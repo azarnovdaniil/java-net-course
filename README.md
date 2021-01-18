@@ -1,1 +1,1 @@
-# java-course-3
+# java-net-course
