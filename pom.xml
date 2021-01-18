@@ -18,6 +18,7 @@
         <module>lesson-4</module>
         <module>lesson-6</module>
         <module>lesson-7</module>
+        <module>project</module>
     </modules>
 
     <properties>
