@@ -278,19 +278,6 @@ class MainTest {
     }
 
     @Test
-    void testStream0() {
-        List<String> strings = List.of("aa", "bb", "cc");
-
-        Stream<String> stream = strings.stream();
-
-        String collect = stream.map(s -> s + " ")
-                .collect(Collectors.joining());
-
-        String collect1 = stream.map(s -> s + "11")
-                .collect(Collectors.joining());
-    }
-
-    @Test
     void testParallel() {
         List<String> strings = List.of("aa", "bb", "cc");
 
