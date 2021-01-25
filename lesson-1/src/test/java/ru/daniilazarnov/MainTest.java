@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -125,6 +126,7 @@ class MainTest {
     }
 
     @Test
+    @Disabled
     void testExists() throws IOException {
         Path path = Paths.get("dir/2.txt");
 
