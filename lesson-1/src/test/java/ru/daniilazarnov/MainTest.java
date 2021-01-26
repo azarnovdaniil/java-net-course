@@ -3,6 +3,8 @@ package ru.daniilazarnov;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.*;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +12,20 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
+
+    @Test
+    void oldWay() {
+        File file = new File("/unrealpath/file.txt");
+        assertFalse(file.exists());
+    }
+
+    @Test
+    void readFromResources() throws URISyntaxException {
+        URL resource = getClass().getClassLoader().getResource("file.txt");
+        Path path = Paths.get(resource.toURI());
+
+        assertTrue(Files.exists(path));
+    }
 
     @Test
     void testPath0() {
@@ -21,6 +37,9 @@ class MainTest {
         assertTrue(Files.exists(path0));
         assertTrue(Files.exists(path1));
         assertTrue(Files.exists(path2));
+
+        Path path = Path.of("/unrealpath/file.txt");
+        assertFalse(Files.exists(path));
     }
 
     @Test
@@ -29,7 +48,8 @@ class MainTest {
         Path path0 = Paths.get("dir/2.txt");
         Path path1 = Paths.get("dir/subdir0/file.txt");
 
-        System.out.println(path0.relativize(path1));
+        Path relativize = path0.relativize(path1);
+        System.out.println(relativize);
 
         System.out.println(path0);
         System.out.println(path1);
