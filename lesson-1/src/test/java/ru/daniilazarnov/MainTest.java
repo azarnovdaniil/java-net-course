@@ -185,11 +185,11 @@ class MainTest {
 
     @Test
     void testCopy() throws IOException {
-        Files.copy(Path.of("dir/from.txt"), Path.of("dir/to.txt"), StandardCopyOption.REPLACE_EXISTING);
+       Files.copy(Path.of("dir/from.txt"), Path.of("dir/to.txt"), StandardCopyOption.REPLACE_EXISTING);
 
         OutputStream outputStream = new FileOutputStream("dir/out.txt");
         Files.copy(Path.of("dir/from.txt"), outputStream);
-
+//
         InputStream inputStream = new FileInputStream("dir/from.txt");
         Files.copy(inputStream, Path.of("dir/from_input.txt"), StandardCopyOption.REPLACE_EXISTING);
     }
