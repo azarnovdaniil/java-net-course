@@ -13,6 +13,7 @@ class MainTest {
 
     @Test
     void testPath0() {
+        /*get - из переданной строки или URI возвращает объект типа Path*/
         Path path0 = Paths.get("dir/2.txt");
         Path path1 = Paths.get("dir" + File.separator + "2.txt");
         Path path2 = Paths.get("dir", "2.txt");
@@ -24,6 +25,7 @@ class MainTest {
 
     @Test
     void testRelativize() {
+        /*Path relativize() — вычисляет относительный путь между текущим и переданным путем*/
         Path path0 = Paths.get("dir/2.txt");
         Path path1 = Paths.get("dir/subdir0/file.txt");
 
@@ -35,30 +37,31 @@ class MainTest {
 
     @Test
     void testResolve() {
+        /*Восстанавливает абсолютный путь по текущему и относительному.*/
         Path path0 = Paths.get("dir/subdir");
         Path path1 = Paths.get("subdir2");
 
         // dir/subdir + subdir2
-        System.out.println(path0.resolve("subdir2"));
-        System.out.println(path0.resolve(path1));
+        System.out.println(path0.resolve("subdir2")); // dir\subdir\subdir2
+        System.out.println(path0.resolve(path1));  //dir\subdir\subdir2
 
         // user -> root_dir 76fewf83fwefwfwef192409fwe18 + my_love.jpg
 
         // dir/subdir2
-        System.out.println(path0.resolveSibling("subdir2"));
-        System.out.println(path0.resolveSibling(path1));
+        System.out.println(path0.resolveSibling("subdir2")); //dir\subdir2
+        System.out.println(path0.resolveSibling(path1)); //dir\subdir2
 
-        System.out.println(path0);
-        System.out.println(path1);
+        System.out.println(path0); //dir\subdir
+        System.out.println(path1); //subdir2
 
         Path path3 = Paths.get("dir/fregergergonsdpkogfnjklfaijpgnljbkflgiofpnljbfk dsgmi");
-        System.out.println(path3);
+        System.out.println(path3); //dir\fregergergonsdpkogfnjklfaijpgnljbkflgiofpnljbfk dsgmi
     }
 
     @Test
     void testStartEndWith() {
         Path path0 = Paths.get("dir/subdir");
-
+        /*startsWith(), endsWith() — проверяют, начинается/заканчивается ли путь с переданного пути*/
         assertTrue(path0.startsWith("dir"));
         assertTrue(path0.endsWith(Paths.get("subdir")));
     }
@@ -66,7 +69,7 @@ class MainTest {
     @Test
     void testIsAbsolute() {
         Path path0 = Paths.get("dir/subdir");
-
+        /*Приводит путь к абсолютному, если был относительный.*/
         Path absolutePath = path0.toAbsolutePath();
         System.out.println(absolutePath);
 
@@ -76,17 +79,24 @@ class MainTest {
     @Test
     void testFileNameParentRoot() {
         Path path0 = Paths.get("/dir/subdir");
-
+        /*Возвращает имя файла из текущего пути*/
         System.out.println(path0.getFileName());
+        /*Возвращает директорию из текущего пути.*/
         System.out.println(path0.getParent());
+        /*Возвращает корень текущего пути – директорию самого верхнего уровня.*/
         System.out.println(path0.getRoot());
     }
 
     @Test
     void testCount() {
         Path path0 = Paths.get("/dir/subdir/subsubdir");
-
+        /*getNameCount() используется для возврата количества элементов имени в пути.
+        Если этот путь представляет только корневой компонент, метод вернет 1.*/
         System.out.println(path0.getNameCount());
+        /*используется для возврата элемента имени этого пути в качестве объекта Path.
+        Мы передали индекс в качестве параметра, а индекс представляет индекс элемента name,
+        который нужно вернуть. Элемент, ближайший к корню в иерархии каталогов, имеет индекс 0.
+        Элемент, самый дальний от корня, имеет индекс count-1.*/
         System.out.println(path0.getName(0));
         System.out.println(path0.getName(path0.getNameCount() - 1));
         System.out.println(path0.subpath(1, path0.getNameCount()));
@@ -95,22 +105,24 @@ class MainTest {
     @Test
     void testNormalize() {
         Path path0 = Paths.get("/../../../dir/subdir");
-
-        System.out.println(path0.normalize());
+        /*используемый для возврата пути из текущего пути,
+        в котором исключены все избыточные элементы имени.*/
+        System.out.println(path0.normalize());  // \dir\subdir
     }
 
     @Test
     void testUri() {
         Path path0 = Paths.get("dir/subdir");
-
+        /*Метод toUri() возвращает URI (путь который может быть открыт из браузера)*/
         System.out.println(path0.toUri());
+        /*используется для возврата объекта java.io.File, представляющего этот объект пути*/
         System.out.println(path0.toFile());
     }
 
     @Test
     void nameIterator() {
         Path path0 = Paths.get("dir/subdir");
-
+        /*для возврата итератора элементов имени, которые создают этот путь.*/
         path0.iterator().forEachRemaining(System.out::println);
     }
 
@@ -134,7 +146,7 @@ class MainTest {
         assertTrue(Files.isWritable(path));
 
         assertFalse(Files.isSymbolicLink(path));
-        assertFalse(Files.isExecutable(path));
+        assertTrue(Files.isExecutable(path));
         assertFalse(Files.isHidden(path));
     }
 
@@ -143,6 +155,7 @@ class MainTest {
         Path path0 = Paths.get("dir");
         Path path1 = Paths.get("dir");
         assertTrue(Files.isDirectory(path0));
+        /*не указывает ли на тот же самый файл?*/
         assertTrue(Files.isSameFile(path0, path1));
     }
 
