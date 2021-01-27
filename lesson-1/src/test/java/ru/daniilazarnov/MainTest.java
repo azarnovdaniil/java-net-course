@@ -1,6 +1,8 @@
 package ru.daniilazarnov;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -145,6 +147,7 @@ class MainTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     void testExists() throws IOException {
         Path path = Paths.get("dir/2.txt");
 
