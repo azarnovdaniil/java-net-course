@@ -25,13 +25,28 @@
 
 ### Ответы:
 
-1.
-2.
-3.
-4.
-5.
-6.
-7.
+1. 
+ Класс ServerSocket server; класс Socket socket;
+ PORT;
+ DataInputStream in - 
+ DataOutputStream out;
+
+2. Если это пакет java.io., то возможно используя классы FileOutputStream/FileInputStream
+
+3.Честно, пока не знаю. Видимо частями.
+ Надеюсь этот вопрос мы будем разбирать отдельно.
+
+4. 
+Проще используя стринговые команды типа:
+String str = in.readUTF();
+if (str.equals("/regok")) {
+
+Хотя интересно было бы попробовать сериализацию.
+
+5. Используя класс File как вариант. 
+
+6. Пока начну с java.io
+
 
 ---
 

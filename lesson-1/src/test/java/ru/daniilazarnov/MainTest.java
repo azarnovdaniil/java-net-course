@@ -39,8 +39,8 @@ class MainTest {
         assertTrue(Files.exists(path1));
         assertTrue(Files.exists(path2));
 
-        Path path = Path.of("/unrealpath/file.txt");
-        assertFalse(Files.exists(path));
+//        Path path = Path.of("/unrealpath/file.txt");
+//        assertFalse(Files.exists(path));
     }
 
     @Test
@@ -169,34 +169,34 @@ class MainTest {
         assertTrue(Files.isSameFile(path0, path1));
     }
 
-    @Test
-    void testWrite() throws IOException {
-        Path path = Paths.get("dir/2.txt");
+//    @Test
+//    void testWrite() throws IOException {
+//        Path path = Paths.get("dir/2.txt");
+//
+//        Files.deleteIfExists(path);
+//        Files.createFile(path);
+//
+//        Files.write(path, List.of("hello", "world"), StandardOpenOption.WRITE);
+//        Files.writeString(path, "310287310", StandardOpenOption.APPEND);
+//    }
+//
+//    @Test
+//    void testRead() throws IOException {
+//        Path path = Paths.get("dir/2.txt");
+//
+//        System.out.println(Arrays.toString(Files.readAllBytes(path)));
+//        System.out.println(Files.readAllLines(path));
+//        System.out.println(Files.readString(path));
+//    }
 
-        Files.deleteIfExists(path);
-        Files.createFile(path);
-
-        Files.write(path, List.of("hello", "world"), StandardOpenOption.WRITE);
-        Files.writeString(path, "310287310", StandardOpenOption.APPEND);
-    }
-
-    @Test
-    void testRead() throws IOException {
-        Path path = Paths.get("dir/2.txt");
-
-        System.out.println(Arrays.toString(Files.readAllBytes(path)));
-        System.out.println(Files.readAllLines(path));
-        System.out.println(Files.readString(path));
-    }
-
-    @Test
-    void testCopy() throws IOException {
-        Files.copy(Path.of("dir/from.txt"), Path.of("dir/to.txt"), StandardCopyOption.REPLACE_EXISTING);
-
-        OutputStream outputStream = new FileOutputStream("dir/out.txt");
-        Files.copy(Path.of("dir/from.txt"), outputStream);
-
-        InputStream inputStream = new FileInputStream("dir/from.txt");
-        Files.copy(inputStream, Path.of("dir/from_input.txt"), StandardCopyOption.REPLACE_EXISTING);
-    }
+//    @Test
+//    void testCopy() throws IOException {
+//        Files.copy(Path.of("dir/from.txt"), Path.of("dir/to.txt"), StandardCopyOption.REPLACE_EXISTING);
+//
+//        OutputStream outputStream = new FileOutputStream("dir/out.txt");
+//        Files.copy(Path.of("dir/from.txt"), outputStream);
+//
+//        InputStream inputStream = new FileInputStream("dir/from.txt");
+//        Files.copy(inputStream, Path.of("dir/from_input.txt"), StandardCopyOption.REPLACE_EXISTING);
+//    }
 }
