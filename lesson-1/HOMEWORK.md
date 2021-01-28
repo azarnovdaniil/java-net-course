@@ -25,12 +25,12 @@
 
 ### Ответы:
 
-1.
-2.
-3.
-4.
-5.
-6.
+1. Через Socket 
+2. Переводить в byte 
+3. Отправлять по частям
+4. Буду использовать ObjectInputStream и ObjectOutputStream
+5. Object -> String[]
+6. java.nio
 7.
 
 ---
