@@ -7,11 +7,13 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 
 public class Server implements Runnable {
     private static final Logger log = Logger.getLogger(Server.class);
-    private final ServerSocketChannel serverSocketChannel;
+    private static ServerSocketChannel serverSocketChannel = null;
     private final Selector selector; // слушает все события
     private final ByteBuffer buf = ByteBuffer.allocate(256);
     private int acceptedClientIndex = 1;
@@ -27,6 +29,18 @@ public class Server implements Runnable {
 
     public static void main(String[] args) throws IOException {
         start();
+
+
+//        writeFile();
+
+    }
+
+    private static void writeFile(SocketChannel ch) throws IOException {
+        log.debug("enter writeFile");
+        try (FileChannel fileChannel = FileChannel.open(Paths.get("data/_nio-data.txt"), StandardOpenOption.CREATE,
+                StandardOpenOption.WRITE)) {
+            fileChannel.transferFrom(ch, 0, Long.MAX_VALUE);
+        }
     }
 
     private static void start() throws IOException {
@@ -78,18 +92,37 @@ public class Server implements Runnable {
         log.info("Подключился новый клиент " + clientName);
     }
 
-
     /**
      * Обработка события чтение из канала
      * Чтение из канала
      *
      * @param key ключ
-     * @throws IOException исключени
+     * @throws IOException исключение
      */
     private void handleRead(SelectionKey key) throws IOException {
+        log.debug("handleRead enter");
         SocketChannel ch = (SocketChannel) key.channel(); //получаем ссылку на канал из ключа
         StringBuilder sb = new StringBuilder();
+        byte control = getControlByte(ch);
+//        log.debug("bytes[0]: " + control);
 
+        switch (control) {
+            case 70:
+                writeFile(ch);
+                break;
+            case 71:
+                getMessage(key, ch, sb);
+            break;
+
+            default:
+                throw new IllegalStateException("Unexpected value: " + control);
+        }
+
+
+
+    }
+
+    private void getMessage(SelectionKey key, SocketChannel ch, StringBuilder sb) throws IOException {
         buf.clear(); //очищаем буфер
         int read;
         try {
@@ -98,9 +131,11 @@ public class Server implements Runnable {
                 byte[] bytes = new byte[buf.limit()];
                 buf.get(bytes); //записываем в данные из буфера в массив
                 sb.append(new String(bytes)); // добавляем в стринг билдер
+                log.debug(sb.toString());
                 buf.clear();
-
             }
+
+
         } catch (Exception e) {
             key.cancel();
             read = -1;
@@ -117,6 +152,20 @@ public class Server implements Runnable {
         broadcastMessage(msg);
     }
 
+    private byte getControlByte(SocketChannel ch) throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(1);
+        byte control = -1;
+        int read;
+        buffer.clear(); //очищаем буфер
+        if ((read = ch.read(buffer)) > 0) {
+            buffer.flip();
+            byte[] bytes = new byte[1];
+            buffer.get(bytes); //записываем в данные из буфера в массив
+            control = bytes[0];
+
+        }
+        return control;
+    }
 
     /**
      * Рассылаем сообщения всем клиентам
