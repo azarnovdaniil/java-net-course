@@ -1,61 +1,48 @@
 package ru.daniilazarnov;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.Scanner;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelHandlerContext;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
-public class ClientHandler {
-    private Server server;
-    private Socket socket;
-    private DataInputStream in;
-    private DataOutputStream out;
+public class ClientHandler extends ChannelInboundHandlerAdapter {
 
-
-    public ClientHandler(Server server, Socket socket) {
-        try {
-            this.server = server;
-            this.socket = socket;
-            in = new DataInputStream(socket.getInputStream());
-            out = new DataOutputStream(socket.getOutputStream());
-
-            new Thread(() -> {
-
-
-                try {
-                    socket.setSoTimeout(120000); // через время нас отклчит
-                } catch (SocketException e) {
-                    e.printStackTrace();
-                }
-
-                while (true) {
-                    String str = null;
-
-                    try {
-                        str = in.readUTF();    // считываем то что написали (не уверен что верно)
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println(str);
-                }
-
-            }).start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("Клиент подключился ");
     }
 
-    public void sendMsg(String msg) {
-        try {
-            out.writeUTF(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        System.out.println("Клиент отключился");
+    }
+
+    @Override
+    public void channelRead(io.netty.channel.ChannelHandlerContext ctx, java.lang.Object msg) throws java.lang.Exception {
+
+
+        System.out.println(msg.getClass().getName());
+
+
+            if (msg instanceof MyMessage){
+                if ( msg.equals("/all")) {
+                    Path path = Paths.get("project", "server", "src", "main", "java", "ru.daniilazarnov", "file");
+
+                    ctx.writeAndFlush(new File(path.getFileName().toString()));
+                }
+            }
+
+
+
 
     }
 
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+        ctx.close();
+    }
 }

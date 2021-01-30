@@ -1,45 +1,46 @@
 package ru.daniilazarnov;
 
+import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
+import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+
 import java.io.*;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Client {
-    private DataInputStream in;
-    private DataOutputStream out;
 
     public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("localhost", 8189);
-        OutputStream output = socket.getOutputStream();
-        InputStream input = socket.getInputStream();
+        try (Socket socket = new Socket("localhost", 8189);
+             ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream());
+             ObjectDecoderInputStream in = new ObjectDecoderInputStream(socket.getInputStream(), 100 * 1024 * 1024);) {
 
-        PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(output, "UTF-8"));
+            while (true) {
+                Scanner scanner = new Scanner(System.in);
+                String msg = scanner.nextLine();
+
+                File textMessage = new File(msg);
+                out.writeObject(textMessage);
+                out.flush();
 
 
-        Scanner scanner = new Scanner(input);
-        String str;
+                if (msg.startsWith("/")) {
+                    if (msg.equals("/all")) {
 
-        while (!socket.isOutputShutdown()) {
+                        try {
+                            File fileFromServer = (File) in.readObject();
+                            System.out.println(fileFromServer.getFile());
+                        } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        }
 
-            if (scanner.hasNext()) {
-                str = scanner.nextLine();// считывание строк из стандартного ввода
+                    }
 
-                printWriter.println(str);// и отправка на сервер
-                printWriter.flush();
 
-                String msg;
-                while (!socket.isInputShutdown()) { // ждем сообщений
+//                    MyMessage messageFromServer = (MyMessage) in.readObject();
+//                    System.out.println(messageFromServer.getText());
 
-                    msg = scanner.nextLine();// считывание сообщений с сервера
-                    System.out.println(msg); //выводим в консоль его
-                    if (msg.equals("/gg"))
-                        break;
+
                 }
-                if (str.equalsIgnoreCase("/bye"))
-                    break;
 
             }
         }
