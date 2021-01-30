@@ -29,17 +29,13 @@ public class Server implements Runnable {
 
     public static void main(String[] args) throws IOException {
         start();
-
-
-//        writeFile();
-
     }
 
-    private static void writeFile(SocketChannel ch) throws IOException {
+    private static void writeFile(SocketChannel ch, byte size) throws IOException {
         log.debug("enter writeFile");
         try (FileChannel fileChannel = FileChannel.open(Paths.get("data/_nio-data.txt"), StandardOpenOption.CREATE,
                 StandardOpenOption.WRITE)) {
-            fileChannel.transferFrom(ch, 0, Long.MAX_VALUE);
+            fileChannel.transferFrom(ch, 0, size);
         }
     }
 
@@ -104,20 +100,21 @@ public class Server implements Runnable {
         SocketChannel ch = (SocketChannel) key.channel(); //получаем ссылку на канал из ключа
         StringBuilder sb = new StringBuilder();
         byte control = getControlByte(ch);
-//        log.debug("bytes[0]: " + control);
+        byte sizeFile = getSizeFile(ch);
+        log.debug("control bytes: " + control);
 
         switch (control) {
             case 70:
-                writeFile(ch);
+                writeFile(ch, sizeFile);
                 break;
             case 71:
                 getMessage(key, ch, sb);
-            break;
+                break;
 
             default:
-                throw new IllegalStateException("Unexpected value: " + control);
+                log.error("Unexpected value: " + control);
+//                throw new IllegalStateException("Unexpected value: " + control);
         }
-
 
 
     }
@@ -134,8 +131,6 @@ public class Server implements Runnable {
                 log.debug(sb.toString());
                 buf.clear();
             }
-
-
         } catch (Exception e) {
             key.cancel();
             read = -1;
@@ -151,6 +146,23 @@ public class Server implements Runnable {
         System.out.println(msg);
         broadcastMessage(msg);
     }
+
+    private byte getSizeFile(SocketChannel ch) throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(1);
+        byte size = -1;
+        int read;
+        buffer.clear(); //очищаем буфер
+        if ((read = ch.read(buffer)) > 0) {
+            buffer.flip();
+            byte[] bytes = new byte[1];
+            buffer.get(bytes); //записываем в данные из буфера в массив
+            size = bytes[0];
+
+        }
+//        log.debug("size: " + size);
+        return size;
+    }
+
 
     private byte getControlByte(SocketChannel ch) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(1);
