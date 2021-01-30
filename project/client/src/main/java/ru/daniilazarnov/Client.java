@@ -11,6 +11,8 @@ import java.nio.channels.AlreadyConnectedException;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class Client {
 
@@ -33,7 +35,6 @@ public class Client {
     }
 
     public static void main(String[] args) throws IOException {
-
         client = SocketChannel.open();
         String msg = "Hello\n";
         String hostname = "localhost";
@@ -43,10 +44,15 @@ public class Client {
         buffer = sendMessage(client, msg);
         readingInMessage(client, buffer);
 
-        System.out.println();
-        while (client.isOpen()) {
-
-        }
+//        while (client.isOpen()) {
+//            long before = System.currentTimeMillis();
+//            long after = 0L;
+//            if (before - after >= 1000) {
+//                log.info("client.isOpen()");
+//            }
+//            after = System.currentTimeMillis();
+//
+//        }
     }
 
     private static void connect(String hostname, int port) throws IOException {
@@ -78,21 +84,36 @@ public class Client {
     //    @org.jetbrains.annotations.NotNull
     private static ByteBuffer sendMessage(SocketChannel client, String msg) throws IOException {
         ByteBuffer buffer = ByteBuffer.wrap(msg.getBytes());
-        log.debug(buffer);
+//        log.debug(buffer);
         client.write(buffer);
         return buffer;
     }
 
     private static void readingInMessage(SocketChannel client, ByteBuffer buffer) throws IOException {
-        int i = client.read(buffer);
-        while (i != -1) {
-            buffer.flip(); //Переключение буфера в режим чтения
+        SocketChannel ch = client.socket().getChannel();
+        StringBuilder sb = new StringBuilder();
+//        int read;
+        buffer.clear(); //очищаем буфер
+        int read;
+//        while (read != -1) {
 
-            while (buffer.hasRemaining()) {
-                System.out.print((char) buffer.get()); // побайтово получаем содержимое буфера
-            }
+        while ((read = ch.read(buffer)) != -1) { //читаем из канала
+            int positions = buffer.position();
+            buffer.flip();
+            byte[] bytes = new byte[buffer.limit()];
+            buffer.get(bytes); //записываем в данные из буфера в массив
+            sb.append(new String(bytes)); // добавляем в стринг билдер
             buffer.clear();
-            i = client.read(buffer); //получаем следующий фрагмент
+            if (positions < 6) {
+                break;
+            }
         }
+        log.debug("sb: " + sb.toString());
+        if (read < 0) {
+            ch.close();
+        }
+
+
+        log.debug("Out of the loop");
     }
 }
