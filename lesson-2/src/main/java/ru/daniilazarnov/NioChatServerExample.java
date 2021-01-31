@@ -7,6 +7,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.sql.SQLOutput;
 import java.util.Iterator;
 
 public class NioChatServerExample implements Runnable {
@@ -38,8 +39,10 @@ public class NioChatServerExample implements Runnable {
             while (this.serverSocketChannel.isOpen()) {
                 selector.select();
                 iter = this.selector.selectedKeys().iterator();
+   System.out.println("iter = " + iter);
                 while (iter.hasNext()) {
                     key = iter.next();
+   System.out.println("key = " + key);
                     iter.remove();
                     if (key.isAcceptable()) {
                         handleAccept(key);
