@@ -1,5 +1,7 @@
 package ru.daniilazarnov;
 
+import javax.sound.sampled.Line;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -7,7 +9,11 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
+import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class Server implements Runnable {
 
@@ -86,6 +92,8 @@ public class Server implements Runnable {
             msg = key.attachment() + ": " + sb.toString();
         }
 
+        writeToFile(msg);
+
         System.out.println(msg);
         broadcastMessage(msg);
     }
@@ -98,6 +106,32 @@ public class Server implements Runnable {
                 sch.write(msgBuf);
                 msgBuf.rewind();
             }
+        }
+    }
+
+    private void checkDirectory(Path dir) {
+        if (!Files.exists(dir)) {
+            createDirectory(dir);
+        }
+    }
+
+    private void createDirectory(Path dir) {
+        try {
+            Files.createFile(dir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeToFile(String msg) {
+        Path dir = Paths.get("project/server/src/main/java/ru/daniilazarnov/message.txt");
+        List<String> lines = new ArrayList<>();
+        lines.add(msg);
+        checkDirectory(dir);
+        try {
+            Files.write(dir, lines, Charset.defaultCharset(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
