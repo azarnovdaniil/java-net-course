@@ -15,6 +15,7 @@ import java.util.Iterator;
 public class Client {
 
     /*
+    Нереализованный протокол:
             [byte  ] 1b управляющий байт →
             [short ] 2b длинна имени файла →
             [byte[]] nb  имя файла →
@@ -31,7 +32,7 @@ public class Client {
 
         String msg = "Hello\nHello\nHello\n";
         ByteBuffer prefixBuf = ByteBuffer.wrap("G".getBytes()); // добавляем команду управления в первый байт
-           byte lengthFileByte = (byte) msg.length();
+           byte lengthFileByte = (byte) msg.length(); //получаем размер файла
         log.debug("lengthFileByte: " + msg.length() );
         String hostname = "localhost";
         int port = 8189;
@@ -61,6 +62,10 @@ public class Client {
         }
     }
 
+    /**
+     * Инициализация сетевого соединения
+     * @throws IOException исключение
+     */
     private static void initConnection() throws IOException {
         client = SocketChannel.open();
         client.configureBlocking(false);
@@ -68,6 +73,12 @@ public class Client {
         client.register(selector, SelectionKey.OP_READ);
     }
 
+    /**
+     * Читает файл по переданному пути // TODO: 31.01.2021 функционал реализован не полностью
+     * и отправляет напрямую в канал
+     *
+     * @throws IOException исключение
+     */
     private static void readFile() throws IOException {
         RandomAccessFile randomAccessFile = new RandomAccessFile("data/nio-data.txt", "rw");
         ByteBuffer prefixBuf = ByteBuffer.wrap("F".getBytes()); // добавляем команду управления в первый байт
@@ -98,6 +109,13 @@ public class Client {
         randomAccessFile.close();
     }
 
+    /**
+     * Создает соединение
+     *
+     * @param hostname ip адресс сервера
+     * @param port порт
+     * @throws IOException исключение
+     */
     private static void connect(String hostname, int port) throws IOException {
         InetSocketAddress serverAddress = new InetSocketAddress(hostname,
                 port);
@@ -118,6 +136,16 @@ public class Client {
         log.info("Соединение с сервером установлено");
     }
 
+    /**
+     * Отправляет сообщение, возвращает зачем то буфер // TODO: 31.01.2021 разобраться зачем возвращает буфер
+     *
+     * @param client открытый сокет
+     * @param msg сообщение для отправки
+     * @param prefixBuf управлюящий байт
+     * @param lengthFileByte байт содержащий информацию о длинне передаваемых данных
+     * @return буфер
+     * @throws IOException исключение
+     */
     private static ByteBuffer sendMessage(SocketChannel client, String msg, ByteBuffer prefixBuf, byte lengthFileByte) throws IOException {
         ByteBuffer buffer = ByteBuffer.wrap(msg.getBytes());
         ByteBuffer lengthFile = ByteBuffer.wrap(new byte[]{lengthFileByte});
@@ -127,6 +155,12 @@ public class Client {
         return  buffer;
     }
 
+    /**
+     * Читает сообщение
+     * @param client открытый сокет
+     * @param buffer буфер
+     * @throws IOException исключение
+     */
     private static void readingInMessage(SocketChannel client, ByteBuffer buffer) throws IOException {
         SocketChannel ch = client.socket().getChannel();
         StringBuilder sb = new StringBuilder();

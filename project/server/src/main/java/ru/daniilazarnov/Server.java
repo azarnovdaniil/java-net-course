@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.file.Paths;
@@ -31,14 +30,25 @@ public class Server implements Runnable {
         start();
     }
 
+    /**
+     * Запись полученных данных в файл
+     * @param ch канал получаемых данных
+     * @param size размер получаемых данных
+     * @throws IOException исключение
+     */
     private static void writeFile(SocketChannel ch, byte size) throws IOException {
         log.debug("enter writeFile");
         try (FileChannel fileChannel = FileChannel.open(Paths.get("data/_nio-data.txt"), StandardOpenOption.CREATE,
                 StandardOpenOption.WRITE)) {
             fileChannel.transferFrom(ch, 0, size);
+
         }
     }
 
+    /**
+     * Стартуем сервер
+     * @throws IOException исключение
+     */
     private static void start() throws IOException {
         new Thread(new Server()).start(); // запускаем сервер
     }
@@ -115,10 +125,15 @@ public class Server implements Runnable {
                 log.error("Unexpected value: " + control);
 //                throw new IllegalStateException("Unexpected value: " + control);
         }
-
-
     }
 
+    /**
+     * Получаем сообщение
+     * @param key ключ
+     * @param ch канал
+     * @param sb стрингБилдер
+     * @throws IOException
+     */
     private void getMessage(SelectionKey key, SocketChannel ch, StringBuilder sb) throws IOException {
         buf.clear(); //очищаем буфер
         int read;
@@ -142,11 +157,18 @@ public class Server implements Runnable {
         } else {
             msg = key.attachment() + ": " + sb.toString();
         }
-
         System.out.println(msg);
         broadcastMessage(msg);
     }
 
+
+    /**
+     * Через этот метод получаем размер файла в байтах из второго байта, метод должен использоваться после
+     * @getControlByte иначе будет ошибка в получении служебной информации
+     * @param ch
+     * @return
+     * @throws IOException
+     */
     private byte getSizeFile(SocketChannel ch) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(1);
         byte size = -1;
@@ -157,13 +179,18 @@ public class Server implements Runnable {
             byte[] bytes = new byte[1];
             buffer.get(bytes); //записываем в данные из буфера в массив
             size = bytes[0];
-
         }
 //        log.debug("size: " + size);
         return size;
     }
 
-
+    /**
+     * Получаем первый байт сообщения, который содержит данные о передаваемом контенте.
+     *
+     * @param ch
+     * @return управляющий байт;
+     * @throws IOException
+     */
     private byte getControlByte(SocketChannel ch) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(1);
         byte control = -1;
@@ -174,7 +201,6 @@ public class Server implements Runnable {
             byte[] bytes = new byte[1];
             buffer.get(bytes); //записываем в данные из буфера в массив
             control = bytes[0];
-
         }
         return control;
     }
