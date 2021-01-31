@@ -6,11 +6,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.util.Arrays;
-import java.util.Iterator;
 
 public class Client {
 
@@ -32,38 +29,19 @@ public class Client {
 
         String msg = "Hello\nHello\nHello\n";
         ByteBuffer prefixBuf = ByteBuffer.wrap("G".getBytes()); // добавляем команду управления в первый байт
-           byte lengthFileByte = (byte) msg.length(); //получаем размер файла
-        log.debug("lengthFileByte: " + msg.length() );
+        byte lengthFileByte = (byte) msg.length(); //получаем размер файла
         String hostname = "localhost";
         int port = 8189;
         connect(hostname, port);
 
         readFile();
-        ByteBuffer buffer;
-        buffer = sendMessage(client,msg, prefixBuf, lengthFileByte);
-        readingInMessage(client, buffer);
-
-        Iterator<SelectionKey> iter;
-        SelectionKey key;
-
-        while (client.isOpen()) { // внутри вайла канал открыт
-            selector.select();// ждем новых событий
-            iter = selector.selectedKeys().iterator();
-            while (iter.hasNext()) { // перебираем ключи в итераторе событий
-                key = iter.next(); //получаем ссылку на событие
-                iter.remove(); //удаляем событие из списка обработки
-                if (key.isAcceptable()) { // проверяем ключ
-//                    handleAccept(key); // если подключился
-                }
-                if (key.isReadable()) { //если что-то написал
-//                    handleRead(key);
-                }
-            }
-        }
+        sendMessage(client, msg, prefixBuf, lengthFileByte);
+        readingInMessage(client);
     }
 
     /**
      * Инициализация сетевого соединения
+     *
      * @throws IOException исключение
      */
     private static void initConnection() throws IOException {
@@ -83,13 +61,10 @@ public class Client {
         RandomAccessFile randomAccessFile = new RandomAccessFile("data/nio-data.txt", "rw");
         ByteBuffer prefixBuf = ByteBuffer.wrap("F".getBytes()); // добавляем команду управления в первый байт
         byte lengthFileByte = (byte) randomAccessFile.length(); // добавляем длинну файла во второй байт
-
         ByteBuffer lengthFile = ByteBuffer.wrap(new byte[]{lengthFileByte});
-        log.debug("new byte[]: " + Arrays.toString(new byte[]{lengthFileByte}));
-        log.debug("randomAccessFile.length(): " + randomAccessFile.length());
-
         FileChannel inChannel = randomAccessFile.getChannel();
         ByteBuffer buf = ByteBuffer.allocate(48);
+
         int bytesRead = inChannel.read(buf);
         while (bytesRead != -1) {
             buf.flip();
@@ -98,7 +73,6 @@ public class Client {
                 if (count == 0) {
                     client.write(prefixBuf);
                     client.write(lengthFile);
-
                 }
                 client.write(buf);
                 count++;
@@ -113,7 +87,7 @@ public class Client {
      * Создает соединение
      *
      * @param hostname ip адресс сервера
-     * @param port порт
+     * @param port     порт
      * @throws IOException исключение
      */
     private static void connect(String hostname, int port) throws IOException {
@@ -139,9 +113,9 @@ public class Client {
     /**
      * Отправляет сообщение, возвращает зачем то буфер // TODO: 31.01.2021 разобраться зачем возвращает буфер
      *
-     * @param client открытый сокет
-     * @param msg сообщение для отправки
-     * @param prefixBuf управлюящий байт
+     * @param client         открытый сокет
+     * @param msg            сообщение для отправки
+     * @param prefixBuf      управлюящий байт
      * @param lengthFileByte байт содержащий информацию о длинне передаваемых данных
      * @return буфер
      * @throws IOException исключение
@@ -152,32 +126,37 @@ public class Client {
         client.write(prefixBuf);
         client.write(lengthFile);
         client.write(buffer);
-        return  buffer;
+        return buffer;
     }
 
     /**
      * Читает сообщение
+     *
      * @param client открытый сокет
-     * @param buffer буфер
      * @throws IOException исключение
      */
-    private static void readingInMessage(SocketChannel client, ByteBuffer buffer) throws IOException {
+    private static void readingInMessage(SocketChannel client) throws IOException {
+        int bufferSize = 10;
+        ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
         SocketChannel ch = client.socket().getChannel();
         StringBuilder sb = new StringBuilder();
         buffer.clear(); //очищаем буфер
         int read;
-        while ((read = ch.read(buffer)) != -1) { //читаем из канала
-            int positions = buffer.position();
-            buffer.flip();
-            byte[] bytes = new byte[buffer.limit()];
-            buffer.get(bytes); //записываем в данные из буфера в массив
-            sb.append(new String(bytes)); // добавляем в стринг билдер
-            buffer.clear();
-            if (positions < 6) {
-                break;
+        while (true) {
+            while ((read = ch.read(buffer)) != -1) { //читаем из канала
+                int positions = buffer.position();
+                buffer.flip();
+                byte[] bytes = new byte[buffer.limit()];
+                buffer.get(bytes); //записываем в данные из буфера в массив
+
+                sb.append(new String(bytes)); // добавляем в стринг билдер
+                buffer.clear();
+                if (positions < bufferSize) {
+                    break;
+                }
             }
+            System.out.printf("%s\n", sb.toString());
+            sb.setLength(0);
         }
-        System.out.println(sb.toString());
-        log.debug("Out of the loop");
     }
 }
