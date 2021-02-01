@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T08:29:42.665187Z</date>
+  <millis>1611736182665</millis>
+  <nanos>187000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T09:12:01.114154Z</date>
+  <millis>1611738721114</millis>
+  <nanos>154000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>WARNING</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started IOException</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T09:13:59.052364Z</date>
+  <millis>1611738839052</millis>
+  <nanos>364000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T09:14:13.968754Z</date>
+  <millis>1611738853968</millis>
+  <nanos>754000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>WARNING</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started IOException</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T09:28:10.287729Z</date>
+  <millis>1611739690287</millis>
+  <nanos>729000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>WARNING</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started IOException</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T09:29:17.495377Z</date>
+  <millis>1611739757495</millis>
+  <nanos>377000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>WARNING</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started IOException</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T09:29:27.381412Z</date>
+  <millis>1611739767381</millis>
+  <nanos>412000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>WARNING</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started IOException</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T09:30:24.388626Z</date>
+  <millis>1611739824388</millis>
+  <nanos>626000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T09:31:25.282024Z</date>
+  <millis>1611739885282</millis>
+  <nanos>24000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T12:32:07.391907Z</date>
+  <millis>1611750727391</millis>
+  <nanos>907000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T12:39:28.291431Z</date>
+  <millis>1611751168291</millis>
+  <nanos>431000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T12:42:48.342351Z</date>
+  <millis>1611751368342</millis>
+  <nanos>351000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T12:46:19.153207Z</date>
+  <millis>1611751579153</millis>
+  <nanos>207000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T12:54:48.819195Z</date>
+  <millis>1611752088819</millis>
+  <nanos>195000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T12:55:41.503478Z</date>
+  <millis>1611752141503</millis>
+  <nanos>478000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T13:24:03.191195Z</date>
+  <millis>1611753843191</millis>
+  <nanos>195000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T13:58:29.303565Z</date>
+  <millis>1611755909303</millis>
+  <nanos>565000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T20:58:52.829727Z</date>
+  <millis>1611781132829</millis>
+  <nanos>727000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T21:01:41.891454Z</date>
+  <millis>1611781301891</millis>
+  <nanos>454000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T21:05:26.444048Z</date>
+  <millis>1611781526444</millis>
+  <nanos>48000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T21:06:14.071126Z</date>
+  <millis>1611781574071</millis>
+  <nanos>126000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-01-27T21:07:04.573620Z</date>
+  <millis>1611781624573</millis>
+  <nanos>620000</nanos>
+  <sequence>0</sequence>
+  <logger>ru.daniilazarnov.StorageServer</logger>
+  <level>INFO</level>
+  <class>ru.daniilazarnov.StorageServer</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>StorageServer started!</message>
+</record>
+</log>
