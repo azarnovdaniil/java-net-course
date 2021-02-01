@@ -1,0 +1,6 @@
+янв 27, 2021 10:35:33 PM server.chat.MyServer start
+INFO: Сервер запущен
+февр. 01, 2021 7:57:28 PM server.chat.MyServer start
+INFO: Сервер запущен
+февр. 01, 2021 7:57:47 PM server.chat.MyServer waitAndProcessNewClientConnection
+INFO: Соединение установлено. Ожидаем авторизации...
