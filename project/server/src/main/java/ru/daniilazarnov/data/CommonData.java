@@ -1,5 +1,7 @@
 package ru.daniilazarnov.data;
 
+import com.google.gson.Gson;
+
 import java.io.*;
 
 public class CommonData implements iData, Serializable {
@@ -15,21 +17,9 @@ public class CommonData implements iData, Serializable {
         return this.type;
     }
 
-    public static byte[] serialize(Serializable o) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(out)) {
-            outputStream.writeObject(o);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return out.toByteArray();
+    public String jsonToString () {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 
-    public static <T extends Serializable> T deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        try(ByteArrayInputStream bis = new ByteArrayInputStream(data)) {
-            return (T) new ObjectInputStream(bis).readObject();
-        }
-    }
 }

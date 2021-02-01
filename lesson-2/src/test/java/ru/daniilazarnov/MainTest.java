@@ -18,9 +18,12 @@ class MainTest {
 
     @Test
     void testWalk() throws IOException {
-        Stream<Path> stream = Files.walk(Path.of("../lesson-1/dir"));
+        Path path = Paths.get("files/catalog/ddd/sd.jpg");
+        System.out.println(path.getParent());
 
-        stream.forEach(System.out::println);
+//        //Stream<Path> stream = Files.walk(Path.of("files/catalog/lol/hh.jpg"));
+//        Files.createDirectory(Path.of("files/catalog/lol"));
+//        //stream.forEach(System.out::println);
     }
 
     @Test
@@ -32,24 +35,28 @@ class MainTest {
 
     @Test
     void testWalkFileTree() throws IOException {
-        Files.walkFileTree(Path.of("../lesson-1/dir"), new FileVisitor<Path>() {
+        Files.walkFileTree(Path.of("files/catalog/lol/ll.e"), new FileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                System.out.println(dir);
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                System.out.println(file);
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                System.out.println(file);
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                System.out.println(dir);
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -85,7 +92,6 @@ class MainTest {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                Files.delete(file);
                 return FileVisitResult.CONTINUE;
             }
 
@@ -159,13 +165,20 @@ class MainTest {
     @Test
     void testBuffer2() throws IOException {
         byte arr[] = {10, 20, 30, 40, 50};
+        byte arr1[] = new byte[10];
+
+
         ByteBuffer buffer = ByteBuffer.wrap(arr);
 
         System.out.println("get: " + buffer.get());
         System.out.println("get: " + buffer.get());
         System.out.println();
 
-        buffer.rewind();
+        System.out.println("capacity: " + buffer.capacity());
+        System.out.println("limit: " + buffer.limit());
+        System.out.println("position: " + buffer.position());
+        System.out.println();
+        buffer.flip();
         System.out.println("capacity: " + buffer.capacity());
         System.out.println("limit: " + buffer.limit());
         System.out.println("position: " + buffer.position());
