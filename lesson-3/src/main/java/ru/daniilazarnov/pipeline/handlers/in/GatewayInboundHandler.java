@@ -5,7 +5,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.util.Arrays;
 
-public class GatewayHandler extends ChannelInboundHandlerAdapter {
+public class GatewayInboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
