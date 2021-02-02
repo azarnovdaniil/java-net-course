@@ -4,7 +4,9 @@ import clientserver.Commands;
 
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class MyClient {
@@ -15,11 +17,10 @@ public class MyClient {
 //            String str = by.toString(StandardCharsets.UTF_8);
 //            System.out.println(str);
             Commands command = Commands.LS;
-//            command.name().
 
-            by[0] = 1;
-            by[2] = 112;
-            by[3] = 107;
+            by[0] = command.getSignal();
+//            by[2] = 112;
+//            by[3] = 107;
             Socket socket = new Socket("localhost", 8189);
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             Scanner in = new Scanner(socket.getInputStream());

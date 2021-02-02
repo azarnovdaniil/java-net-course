@@ -15,4 +15,32 @@ public enum Commands {
     Commands(String name, byte signal) {
         this.signal = signal;
     }
+
+    public byte getSignal() {
+        return signal;
+    }
+
+    public static Commands getCommand(byte code) {
+        int index = code;
+        switch (index) {
+            case 1:
+                return UPLOAD;
+            case 2:
+                return DOWNLOAD;
+            case 3:
+                return LS;
+            case 4:
+                return RM;
+            case 5:
+                return MKDIR;
+            case 6:
+                return MV;
+            case 7:
+                return CD;
+            case 8:
+                return RENAME;
+            default:
+                return null;
+        }
+    }
 }
