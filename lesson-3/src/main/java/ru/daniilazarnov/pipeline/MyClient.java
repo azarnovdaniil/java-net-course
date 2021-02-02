@@ -10,7 +10,7 @@ public class MyClient {
             Socket socket = new Socket("localhost", 8189);
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             Scanner in = new Scanner(socket.getInputStream());
-            out.write(new byte[]{115, 21, 31});
+            out.write(new byte[]{21, 21, 21});
             String x = in.nextLine();
             System.out.println("A: " + x);
             in.close();

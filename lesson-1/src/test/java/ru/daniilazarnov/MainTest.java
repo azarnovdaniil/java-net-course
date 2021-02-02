@@ -1,6 +1,8 @@
 package ru.daniilazarnov;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -145,6 +147,7 @@ class MainTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     void testExists() throws IOException {
         Path path = Paths.get("dir/2.txt");
 
@@ -169,6 +172,9 @@ class MainTest {
     @Test
     void testWrite() throws IOException {
         Path path = Paths.get("dir/2.txt");
+
+        Files.deleteIfExists(path);
+        Files.createFile(path);
 
         Files.write(path, List.of("hello", "world"), StandardOpenOption.WRITE);
         Files.writeString(path, "310287310", StandardOpenOption.APPEND);
