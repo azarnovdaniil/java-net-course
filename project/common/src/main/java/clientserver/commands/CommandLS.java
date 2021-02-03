@@ -49,6 +49,7 @@ public class CommandLS {
         while (buf.isReadable()) {
             list.add(buf.readBytes(buf.readInt()).toString(CharsetUtil.UTF_8));
         }
+
         return list;
     }
 }

@@ -28,8 +28,8 @@ public class ServerStorage {
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
-//                    .option(ChannelOption.TCP_NODELAY, true)
-//                    .childOption(ChannelOption.TCP_NODELAY, true)
+                    .option(ChannelOption.TCP_NODELAY, true)
+                    .childOption(ChannelOption.TCP_NODELAY, true)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override

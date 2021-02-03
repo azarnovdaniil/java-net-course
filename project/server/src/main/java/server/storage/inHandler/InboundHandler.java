@@ -45,8 +45,9 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
                         answer = CommandLS.makeResponse(List.of("file1.txt", "file2.txt"));
                         System.out.println("Создан ответ: "+answer);
                         // отправляем этот список
-                        buf.writeBytes(answer);
-                        ChannelFuture transferOperationFuture = ctx.writeAndFlush(buf);
+                        ByteBuf bufOut = ctx.alloc().buffer(answer.length);
+                        bufOut.writeBytes(answer);
+                        ChannelFuture transferOperationFuture = ctx.writeAndFlush(bufOut);
                         transferOperationFuture.addListener(new ChannelFutureListener() {
                             @Override
                             public void operationComplete(ChannelFuture future) {
