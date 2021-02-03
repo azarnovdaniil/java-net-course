@@ -24,7 +24,7 @@ public class ProtoClient {
         CountDownLatch networkStarter = new CountDownLatch(1);
         ProtoClient protoClient = new ProtoClient(networkStarter);
 
-        protoClient.run(Paths.get("demo.txt"));
+        protoClient.run(Paths.get("C:\\Users\\willi\\OneDrive\\project\\java-net-course\\lesson-3\\demo.txt"));
     }
 
     public void run(Path path) throws IOException {

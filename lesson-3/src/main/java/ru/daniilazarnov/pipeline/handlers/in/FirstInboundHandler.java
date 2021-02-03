@@ -14,7 +14,6 @@ public class FirstInboundHandler extends ChannelInboundHandlerAdapter {
         ByteBuf buf = (ByteBuf) msg;
         if (buf.readableBytes() < 3) {
             buf.release();
-            ctx.writeAndFlush("hahahah");
         }
         byte[] data = new byte[3];
         buf.readBytes(data);
