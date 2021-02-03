@@ -1,14 +1,13 @@
 package server.storage.inHandler;
 
 import clientserver.Commands;
-import clientserver.MakeCommand;
+import clientserver.commands.CommandLS;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelPromise;
 import io.netty.util.CharsetUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InboundHandler extends ChannelInboundHandlerAdapter {
@@ -26,16 +25,15 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
         Commands command = Commands.getCommand(buf.getByte(0));
         String str = buf.toString(CharsetUtil.UTF_8);
         System.out.println(str + " команда: " + command + " name=" + command.name());
+        byte[] answer = new byte[0];
         if (command != null) {
             switch (command) {
                 case LS:  // команда LS
-                    System.out.println("LS");
+//                    System.out.println("LS");
                     // читаем список директорий и файлов в текущей диретории
-
-                    MakeCommand.CommandDataLSResponse(List.of("file1.txt","file2.txt"));
-
+                    answer = CommandLS.makeResponse(List.of("file1.txt","file2.txt"));
                     // отправляем этот список
-                    //ctx.writeAndFlush();
+//                    ctx.writeAndFlush(answer);
                     break;
                 case CD:
                     System.out.println("CD");
@@ -43,8 +41,14 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
                 default:
                     break;
             }
-            ctx.writeAndFlush("Получена команда " + command);
+            ctx.writeAndFlush(answer);
         }
 //        ctx.fireChannelRead(msg);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+        ctx.close();
     }
 }
