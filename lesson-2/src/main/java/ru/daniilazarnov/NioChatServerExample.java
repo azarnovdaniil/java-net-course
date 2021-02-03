@@ -56,7 +56,7 @@ public class NioChatServerExample implements Runnable {
 
     private void handleAccept(SelectionKey key) throws IOException {
         SocketChannel sc = ((ServerSocketChannel) key.channel()).accept();
-        String clientName = "Клиент #" + acceptedClientIndex;
+        String clientName = "Client #" + acceptedClientIndex;
         acceptedClientIndex++;
         sc.configureBlocking(false);
         sc.register(selector, SelectionKey.OP_READ, clientName);
