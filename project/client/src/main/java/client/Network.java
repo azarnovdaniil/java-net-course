@@ -8,6 +8,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import client.outHandler.ConsoleOutboundHandler;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
@@ -30,7 +31,8 @@ public class Network {
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) {
-                            socketChannel.pipeline().addLast();
+                            socketChannel.pipeline().addLast(new ConsoleOutboundHandler());
+//                            socketChannel.pipeline().addLast();
                             currentChannel = socketChannel;
                         }
                     });

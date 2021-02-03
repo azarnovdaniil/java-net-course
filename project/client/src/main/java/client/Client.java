@@ -1,5 +1,7 @@
 package client;
 
+import clientserver.Command;
+import clientserver.Commands;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.*;
@@ -9,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
 public class Client {
@@ -23,8 +26,29 @@ public class Client {
     public static void main(String[] args) throws Exception {
         CountDownLatch networkStarter = new CountDownLatch(1);
         Client protoClient = new Client(networkStarter);
-
+        //protoClient.consoleRead();
         protoClient.run(Paths.get("demo.txt"));
+    }
+
+    private void consoleRead() {
+        System.out.print("Введите команду: ");
+
+        Scanner scanner = new Scanner(System.in);
+        if (scanner.hasNext()) {
+            StringBuilder readLine = new StringBuilder();
+            readLine.append(scanner.nextLine());
+
+            ByteBuf by = ByteBufAllocator.DEFAULT.buffer();
+            String command = readLine.substring(0,readLine.indexOf(" "));
+            switch (command) {
+                case "ls":
+                    by.writeByte(Commands.LS.getSignal());
+                    break;
+                default:
+                    System.out.println("Неизвестная команда");
+            }
+            network.getCurrentChannel().writeAndFlush(by);
+        }
     }
 
     public void run(Path path) throws IOException {

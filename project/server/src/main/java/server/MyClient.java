@@ -46,15 +46,19 @@ public class MyClient {
 //        System.out.println(bb.get(1));
 //        System.out.println(bb.get(2));
 //        System.out.println(bb.get(3));
-        byte[] answer = new byte[0];
-        ByteBuf buf;
-        answer = CommandLS.makeResponse(List.of("file1.txt","file2.txt"));
+//        byte[] answer = new byte[0];
+//        ByteBuf buf;
+//        answer = CommandLS.makeResponse(List.of("file1.txt","file2.txt"));
+//
+//        buf = ByteBufAllocator.DEFAULT.directBuffer(answer.length);
+//        buf.writeBytes(answer);
+//        buf.readByte();
+//        List<String> ans = CommandLS.readResponse(buf);
+//        System.out.println(ans);
 
-        buf = ByteBufAllocator.DEFAULT.directBuffer(answer.length);
-        buf.writeBytes(answer);
-        buf.readByte();
-        List<String> ans = CommandLS.readResponse(buf);
-        System.out.println(ans);
+          Scanner in = new Scanner(System.in);
+          String s = in.next();
+          System.out.println(s);
 
     }
 }
