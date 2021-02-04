@@ -7,7 +7,11 @@ public enum TypeCommand {
     AUTH_ERROR,
     MESSAGE,
     CREATE_NEW_FILE,
-    CREATE_NEW_DIRECTORY
+    CREATE_NEW_DIRECTORY,
+    DELETE_DIRECTORY,
+    DELETE_FILE,
+    COPY_FILE,
+    PATE_FILE
 
 
 }

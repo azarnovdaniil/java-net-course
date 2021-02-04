@@ -60,4 +60,33 @@ public class Command implements Serializable {
         return command;
     }
 
+    public static Command deleteDirectory (String userName, String numberDirectory) {
+        Command command = new Command();
+        command.type = TypeCommand.DELETE_DIRECTORY;
+        command.data = new DeleteDirectory(userName, numberDirectory);
+        return command;
+    }
+
+    public static Command deleteFile (String userName, String numberFile) {
+        Command command = new Command();
+        command.type = TypeCommand.DELETE_FILE;
+        command.data = new DeleteFile(userName, numberFile);
+        return command;
+    }
+
+    public static Command copyFile (String userName, String numberFile) {
+        Command command = new Command();
+        command.type = TypeCommand.COPY_FILE;
+        command.data = new CopyFile(userName, numberFile);
+        return command;
+    }
+
+    public static Command pasteFile (String userName) {
+        Command command = new Command();
+        command.type = TypeCommand.PATE_FILE;
+        command.data = new PasteFile(userName);
+        return command;
+    }
+
+
 }

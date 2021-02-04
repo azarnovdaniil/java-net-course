@@ -26,11 +26,14 @@ public class ClientConnection {
     private static final Logger logger = Logger.getLogger(ClientConnection.class.getName());
     private final ServerSocketChannel serverSocketChannel;
     private final Selector selector;
-    private final ByteBuffer buf = ByteBuffer.allocate(1024);
     private int acceptedClientIndex = 1;
     private final ByteBuffer welcomeBuf = ByteBuffer.wrap("Добро пожаловать в чат!\n".getBytes());
     private SocketChannel clientSocket;
     private static WorkWithFile workWithFile = new WorkWithFile();
+    private WhatDo whatDo = new WhatDo(workWithFile);
+    private int bufCapacity = 1024;
+    private ByteBuffer bufRead = ByteBuffer.allocate(bufCapacity);
+    private ByteBuffer bufWrite = ByteBuffer.allocate(bufCapacity);
 
 
     public ClientConnection(int usePort, Handler fileHandler) throws IOException {
@@ -95,96 +98,33 @@ public class ClientConnection {
         sc.write(welcomeBuf);
         welcomeBuf.rewind();
         System.out.println("Подключился новый клиент " + clientName);
+        workWithFile.createFirsDirectory("user1");
 
     }
+
 
     private void handleRead(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
-        buf.clear();
+        bufRead.clear();
         int read = 0;
-        while ((read = channel.read(buf)) > 0) {
-            if (channel.read(buf) < 0) {
+        while ((read = channel.read(bufRead)) > 0) {
+            if (channel.read(bufRead) < 0) {
                 continue;
             }
-                buf.flip();
-                byte[] bytes = new byte[buf.limit()];
-                buf.get(bytes);
+                bufRead.flip();
+                byte[] bytes = new byte[bufRead.limit()];
+                bufRead.get(bytes);
                 Command command = SerializationUtils.deserialize(bytes);
-                    whatDo(command, key);
-                    buf.clear();
-
-
+                    whatDo.whatDo(command, key);
+                    bufRead.clear();
 
         }
 
     }
 
-    private void whatDo (Command command, SelectionKey key) {
-        String who = (String) key.attachment();
-        switch (command.getType()) {
-            case MESSAGE: {
-                MessageCommandData data = (MessageCommandData) command.getData();
-                String username = data.getUserName();
-                String message = data.getMessage();
-                System.out.println(who + " " + username + " " + message);
-                break;
-            }
-            case AUTH: {
-                AuthCommandData data = (AuthCommandData) command.getData();
-                String login = data.getLogin();
-                String password = data.getPassword();
-                System.out.println(who + " " + login + " " + password);
-                break;
-            }
-            case CREATE_NEW_FILE: {
-                CreateNewFile data = (CreateNewFile) command.getData();
-                String fileName = data.getFileName();
-                String userName = data.getUserName();
-                workWithFile.createNewFile(userName, fileName,"");
-                System.out.println(who + " " + userName + " " + fileName);
-            }
-            case CREATE_NEW_DIRECTORY: {
-                CreateNewDirectory data = (CreateNewDirectory) command.getData();
-                String directoryName = data.getDirectoryName();
-                String userName = data.getUserName();
-                workWithFile.createNewDirectory(userName, directoryName);
-                System.out.println(who + " " + userName + " " + directoryName);
-            }
-        }
-    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    private void broadcastMessage(String msg) throws IOException {
-        ByteBuffer msgBuf = ByteBuffer.wrap(msg.getBytes());
-        for (SelectionKey key : selector.keys()) {
-            if (key.isValid() && key.channel() instanceof SocketChannel) {
-                SocketChannel sch = (SocketChannel) key.channel();
-                sch.write(msgBuf);
-                msgBuf.rewind();
-            }
-        }
-    }
 }
 
-
-
-
-
-
-//    public void chekAndSubscribeClientConnection (SocketChannel clientSocket) {
-//        new ClientHandler(this, clientSocket).handle();
-//    }
 
 
 
