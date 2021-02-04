@@ -6,7 +6,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class FinalHandler extends ChannelInboundHandlerAdapter {
+public class FinalInboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
