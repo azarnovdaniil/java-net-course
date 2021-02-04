@@ -40,16 +40,11 @@ public class CommandLS {
     }
 
     public static List<String> readResponse(ByteBuf buf) {
-//        ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(response.length);
-//        buf.writeBytes(response);
-//        System.out.println(buf.toString(CharsetUtil.UTF_8));
-//        buf.readByte();
-        int count = buf.readInt();
+        buf.readInt();
         List<String> list = new ArrayList<>();
         while (buf.isReadable()) {
             list.add(buf.readBytes(buf.readInt()).toString(CharsetUtil.UTF_8));
         }
-
         return list;
     }
 }

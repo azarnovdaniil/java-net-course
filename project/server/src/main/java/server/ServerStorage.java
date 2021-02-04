@@ -1,10 +1,7 @@
 package server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -17,6 +14,7 @@ public class ServerStorage {
     private static final int SERVER_PORT = 8189;
     private static Logger logger = Logger.getLogger("");
     private int port;
+    private String storageDir = "storage";
 
     public ServerStorage(int port) {
         this.port = port;
@@ -28,9 +26,9 @@ public class ServerStorage {
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .childOption(ChannelOption.TCP_NODELAY, true)
                     .channel(NioServerSocketChannel.class)
+                    .option(ChannelOption.SO_RCVBUF, 1024*1024)
+                    .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(1024*1024))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) {
