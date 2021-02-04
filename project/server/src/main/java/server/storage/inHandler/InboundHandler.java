@@ -39,8 +39,8 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
-        bufSum.writeBytes(buf);
-        buf.release();
+//        bufSum.writeBytes(buf);
+//        buf.release();
 
 //        System.out.println(buf.toString(StandardCharsets.UTF_8));
         System.out.println("пришло сообщение");

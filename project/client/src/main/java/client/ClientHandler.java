@@ -14,14 +14,17 @@ public class ClientHandler {
         long volume = file.length();
         int countPar = (int) volume / partSize + 1;
         byte[] buffer = new byte[partSize];
-        int readLen = fileInputStream.read(buffer, 0, partSize);
-        out.write(bytes);
-        while (readLen == partSize) {
-            out.write(buffer,0,readLen);
-            readLen = fileInputStream.read(buffer, 0, partSize);
-        }
-        out.write(buffer,0,readLen);
+        System.arraycopy(bytes, 0, buffer, 0, bytes.length);
+        int readLen = fileInputStream.read(buffer, bytes.length, partSize-bytes.length);
+
+        out.write(buffer,0, readLen+bytes.length);
         out.flush();
+//        while (readLen == partSize) {
+//            out.write(buffer,0,readLen);
+//            readLen = fileInputStream.read(buffer, 0, partSize);
+//        }
+//        out.write(buffer,0,readLen);
+//        out.flush();
 
         return true;
     }

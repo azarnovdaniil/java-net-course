@@ -5,8 +5,14 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 import server.storage.inHandler.InboundHandler;
 import server.storage.inHandler.SecondToStringInHandler;
+import server.storage.inHandler.ToByteDecoder;
 
 import java.util.logging.Logger;
 
@@ -27,15 +33,19 @@ public class ServerStorage {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_RCVBUF, 1024*1024)
-                    .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(1024*1024))
+//                    .option(ChannelOption.SO_RCVBUF, 1024*1024)
+//                    .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(1024*1024))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) {
                             ch.pipeline()
+                                    .addLast(new ToByteDecoder())
+//                                    .addLast(new MessageToByteEncoder())
+//                                    .addLast(new ObjectDecoder(1024*1024, ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
+//                                    .addLast(new ObjectEncoder())
                                     .addLast(new InboundHandler());
                         }
-                    });
+                    });ObjectDecoder
             ChannelFuture f = b.bind(SERVER_PORT).sync();
             f.channel().closeFuture().sync();
         } finally {

@@ -28,7 +28,7 @@ public class NettyClient {
         ByteBuf buf;
         while (!socket.isClosed()) {
             buf = readInput();
-            smp.acquire();
+//            smp.acquire();
             firstB = buf.readByte();
             switch (firstB) {
                 case 1:
@@ -41,7 +41,7 @@ public class NettyClient {
                 case 4:
                     break;
             }
-            smp.release();
+//            smp.release();
         }
     }
 
@@ -51,11 +51,11 @@ public class NettyClient {
                 Scanner scanner = new Scanner(System.in);
                 while (true) {
                     String readLine;
-                    smp.acquire();
+//                    smp.acquire();
                     System.out.print("Введите команду: ");
                     if (scanner.hasNext()) {
                         readLine = scanner.next();
-                        smp.release();
+//                        smp.release();
                         String command = readLine.contains(" ") ? readLine.split(" ")[0] : readLine;
                         readLine = scanner.next();
                         byte[] by;
@@ -90,7 +90,7 @@ public class NettyClient {
 
     private static ByteBuf readInput() throws IOException {
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
-        int maxLen = 1024 * 100;
+        int maxLen = 1024 * 1024;
         byte[] contextBytes = new byte[maxLen];
         int readLen;
         readLen = inputStream.read(contextBytes, 0, maxLen);
