@@ -35,11 +35,13 @@ class MainTest {
         Files.walkFileTree(Path.of("../lesson-1/dir"), new FileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                System.out.println("Pre visit dir" + dir);
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                System.out.println("Visit file" + file);
                 return FileVisitResult.CONTINUE;
             }
 
@@ -50,6 +52,7 @@ class MainTest {
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                System.out.println("Post visit dir" + dir);
                 return FileVisitResult.CONTINUE;
             }
         });
