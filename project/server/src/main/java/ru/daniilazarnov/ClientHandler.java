@@ -26,6 +26,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         System.out.println(msg.getClass().getName());
 
 
+
             if (msg instanceof MyMessage){
                 if ( msg.equals("/all")) {
                     Path path = Paths.get("project", "server", "src", "main", "java", "ru.daniilazarnov", "file");
