@@ -7,7 +7,6 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,6 +16,7 @@ import java.util.List;
 public class FirstHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = Logger.getLogger(FirstHandler.class);
     private static final List<Channel> channels = new ArrayList<>();
+    private static List<User> listOfUsers = new ArrayList<>();
     private static int newClientIndex = 1;
     private String clientName;
 
@@ -27,18 +27,29 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
         // Поскольку этот хендлер стоит "первым от сети", то 100% получим ByteBuf
         ByteBuf buf = (ByteBuf)msg;
         // Ждем получения трех байт
-        if (buf.readableBytes() < 3) {
-            return;
-        }
+//        if (buf.readableBytes() < 3) {
+//            return;
+//        }
         // Как только получили три байта, готовим массив, чтобы их туда закинуть
-        byte[] data = new byte[3];
-        // Перекидываем байты из буфера в массив
+        byte[] data = new byte[buf.readableBytes()];
+
+
+//        if (){
+//
+//        }
+
+
+        // Перекидываем байты из буфера в массивЯ
         buf.readBytes(data);
+            log.info("[SERVER: Сообщение принято от " + listOfUsers.get(listOfUsers.size()-1)+
+                    "]");
+            ctx.writeAndFlush("FirstHandler пройден " + new String(data));
+//            ctx.fireChannelRead(data);
+            buf.release();
+
+
         // Освобождаем буфер
-        buf.release();
-        // Распечатываем что за массив у нас получился
-        System.out.println(Arrays.toString(data));
-        ctx.writeAndFlush(Arrays.toString(data) + " ");
+//        buf.release();
         // Прокидываем массив дальше по конвееру
         ctx.fireChannelRead(data);
     }
@@ -47,6 +58,7 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         channels.add(ctx.channel());
         clientName = "Клиент #" + newClientIndex;
+        listOfUsers.add(new User(ctx.channel(), clientName, "user" + newClientIndex));
         log.info("SERVER: Клиент подключился: " + clientName);
 //        System.out.println("SERVER: Клиент подключился: " + ctx.name());
         newClientIndex++;

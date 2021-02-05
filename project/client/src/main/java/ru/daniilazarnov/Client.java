@@ -1,67 +1,111 @@
 package ru.daniilazarnov;
 
-import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
-import java.net.Socket;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
+
+   /*
+    Нереализованный протокол:
+            [byte [] ] 1b управляющий байт →
+            [short [][]] 2b длинна имени файла →
+            [byte[]?] nb  имя файла →
+            [long  [][][][][][][][]] 8b размер файла →
+            [byte[]?] nb содержимое файла
+     */
 
 public class Client {
+    private static Network client;
+    private static BufferedReader bufferedReader = null;
+    private static String msg = "◙◙◙";
 
-    /*
-    Нереализованный протокол:
-            [byte  ] 1b управляющий байт →
-            [short ] 2b длинна имени файла →
-            [byte[]] nb  имя файла →
-            [long  ] 8b размер файла →
-            [byte[]] nb содержимое файла
-     */
-    private static final Logger log = Logger.getLogger(Client.class);
-
-    private static Socket socket;
-    private static DataOutputStream out;
-    private static Scanner in;
-    public static final String HOSTNAME = "localhost";
-    public static final int PORT = 8189;
-
+    public static void sendMsg(String message) {
+        client.sendMessage(message);
+    }
 
     public static void main(String[] args) throws IOException {
-        InputStream input = System.in;
-        String inputString;
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input))) {
-            inputString = bufferedReader.readLine().trim();
+        client = new Network();
+        InputStream in = System.in;
+
+
+        String inputLine = "";
+        while (true) {
+            bufferedReader = new BufferedReader(new InputStreamReader(in));
+            if (client.isConnect()) {
+                System.out.println("Введите сообщение:");
+                inputLine = bufferedReader.readLine().trim().toLowerCase();
+
+                switch (inputLine) {
+                    case "ls":
+                        System.out.println("LS");
+//                        System.out.println("Files.exists: " + Files.exists(Path.of("project/client/local_storage")));
+                        client.sendfile("project/client/local_storage/file_to_send.txt");
+                        break;
+                    case "cd":
+                        System.out.println("CD");
+                        break;
+                    case "rm":
+                        System.out.println("RM");
+                        break;
+                    case "/":
+                        System.out.println("server command".toUpperCase());
+                        sendCommandToServer();
+                        break;
+                    case "exit":
+                        System.out.println("exit");
+                        bufferedReader.close();
+                        return;
+
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + inputLine);
+                }
+            }
+
+//            sendMsg(inputLine);
         }
 
 
-        try {
-            out = connect();
-            sendMsg();
+    }
 
-            String x = in.nextLine();
-            System.out.println("A: " + x);
-            in.close();
-            out.close();
-            socket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private static void sendCommandToServer() {
+        String inputLine = "";
+        while (true) {
+            if (client.isConnect()) {
+                System.out.println("Команда для сервера:");
+                try {
+                    inputLine = bufferedReader.readLine().trim().toLowerCase();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                switch (inputLine) {
+                    case "ls":
+                        sendMsg(inputLine);
+                        System.out.println("sendCommandToServer LS");
+                        break;
+                    case "cd":
+                        System.out.println("sendCommandToServer CD");
+                        break;
+                    case "rm":
+                        System.out.println("sendCommandToServer RM");
+                        break;
+                    case "exit":
+                        System.out.println("exit");
+
+                        return;
+
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + inputLine);
+                }
+            }
         }
 
 
     }
 
-    private static void sendMsg() throws IOException {
-        out.write(new byte[]{11, 21, 31});
-    }
-
-    @NotNull
-    private static DataOutputStream connect() throws IOException {
-        socket = new Socket(HOSTNAME, PORT);
-        in =  new Scanner(socket.getInputStream());
-
-        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-        return out;
-    }
 
 }

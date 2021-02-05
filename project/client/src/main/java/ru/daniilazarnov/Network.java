@@ -9,15 +9,18 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import org.apache.log4j.Logger;
 
-public class Client2 {
-    private static final Logger log = Logger.getLogger(Client2.class);
+import java.io.IOException;
+import java.nio.file.Path;
+
+public class Network {
+    private static final Logger log = Logger.getLogger(Network.class);
     private SocketChannel channel;
 
     private static final String HOST = "localhost";
     private static final int PORT = 8189;
 
-    public Client2() {
-     Thread t =   new Thread(() -> {
+    public Network() {
+        Thread t = new Thread(() -> {
             EventLoopGroup workerGroup = new NioEventLoopGroup();
             try {
                 Bootstrap b = new Bootstrap();
@@ -28,7 +31,7 @@ public class Client2 {
                             protected void initChannel(SocketChannel socketChannel) throws Exception {
                                 channel = socketChannel;
                                 socketChannel.pipeline().addLast(new StringDecoder(), new StringEncoder(), new ClientHandler());
-                                log.info("Соединение получено!");
+                                log.info("Соединение с сервером установлено!");
                             }
                         });
                 ChannelFuture future = b.connect(HOST, PORT).sync();
@@ -52,5 +55,29 @@ public class Client2 {
         channel.writeAndFlush(str);
         log.info("Сообщение отправлено");
     }
+
+    public boolean isConnect() {
+        if (channel != null)
+            return channel.isActive();
+        else return false;
+    }
+
+    public void sendfile(String file) {
+        try {
+            FileSender.sendFile(Path.of(file), channel, future -> {
+                if (!future.isSuccess()) {
+                    future.cause().printStackTrace();
+                }
+                if (future.isSuccess()) {
+                    System.out.println("Файл успешно передан");
+    //                Network.getInstance().stop();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.info("Сообщение отправлено");
+    }
+
 
 }

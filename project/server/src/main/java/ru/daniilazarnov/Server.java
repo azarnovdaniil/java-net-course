@@ -7,6 +7,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import org.apache.log4j.Logger;
 
 
@@ -26,7 +28,8 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception { // настройка конвеера для каждого подключившегося клиента
-                            ch.pipeline().addLast(new StringToByteBufHandler(), new FirstHandler(), new SecondHandler(), new GatewayHandler(), new FinalHandler());
+//                            ch.pipeline().addLast(new StringDecoder(), new StringEncoder(),new StringToByteBufHandler(), new FirstHandler(), new SecondHandler(), new GatewayHandler(), new FinalHandler());
+                            ch.pipeline().addLast(new StringToByteBufHandler(), new FileRecieveHandler(), new FirstHandler(), new SecondHandler(), new GatewayHandler(), new FinalHandler());
                         }
                     });
             ChannelFuture f = b.bind(8189).sync(); // запуск прослушивания порта 8189 для подключения клиентов
