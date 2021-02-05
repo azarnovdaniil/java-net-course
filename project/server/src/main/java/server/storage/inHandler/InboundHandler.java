@@ -42,8 +42,8 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
 //        bufSum.writeBytes(buf);
 //        buf.release();
 
-//        System.out.println(buf.toString(StandardCharsets.UTF_8));
-        System.out.println("пришло сообщение");
+        System.out.print("пришло сообщение");
+        System.out.println(buf.readableBytes());
         assert buf != null;
         if (buf.readableBytes() < 1) {
             buf.release();
@@ -68,6 +68,7 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
                     case UPLOAD:
                         String dir = storageDir + File.separator + userName;
                         int hash = buf.readInt();
+                        buf.readInt(); // длина всего сообщения
                         int partNum = buf.readInt();
                         int fileNameSize = buf.readInt();
                         ByteBuf fileNameBuf = buf.readBytes(fileNameSize);

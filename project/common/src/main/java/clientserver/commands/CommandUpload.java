@@ -12,7 +12,7 @@ public class CommandUpload {
     private static final int partSize = 1024 * 1024;
 
     public static byte[] makeResponse(String fileName) {
-        //[команда 1б][хэш 4б][номер части 4б][длина имени 4б][имя][размер файла 8б][содержимое]
+        //[команда 1б][длина сообщения 4б][хэш 4б][номер части 4б][длина имени 4б][имя][размер файла 8б][содержимое]
         //если номер части =-1, значит она одна
         File file = new File(fileName);
         if (!file.exists()) return null;
@@ -23,10 +23,10 @@ public class CommandUpload {
         long volume = file.length();
         int countPar = (int) volume / partSize + 1;
         partNum = countPar == 1 ? -1 : 1;
-        lengthResponse = 1 + 4 + 4 + 4 + name.getBytes(StandardCharsets.UTF_8).length + 8;
+        lengthResponse = 4 + 4 + 4 + name.getBytes(StandardCharsets.UTF_8).length + 8;
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(lengthResponse);
 
-        buf.writeByte(Commands.UPLOAD.getSignal()); // 1 команда
+//        buf.writeByte(Commands.UPLOAD.getSignal()); // 1 команда
         buf.writeInt(hash); // 2 хэш
         buf.writeInt(partNum); // 3 номер части
         buf.writeInt(name.getBytes(StandardCharsets.UTF_8).length); // 4 длина имени

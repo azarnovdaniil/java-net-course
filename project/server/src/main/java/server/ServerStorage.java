@@ -45,7 +45,7 @@ public class ServerStorage {
 //                                    .addLast(new ObjectEncoder())
                                     .addLast(new InboundHandler());
                         }
-                    });ObjectDecoder
+                    });
             ChannelFuture f = b.bind(SERVER_PORT).sync();
             f.channel().closeFuture().sync();
         } finally {

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CommandLS {
     public static byte[] makeResponse(List<String> listFile) {
-        //[команда 1б][кол объектов 4 байта][длина имени1 4б][имя1][длина имени2 4б][имя2]...
+        //[команда 1б][длина сообщения 4б][кол объектов 4 байта][длина имени1 4б][имя1][длина имени2 4б][имя2]...
         int lengthResponse = (listFile.size()+1)*4+1;
         for (String s : listFile) {
             lengthResponse += s.getBytes(StandardCharsets.UTF_8).length;
