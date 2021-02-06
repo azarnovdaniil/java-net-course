@@ -3,6 +3,10 @@ package ru.uio.io;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class Common {
     private Common(){}
@@ -49,5 +53,13 @@ public final class Common {
             ex.printStackTrace();
         }
         return packet;
+    }
+
+    public static List<String> getFileList(String dirName) throws IOException {
+        return Files.walk(Path.of(dirName))
+                .filter(Files::isRegularFile)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .collect(Collectors.toList());
     }
 }

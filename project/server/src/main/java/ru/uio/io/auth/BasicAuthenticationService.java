@@ -1,31 +1,42 @@
 package ru.uio.io.auth;
 
 import ru.uio.io.entity.User;
+import ru.uio.io.sql.JdbcSQLiteConnection;
 
-import java.util.List;
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class BasicAuthenticationService implements AuthenticationService {
-    /**
-     * Fake database with stubbed entities
-     */
-    private static final List<User> users;
+    private JdbcSQLiteConnection sqLiteConnection;
 
-    static {
-        users = List.of(
-                new User("n1", "n1@mail.com", "1"),
-                new User("n2", "n2@mail.com", "2"),
-                new User("n3", "n3@mail.com", "3")
-        );
+    public BasicAuthenticationService() {
+        try {
+            sqLiteConnection = new JdbcSQLiteConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public Optional<User> doAuth(String email, String password) {
-        for (User user : users) {
-            if (user.getEmail().equals(email) && user.getPassword().equals(password)) {
-                return Optional.of(user);
-            }
+        System.out.println(email);
+        System.out.println(password);
+        try {
+            User user = sqLiteConnection.checkLoginAndPass(email, password);
+            System.out.println(user);
+            if(user != null) return Optional.of(user);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void close() {
+        try {
+            sqLiteConnection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

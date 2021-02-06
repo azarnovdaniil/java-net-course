@@ -29,7 +29,10 @@ public class ChatServer implements Server {
             }
         } catch (IOException e) {
             throw new RuntimeException("SWW5", e);
+        } finally {
+            authenticationService.close();
         }
+
     }
 
     @Override
