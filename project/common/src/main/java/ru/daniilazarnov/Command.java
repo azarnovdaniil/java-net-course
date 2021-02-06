@@ -27,4 +27,5 @@ public enum Command {
         this.signal = signal;
         this.nameCommand = nameCommand;
     }
+
 }

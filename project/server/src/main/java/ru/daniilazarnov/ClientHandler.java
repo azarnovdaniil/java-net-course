@@ -29,7 +29,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             if(currentState == Command.ULF){
 
             }
-
         }
         if (byteBuf.readableBytes() == 0){
             byteBuf.release();
