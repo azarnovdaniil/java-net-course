@@ -40,7 +40,7 @@ public class FileManager {
 
     // 2) fileAction(команда, "путь") - метод принимает на вход команду для работы с файлом, и путь к фалу, возвращает объект Path
 
-    Path fileAction(commandFile command, Path fileName) {
+    Path fileAction(commandToServer command, Path fileName) {
         Path file=null;
 
         switch (command) {

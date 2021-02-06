@@ -7,6 +7,10 @@ package ru.daniilazarnov;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
+
+import static io.netty.util.CharsetUtil.UTF_8;
 
 public class MainHandler extends ChannelInboundHandlerAdapter {
     //переопределяем необходимые нам методы
@@ -27,12 +31,27 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg; //явное приведения типа к буферу байтов
-        while (buf.readableBytes() >0) {
 
-            System.out.print((char) buf.readByte());
-        }
-        //после того, как закончили обработку буфера, буфер очищаем
-        buf.release();
+            while (buf.readableBytes()>0) { //
+                buf.slice(0,3);
+                System.out.println(buf.toString(UTF_8));
+                buf.release(1);
+            if  (buf.capacity()>1)
+                 switch (buf.slice(0,3).toString(UTF_8)) {
+
+                    case "OK":
+                        System.out.println(buf.toString(UTF_8));
+                }
+            }
+
+
+
+//        while (buf.readableBytes() >0) {
+
+     //       System.out.print((char) buf.readByte());
+//        }
+//        //после того, как закончили обработку буфера, буфер очищаем
+//       buf.release();
     }
     //перехват исключений
     @Override
