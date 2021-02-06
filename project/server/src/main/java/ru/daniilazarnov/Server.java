@@ -1,34 +1,37 @@
 package ru.daniilazarnov;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+
 
 public class Server {
-    private ServerSocket server;
-    private Socket socket;
+
     private final int PORT = 8189;
 
-    public Server (){
+       public void run() throws Exception {
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            server = new ServerSocket(PORT);
-            System.out.println("server started!");
-
-            while (true) {
-                socket = server.accept();
-                System.out.println("client connected " + socket.getRemoteSocketAddress());
-                new ClientHandler(this, socket);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            ServerBootstrap b = new ServerBootstrap();
+            b.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        public void initChannel(SocketChannel ch) {
+                            ch.pipeline()
+                                    .addLast(new ClientHandler());
+                        }
+                    });
+            ChannelFuture f = b.bind(PORT).sync();
+            f.channel().closeFuture().sync();
         } finally {
-            System.out.println("server closed");
-            try {
-                server.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
         }
     }
 }

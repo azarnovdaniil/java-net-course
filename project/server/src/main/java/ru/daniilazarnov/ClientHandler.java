@@ -1,60 +1,44 @@
 package ru.daniilazarnov;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class ClientHandler {
-    private Server server;
-    private Socket socket;
-    private DataInputStream in;
-    private DataOutputStream out;
+public class ClientHandler extends ChannelInboundHandlerAdapter {
 
-    public ClientHandler(Server server, Socket socket) {
-        try {
-            this.server = server;
-            this.socket = socket;
-            in = new DataInputStream(socket.getInputStream());
-            out = new DataOutputStream(socket.getOutputStream());
+    private Command currentState =  Command.FLS;
 
-            new Thread(() -> {
-                try {
-                    socket.setSoTimeout(5000);
-                    //Цикл работы
-                    while (true) {
-                        String str = in.readUTF();
-                        if (str.startsWith("/")) {
-                            if (str.startsWith("/w")) {
-                                String[] token = str.split("\\s+", 3);
-                                if (token.length < 3) {
-                                    continue;
-                                }
-                            }
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("Server start");
 
-                            if (str.equals("/end")) {
-                                out.writeUTF("/end");
-                                break;
-                            }
-                        } else {
+        ByteBuf byteBuf = ((ByteBuf) msg);
 
-                        }
-                    }
-                    //catch SocketTimeoutException
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    System.out.println("Client disconnected!");
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        while (byteBuf.readableBytes() > 0){
+            if(currentState == Command.FLS){
+                byte readed = byteBuf.readByte();
+                if (readed == (byte)2){
+
                 }
-            }).start();
-        } catch (IOException e) {
-            e.printStackTrace();
+            }
+
+            if(currentState == Command.DLF){
+
+            }
+
+            if(currentState == Command.ULF){
+
+            }
+
+        }
+        if (byteBuf.readableBytes() == 0){
+            byteBuf.release();
         }
     }
 
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+        ctx.close();
+    }
 }

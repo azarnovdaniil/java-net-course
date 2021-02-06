@@ -1,47 +1,29 @@
 package ru.daniilazarnov;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Client {
-    Socket socket;
-    final String IP_ADDRESS = "localhost";
-    final int PORT = 8189;
-
-    DataInputStream in;
-    DataOutputStream out;
+    static Socket socket;
+    final static String IP_ADDRESS = "localhost";
+    final static int PORT = 8189;
+    static String clientMsg;
 
     public static void main(String[] args) {
 
-    }
-
-    private void connect() {
-
         try {
             socket = new Socket(IP_ADDRESS, PORT);
-            in = new DataInputStream(socket.getInputStream());
-            out = new DataOutputStream(socket.getOutputStream());
-
-            new Thread(() -> {
-                try {
-                    //Цикл работы
-                    while (true) {
-                        String str = in.readUTF();
-                        if (str.startsWith("/")) {
-                           //список команд для клиентской стороны
-                        }
-                    }
-                } catch (RuntimeException e) {
-                    System.out.println(e.getMessage());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        } catch (IOException e) {
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            Scanner in = new Scanner(socket.getInputStream());
+            out.write(new byte[]{115, 21, 31}); //Почему
+            clientMsg = in.nextLine();
+            System.out.println("A: " + clientMsg);
+            in.close();
+            out.close();
+            socket.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }
