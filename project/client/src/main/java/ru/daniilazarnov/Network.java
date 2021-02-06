@@ -31,7 +31,7 @@ public class Network {
                             protected void initChannel(SocketChannel socketChannel) throws Exception {
                                 channel = socketChannel;
                                 socketChannel.pipeline().addLast(new StringDecoder(), new StringEncoder(), new ClientHandler());
-                                log.info("Соединение с сервером установлено!");
+//                                log.info("Соединение с сервером установлено!");
                             }
                         });
                 ChannelFuture future = b.connect(HOST, PORT).sync();
@@ -47,9 +47,12 @@ public class Network {
 
     }
 
+
+
     public void close() {
         channel.close();
     }
+
 
     public void sendMessage(String str) {
         channel.writeAndFlush(str);
@@ -62,21 +65,22 @@ public class Network {
         else return false;
     }
 
-    public void sendfile(String file) {
+    public void sendFile(String file) {
         try {
             FileSender.sendFile(Path.of(file), channel, future -> {
                 if (!future.isSuccess()) {
                     future.cause().printStackTrace();
                 }
                 if (future.isSuccess()) {
-                    System.out.println("Файл успешно передан");
+                    System.out.print("\nФайл успешно передан");
+//                    channel.close();
     //                Network.getInstance().stop();
                 }
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
-        log.info("Сообщение отправлено");
+//        log.info("Сообщение отправлено");
     }
 
 

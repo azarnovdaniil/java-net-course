@@ -11,7 +11,8 @@ public class ClientHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
-        log.debug("[SERVER: " + s + "]\n ");
+        System.out.println(("\n" + s));
+        Client.printPrompt();
 
 
     }

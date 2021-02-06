@@ -7,8 +7,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import org.apache.log4j.Logger;
 
 
@@ -42,8 +40,10 @@ public class Server {
     }
 
     public static void main(String[] args) throws Exception {
-        new Server().run();
+            new Server().run();
 
     }
+
+
 
 }

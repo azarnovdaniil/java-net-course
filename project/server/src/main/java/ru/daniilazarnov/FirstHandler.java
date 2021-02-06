@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Первичный обработчик
+ * Первичный обработчик Сервера
  * Проверяем содержимое заголовка
  */
 public class FirstHandler extends ChannelInboundHandlerAdapter {
@@ -24,34 +24,30 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
     // Что делать, когда к нам прилетело сообщение?
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // Поскольку этот хендлер стоит "первым от сети", то 100% получим ByteBuf
-        ByteBuf buf = (ByteBuf)msg;
-        // Ждем получения трех байт
+            // Поскольку этот хендлер стоит "первым от сети", то 100% получим ByteBuf
+            ByteBuf buf = (ByteBuf)msg;
+            // Ждем получения трех байт
 //        if (buf.readableBytes() < 3) {
 //            return;
 //        }
-        // Как только получили три байта, готовим массив, чтобы их туда закинуть
-        byte[] data = new byte[buf.readableBytes()];
+            // Как только получили три байта, готовим массив, чтобы их туда закинуть
+            byte[] data = new byte[buf.readableBytes()];
 
 
-//        if (){
-//
-//        }
-
-
-        // Перекидываем байты из буфера в массивЯ
-        buf.readBytes(data);
-            log.info("[SERVER: Сообщение принято от " + listOfUsers.get(listOfUsers.size()-1)+
-                    "]");
-            ctx.writeAndFlush("FirstHandler пройден " + new String(data));
+            // Перекидываем байты из буфера в массивЯ
+            buf.readBytes(data);
+//            log.info("[SERVER: Сообщение принято от " + listOfUsers.get(listOfUsers.size()-1)+
+//                    "]");
+            ctx.writeAndFlush("[(FirstHandler) SERVER: " + new String(data) + "]");
 //            ctx.fireChannelRead(data);
-            buf.release();
+            buf.release(); // Освобождаем буфер
 
 
-        // Освобождаем буфер
+
 //        buf.release();
-        // Прокидываем массив дальше по конвееру
-        ctx.fireChannelRead(data);
+            // Прокидываем массив дальше по конвееру
+            ctx.fireChannelRead(data);
+
     }
 
     @Override
@@ -62,9 +58,11 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
         log.info("SERVER: Клиент подключился: " + clientName);
 //        System.out.println("SERVER: Клиент подключился: " + ctx.name());
         newClientIndex++;
+        ctx.writeAndFlush("Пользователь" + clientName +
+                "подключился ");
     }
 
-    // Стандартный обработчик исключений. Не забывайте его добавлять!!!
+    // Стандартный обработчик исключений.
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
