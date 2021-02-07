@@ -1,55 +1,91 @@
 package ru.daniilazarnov;
 
-import java.io.*;
+import ru.daniilazarnov.auth.AuthService;
+
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
+import ru.daniilazarnov.*;
+import ru.daniilazarnov.auth.*;
+import ru.daniilazarnov.Command;
 public class Server {
-    private final static String fileToSend = "C:\\temp\\1.txt";
-    private static final int PORT = 8190;
 
-    public static void main(String args[]) {
+    private final ServerSocket serverSocket;
+    private final AuthService authService;
+    private final List<ClientHandler> clients = new ArrayList<>();
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
 
-        while (true) {
-            ServerSocket welcomeSocket = null;
-            Socket connectionSocket = null;
-            BufferedOutputStream outToClient = null;
-            System.out.println("Сервер запущен");
-            try {
-                welcomeSocket = new ServerSocket(PORT);
-                connectionSocket = welcomeSocket.accept();
-                outToClient = new BufferedOutputStream(connectionSocket.getOutputStream());
-            } catch (IOException ex) {
-                System.out.println("У сервера возникли проблемы с открытием сокета...");
+    public Server(int port) throws IOException {
+        this.serverSocket = new ServerSocket(port);
+        this.authService = new BaseAuthService();
+    }
+
+    public void start() throws IOException {
+        System.out.println("Сервер запущен!");
+
+        try {
+            while (true) {
+                waitAndProcessNewClientConnection();
             }
-            System.out.println("Готов принимать подключения...");
+        } catch (IOException e) {
+            System.out.println("Ошибка создания нового подключения");
+            e.printStackTrace();
+        } finally {
+            serverSocket.close();
+        }
+    }
 
-            if (outToClient != null) {
-                System.out.println("Установлено подключение, готов отдавать файл...");
-                File myFile = new File( fileToSend );
-                byte[] mybytearray = new byte[(int) myFile.length()];
+    private void waitAndProcessNewClientConnection() throws IOException {
+        //System.out.println("Ожидание пользователя...");
+        Socket clientSocket = serverSocket.accept();
+        //System.out.println("Клиент подключился!");
+        processClientConnection(clientSocket);
+    }
 
-                FileInputStream fis = null;
+    private void processClientConnection(Socket clientSocket) throws IOException {
+        ClientHandler clientHandler = new ClientHandler(this, clientSocket);
+        clientHandler.handle();
+    }
 
-                try {
-                    fis = new FileInputStream(myFile);      // считали в поток данные из файла, лежащего на сервере
-                } catch (FileNotFoundException ex) {
-                    // Do exception handling
-                }
-                BufferedInputStream bis = new BufferedInputStream(fis);
+    public AuthService getAuthService() {
+        return authService;
+    }
 
-                try {
-                    bis.read(mybytearray, 0, mybytearray.length);
-                    outToClient.write(mybytearray, 0, mybytearray.length);
-                    outToClient.flush();
-                    outToClient.close();
-                    connectionSocket.close();
+    public synchronized boolean isUsernameBusy(String clientUsername) {
+        for (ClientHandler client : clients) {
+            if (client.getClientUsername().equals(clientUsername)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-                    // File sent, exit the main method
-                    return;
-                } catch (IOException ex) {
-                    System.out.println("Ошибка при получении");
-                }
+    public synchronized void broadcastMessage(ClientHandler sender, Command command) throws IOException {
+        for (ClientHandler client : clients) {
+            if (client == sender) {
+                continue;
+            }
+            client.sendMessage(command);
+        }
+    }
+
+    private List<String> getAllUsernames() {
+        List<String> usernames = new ArrayList<>();
+        for (ClientHandler client : clients) {
+            usernames.add(client.getClientUsername());
+        }
+        return usernames;
+    }
+
+    public synchronized void sendPrivateMessage(String recipient, Command command) throws IOException {
+        for (ClientHandler client : clients) {
+            if (client.getClientUsername().equals(recipient)) {
+                client.sendMessage(command);
+                break;
             }
         }
     }
