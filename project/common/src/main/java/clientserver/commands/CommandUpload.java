@@ -9,7 +9,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class CommandUpload {
-    private static final int partSize = 1024 * 1024;
+    public static int getPartSize() {
+        return partSize;
+    }
+
+    private static final int partSize = 5*1024 * 1024;
 
     public static byte[] makeResponse(String fileName) {
         //[команда 1б][длина сообщения 4б][хэш 4б][номер части 4б][длина имени 4б][имя][размер файла 8б][содержимое]

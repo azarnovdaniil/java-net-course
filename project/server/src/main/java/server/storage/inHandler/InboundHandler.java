@@ -11,38 +11,40 @@ import io.netty.util.CharsetUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class InboundHandler extends ChannelInboundHandlerAdapter {
     private String storageDir = "storage";
     private String userName = "user_1";
-    private ByteBuf bufSum;
+    private String currentDir;
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        bufSum = ctx.alloc().buffer(1024*1024);
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-        bufSum.release();
-        bufSum = null;
     }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Кто-то подключился");
+        System.out.println("Подключился клиент "+ctx.channel().remoteAddress().toString());
+        currentDir = storageDir + File.separator + userName;
         ctx.fireChannelRegistered();
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
-//        bufSum.writeBytes(buf);
-//        buf.release();
 
-        System.out.print("пришло сообщение");
+        System.out.print("пришло сообщение ");
         System.out.println(buf.readableBytes());
         assert buf != null;
         if (buf.readableBytes() < 1) {
@@ -52,13 +54,16 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
 
             byte b = buf.readByte();
             Commands command = Commands.getCommand(b);
-//            System.out.println("Получена команда: " + command);
             if (command != null) {
                 switch (command) {
                     case LS:  // команда LS
                         // читаем список директорий и файлов в текущей диретории
                         byte[] answer;
-                        answer = CommandLS.makeResponse(List.of("file1.txt", "file2.txt"));
+                        List<String> filesInDir = Files.list(Path.of(currentDir))
+                                                    .map(Path::toFile)
+                                                    .map(File::getName)
+                                                    .collect(toList());
+                        answer = CommandLS.makeResponse(filesInDir);
 //                        System.out.println("Создан ответ: "+answer);
                         // отправляем этот список
                         ByteBuf bufOut = ctx.alloc().buffer(answer.length);
@@ -67,15 +72,14 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
                         break;
                     case UPLOAD:
                         String dir = storageDir + File.separator + userName;
-                        int hash = buf.readInt();
+//                        buf.readLong(); // длина всего сообщения
                         buf.readInt(); // длина всего сообщения
+                        int hash = buf.readInt();
                         int partNum = buf.readInt();
                         int fileNameSize = buf.readInt();
                         ByteBuf fileNameBuf = buf.readBytes(fileNameSize);
                         String fileName = fileNameBuf.toString(StandardCharsets.UTF_8);
                         long fileSize = buf.readLong();
-
-
 
                         File file = new File(dir + File.separator + fileName);
                         if (!file.exists()) file.createNewFile();
