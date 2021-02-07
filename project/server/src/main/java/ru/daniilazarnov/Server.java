@@ -8,6 +8,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 
 
 /**
@@ -18,7 +20,7 @@ public class Server {
 
     public static void main(String[] args) {
 
-        EventLoopGroup clientGroup = new NioEventLoopGroup(); //Создаем первый менеджер потоков для инициализации клиентов
+        EventLoopGroup clientGroup = new NioEventLoopGroup(1); //Создаем первый менеджер потоков для инициализации клиентов
 
         EventLoopGroup dataManagementGroup = new NioEventLoopGroup(); //Создаем второй менеджер потоков для управления передачей данных
         //теперь настроим сервер
@@ -29,7 +31,9 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            socketChannel.pipeline().addLast(new RequestDecoder(), new ResponseDataEncoder(), new ProcessingHandler())new MainHandler()); // для каждого клиента подключаем главный (первый на входе) обработчик - свой конвейер
+                            socketChannel.pipeline().addLast(new StringDecoder());
+                            socketChannel.pipeline().addLast(new StringEncoder());
+                            socketChannel.pipeline().addLast(new ServerHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
