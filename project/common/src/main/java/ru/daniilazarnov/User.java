@@ -1,4 +1,4 @@
-package ru.daniilazarnov.data;
+package ru.daniilazarnov;
 
 import java.nio.ByteBuffer;
 
