@@ -6,7 +6,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.util.Arrays;
 
-public class FirstHandler extends ChannelInboundHandlerAdapter {
+public class FirstInboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
