@@ -15,11 +15,11 @@ public class Server implements Runnable{
     private final Selector selector;
     private int acceptedClientIndex = 1;
     private final ByteBuffer welcomeBuf = ByteBuffer.wrap("Добро пожаловать в чат!\n".getBytes());
+    private final ByteBuffer buf = ByteBuffer.allocate(256);
 
 
-
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException {
+        new Thread(new Server()).start();
     }
 
     public Server() throws IOException {
@@ -46,7 +46,7 @@ public class Server implements Runnable{
                         handleAccept(key);
                     }
                     if (key.isReadable()) {
-                        handleAccept(key);
+                        handleRead(key);
                     }
                 }
 
@@ -67,5 +67,41 @@ public class Server implements Runnable{
         sc.write(welcomeBuf);
         welcomeBuf.rewind();
         System.out.println("Подключился новый клиент " + clientName);
+    }
+
+    private void handleRead(SelectionKey key) throws IOException {
+        SocketChannel ch = (SocketChannel) key.channel();
+        StringBuilder sb = new StringBuilder();
+
+        buf.clear();
+        int read = 0;
+        while ((read = ch.read(buf)) > 0) {
+            buf.flip();
+            byte[] bytes = new byte[buf.limit()];
+            buf.get(bytes);
+            sb.append(new String(bytes));
+            buf.clear();
+        }
+        String msg;
+        if (read < 0) {
+            msg = key.attachment() + " покинул чат\n";
+            ch.close();
+        } else {
+            msg = key.attachment() + ": " + sb.toString();
+        }
+
+        System.out.println(msg);
+        broadcastMessage(msg);
+    }
+
+    private void broadcastMessage(String msg) throws IOException {
+        ByteBuffer msgBuf = ByteBuffer.wrap(msg.getBytes());
+        for (SelectionKey key : selector.keys()) {
+            if (key.isValid() && key.channel() instanceof SocketChannel) {
+                SocketChannel sch = (SocketChannel) key.channel();
+                sch.write(msgBuf);
+                msgBuf.rewind();
+            }
+        }
     }
 }
