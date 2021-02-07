@@ -14,6 +14,13 @@ public class InStringHandler extends ChannelInboundHandlerAdapter {
         ByteBuf buf = (ByteBuf) msg;
         String s = buf.toString(StandardCharsets.UTF_8);
         System.out.println(s);
+        buf.release();                //освобождение ByteBuf
         ctx.fireChannelRead(s);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {      //не забывать писать для всех хендлеров
+        cause.printStackTrace();
+        ctx.close();
     }
 }

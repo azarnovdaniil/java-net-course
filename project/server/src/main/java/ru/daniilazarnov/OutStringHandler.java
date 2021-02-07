@@ -11,12 +11,8 @@ public class OutStringHandler extends ChannelOutboundHandlerAdapter {
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         String str = (String) msg;
         byte[] arr = (str).getBytes();
-        ByteBuf buf = ctx.alloc().buffer(arr.length);
+        ByteBuf buf = ctx.alloc().buffer(arr.length); // alloc() - ссылка на базовый Аллокатор, который выделяет память для буфера
         buf.writeBytes(arr);
-//        ByteBuf buf = ctx.alloc().buffer();
-//        buf.writeCharSequence(str, StandardCharsets.UTF_8);
-//        buf.retain();
-        System.out.println("string to byte 2");
         ctx.writeAndFlush(buf);
     }
 }

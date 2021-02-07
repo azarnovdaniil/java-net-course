@@ -45,9 +45,7 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
     @Override
     protected void channelRead0(ChannelHandlerContext context, String s) throws Exception {
         LOG.info(s);
-//        for (ChannelHandlerContext client : clients) {
-//            client.writeAndFlush("[" + userName + "]: " + s);
-//        }
+
 //        Netty считывает сообщения с добавлением "\r\n"
         if (s.equals("--list\r\n")) {
             context.writeAndFlush("cat\r\ncd\r\ntouch\r\nls\r\nmkdir\r\n");
@@ -91,15 +89,24 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
 
             // выдача списка файлов/папок в текущей директории
         } else if (s.startsWith("ls")) {
-//            String info = Files.list(Path.of(varPath))
-//                    .map(p -> p.getFileName().toString())
-//                    .collect(Collectors.joining(", "));
-//            info += "\r\n";
-//            context.writeAndFlush(info);
             List<String> userFiles = getFiles();
-//            LOG.info(String.valueOf(userFiles.size()));
-//            context.write(userFiles.size());
+            String lengthOfNumberFiles = String.valueOf(String.valueOf(userFiles.size()).length());
+            LOG.info(lengthOfNumberFiles);
+            context.write(lengthOfNumberFiles);
+            context.flush();
+            String numberFiles = String.valueOf(userFiles.size());
+            LOG.info(numberFiles);
+            context.write(numberFiles);
+            context.flush();
             for (String userFile : userFiles) {
+                String lengthOfLength = String.valueOf(String.valueOf(userFile.length()).length());
+                LOG.info(lengthOfLength);
+                context.write(lengthOfLength);
+
+                String userFileLength = String.valueOf(userFile.length());
+                LOG.info(userFileLength);
+                context.write(userFileLength);
+
                 LOG.info(userFile);
                 context.write(userFile);
             }
@@ -112,6 +119,12 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
             if (Files.notExists(Path.of(varPath, dirName))) {
                 Files.createDirectory(Path.of(varPath, dirName));
             }
+            // загрузка файла на сервер
+        } else if (s.startsWith("upload:")) {
+            String fileName = s.replace("upload: ", "");
+            fileName = fileName.replace("\r\n", "");
+            LOG.info(fileName);
+
         } else {
             context.writeAndFlush("Unknown command!\r\n");
         }
