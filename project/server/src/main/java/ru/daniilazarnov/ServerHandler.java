@@ -9,7 +9,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {  // срабатывает при подключении клиента
-        System.out.println("клиент подключился");
+        System.out.println("клиент подключился тест");
     }
 
     @Override
