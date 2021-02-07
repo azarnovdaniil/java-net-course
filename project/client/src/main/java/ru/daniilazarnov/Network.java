@@ -69,12 +69,14 @@ public class Network {
         try {
             FileSender.sendFile(Path.of(file), channel, future -> {
                 if (!future.isSuccess()) {
-                    future.cause().printStackTrace();
+                    log.error(future.cause());
+//                    future.cause().printStackTrace();
                 }
                 if (future.isSuccess()) {
                     System.out.print("\nФайл успешно передан");
+//                    channel.disconnect();
 //                    channel.close();
-    //                Network.getInstance().stop();
+//                    Network.getInstance().stop();
                 }
             });
         } catch (IOException e) {

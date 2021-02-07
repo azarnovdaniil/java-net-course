@@ -14,6 +14,11 @@ import java.util.Arrays;
 
 public class FileRecieveHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = Logger.getLogger(FileRecieveHandler.class);
+    private State currentState = State.IDLE;
+    private int nextLength;
+    private long fileLength;
+    private long receivedFileLength;
+    private BufferedOutputStream out;
 
 
     @Override
@@ -28,33 +33,66 @@ public class FileRecieveHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        //send file_to_send.txt
-        ByteBuf  buf = null;
-         buf = ((ByteBuf) msg);
-//        if (buf.readableBytes() == 1) {
-            byte readed = buf.readByte();
+        ByteBuf buf = ((ByteBuf) msg);
 
-            if (readed == (byte) 25) { //проверяем
-                System.out.println("SERVER: file download started...");
-                ReceivingFiles.fileDownload(ctx, msg, buf);
+        if (currentState == State.IDLE) {
+            byte readed = buf.readByte();
+            if (readed == (byte) 25) {
+                currentState = State.NAME_LENGTH;
+                System.out.println("STATE: Start file receiving");
             } else {
                 System.out.println("ERROR: Invalid first byte - " + readed);
-                buf.resetReaderIndex();
-                ctx.fireChannelRead(buf);
-                ctx.fireChannelRead(msg);
-                return;
             }
+        }
 
+        if (currentState == State.NAME_LENGTH) {
+            if (buf.readableBytes() < 4) return;
+            if (buf.readableBytes() >= 4) {
+                System.out.println("STATE: Get filename length");
+                nextLength = buf.readInt();
+                currentState = State.NAME;
+            }
+        }
 
+        if (currentState == State.NAME) {
+            if (buf.readableBytes() < nextLength) return;
+            if (buf.readableBytes() >= nextLength) {
+                byte[] fileName = new byte[nextLength];
+                buf.readBytes(fileName);
+                System.out.println("STATE: Filename received - _" + new String(fileName));
+                out = new BufferedOutputStream(new FileOutputStream("project/server/cloud_storage/user1/_" + new String(fileName)));
+                currentState = State.FILE_LENGTH;
+            }
+        }
 
-//        }
+        if (currentState == State.FILE_LENGTH) {
+            if (buf.readableBytes() < 8) return;
+            if (buf.readableBytes() >= 8) {
+                fileLength = buf.readLong();
+                System.out.println("STATE: File length received - " + fileLength);
+                currentState = State.FILE;
+            }
+        }
 
-
-
-
+        if (currentState == State.FILE) {
+            while (buf.readableBytes() > 0) {
+                out.write(buf.readByte());
+                receivedFileLength++;
+                if (fileLength == receivedFileLength) {
+                    currentState = State.IDLE;
+                    System.out.println("File received");
+                    out.close();
+                }
+            }
+        } else {
+//                System.out.println("ERROR: Invalid first byte - " + readed);
+            buf.resetReaderIndex();
+            ctx.fireChannelRead(buf);
+            ctx.fireChannelRead(msg);
+            return;
+        }
 
     }
-
 
 
     @Override
