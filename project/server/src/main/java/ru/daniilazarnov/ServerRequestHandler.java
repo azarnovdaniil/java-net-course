@@ -21,14 +21,14 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
              * Действия сервера при получении запроса на скачивание файла
              */
             if (clientCmd.equals("download")) {
-                if (Files.exists(Paths.get("C:\\Users\\rav05\\OneDrive\\Desktop\\java_course_final\\java-net-course\\project\\server\\src\\main\\java\\ru\\daniilazarnov\\server_vault\\" + request.getFilename()))) {
-                    FileMessage fm = new FileMessage(Paths.get("C:\\Users\\rav05\\OneDrive\\Desktop\\java_course_final\\java-net-course\\project\\server\\src\\main\\java\\ru\\daniilazarnov\\server_vault\\" + request.getFilename()));
+                if (Files.exists(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getFilename()))) {
+                    FileMessage fm = new FileMessage(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getFilename()));
                     ctx.writeAndFlush(fm);
                 }
             }
             else if (clientCmd.equals("show")) {
                 List<String> files = new ArrayList<>();
-                Files.walkFileTree(Paths.get("C:\\Users\\rav05\\OneDrive\\Desktop\\java_course_final\\java-net-course\\project\\server\\src\\main\\java\\ru\\daniilazarnov\\server_vault\\"),
+                Files.walkFileTree(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault"),
                         new SimpleFileVisitor<Path>() {
                             @Override
                             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -40,14 +40,14 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
                 ctx.writeAndFlush(dim);
             }
             else if (clientCmd.equals("remove")) {
-                Path removeDir = Paths.get("C:\\Users\\rav05\\OneDrive\\Desktop\\java_course_final\\java-net-course\\project\\server\\src\\main\\java\\ru\\daniilazarnov\\server_vault\\" + request.getFilename());
+                Path removeDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getFilename());
                 if (Files.exists(removeDir)) {
                     removeDir.toFile().delete();
                 }
             }
             else if (clientCmd.equals("rename")) {
-                Path renameDir = Paths.get("C:\\Users\\rav05\\OneDrive\\Desktop\\java_course_final\\java-net-course\\project\\server\\src\\main\\java\\ru\\daniilazarnov\\server_vault\\" + request.getFilename());
-                Path newDir = Paths.get("C:\\Users\\rav05\\OneDrive\\Desktop\\java_course_final\\java-net-course\\project\\server\\src\\main\\java\\ru\\daniilazarnov\\server_vault\\" + request.getNewFileName());
+                Path renameDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getFilename());
+                Path newDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getNewFileName());
                 if (Files.exists(renameDir)) {
                     renameDir.toFile().renameTo(newDir.toFile());
                 }

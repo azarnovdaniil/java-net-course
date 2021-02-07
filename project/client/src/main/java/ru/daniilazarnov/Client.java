@@ -34,7 +34,7 @@ public class Client {
                         if (receivedFile instanceof FileMessage) {
                             FileMessage fm = (FileMessage) receivedFile;
 
-                            Path newFile = Paths.get("C:\\Users\\rav05\\OneDrive\\Desktop\\java_course_final\\java-net-course\\project\\client\\src\\main\\java\\ru\\daniilazarnov\\client_vault\\" + fm.getFilename());
+                            Path newFile = Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + fm.getFilename());
                             Files.write(
                                     newFile,
                                     fm.getData(),

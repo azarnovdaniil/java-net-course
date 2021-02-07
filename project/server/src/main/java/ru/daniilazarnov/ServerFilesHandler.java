@@ -15,7 +15,7 @@ public class ServerFilesHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof FileMessage) {
             FileMessage receivedFile = (FileMessage) msg;
 
-            Path newFile = Paths.get("C:\\Users\\rav05\\OneDrive\\Desktop\\java_course_final\\java-net-course\\project\\server\\src\\main\\java\\ru\\daniilazarnov\\server_vault\\" + receivedFile.getFilename());
+            Path newFile = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + receivedFile.getFilename());
             Files.write(
                     newFile,
                     receivedFile.getData(),

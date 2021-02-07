@@ -25,8 +25,8 @@ public class ClientHandler {
         if (msg.startsWith("upload")) {
             System.out.println("Upload started...");
             System.out.println(msgParts[1]);
-            if (Files.exists(Paths.get("C:\\Users\\rav05\\OneDrive\\Desktop\\java_course_final\\java-net-course\\project\\client\\src\\main\\java\\ru\\daniilazarnov\\client_vault\\" + msgParts[1]))) {
-                FileMessage fm = new FileMessage(Paths.get("C:\\Users\\rav05\\OneDrive\\Desktop\\java_course_final\\java-net-course\\project\\client\\src\\main\\java\\ru\\daniilazarnov\\client_vault\\" + msgParts[1]));
+            if (Files.exists(Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + msgParts[1]))) {
+                FileMessage fm = new FileMessage(Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + msgParts[1]));
                 objectOut.writeObject(fm);
                 objectOut.flush();
             }
