@@ -1,22 +1,33 @@
 package ru.ivanverkhovskiy;
 
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
+import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+
+import java.io.IOException;
 import java.net.Socket;
-import java.io.DataOutputStream;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
-public class Client {
-    public static void main(String[] args) {
-        try {
-            Socket socket = new Socket("localhost", 8189);
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            Scanner in = new Scanner(socket.getInputStream());
-            out.write(new byte[]{21, 21, 21});
-            String text = in.nextLine();
-            System.out.println("Command A: " + text);
-            in.close();
-            out.close();
-            socket.close();
-        } catch (Exception e) {
+public class Client extends ChannelInboundHandlerAdapter {
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        try (Socket socket = new Socket("localhost", 8189);
+             ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream());
+             ObjectDecoderInputStream in = new ObjectDecoderInputStream(socket.getInputStream(), 100 * 1024 * 1024)
+        ) {
+            while (true) {
+                Scanner scanner = new Scanner(System.in);
+                String msg = scanner.nextLine();
+                String textMessage = msg;
+                out.writeObject(textMessage);
+                out.flush();
+                //String str = String.valueOf(in.readObject());
+                System.out.println(msg);
+            }
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
