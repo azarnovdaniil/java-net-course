@@ -2,32 +2,37 @@ package ru.daniilazarnov;
 
 import java.io.Serializable;
 
-public class Command implements Serializable {
-    private String command;
-    private Object obj;
+public enum Command implements Serializable {
+    LIST("/list", " - et a list of all available files and directories"),
+    DOWNLOAD("/download", " - download file from server"),
+    UPLOAD("/upload", " - send file to server"),
+    REMOVE("/remove", " - delete file on server"),
+    EXIT("/exit", " - disconnect from server");
 
-    public Command(String command) {
+    private final String command;
+    private final String description;
+    private Object[] arg;
+
+    Command(String command, String description, Object... arg) {
         this.command = command;
+        this.description = description;
+        this.arg = arg;
     }
 
-    public Command(String command, Object obj) {
-        this.command = command;
-        this.obj = obj;
-    }
 
     public String getCommand() {
         return command;
     }
 
-    public void setCommand(String command) {
-        this.command = command;
+    public String getDescription() {
+        return description;
     }
 
-    public Object getObj() {
-        return obj;
+    public Object[] getArg() {
+        return arg;
     }
 
-    public void setObj(Object obj) {
-        this.obj = obj;
+    public void setArg(Object[] arg) {
+        this.arg = arg;
     }
 }
