@@ -25,6 +25,7 @@ public class Client {
         try (Socket socket = new Socket(host, port);
              ObjectEncoderOutputStream objectOut = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream objectIn = new ObjectDecoderInputStream(socket.getInputStream(),1024 * 1024 * 100)) {
+            ClientHandler clientHandler = new ClientHandler(objectOut, objectIn);
 
             new Thread(() -> {
                 try {
@@ -45,6 +46,14 @@ public class Client {
 
                             System.out.println(dim.getFilesAtDirectory().toString());
                         }
+                        else if (receivedFile instanceof AuthMessage) {
+                            AuthMessage am = (AuthMessage) receivedFile;
+                            System.out.println("Auth was successful");
+                            Path newClientDir = Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + am.getLogin());
+                            if (!newClientDir.toFile().exists()) {
+                                Files.createDirectories(newClientDir);
+                            }
+                        }
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     throw new RuntimeException("SWW", e);
@@ -53,7 +62,6 @@ public class Client {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-            ClientHandler clientHandler = new ClientHandler(objectOut, objectIn);
             while (true) {
                 try {
                     String msg = reader.readLine();

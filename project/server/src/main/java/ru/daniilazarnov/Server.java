@@ -37,6 +37,7 @@ public class Server {
                             ch.pipeline()
                                     .addLast(new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)))
                                     .addLast(new ObjectEncoder())
+                                    .addLast(new ServerAuthHandler())
                                     .addLast(new ServerRequestHandler())
                                     .addLast(new ServerFilesHandler());
                         }

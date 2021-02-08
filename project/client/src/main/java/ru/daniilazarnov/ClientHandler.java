@@ -55,6 +55,12 @@ public class ClientHandler {
             objectOut.writeObject(rm);
             objectOut.flush();
         }
+        else if (msg.startsWith("auth")) {
+            System.out.println("Waiting for auth server");
+            AuthMessage am = new AuthMessage(msgParts[1], msgParts[2]);
+            objectOut.writeObject(am);
+            objectOut.flush();
+        }
         else System.out.println("Unknown command");
     }
 
