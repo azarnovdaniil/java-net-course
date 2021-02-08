@@ -1,4 +1,4 @@
-package ru.gb.putilin.cloudstorage.server;
+package ru.gb.putilin.cloudstorage.server.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
