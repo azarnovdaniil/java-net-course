@@ -7,6 +7,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
@@ -24,7 +27,10 @@ public class ClientApp {
                             @Override
                             protected void initChannel(SocketChannel socketChannel) throws Exception {
                                 socket = socketChannel;
-                                socketChannel.pipeline().addLast(new StringDecoder(), new StringEncoder());
+                                socketChannel.pipeline().addLast(
+                                        new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
+                                        new ObjectEncoder(),
+                                        new ClientHandler());
                             }
                         });
                 ChannelFuture channelFuture = bootstrap.connect("localhost", 8189).sync();
