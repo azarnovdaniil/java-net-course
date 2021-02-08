@@ -85,5 +85,27 @@ public class Network {
 //        log.info("Сообщение отправлено");
     }
 
+    public void sendbyte(int  i) {
+        byte b = (byte) i;
+        try {
+            SendCommandByte.sendByte(b, channel, future -> {
+                if (!future.isSuccess()) {
+                    log.error(future.cause());
+//                    future.cause().printStackTrace();
+                }
+                if (future.isSuccess()) {
+                    System.out.print("\nУправляющий байт передан");
+//                    channel.disconnect();
+//                    channel.close();
+//                    Network.getInstance().stop();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        log.info("Сообщение отправлено");
+    }
+
+
 
 }

@@ -30,23 +30,15 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
 //        if (buf.readableBytes() < 3) {
 //            return;
 //        }
-            // Как только получили три байта, готовим массив, чтобы их туда закинуть
+
+
+        if (buf.readableBytes() > 0) {
             byte[] data = new byte[buf.readableBytes()];
-
-
-            // Перекидываем байты из буфера в массивЯ
             buf.readBytes(data);
-//            log.info("[SERVER: Сообщение принято от " + listOfUsers.get(listOfUsers.size()-1)+
-//                    "]");
             ctx.writeAndFlush("[(FirstHandler) SERVER: " + new String(data) + "]");
-//            ctx.fireChannelRead(data);
             buf.release(); // Освобождаем буфер
-
-
-
-//        buf.release();
-            // Прокидываем массив дальше по конвееру
             ctx.fireChannelRead(data);
+        }
 
     }
 
@@ -65,7 +57,8 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
     // Стандартный обработчик исключений.
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
+        System.err.println(cause);
+//        cause.printStackTrace();
         ctx.close();
     }
 }

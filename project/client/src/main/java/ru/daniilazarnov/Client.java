@@ -68,6 +68,10 @@ public class Client {
                     case "disconnect":
                         client.close();
                         break;
+                    case "up":
+                        sendCommandByte(inputLine);
+                        break;
+
                     case "status":
                         sendMsg("status");
                         break;
@@ -134,6 +138,22 @@ public class Client {
             return;
         }
     }
+
+    private static void sendCommandByte(String inputLine) {
+
+        if (isThereaSecondElement(inputLine)) {
+            String command = getSecondElement(inputLine);
+            int i = Integer.parseInt(command);
+            client.sendbyte(i); // Отправка файла
+        } else {
+            System.out.println("local_storage: некорректный управляющий байт");
+            return;
+        }
+
+
+
+    }
+
 
     /**
      * Метод проверяет есть ли второй элемент в строке

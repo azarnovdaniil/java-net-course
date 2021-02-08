@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -9,19 +10,9 @@ import java.util.Arrays;
 public class SecondHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // Мы точно знаем, что предыдущий обработчик отдает нам массив байт
-//        byte msgString = (byte)msg;
+        byte[] data = (byte[])msg;
+        ctx.writeAndFlush("(SecondHandler)SERVER: " + Arrays.toString(data));
 
-//        ctx.writeAndFlush("SecondHandler starting");
-//        ctx.writeAndFlush("SecondHandler passed" + msgString);
-
-        // Каждый элемент массива увеличиваем на 1
-//        for (int i = 0; i < 3; i++) {
-//            arr[i]++;
-//        }
-//        System.out.println("Второй шаг: " + Arrays.toString(arr));
-//        // Кидаем полученный массив дальше по конвееру
-//        ctx.fireChannelRead(arr);
     }
 
     @Override

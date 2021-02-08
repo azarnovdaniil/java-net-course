@@ -42,9 +42,26 @@ public class FileRecieveHandler extends ChannelInboundHandlerAdapter {
                 System.out.println("STATE: Start file receiving");
             } else {
                 System.out.println("ERROR: Invalid first byte - " + readed);
+                buf.resetReaderIndex();
+                ctx.fireChannelRead(buf);
+//                ctx.fireChannelRead(msg);
+                return;
             }
         }
 
+        ReceivingFiles.fileRecieve(buf);
+//        fileRecieve(buf);
+//        else { // TODO: 08.02.2021 неправильно
+//                System.out.println("ERROR: Invalid first byte - " + readed);
+//            buf.resetReaderIndex();
+//            ctx.fireChannelRead(buf);
+//            ctx.fireChannelRead(msg);
+//            return;
+//        }
+
+    }
+
+    private void fileRecieve(ByteBuf buf) throws IOException {
         if (currentState == State.NAME_LENGTH) {
             if (buf.readableBytes() < 4) return;
             if (buf.readableBytes() >= 4) {
@@ -84,14 +101,7 @@ public class FileRecieveHandler extends ChannelInboundHandlerAdapter {
                     out.close();
                 }
             }
-        } else {
-//                System.out.println("ERROR: Invalid first byte - " + readed);
-            buf.resetReaderIndex();
-            ctx.fireChannelRead(buf);
-            ctx.fireChannelRead(msg);
-            return;
         }
-
     }
 
 

@@ -16,20 +16,20 @@ public class FileSender {
         ByteBuf buf = null;
         buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         buf.writeByte((byte) 25);
-        channel.writeAndFlush(buf);
+        channel.write(buf);
 
         buf = ByteBufAllocator.DEFAULT.directBuffer(4);
         buf.writeInt(path.getFileName().toString().length());
-        channel.writeAndFlush(buf);
+        channel.write(buf);
 
         byte[] filenameBytes = path.getFileName().toString().getBytes();
         buf = ByteBufAllocator.DEFAULT.directBuffer(filenameBytes.length);
         buf.writeBytes(filenameBytes);
-        channel.writeAndFlush(buf);
+        channel.write(buf);
 
         buf = ByteBufAllocator.DEFAULT.directBuffer(8);
         buf.writeLong(Files.size(path));
-        channel.writeAndFlush(buf);
+        channel.write(buf);
 
         ChannelFuture transferOperationFuture = channel.writeAndFlush(region);
         if (finishListener != null) {

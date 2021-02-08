@@ -8,12 +8,56 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class ReceivingFiles {
-    private static State currentState = State.IDLE;
+    private static State currentState = State.NAME_LENGTH;
     private static String fileName;
     private static int nextLength;
     private static long fileLength;
     private static long receivedFileLength;
     private static BufferedOutputStream out;
+
+
+    public static void fileRecieve(ByteBuf buf) throws IOException {
+        if (currentState == State.NAME_LENGTH) {
+            if (buf.readableBytes() < 4) return;
+            if (buf.readableBytes() >= 4) {
+                System.out.println("STATE: Get filename length");
+                nextLength = buf.readInt();
+                currentState = State.NAME;
+            }
+        }
+
+        if (currentState == State.NAME) {
+            if (buf.readableBytes() < nextLength) return;
+            if (buf.readableBytes() >= nextLength) {
+                byte[] fileName = new byte[nextLength];
+                buf.readBytes(fileName);
+                System.out.println("STATE: Filename received - _" + new String(fileName));
+                out = new BufferedOutputStream(new FileOutputStream("project/server/cloud_storage/user1/_" + new String(fileName)));
+                currentState = State.FILE_LENGTH;
+            }
+        }
+
+        if (currentState == State.FILE_LENGTH) {
+            if (buf.readableBytes() < 8) return;
+            if (buf.readableBytes() >= 8) {
+                fileLength = buf.readLong();
+                System.out.println("STATE: File length received - " + fileLength);
+                currentState = State.FILE;
+            }
+        }
+
+        if (currentState == State.FILE) {
+            while (buf.readableBytes() > 0) {
+                out.write(buf.readByte());
+                receivedFileLength++;
+                if (fileLength == receivedFileLength) {
+                    currentState = State.IDLE;
+                    System.out.println("File received");
+                    out.close();
+                }
+            }
+        }
+    }
 
 
 
@@ -26,6 +70,7 @@ public class ReceivingFiles {
             if (readed == (byte) 25) {
                 currentState = State.NAME_LENGTH;
                 System.out.println("(fileDownload) STATE: Start file receiving");
+
             } else {
                 System.out.println("(fileDownload) ERROR: Invalid first byte - " + readed);
             }
