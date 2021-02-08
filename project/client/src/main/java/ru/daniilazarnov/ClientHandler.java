@@ -29,9 +29,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void sendCommand(ChannelHandlerContext ctx){
-        System.out.print("Enter command (enter /help for to get a list of commands): ");
         Scanner scanner = new Scanner(System.in);
         while (true) {
+            System.out.print("Enter command (enter /help for to get a list of commands): ");
             switch (scanner.nextLine()) {
                 case "/list":
                     ctx.writeAndFlush(Command.LIST);
@@ -40,12 +40,26 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                     cf.getInfo();
                     break;
                 case "/download":
-                    System.out.print("Enter path to file: ");
-                    String[] arg = {scanner.nextLine()};
-                    Command download = Command.DOWNLOAD;
-                    download.setArg(arg);
-                    ctx.writeAndFlush(download);
+                    cf.downloadFile(ctx, scanner);
+                    break;
+                case "/upload":
+                    cf.uploadFile(ctx, scanner);
+                    break;
+                case "/remove":
+                    cf.removeFile(ctx, scanner);
+                    break;
+                case "/move":
+                    cf.moveFile(ctx, scanner);
+                    break;
+                case "/exit":
+                    ctx.writeAndFlush(Command.EXIT);
+                    break;
+                default:
+                    System.out.println("Entered incorrect command, please, try again");
+                    break;
             }
         }
     }
+
+
 }

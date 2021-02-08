@@ -3,10 +3,11 @@ package ru.daniilazarnov;
 import java.io.Serializable;
 
 public enum Command implements Serializable {
-    LIST("/list", " - et a list of all available files and directories"),
+    LIST("/list", " - get a list of all available files and directories"),
     DOWNLOAD("/download", " - download file from server"),
     UPLOAD("/upload", " - send file to server"),
     REMOVE("/remove", " - delete file on server"),
+    MOVE("/move", " - moves the file to another directory"),
     EXIT("/exit", " - disconnect from server");
 
     private final String command;
