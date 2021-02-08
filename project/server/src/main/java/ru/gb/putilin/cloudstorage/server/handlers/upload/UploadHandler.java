@@ -12,6 +12,7 @@ public class UploadHandler implements FileHandler {
     private ByteBuf buf;
     private boolean isComplete = false;
     private UploadState currentState = UploadState.NAME_LENGTH;
+    private String fileName;
 
     private int nextLength;
     private long fileLength;
@@ -36,11 +37,14 @@ public class UploadHandler implements FileHandler {
         if (currentState == UploadState.NAME) {
             if (buf.readableBytes() >= nextLength) {
                 try {
-                    byte[] fileName = new byte[nextLength];
-                    buf.readBytes(fileName);
-                    System.out.println("STATE: Filename received - _" + new String(fileName, "UTF-8"));
+                    byte[] fileNameBytes = new byte[nextLength];
+                    buf.readBytes(fileNameBytes);
+                    fileName = new String(fileNameBytes, "UTF-8");
+                    System.out.println("STATE: Filename received:" + fileName);
 
-                    out = new BufferedOutputStream(new FileOutputStream("_" + new String(fileName)));
+                    out = new BufferedOutputStream(
+                            new FileOutputStream("C:/Temp/" + fileName)
+                    );
                     currentState = UploadState.FILE_LENGTH;
                 } catch (FileNotFoundException | UnsupportedEncodingException e) {
                     e.printStackTrace();
