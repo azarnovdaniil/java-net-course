@@ -1,9 +1,8 @@
 package ru.uio.io;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import ru.uio.io.entity.User;
+
+import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,8 +18,9 @@ public class ClientHandler {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
-    private String name;
+    private User user;
     private AtomicBoolean isAuth;
+    private String storePath;
 
 
 
@@ -55,7 +55,7 @@ public class ClientHandler {
     }
 
     public String getName() {
-        return name;
+        return user.getNickname();
     }
 
     private void doListen() {
@@ -89,11 +89,12 @@ public class ClientHandler {
                     server.getAuthenticationService()
                             .doAuth(credentialValues[1], credentialValues[2])
                             .ifPresentOrElse(
-                                    user -> {
-                                        if (!server.isLoggedIn(user.getNickname())) {
+                                    authUser -> {
+                                        if (!server.isLoggedIn(authUser.getNickname())) {
                                             sendMessage("cmd auth: Status OK");
-                                            name = user.getNickname();
-                                            Path dir = Paths.get("store/" + name);
+                                            user = authUser;
+                                            storePath = user.getEmail().replace('@', '_');
+                                            Path dir = Paths.get("store"+ File.separator + storePath);
                                             try {
                                                 if(!Files.isDirectory(dir))
                                                     Files.createDirectory(dir);
@@ -139,10 +140,10 @@ public class ClientHandler {
                     byte[] recv_data = Common.readStream(in);
                     switch (Integer.parseInt(new String(cmd_buff))) {
                         case 124://create new upload file in store (upload)
-                            System.out.println(String.format("store/%s/%s", name, new String(recv_data)));
-                            rw = new RandomAccessFile(String.format("store/%s/%s", name, new String(recv_data)), "rw");
+                            System.out.println(String.format("store/%s/%s", storePath, new String(recv_data)));
+                            rw = new RandomAccessFile(String.format("store/%s/%s", storePath, new String(recv_data)), "rw");
                             System.out.println("124");
-                            System.out.println(Files.exists(Paths.get(String.format("store/%s/%s", name, new String(recv_data)))));
+                            System.out.println(Files.exists(Paths.get(String.format("store/%s/%s", storePath, new String(recv_data)))));
                             out.write(Common.createDataPacket("125".getBytes("UTF8"), String.valueOf(current_file_pointer).getBytes("UTF8")));
                             out.flush();
                             break;
@@ -166,7 +167,7 @@ public class ClientHandler {
                             }
                             break;
                         case 121://send list client file name
-                            List<String> collect = Common.getFileList(String.format("store/%s/", name));
+                            List<String> collect = Common.getFileList(String.format("store/%s/", storePath));
                             int i = 1;
                             for (String name : collect){
                                 out.write(Common.createDataPacket("121".getBytes("UTF8"), String.format("%d. %s",i++,name).getBytes("UTF8")));
@@ -191,14 +192,14 @@ public class ClientHandler {
                             }
                             break;
                         case 115://open file in store and send name file (download)
-                            List<String> list = Common.getFileList(String.format("store/%s/", name));
+                            List<String> list = Common.getFileList(String.format("store/%s/", storePath));
                             if(Integer.parseInt(new String(recv_data)) > list.size()){
                                 out.write(Common.createDataPacket("119".getBytes("UTF8"), "File not found".getBytes("UTF8")));
                                 out.flush();
                                 break;
                             }
-                            System.out.println(String.format("store/%s/%s", name, list.get(Integer.parseInt(new String(recv_data)) -1)));
-                            rw = new RandomAccessFile(String.format("store/%s/%s", name, list.get(Integer.parseInt(new String(recv_data))-1)), "rw");
+                            System.out.println(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recv_data)) -1)));
+                            rw = new RandomAccessFile(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recv_data))-1)), "rw");
                             out.write(Common.createDataPacket("124".getBytes("UTF8"), list.get(Integer.parseInt(new String(recv_data))-1).getBytes("UTF8")));
                             out.flush();
                             break;
@@ -221,12 +222,7 @@ public class ClientHandler {
                 if (loop_break == true) {
                     return;
                 }
-//                String message = in.readUTF();
-//                if (message.equals("-exit")) {
-//                    return;
-//                }//
-//
-                //server.broadcastMessage(message);
+
             }
         } catch (IOException e) {
             throw new RuntimeException("SWW3", e);
@@ -245,16 +241,27 @@ public class ClientHandler {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         ClientHandler that = (ClientHandler) o;
-        return Objects.equals(server, that.server) &&
-                Objects.equals(socket, that.socket) &&
-                Objects.equals(in, that.in) &&
-                Objects.equals(out, that.out) &&
-                Objects.equals(name, that.name);
+
+        if (!Objects.equals(server, that.server)) return false;
+        if (!Objects.equals(socket, that.socket)) return false;
+        if (!Objects.equals(in, that.in)) return false;
+        if (!Objects.equals(out, that.out)) return false;
+        if (!Objects.equals(user, that.user)) return false;
+        if (!Objects.equals(isAuth, that.isAuth)) return false;
+        return Objects.equals(storePath, that.storePath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(server, socket, in, out, name);
+        int result = server != null ? server.hashCode() : 0;
+        result = 31 * result + (socket != null ? socket.hashCode() : 0);
+        result = 31 * result + (in != null ? in.hashCode() : 0);
+        result = 31 * result + (out != null ? out.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (isAuth != null ? isAuth.hashCode() : 0);
+        result = 31 * result + (storePath != null ? storePath.hashCode() : 0);
+        return result;
     }
 }

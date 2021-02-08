@@ -5,3 +5,10 @@
 -u | -upload                                        Загрузить файл на сервер
 -d | -download [номер файла из списка]              Скачать файл
 -exit                                               Отключить клиента
+
+
+store/      Директория для upload
+download/   Директория для загрузки
+
+sql/db/test.db liteSql база.
+sql/db/main_user.sql insert с пользователями.

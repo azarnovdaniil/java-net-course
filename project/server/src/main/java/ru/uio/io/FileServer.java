@@ -9,11 +9,11 @@ import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ChatServer implements Server {
+public class FileServer implements Server {
     private Set<ClientHandler> clients;
     private AuthenticationService authenticationService;
 
-    public ChatServer() {
+    public FileServer() {
         try {
             System.out.println("Server is starting up...");
             ServerSocket serverSocket = new ServerSocket(8888);
