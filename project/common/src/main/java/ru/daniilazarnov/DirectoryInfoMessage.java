@@ -4,6 +4,7 @@ import java.util.List;
 
 public class DirectoryInfoMessage extends AbstractMessage{
     private List<String> filesAtDirectory;
+    private String login;
 
     public DirectoryInfoMessage(List<String> filesAtDirectory) {
         this.filesAtDirectory = filesAtDirectory;

@@ -8,14 +8,16 @@ public class FileMessage extends AbstractMessage {
 
     private String filename;
     private byte[] data;
+    private String login;
 
-    public FileMessage(Path path) {
+    public FileMessage(Path path, String login) {
         filename = path.getFileName().toString();
         try {
             data = Files.readAllBytes(path);
         } catch (IOException e) {
             throw new RuntimeException("SWW", e);
         }
+        this.login = login;
     }
 
     public String getFilename() {
@@ -26,4 +28,7 @@ public class FileMessage extends AbstractMessage {
         return data;
     }
 
+    public String getLogin() {
+        return login;
+    }
 }

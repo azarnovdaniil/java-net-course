@@ -10,6 +10,10 @@ import java.util.Map;
 
 public class ServerAuthHandler extends ChannelInboundHandlerAdapter {
 
+    /**
+     * Хэндлер для предварительной аутентификации
+     */
+
     private static final Map<String, String> USERS = Map.of(
             "user1" , "1",
             "user2" , "2",

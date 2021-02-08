@@ -10,12 +10,16 @@ import java.nio.file.StandardOpenOption;
 
 public class ServerFilesHandler extends ChannelInboundHandlerAdapter {
 
+    /**
+     * Хэндлер для чтения файлов, которые были присланы клиентом
+     */
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FileMessage) {
             FileMessage receivedFile = (FileMessage) msg;
 
-            Path newFile = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + receivedFile.getFilename());
+            Path newFile = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + receivedFile.getLogin() + "/" + receivedFile.getFilename());
             Files.write(
                     newFile,
                     receivedFile.getData(),

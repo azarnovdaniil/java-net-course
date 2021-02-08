@@ -11,46 +11,49 @@ import java.util.List;
 
 public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
 
+    /**
+     * Хэндлер для обработки запросов пришедших от клиента
+     */
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof RequestMessage) {
             RequestMessage request = (RequestMessage) msg;
             String clientCmd = request.getCmd();
 
-            /**
-             * Действия сервера при получении запроса на скачивание файла
-             */
-            if (clientCmd.equals("download")) {
-                if (Files.exists(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getFilename()))) {
-                    FileMessage fm = new FileMessage(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getFilename()));
-                    ctx.writeAndFlush(fm);
-                }
-            }
-            else if (clientCmd.equals("show")) {
-                List<String> files = new ArrayList<>();
-                Files.walkFileTree(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault"),
-                        new SimpleFileVisitor<Path>() {
-                            @Override
-                            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                                files.add(file.toString());
-                                return FileVisitResult.CONTINUE;
-                            }
-                        });
-                DirectoryInfoMessage dim = new DirectoryInfoMessage(files);
-                ctx.writeAndFlush(dim);
-            }
-            else if (clientCmd.equals("remove")) {
-                Path removeDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getFilename());
-                if (Files.exists(removeDir)) {
-                    removeDir.toFile().delete();
-                }
-            }
-            else if (clientCmd.equals("rename")) {
-                Path renameDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getFilename());
-                Path newDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getNewFileName());
-                if (Files.exists(renameDir)) {
-                    renameDir.toFile().renameTo(newDir.toFile());
-                }
+            switch (clientCmd) {
+                case "download":
+                    if (Files.exists(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin() + "/" + request.getFilename()))) {
+                        FileMessage fm = new FileMessage(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin() + "/" + request.getFilename()), request.getLogin());
+                        ctx.writeAndFlush(fm);
+                    }
+                    break;
+                case "list":
+                    List<String> files = new ArrayList<>();
+                    Files.walkFileTree(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin()),
+                            new SimpleFileVisitor<Path>() {
+                                @Override
+                                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                                    files.add(file.toString());
+                                    return FileVisitResult.CONTINUE;
+                                }
+                            });
+                    DirectoryInfoMessage dim = new DirectoryInfoMessage(files);
+                    ctx.writeAndFlush(dim);
+                    break;
+                case "remove":
+                    Path removeDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin() + "/" + request.getFilename());
+                    if (Files.exists(removeDir)) {
+                        removeDir.toFile().delete();
+                    }
+                    break;
+                case "rename":
+                    Path renameDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin() + "/" + request.getFilename());
+                    Path newDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin() + "/" + request.getNewFileName());
+                    if (Files.exists(renameDir)) {
+                        renameDir.toFile().renameTo(newDir.toFile());
+                    }
+                    break;
             }
         }
         else ctx.fireChannelRead(msg);

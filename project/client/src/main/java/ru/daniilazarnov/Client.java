@@ -11,6 +11,7 @@ public class Client {
 
     private String host;
     private int port;
+    private String login;
 
     public Client(String host, int port) {
         this.host = host;
@@ -25,8 +26,8 @@ public class Client {
         try (Socket socket = new Socket(host, port);
              ObjectEncoderOutputStream objectOut = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream objectIn = new ObjectDecoderInputStream(socket.getInputStream(),1024 * 1024 * 100)) {
-            ClientHandler clientHandler = new ClientHandler(objectOut, objectIn);
 
+            ClientHandler clientHandler = new ClientHandler(objectOut);
             new Thread(() -> {
                 try {
                     while (true) {
@@ -35,7 +36,7 @@ public class Client {
                         if (receivedFile instanceof FileMessage) {
                             FileMessage fm = (FileMessage) receivedFile;
 
-                            Path newFile = Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + fm.getFilename());
+                            Path newFile = Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + login + "/" + fm.getFilename());
                             Files.write(
                                     newFile,
                                     fm.getData(),
@@ -49,6 +50,8 @@ public class Client {
                         else if (receivedFile instanceof AuthMessage) {
                             AuthMessage am = (AuthMessage) receivedFile;
                             System.out.println("Auth was successful");
+                            login = am.getLogin();
+                            clientHandler.setClientLogin(login);
                             Path newClientDir = Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + am.getLogin());
                             if (!newClientDir.toFile().exists()) {
                                 Files.createDirectories(newClientDir);
