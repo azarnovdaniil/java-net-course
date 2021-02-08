@@ -13,6 +13,7 @@ public class DiscardServer {
         new DiscardServer().run();
     }
 
+
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
