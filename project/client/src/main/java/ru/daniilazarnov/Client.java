@@ -1,9 +1,6 @@
 package ru.daniilazarnov;
 
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.*;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -42,7 +39,7 @@ public class Client {
     public static void main(String[] args) throws IOException {
         init();
 
-        String inputLine = "";
+        String inputLine;
         while (true) {
             InputStream in = System.in;
             bufferedReader = new BufferedReader(new InputStreamReader(in));
@@ -69,11 +66,13 @@ public class Client {
                         client.close();
                         break;
                     case "up":
-                        sendCommandByte(inputLine);
+                        sendNameFIleForDownloading(inputLine);
                         break;
 
                     case "status":
-                        sendMsg("status");
+                        if (client.isConnect()) System.out.println("Сервер доступен");
+                        else System.err.println("соединение с сервером отсутствует");
+//                        sendMsg("status");
                         break;
 
                     default:
@@ -130,26 +129,31 @@ public class Client {
             String fileName = getSecondElement(inputLine);
             if (isFileExists(fileName)) { // проверяем, существует ли файл
                 client.sendFile(HOME_FOLDER_PATH + fileName); // Отправка файла
+                if (client.isConnect()) printPrompt();
             } else {
                 System.out.println("local_storage: Файл не найден");
             }
         } else {
             System.out.println("local_storage: некорректный аргумент");
-            return;
+//            return;
         }
     }
 
-    private static void sendCommandByte(String inputLine) {
+    private static void sendNameFIleForDownloading(String inputLine) {
 
         if (isThereaSecondElement(inputLine)) {
             String command = getSecondElement(inputLine);
-            int i = Integer.parseInt(command);
-            client.sendbyte(i); // Отправка файла
+//            int i = Integer.parseInt(command);
+//            client.sendByte(1);
+            client.sendFileName(command);
+//            client.sendByte("file".length())
+//            ;
+//            client.sendMessage("file");
+//            client.sendMessage("text");
         } else {
             System.out.println("local_storage: некорректный управляющий байт");
-            return;
+//            return;
         }
-
 
 
     }
@@ -158,12 +162,11 @@ public class Client {
     /**
      * Метод проверяет есть ли второй элемент в строке
      *
-     * @param inputLine
-     * @return
+     * @param inputLine входные данные
+     * @return если есть второй элемент в строке = true
      */
     private static boolean isThereaSecondElement(String inputLine) {
-        if (inputLine.split(" ").length == 2) return true;
-        else return false;
+        return inputLine.split(" ").length == 2;
     }
 
     private static String getSecondElement(String inputLine) {
@@ -178,34 +181,6 @@ public class Client {
      */
     private static boolean isFileExists(String fileName) {
         return Files.exists(Path.of(HOME_FOLDER_PATH + fileName));
-    }
-
-
-    private static void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
-        FileRegion region = new DefaultFileRegion(new FileInputStream(path.toFile()).getChannel(), 0, Files.size(path));
-
-        ByteBuf buf = null;
-        buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte((byte) 25);
-        channel.writeAndFlush(buf);
-
-        buf = ByteBufAllocator.DEFAULT.directBuffer(4);
-        buf.writeInt(path.getFileName().toString().length());
-        channel.writeAndFlush(buf);
-
-        byte[] filenameBytes = path.getFileName().toString().getBytes();
-        buf = ByteBufAllocator.DEFAULT.directBuffer(filenameBytes.length);
-        buf.writeBytes(filenameBytes);
-        channel.writeAndFlush(buf);
-
-        buf = ByteBufAllocator.DEFAULT.directBuffer(8);
-        buf.writeLong(Files.size(path));
-        channel.writeAndFlush(buf);
-
-        ChannelFuture transferOperationFuture = channel.writeAndFlush(region);
-        if (finishListener != null) {
-            transferOperationFuture.addListener(finishListener);
-        }
     }
 
 

@@ -5,9 +5,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -28,9 +27,9 @@ public class Network {
                         .channel(NioSocketChannel.class)
                         .handler(new ChannelInitializer<SocketChannel>() {
                             @Override
-                            protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            protected void initChannel(SocketChannel socketChannel){
                                 channel = socketChannel;
-                                socketChannel.pipeline().addLast(new StringDecoder(), new StringEncoder(), new ClientHandler());
+                                socketChannel.pipeline().addLast(new ClientHandler());
 //                                log.info("Соединение с сервером установлено!");
                             }
                         });
@@ -67,45 +66,47 @@ public class Network {
 
     public void sendFile(String file) {
         try {
-            FileSender.sendFile(Path.of(file), channel, future -> {
-                if (!future.isSuccess()) {
-                    log.error(future.cause());
-//                    future.cause().printStackTrace();
-                }
-                if (future.isSuccess()) {
-                    System.out.print("\nФайл успешно передан");
-//                    channel.disconnect();
-//                    channel.close();
-//                    Network.getInstance().stop();
-                }
-            });
+            FileSender.sendFile(Path.of(file), channel, getChannelFutureListener("\nФайл успешно передан"));
         } catch (IOException e) {
             e.printStackTrace();
         }
 //        log.info("Сообщение отправлено");
     }
 
-    public void sendbyte(int  i) {
+    @NotNull
+    private ChannelFutureListener getChannelFutureListener(String s) {
+        return future -> {
+            if (!future.isSuccess()) {
+                System.err.println(s + "не был");
+//                log.error(future.cause());
+
+//                    future.cause().printStackTrace();
+            }
+            if (future.isSuccess()) {
+                System.out.print(s);
+//                    channel.disconnect();
+//                    channel.close();
+//                    Network.getInstance().stop();
+            }
+        };
+    }
+
+    public void sendByte(int  i) {
         byte b = (byte) i;
         try {
-            SendCommandByte.sendByte(b, channel, future -> {
-                if (!future.isSuccess()) {
-                    log.error(future.cause());
-//                    future.cause().printStackTrace();
-                }
-                if (future.isSuccess()) {
-                    System.out.print("\nУправляющий байт передан");
-//                    channel.disconnect();
-//                    channel.close();
-//                    Network.getInstance().stop();
-                }
-            });
+            SendCommandByte.sendByte(b, channel, getChannelFutureListener("\nУправляющий байт передан"));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+
+
 //        log.info("Сообщение отправлено");
     }
 
-
+    public void sendFileName(String fileName) {
+        SendFileName.sendFileName(fileName, channel, getChannelFutureListener("\nИмя файла передано"));
+    }
 
 }

@@ -1,12 +1,15 @@
 package ru.daniilazarnov;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,9 +24,10 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
     private String clientName;
 
 
+
     // Что делать, когда к нам прилетело сообщение?
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg){
             // Поскольку этот хендлер стоит "первым от сети", то 100% получим ByteBuf
             ByteBuf buf = (ByteBuf)msg;
             // Ждем получения трех байт
@@ -35,7 +39,20 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
         if (buf.readableBytes() > 0) {
             byte[] data = new byte[buf.readableBytes()];
             buf.readBytes(data);
-            ctx.writeAndFlush("[(FirstHandler) SERVER: " + new String(data) + "]");
+            String s =  "[(FirstHandler) SERVER: " + new String(data) + "]";
+
+
+
+//            buf = ByteBufAllocator.DEFAULT.directBuffer(s.length());
+            buf = ByteBufAllocator.DEFAULT.directBuffer(4);
+            buf.writeInt(s.length());
+            ctx.write(buf);
+//            ctx.flush();
+            byte[] stringSource = s.getBytes();
+            buf = ByteBufAllocator.DEFAULT.directBuffer(s.length());
+            buf.writeBytes(stringSource);
+            ctx.write(buf);
+            ctx.flush();
             buf.release(); // Освобождаем буфер
             ctx.fireChannelRead(data);
         }
@@ -43,7 +60,7 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx){
         channels.add(ctx.channel());
         clientName = "Клиент #" + newClientIndex;
         listOfUsers.add(new User(ctx.channel(), clientName, "user" + newClientIndex));
@@ -56,7 +73,7 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
 
     // Стандартный обработчик исключений.
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
         System.err.println(cause);
 //        cause.printStackTrace();
         ctx.close();

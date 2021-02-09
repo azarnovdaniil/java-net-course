@@ -15,7 +15,7 @@ public class SendCommandByte {
     public static void sendByte(byte b, Channel channel, ChannelFutureListener finishListener) throws IOException {
         ByteBuf  buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         buf.writeByte((byte) b);
-        channel.writeAndFlush(buf);
+        channel.write(buf);
     }
 
 }

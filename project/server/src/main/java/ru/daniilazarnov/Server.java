@@ -25,9 +25,9 @@ public class Server {
                     .channel(NioServerSocketChannel.class) // указание канала для подключения новых клиентов
                     .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
-                        public void initChannel(SocketChannel ch) throws Exception { // настройка конвеера для каждого подключившегося клиента
+                        public void initChannel(SocketChannel ch) { // настройка конвеера для каждого подключившегося клиента
 //                            ch.pipeline().addLast(new StringDecoder(), new StringEncoder(),new StringToByteBufHandler(), new FirstHandler(), new SecondHandler(), new GatewayHandler(), new FinalHandler());
-                            ch.pipeline().addLast(new StringToByteBufHandler(), new FileRecieveHandler(), new FirstHandler(), new SecondHandler(), new GatewayHandler(), new FinalHandler());
+                            ch.pipeline().addLast(new FileReceiveHandler(), new FirstHandler());
                         }
                     });
             ChannelFuture f = b.bind(8189).sync(); // запуск прослушивания порта 8189 для подключения клиентов
