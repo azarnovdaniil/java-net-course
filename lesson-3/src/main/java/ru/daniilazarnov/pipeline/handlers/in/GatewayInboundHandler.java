@@ -21,7 +21,7 @@ public class GatewayInboundHandler extends ChannelInboundHandlerAdapter {
         for (int i = 0; i < 3; i++) {
             sum += arr[i];
         }
-        if (sum == 66) {
+        if (sum != 66) {
             ctx.fireChannelRead(arr);
         } else {
             System.out.println("Сообщение сломано: " + Arrays.toString(arr));

@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.logging.*;
 
 public class ServerApp {
+
+    // оставил пока от чата, но он не используется
+
     private static final int SERVER_PORT = 8189;
     private static Logger logger = Logger.getLogger("");
 
