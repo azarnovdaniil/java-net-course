@@ -8,6 +8,7 @@ public enum Command implements Serializable {
     UPLOAD("/upload", " - send file to server"),
     REMOVE("/remove", " - delete file on server"),
     MOVE("/move", " - moves the file to another directory"),
+    CREATEDIR("/crdir", " - create directory on server"),
     EXIT("/exit", " - disconnect from server");
 
     private final String command;
