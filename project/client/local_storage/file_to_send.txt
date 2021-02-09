@@ -1,2 +1,0 @@
-text to send
-send file_to_send.txt

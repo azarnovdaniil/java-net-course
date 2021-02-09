@@ -11,6 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.file.Path;
 
+/**
+ * Класс содержит реализацию сетевого соединения
+ */
 public class Network {
     private static final Logger log = Logger.getLogger(Network.class);
     private SocketChannel channel;
@@ -43,19 +46,11 @@ public class Network {
             }
         });
         t.start();
-
     }
 
-
-
-    public void close() {
+    public String close() {
         channel.close();
-    }
-
-
-    public void sendMessage(String str) {
-        channel.writeAndFlush(str);
-        log.info("Сообщение отправлено");
+        return "Соединение разорвано";
     }
 
     public boolean isConnect() {
@@ -70,7 +65,6 @@ public class Network {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        log.info("Сообщение отправлено");
     }
 
     @NotNull
@@ -78,35 +72,14 @@ public class Network {
         return future -> {
             if (!future.isSuccess()) {
                 System.err.println(s + "не был");
-//                log.error(future.cause());
-
-//                    future.cause().printStackTrace();
             }
             if (future.isSuccess()) {
                 System.out.print(s);
-//                    channel.disconnect();
-//                    channel.close();
-//                    Network.getInstance().stop();
             }
         };
-    }
-
-    public void sendByte(int  i) {
-        byte b = (byte) i;
-        try {
-            SendCommandByte.sendByte(b, channel, getChannelFutureListener("\nУправляющий байт передан"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-
-
-//        log.info("Сообщение отправлено");
     }
 
     public void sendFileName(String fileName) {
         SendFileName.sendFileName(fileName, channel, getChannelFutureListener("\nИмя файла передано"));
     }
-
 }

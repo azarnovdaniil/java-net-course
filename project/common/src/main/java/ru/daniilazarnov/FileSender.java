@@ -9,11 +9,29 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+
+/**
+ * Утилитный класс, содержит метод отправки файла
+ */
 public class FileSender {
+
+
+    /**
+     * [] - 1b управляющий байт
+     * [][][][] - 1 int длинна имени файла
+     * [] - byte[?] имя файла
+     * [][][][][][][][] long размер файла в байтах
+     * [] data[] - содержимое файла
+     *
+     * @param path - путь;
+     * @param channel - канал;
+     * @param finishListener ;
+     * @throws IOException;
+     */
     public static void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
         FileRegion region = new DefaultFileRegion(new FileInputStream(path.toFile()).getChannel(), 0, Files.size(path));
 
-        ByteBuf buf = null;
+        ByteBuf buf;
         buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         buf.writeByte((byte) 25);
         channel.write(buf);

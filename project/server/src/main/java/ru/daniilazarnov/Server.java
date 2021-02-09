@@ -1,5 +1,12 @@
 package ru.daniilazarnov;
 
+/*
+ * Netty fileServer ServerApp
+ *
+ * @author Valeriy Lazarev
+ * @since 09.02.2021
+ */
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -9,7 +16,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.log4j.Logger;
 
-
+/**
+ * Класс содержит логику работы с сетью на стороне сервера
+ */
 public class Server {
     private static final Logger log = Logger.getLogger(Server.class);
 

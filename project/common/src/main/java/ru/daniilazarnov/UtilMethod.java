@@ -7,12 +7,18 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.stream.Collectors;
 
-
+/**
+ * Класс содержащий утилитные методы используемые как на стороне сервера, так и на стороне клиента
+ */
 public class UtilMethod {
     public static final String HOME_FOLDER_PATH = "project\\client\\local_storage\\";
 
+    /**
+     * Создание каталога по указанному пути
+     *
+     * @param filePath путь содержащий имя файла
+     */
     public static void createDirectory(String filePath) throws IOException {
         Path path = Paths.get("project/server/cloud_storage/user1/" + filePath);
         Files.createDirectories(path.getParent());
@@ -23,6 +29,13 @@ public class UtilMethod {
         }
     }
 
+
+    /**
+     * Получение списка файлов и каталогов по указанному пути
+     *
+     * @param folderName имя каталога
+     * @return результирующая строка имеет вид:  [папка] 'файл';
+     */
     public static String getFolderContents(String folderName) throws IOException {
         StringBuilder sb = new StringBuilder();
         String folder = HOME_FOLDER_PATH + (folderName.length() > 0 ? folderName + File.separator : "");
@@ -36,7 +49,11 @@ public class UtilMethod {
         return sb.toString();
     }
 
-
+    /**
+     * Принимает строку по протоколу   * Формирует для отправки на сервер имя файла по протоколу
+     *      * [][][][] int  = длинна имени файла;
+     *      * [] byte[] - имя файла;
+     */
     public  static String receiveAndEncodeString(ByteBuf buf) {
         int msgLength = (byte) buf.readInt();
         byte[] messageContent = new byte[msgLength];

@@ -1,21 +1,24 @@
 package ru.daniilazarnov;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
 
-import javax.swing.*;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+
+/**
+ * Класс реализующий получение файла по протоколу
+ *     [] - 1b управляющий байт
+ *     [][][][] - 1 int длинна имени файла
+ *     [] - byte[?] имя файла
+ *     [][][][][][][][] long размер файла в байтах
+ *     [] data[] - содержимое файла
+ */
 public class ReceivingFiles {
-    //    private static State currentState = State.NAME_LENGTH;
     private static State currentState = State.IDLE;
-    private static String fileName;
     private static final String DEFAULT_PATH_SERVER = "project/server/cloud_storage/";
     private static final String DEFAULT_PATH_USER = "project/client/local_storage/";
-    private static final String username = "user";
     private static final String prefixFileName = "/_";
     private static final String serverName = "server";
     private static int nextLength;
@@ -23,7 +26,13 @@ public class ReceivingFiles {
     private static long receivedFileLength;
     private static BufferedOutputStream out;
 
-
+    /**
+     * Метод реализующий получение файла по протоколу
+     *
+     * @param msg - данные
+     * @param user - пользователь (сервер или клиент) параметр нужен для того что бы
+     *             корректно составить путь для сохранения файла
+     */
     public static void fileReceive(Object msg, String user) throws IOException {
         // собираем путь до целевой папки
         final String FULL_PATH_TO_FILE = user.equals(serverName) ? // собираем путь до целевой папки
@@ -36,13 +45,13 @@ public class ReceivingFiles {
 
         ByteBuf buf = ((ByteBuf) msg);
         if (currentState == State.IDLE) {
+                buf.resetReaderIndex();
             byte readed = buf.readByte();
             if (readed == (byte) 25) {
                 currentState = State.NAME_LENGTH;
                 System.out.println("Client: Start file receiving");
             } else {
                 System.out.println("(class ReceivingFiles)ERROR: Invalid first byte - " + readed);
-                buf.resetReaderIndex();
                 return;
 
             }
@@ -63,7 +72,6 @@ public class ReceivingFiles {
                 byte[] fileName = new byte[nextLength];
                 buf.readBytes(fileName);
                 System.out.println("STATE: Filename received - _" + new String(fileName));
-//                out = new BufferedOutputStream(new FileOutputStream("project/server/cloud_storage/user1/_" + new String(fileName)));
                 out = new BufferedOutputStream(new FileOutputStream(FULL_PATH_TO_FILE + new String(fileName)));
                 currentState = State.FILE_LENGTH;
             }

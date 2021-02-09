@@ -1,12 +1,16 @@
 package ru.daniilazarnov;
 
-
+/*
+ * Netty fileServer ClientApp
+ *
+ * @author Valeriy Lazarev
+ * @since 09.02.2021
+ */
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 
    /*
     Нереализованный протокол:
@@ -16,29 +20,33 @@ import java.nio.file.Path;
             [long  [][][][][][][][]] 8b размер файла →
             [byte[]?] nb содержимое файла
 
-//                       System.out.println("Files.exists: " + Files.exists(Path.of("project/client/local_storage")));
-//                       client.sendfile("project/client/local_storage/file_to_send.txt");
-//                       sendMsg(inputLine);
-
      */
 
+/**
+ * Содержит основную логику обработки введенных с консоли команд
+ */
 public class Client {
     private static final Logger log = Logger.getLogger(Client.class);
     private static Network client;
     private static BufferedReader bufferedReader = null;
-    //    private static String msg = "◙◙◙";
     public static final String PROMPT_TO_ENTER = ">";
     public static final String PROGRAM_NAME = "local_storage ";
     public static final String USERNAME = "~/user1";
     public static final String HOME_FOLDER_PATH = "project/client/local_storage/";
     public static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n" +
-            "ver: 0.001a\n" +
-            "uod: 05.02.2021\n";
+            "ver: 0.002a\n" +
+            "uod: 09.02.2021\n";
 
 
     public static void main(String[] args) throws IOException {
         init();
+        godHandle();
+    }
 
+    /**
+     * Метод содержит основную логику введенных с консоли команд
+     */
+    private static void godHandle() throws IOException {
         String inputLine;
         while (true) {
             InputStream in = System.in;
@@ -49,7 +57,7 @@ public class Client {
                 String firstCommand = inputLine.split(" ")[0];
 
                 switch (firstCommand) {
-                    case "send":
+                    case "up":
                         sendCommand(inputLine);
                         break;
                     case "ls":
@@ -57,22 +65,23 @@ public class Client {
                         break;
                     case "exit":
                         client.close();
+                        System.out.println("Bye");
                         System.exit(0);
                         return;
                     case "connect":
-                        connectedToServer();
+                        System.out.println(connectedToServer());
                         break;
                     case "disconnect":
                         client.close();
                         break;
-                    case "up":
+                    case "down":
                         sendNameFIleForDownloading(inputLine);
                         break;
-
+                    case "help":
+                        System.out.println(helpPrint());
+                        break;
                     case "status":
-                        if (client.isConnect()) System.out.println("Сервер доступен");
-                        else System.err.println("соединение с сервером отсутствует");
-//                        sendMsg("status");
+                        System.out.println(getStatus());
                         break;
 
                     default:
@@ -82,24 +91,61 @@ public class Client {
         }
     }
 
-    private static void connectedToServer() {
+    /**
+     * Метод отвечает за вывод справки на консоль
+     *
+     * @return строку содержащую команды и результат их работы
+     */
+    private static String helpPrint() {
+        return "\n'down' - скачивает файл с сервера\n" +
+                "'up' - загружает файл на сервер\n" +
+                "'connect' - если соединение разорвано - восстанавливает его\n" +
+                "'ls' - вывести имена файлов и каталогов расположенных в корне папки пользователя в локальном хранилище\n" +
+                "'ls [catalog_name]' - вывести имена файлов и каталогов расположенных в каталоге [catalog_name] в локальном хранилище\n" +
+                "'status' - вывести статус подключения к серверу\n" +
+                "'exit' - разорвать соединение и выйти из приложения\n" +
+                "пример:\n up fileclient - загрузка файла 'fileclient 'на сервер;" +
+                "\n down fileserver - скачивание файла 'fileserver' с сервера;\n" +
+                "";
+    }
+
+    /**
+     * Получает статус состояния соединения с сервером
+     *
+     * @return возвращает готовую для вывода строку
+     */
+    private static String getStatus() {
+        if (client.isConnect()) return "Сервер доступен";
+        else return "соединение с сервером отсутствует";
+    }
+
+    /**
+     * Инициализирует соединение с сервером, если оно не еще не активно
+     */
+    private static String connectedToServer() {
         if (!client.isConnect()) {
             init();
+            return "Соединение с сервером получено";
         } else {
-            System.out.println("Соединение с сервером активно");
+            return "Соединение с сервером уже активно";
         }
     }
 
+    /**
+     * Получает строку содержащую  файлы и каталоги по указанному пути
+     *
+     * @param inputLine введеная строка
+     * @return результирующая строка имеет вид:  [папка] 'файл';
+     */
     private static String getFilesList(String inputLine) {
         String result = "";
         String fileName;
-        if (isThereaSecondElement(inputLine)) {
+        if (isThereaSecondElement(inputLine)) { // если после ls введено имя каталога получаем его
             fileName = getSecondElement(inputLine);
             if (!Files.isDirectory(Path.of(HOME_FOLDER_PATH + fileName))) {
-                System.out.println("Файл не является каталогом");
+                return "Файл не является каталогом";
             }
-        } else fileName = "";
-
+        } else fileName = ""; // если имени каталога нет
 
         try {
             result = UtilMethod.getFolderContents(fileName);
@@ -109,6 +155,9 @@ public class Client {
         return result;
     }
 
+    /**
+     * Метод выводит на консоль строку приглашение ко вводу
+     */
     protected static void printPrompt() {
         System.out.print(PROGRAM_NAME + USERNAME + PROMPT_TO_ENTER);
     }
@@ -135,27 +184,21 @@ public class Client {
             }
         } else {
             System.out.println("local_storage: некорректный аргумент");
-//            return;
         }
     }
 
+    /**
+     * Метод отправляет имя файла взятое из введённой в консоль строки на сервер
+     * если на сервере есть такой файл, сервер отправляет файл на загрузку.
+     *
+     */
     private static void sendNameFIleForDownloading(String inputLine) {
-
         if (isThereaSecondElement(inputLine)) {
             String command = getSecondElement(inputLine);
-//            int i = Integer.parseInt(command);
-//            client.sendByte(1);
             client.sendFileName(command);
-//            client.sendByte("file".length())
-//            ;
-//            client.sendMessage("file");
-//            client.sendMessage("text");
         } else {
             System.out.println("local_storage: некорректный управляющий байт");
-//            return;
         }
-
-
     }
 
 
@@ -169,6 +212,12 @@ public class Client {
         return inputLine.split(" ").length == 2;
     }
 
+    /**
+     * Получает второй элемент ввода
+     *
+     * @param inputLine входящая строка
+     * @return второй элемент строки
+     */
     private static String getSecondElement(String inputLine) {
         return inputLine.split(" ")[1];
     }
@@ -183,8 +232,4 @@ public class Client {
         return Files.exists(Path.of(HOME_FOLDER_PATH + fileName));
     }
 
-
-    public static void sendMsg(String message) {
-        client.sendMessage(message);
-    }
 }
