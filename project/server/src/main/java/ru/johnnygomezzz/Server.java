@@ -10,7 +10,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import ru.johnnygomezzz.handlers.ClientHandler;
+import ru.johnnygomezzz.handlers.ServerHandler;
 
 public class Server {
 
@@ -31,7 +31,7 @@ public class Server {
                         .pipeline()
                         .addLast(new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)))
                         .addLast(new ObjectEncoder())
-                        .addLast(new ClientHandler());
+                        .addLast(new ServerHandler());
                 }
             });
 

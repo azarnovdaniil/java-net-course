@@ -31,7 +31,7 @@ public class CloudServerHandler extends ChannelInboundHandlerAdapter {
         }
         if (msg instanceof FileMessage) {
             System.out.println("save file..");
-            ctx.writeAndFlush(new MyMessage("Your file was succsefuly save"));
+            ctx.writeAndFlush(new MyMessage("Your file was successfully saved"));
             try {
                 Files.write(Path.of(((FileMessage) msg).getFileName()), ((FileMessage) msg).getContent(), StandardOpenOption.CREATE_NEW);
             } catch (IOException e) {
