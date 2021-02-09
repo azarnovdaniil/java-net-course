@@ -30,10 +30,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
         if (msg instanceof MyMessage) {
             System.out.println("Сообщение от клиента: " + ((MyMessage) msg).getText());
-            if (((MyMessage) msg).getText().equals("/quit"))
-            {
-                ctx.close();
-            }
+            //if (msg.equals("/quit"))
+            //{
+            //    ctx.close();
+            //}
         }
         else if (msg instanceof FileMessage) {
             System.out.println("save file..");
