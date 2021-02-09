@@ -1,4 +1,7 @@
 .idea
 *.iml
-
+/lesson*
 **/target
+main.db
+/log
+/server/src/main/java/chat
