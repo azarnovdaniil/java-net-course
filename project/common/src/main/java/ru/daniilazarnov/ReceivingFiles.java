@@ -87,7 +87,7 @@ public class ReceivingFiles {
         }
 
         if (currentState == State.FILE) {
-            while (buf.readableBytes() > 0) {
+            while (buf.readableBytes() > 0) {//Записываем в цикле напрямую в файл
                 out.write(buf.readByte());
                 receivedFileLength++;
                 if (fileLength == receivedFileLength) {
