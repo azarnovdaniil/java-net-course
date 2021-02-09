@@ -36,7 +36,7 @@ public class Server {
                         @Override
                         public void initChannel(SocketChannel ch) { // настройка конвеера для каждого подключившегося клиента
 //                            ch.pipeline().addLast(new StringDecoder(), new StringEncoder(),new StringToByteBufHandler(), new FirstHandler(), new SecondHandler(), new GatewayHandler(), new FinalHandler());
-                            ch.pipeline().addLast(new FileReceiveHandler(), new FirstHandler());
+                            ch.pipeline().addLast(new ServerHandler(), new FirstHandler());
                         }
                     });
             ChannelFuture f = b.bind(8189).sync(); // запуск прослушивания порта 8189 для подключения клиентов

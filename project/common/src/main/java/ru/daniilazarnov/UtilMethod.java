@@ -1,6 +1,5 @@
 package ru.daniilazarnov;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFutureListener;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +11,10 @@ import java.nio.file.*;
  * Класс содержащий утилитные методы используемые как на стороне сервера, так и на стороне клиента
  */
 public class UtilMethod {
-    public static final String HOME_FOLDER_PATH = "project\\client\\local_storage\\";
+    public static final String USER_FOLDER_PATH = "project\\client\\local_storage\\";
+    public static final String SERVER_FOLDER_PATH = "project\\server\\cloud_storage\\user1\\";
+    public static final String user = "user1";
+//                                                   project/server/cloud_storage
 
     /**
      * Создание каталога по указанному пути
@@ -36,11 +38,17 @@ public class UtilMethod {
      * @param folderName имя каталога
      * @return результирующая строка имеет вид:  [папка] 'файл';
      */
-    public static String getFolderContents(String folderName) throws IOException {
+    public static String getFolderContents(String folderName, String user) throws IOException {
         StringBuilder sb = new StringBuilder();
-        String folder = HOME_FOLDER_PATH + (folderName.length() > 0 ? folderName + File.separator : "");
+        String folder;
+        if (user.equals("user")) {
+            folder = getStringPath(USER_FOLDER_PATH, folderName);
+        } else {
+            folder = getStringPath(SERVER_FOLDER_PATH, "");
+        }
         //папка выделяется квадратной скобкой
-        Files.list(Path.of(HOME_FOLDER_PATH + folderName))
+//        Files.list(Path.of(USER_FOLDER_PATH + folderName))
+        Files.list(Path.of(folder + folderName))
                 .map(Path::getFileName)
                 .map(Path::toString)
                 .map(s -> {
@@ -54,17 +62,24 @@ public class UtilMethod {
         return sb.toString();
     }
 
-    /**
-     * Принимает строку по протоколу   * Формирует для отправки на сервер имя файла по протоколу
-     * * [][][][] int  = длинна имени файла;
-     * * [] byte[] - имя файла;
-     */
-    public static String receiveAndEncodeString(ByteBuf buf) {
-        int msgLength = (byte) buf.readInt();
-        byte[] messageContent = new byte[msgLength];
-        buf.readBytes(messageContent);
-        return new String(messageContent);
+    @NotNull
+    private static String getStringPath(String path, String folderName) {
+        String folder;
+        folder = path + (folderName.length() > 0 ? folderName + File.separator : "");
+        return folder;
     }
+
+//    /**
+//     * Принимает строку по протоколу   * Формирует для отправки на сервер имя файла по протоколу
+//     * * [][][][] int  = длинна имени файла;
+//     * * [] byte[] - имя файла;
+//     */
+//    public static String receiveAndEncodeString(ByteBuf buf) {
+//        int msgLength = (byte) buf.readInt();
+//        byte[] messageContent = new byte[msgLength];
+//        buf.readBytes(messageContent);
+//        return new String(messageContent);
+//    }
 
 
     @NotNull

@@ -61,10 +61,26 @@ public class Network {
 
     public void sendFile(String file) {
         try {
-            FileSender.sendFile(Path.of(file), channel, getChannelFutureListener("\nФайл успешно передан"));
+            FileSender.setLoadingStatus(true);
+            FileSender.sendFile(Path.of(file), channel, getChannelFutureListenerSendFile("Файл успешно передан\n"));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @NotNull
+    private ChannelFutureListener getChannelFutureListenerSendFile(String s) {
+        return future -> {
+            if (!future.isSuccess()) {
+                System.err.println(s + "не был");
+            }
+            if (future.isSuccess()) {
+                System.out.print(s);
+                FileSender.setLoadingStatus(false);
+
+            }
+        };
     }
 
     @NotNull
@@ -75,11 +91,13 @@ public class Network {
             }
             if (future.isSuccess()) {
                 System.out.print(s);
+                FileSender.setLoadingStatus(false);
+
             }
         };
     }
 
-    public void sendFileName(String fileName) {
-        SendFileName.sendFileName(fileName, channel, getChannelFutureListener("\nИмя файла передано"));
+    public void sendStringAndCommand(String fileName, byte command) {
+        ReceivingAndSendingStrings.sendString(fileName, channel,command, getChannelFutureListener("\nИмя файла передано"));
     }
 }

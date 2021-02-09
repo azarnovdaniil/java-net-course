@@ -8,7 +8,7 @@ import io.netty.channel.ChannelFutureListener;
 /**
  * Класс содержит логику отправления побайтово имени файла на сервер
  */
-public class SendFileName {
+public class ReceivingAndSendingStrings {
 
     /**
      * Формирует для отправки на сервер имя файла по протоколу
@@ -19,10 +19,10 @@ public class SendFileName {
      * @param fileName - имя файла;
      * @param channel - канал для передачи;
      */
-    public static void sendFileName(String fileName, Channel channel, ChannelFutureListener finishListener){
+    public static void sendString(String fileName, Channel channel, byte commandByte, ChannelFutureListener finishListener){
 
         ByteBuf  buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte(1); //управляющий байт
+        buf.writeByte(commandByte); //управляющий байт
         channel.write(buf);
         buf = ByteBufAllocator.DEFAULT.directBuffer(4);
         buf.writeInt(fileName.length()); // длинна имени файла
@@ -34,4 +34,18 @@ public class SendFileName {
         channel.flush();
 //        buf.release(); //на этой строке рвет соединение с сервером
     }
+
+    /**
+     * Принимает строку по протоколу   * Формирует для отправки на сервер имя файла по протоколу
+     * * [][][][] int  = длинна имени файла;
+     * * [] byte[] - имя файла;
+     */
+    public static String receiveAndEncodeString(ByteBuf buf) {
+        int msgLength = (byte) buf.readInt();
+        byte[] messageContent = new byte[msgLength];
+        buf.readBytes(messageContent);
+        return new String(messageContent);
+    }
+
+
 }

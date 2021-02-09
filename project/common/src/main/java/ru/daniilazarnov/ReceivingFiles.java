@@ -47,7 +47,7 @@ public class ReceivingFiles {
         if (currentState == State.IDLE) {
                 buf.resetReaderIndex();
             byte readed = buf.readByte();
-            if (readed == (byte) 25) {
+            if (readed == (byte) 2) {
                 currentState = State.NAME_LENGTH;
                 System.out.println("Client: Start file receiving");
             } else {

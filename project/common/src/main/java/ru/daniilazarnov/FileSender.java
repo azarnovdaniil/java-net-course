@@ -14,6 +14,16 @@ import java.nio.file.Path;
  * Утилитный класс, содержит метод отправки файла
  */
 public class FileSender {
+    private static boolean loadingStatus = false; //переменная нужна для отправки статуса загрузки из других классов
+
+    public static void setLoadingStatus(boolean loadingStatus) {
+        FileSender.loadingStatus = loadingStatus;
+    }
+
+    public static boolean isLoadingStatus() {
+        return loadingStatus;
+    }
+
 
 
     /**
@@ -23,8 +33,8 @@ public class FileSender {
      * [][][][][][][][] long размер файла в байтах
      * [] data[] - содержимое файла
      *
-     * @param path - путь;
-     * @param channel - канал;
+     * @param path           - путь;
+     * @param channel        - канал;
      * @param finishListener ;
      * @throws IOException;
      */
@@ -33,7 +43,7 @@ public class FileSender {
 
         ByteBuf buf;
         buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte((byte) 25);
+        buf.writeByte((byte) 2);
         channel.write(buf);
 
         buf = ByteBufAllocator.DEFAULT.directBuffer(4);
@@ -53,5 +63,6 @@ public class FileSender {
         if (finishListener != null) {
             transferOperationFuture.addListener(finishListener);
         }
+
     }
 }

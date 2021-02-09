@@ -6,6 +6,7 @@ package ru.daniilazarnov;
  * @author Valeriy Lazarev
  * @since 09.02.2021
  */
+
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -29,11 +30,11 @@ public class Client {
     private static final Logger log = Logger.getLogger(Client.class);
     private static Network client;
     private static BufferedReader bufferedReader = null;
-    public static final String PROMPT_TO_ENTER = ">";
-    public static final String PROGRAM_NAME = "local_storage ";
-    public static final String USERNAME = "~/user1";
-    public static final String HOME_FOLDER_PATH = "project/client/local_storage/";
-    public static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n" +
+    private static final String PROMPT_TO_ENTER = ">";
+    private static final String PROGRAM_NAME = "local_storage ";
+    private static final String USERNAME = "~/user1";
+    private static final String HOME_FOLDER_PATH = "project/client/local_storage/";
+    private static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n" +
             "ver: 0.002a\n" +
             "uod: 09.02.2021\n";
 
@@ -42,6 +43,7 @@ public class Client {
         init();
         godHandle();
     }
+
 
     /**
      * Метод содержит основную логику введенных с консоли команд
@@ -52,9 +54,15 @@ public class Client {
             InputStream in = System.in;
             bufferedReader = new BufferedReader(new InputStreamReader(in));
             if (client.isConnect()) {
-                printPrompt();
+                while (true) {
+                    if (!FileSender.isLoadingStatus()) {
+                        printPrompt();
+                        break;
+                    }
+                }
                 inputLine = bufferedReader.readLine().trim().toLowerCase();
                 String firstCommand = inputLine.split(" ")[0];
+
 
                 switch (firstCommand) {
                     case "up":
@@ -84,11 +92,41 @@ public class Client {
                         System.out.println(getStatus());
                         break;
 
+                    case "server":
+                        System.out.println(accessingTheServer(inputLine));
+
+                        break;
+
+
                     default:
                         throw new IllegalStateException("Unexpected value: " + inputLine);
                 }
             }
         }
+    }
+
+    /**
+     * В этом методе обратимся к серверу за получением списка файлов находящемся в удаленном хранилище
+     * @param inputLine ввод;
+     */
+    private static String accessingTheServer(String inputLine) {
+        String result;
+        String command;
+        if (isThereaThirdElement(inputLine)) { // если после ls введено имя каталога получаем его
+            command = getSecondElement(inputLine);
+            String folderName = getThirdElement(inputLine);
+            if (command.equals("ls")){
+               client.sendStringAndCommand(folderName, (byte) 4);
+
+            } else return "Неизвестная команда";
+        } else {
+            client.sendStringAndCommand("", (byte) 4);
+        }
+
+
+
+            result = "Запрос отправлен на сервер";
+        return result;
     }
 
     /**
@@ -101,8 +139,9 @@ public class Client {
                 "'up' - загружает файл на сервер\n" +
                 "'connect' - если соединение разорвано - восстанавливает его\n" +
                 "'ls' - вывести имена файлов и каталогов расположенных в корне папки пользователя в локальном хранилище\n" +
-                "'ls [catalog_name]' - вывести имена файлов и каталогов расположенных в каталоге [catalog_name] в локальном хранилище\n" +
+                "'ls [catalog_name]' - вывести имена файлов и каталогов расположенных в папке [catalog_name] на локальном хранилище\n" +
                 "'status' - вывести статус подключения к серверу\n" +
+                "'server ls [catalog_name]' - вывести имена файлов и каталогов расположенных в папке [catalog_name] на удаленном хранилище\n" +
                 "'exit' - разорвать соединение и выйти из приложения\n" +
                 "пример:\n up fileclient - загрузка файла 'fileclient 'на сервер;" +
                 "\n down fileserver - скачивание файла 'fileserver' с сервера;\n" +
@@ -148,7 +187,7 @@ public class Client {
         } else fileName = ""; // если имени каталога нет
 
         try {
-            result = UtilMethod.getFolderContents(fileName);
+            result = UtilMethod.getFolderContents(fileName, "user"); // TODO: 09.02.2021
         } catch (IOException e) {
             log.debug(e);
         }
@@ -178,7 +217,7 @@ public class Client {
             String fileName = getSecondElement(inputLine);
             if (isFileExists(fileName)) { // проверяем, существует ли файл
                 client.sendFile(HOME_FOLDER_PATH + fileName); // Отправка файла
-                if (client.isConnect()) printPrompt();
+
             } else {
                 System.out.println("local_storage: Файл не найден");
             }
@@ -190,12 +229,12 @@ public class Client {
     /**
      * Метод отправляет имя файла взятое из введённой в консоль строки на сервер
      * если на сервере есть такой файл, сервер отправляет файл на загрузку.
-     *
      */
     private static void sendNameFIleForDownloading(String inputLine) {
         if (isThereaSecondElement(inputLine)) {
             String command = getSecondElement(inputLine);
-            client.sendFileName(command);
+            client.sendStringAndCommand(command, (byte) 1);
+            printPrompt();
         } else {
             System.out.println("local_storage: некорректный управляющий байт");
         }
@@ -213,6 +252,16 @@ public class Client {
     }
 
     /**
+     * Метод проверяет есть ли третий элемент в строке
+     *
+     * @param inputLine входные данные
+     * @return если есть третий элемент в строке = true
+     */
+    private static boolean isThereaThirdElement(String inputLine) {
+        return inputLine.split(" ").length == 3;
+    }
+
+    /**
      * Получает второй элемент ввода
      *
      * @param inputLine входящая строка
@@ -220,6 +269,16 @@ public class Client {
      */
     private static String getSecondElement(String inputLine) {
         return inputLine.split(" ")[1];
+    }
+
+    /**
+     * Получает третий элемент ввода
+     *
+     * @param inputLine входящая строка
+     * @return второй элемент строки
+     */
+    private static String getThirdElement(String inputLine) {
+        return inputLine.split(" ")[2];
     }
 
     /**

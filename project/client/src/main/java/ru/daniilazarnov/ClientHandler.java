@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
@@ -17,8 +18,33 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ReceivingFiles.fileReceive(msg, user);
-        Client.printPrompt(); // вывод строки приглашения к вводу
+
+        ByteBuf buf = ((ByteBuf) msg);
+
+        if (currentState == State.IDLE) {
+            byte readed = buf.readByte();
+
+            switch (readed) {
+                case (byte) 2:
+                    ReceivingFiles.fileReceive(msg, user);
+                    Client.printPrompt(); // вывод строки приглашения к вводу
+                    break;
+
+                case (byte) 4:
+                    String catalogStrings = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
+                    System.out.println(catalogStrings);
+                    break;
+
+                default:
+//                    invalidControlByte(buf, "(class FileReceiveHandler) ERROR: Invalid first byte - ", readed);
+
+            }
+        }
+
+
+
+
+
     }
 
     @Override

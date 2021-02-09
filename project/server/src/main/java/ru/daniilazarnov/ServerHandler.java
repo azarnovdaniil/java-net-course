@@ -11,8 +11,8 @@ import java.nio.file.Path;
 /**
  * Класс содержит обработку принятых сообщений на стороне сервера
  */
-public class FileReceiveHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger log = Logger.getLogger(FileReceiveHandler.class);
+public class ServerHandler extends ChannelInboundHandlerAdapter {
+    private static final Logger log = Logger.getLogger(ServerHandler.class);
     private final String user = "server";
     private State currentState = State.IDLE;
     public static final String HOME_FOLDER_PATH = "project/server/cloud_storage/user1";
@@ -36,12 +36,23 @@ public class FileReceiveHandler extends ChannelInboundHandlerAdapter {
             byte readed = buf.readByte();
 
             switch (readed) {
-                case (byte) 25:
+                case (byte) 2:
                     uploadFileToServer(buf);
                     break;
 
                 case (byte) 1:
                     downloadFileFromServer(ctx, buf);
+                    break;
+
+                case (byte) 4:
+                    String folderName = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
+
+                  String fileList =   UtilMethod.getFolderContents(folderName, "server");
+
+                    ReceivingAndSendingStrings
+                            .sendString(("\n" + fileList), ctx.channel(), (byte) 4,
+                                    UtilMethod.getChannelFutureListener("Список файлов успешно передан"));
+                    System.out.println(folderName);
                     break;
 
                 default:
@@ -54,8 +65,8 @@ public class FileReceiveHandler extends ChannelInboundHandlerAdapter {
     /**
      * Будет содержать действия по умолчанию, если переданная команда окажется неизвестной
      *
-     * @param buf ;
-     * @param s ;
+     * @param buf    ;
+     * @param s      ;
      * @param readed ;
      */
     private void invalidControlByte(ByteBuf buf, String s, byte readed) {
@@ -69,11 +80,11 @@ public class FileReceiveHandler extends ChannelInboundHandlerAdapter {
      * Скачивает файл с сервера и передает в сторону клиента
      *
      * @param ctx ;
-     * @param buf   ;
+     * @param buf ;
      * @throws IOException ;
      */
     private void downloadFileFromServer(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
-        String fileName = UtilMethod.receiveAndEncodeString(buf);
+        String fileName = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
         System.out.println("fileName ".toUpperCase() + fileName);
 
         System.out.println("STATE: Start file download");
@@ -86,6 +97,7 @@ public class FileReceiveHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * Загружает файл на сервер
+     *
      * @param buf буфер
      */
     private void uploadFileToServer(ByteBuf buf) throws IOException {
