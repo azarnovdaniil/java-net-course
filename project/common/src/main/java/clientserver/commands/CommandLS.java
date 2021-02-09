@@ -1,8 +1,10 @@
 package clientserver.commands;
 
+import clientserver.Command;
 import clientserver.Commands;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
 import java.nio.ByteBuffer;
@@ -10,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandLS {
+public class CommandLS implements Command {
     public static byte[] makeResponse(List<String> listFile) {
         //[команда 1б][длина сообщения 4б][кол объектов 4 байта][длина имени1 4б][имя1][длина имени2 4б][имя2]...
         int lengthResponse = (listFile.size()+2)*4+1;
@@ -51,5 +53,13 @@ public class CommandLS {
             list.add(buf.readBytes(buf.readInt()).toString(CharsetUtil.UTF_8));
         }
         return list;
+    }
+
+    @Override
+    public void apply(ChannelHandlerContext ctx, String content, byte signal) {
+        ByteBuf byBuf = ByteBufAllocator.DEFAULT.buffer();
+        byBuf.writeByte(signal);
+        byBuf.writeInt(5);
+        ctx.writeAndFlush(byBuf);
     }
 }

@@ -25,7 +25,6 @@ public class ServerStorage {
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-//        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
@@ -34,9 +33,7 @@ public class ServerStorage {
                         @Override
                         public void initChannel(SocketChannel ch) {
                             ch.pipeline()
-//                                    .addLast(new MyLengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, 1024*1024, 1, 4, -5, 0, true))
                                     .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE, 1, 4, -5, 0, true))
-//                                    .addLast(new ToByteDecoder())
 //                                    .addLast(new ObjectDecoder(1024*1024, ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
 //                                    .addLast(new ObjectEncoder())
                                     .addLast(new InboundHandler());

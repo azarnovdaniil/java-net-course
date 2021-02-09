@@ -14,7 +14,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class ClientHandlerNetty extends SimpleChannelInboundHandler {
     private int partSize;
@@ -107,15 +109,18 @@ public class ClientHandlerNetty extends SimpleChannelInboundHandler {
                 Scanner scanner = new Scanner(System.in);
                 while (true) {
                     String readLine = "";
-//                    smp.acquire();
                     System.out.print("Введите команду: ");
                     if (scanner.hasNext()) {
                         readLine = scanner.nextLine();
-//                        smp.release();
-                        String command = readLine.contains(" ") ? readLine.split(" ")[0] : readLine;
+                        String strCommand = readLine.contains(" ") ? readLine.split("\\s", 2)[0] : readLine;
+
+                        Commands command = Commands.valueOf(strCommand.toUpperCase(Locale.ROOT));
+
+                        command.sendToServer(ctx, readLine);
                         byte[] by;
                         switch (command) {
-                            case "upload":
+                            case UPLOAD:
+//                                String[] param = readLine.split("\\s",2);
                                 String fileName = readLine.contains(" ") ? readLine.split(" ")[1] : "";
                                 // запаковать в массив
                                 by = CommandUpload.makeResponse(fileName);
@@ -123,17 +128,16 @@ public class ClientHandlerNetty extends SimpleChannelInboundHandler {
                                     uploadFileNetty(ctx, fileName, by);
                                 }
                                 break;
-                            case "ls":
+                            case LS:
                                 ByteBuf byBuf = ByteBufAllocator.DEFAULT.buffer();
-                                byBuf.writeByte(Commands.LS.getSignal());
+                                byBuf.writeByte(command.getSignal());
                                 byBuf.writeInt(5);
-//                                byBuf.writeInt(5);
                                 ctx.writeAndFlush(byBuf);
                                 break;
                             default:
                                 System.out.println("Неизвестная команда");
                         }
-                        Thread.sleep(2 * 1000);
+                        TimeUnit.SECONDS.sleep(2);
                     }
                 }
             } catch (IOException | InterruptedException e) {

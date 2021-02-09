@@ -1,14 +1,16 @@
 package clientserver.commands;
 
+import clientserver.Command;
 import clientserver.Commands;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.channel.ChannelHandlerContext;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class CommandUpload {
+public class CommandUpload implements Command {
     public static int getPartSize() {
         return partSize;
     }
@@ -48,4 +50,8 @@ public class CommandUpload {
     }
 
 
+    @Override
+    public void apply(ChannelHandlerContext ctx, String content, byte signal) {
+
+    }
 }

@@ -26,14 +26,6 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
     private String currentDir;
 
     @Override
-    public void handlerAdded(ChannelHandlerContext ctx) {
-    }
-
-    @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) {
-    }
-
-    @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         System.out.println("Подключился клиент "+ctx.channel().remoteAddress().toString());
         currentDir = storageDir + File.separator + userName;
@@ -81,6 +73,7 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
                         String fileName = fileNameBuf.toString(StandardCharsets.UTF_8);
                         long fileSize = buf.readLong();
 
+                        Path path = Path.of(dir, fileName);
                         File file = new File(dir + File.separator + fileName);
                         if (!file.exists()) file.createNewFile();
                         FileOutputStream fileOutputStream = new FileOutputStream(file);
