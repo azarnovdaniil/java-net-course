@@ -7,6 +7,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class ClientHandlerNetty extends SimpleChannelInboundHandler {
     private int partSize;
@@ -18,7 +19,6 @@ public class ClientHandlerNetty extends SimpleChannelInboundHandler {
 
     @Override
     public void channelActive(ChannelHandlerContext channelHandlerContext) {
-//        channelHandlerContext.writeAndFlush(Unpooled.copiedBuffer("Netty Rocks!", CharsetUtil.UTF_8));
         consoleRead(channelHandlerContext);
     }
 
@@ -32,7 +32,6 @@ public class ClientHandlerNetty extends SimpleChannelInboundHandler {
             Commands command = Commands.getCommand(firstByte);
             command.receive(channelHandlerContext, buf);
         }
-        consoleRead(channelHandlerContext);
     }
 
     @Override
@@ -42,9 +41,9 @@ public class ClientHandlerNetty extends SimpleChannelInboundHandler {
     }
 
     public void consoleRead(ChannelHandlerContext ctx) {
-//        Thread threadConsole = new Thread(() -> {
+        Thread threadConsole = new Thread(() -> {
             Scanner scanner = new Scanner(System.in);
-//            while (true) {
+            while (true) {
                 String readLine = "";
                 System.out.print("Введите команду: ");
                 if (scanner.hasNext()) {
@@ -54,11 +53,15 @@ public class ClientHandlerNetty extends SimpleChannelInboundHandler {
                     String commandParam = commandPart.length > 1 ? commandPart[1] : commandPart[0];
 
                     command.sendToServer(ctx, commandParam);
-//                        TimeUnit.SECONDS.sleep(2);
+                    try {
+                        TimeUnit.SECONDS.sleep(2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-//            }
-//        });
-//        threadConsole.setDaemon(true);
-//        threadConsole.start();
+            }
+        });
+        threadConsole.setDaemon(true);
+        threadConsole.start();
     }
 }

@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class ServerStorage {
     private static final int SERVER_PORT = 8189;
-    private static final int PART_SIZE = 5*1024*1024;
+    private static final int PART_SIZE = 10*1024*1024;
     private static Logger logger = Logger.getLogger("");
     private int port;
     private String storageDir = "storage";

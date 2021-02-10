@@ -13,7 +13,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
 
 public class RealNettyClient {
-    private static final int PART_SIZE = 5*1024*1024;
+    private static final int PART_SIZE = 10*1024*1024;
     private static final int SERVER_PORT = 8189;
     private static final String host = "localhost";
 

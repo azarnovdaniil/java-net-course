@@ -28,7 +28,7 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
 
-        System.out.print("пришло сообщение "+buf.readableBytes()+" байт");
+//        System.out.println("пришло сообщение "+buf.readableBytes()+" байт");
         if (buf.readableBytes() > 0) {
             byte b = buf.readByte();
             Commands command = Commands.getCommand(b);
