@@ -2,12 +2,13 @@ package ru.daniilazarnov;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,13 +22,46 @@ class MainTest {
         for (int i = 0; i < ints.length; i++) {
             System.out.println(ints[i]);
         }
+
+        while (true) {
+            break;
+        }
+
+        do {
+            break;
+        } while (true);
     }
 
     @Test
     void testFor() {
         int[] ints = new int[10];
+
         for (int anInt : ints) {
             System.out.println(anInt);
+        }
+
+        class MyIterable implements Iterable<String> {
+
+            @Override
+            public Iterator<String> iterator() {
+                return new Iterator<String>() {
+                    @Override
+                    public boolean hasNext() {
+                        return false;
+                    }
+
+                    @Override
+                    public String next() {
+                        return "";
+                    }
+                };
+            }
+        }
+
+        MyIterable myIterable = new MyIterable();
+
+        for (String s : myIterable) {
+            System.out.println(s);
         }
     }
 
@@ -52,6 +86,31 @@ class MainTest {
 
         Consumer<String> consumer = s -> System.out.println(s);
         consumer.accept("aaa");
+    }
+
+    @Test
+    void name4() {
+        List.of("1", "2", "3").forEach(System.out::println);
+
+        int[] i = new int[]{0};
+        i[0] = 1;
+
+        methodReferenceWithTwo((var1, var2) -> System.out.println(var1.length() + 100 + var2 + i[0]));
+    }
+
+    @Test
+    void name5() {
+        methodReferenceWithTwo(MainTest::printStringPlusInteger);
+
+        SortedSet<String> set = new TreeSet<>(Comparator.comparingInt(String::length));
+    }
+
+    static void methodReferenceWithTwo(BiConsumer<String, Integer> biConsumer) {
+        biConsumer.accept(" ", 1);
+    }
+
+    static void printStringPlusInteger(String string, Integer integer) {
+        System.out.println(string + integer);
     }
 
     class MyClass {
@@ -88,12 +147,35 @@ class MainTest {
     void testStream() {
         List<String> strings = List.of("aa", "bb", "cc");
 
-        strings.stream().map(s -> s + "dd").forEach(s -> System.out.println(s));
+        Stream<String> stringStream = strings.stream()
+                .map(s -> s + "dd")
+                .map(s -> s + " map2")
+                .peek(System.out::println);
 
         System.out.println();
 
+        stringStream.forEach(System.out::println);
+
+        System.out.println(strings);
+
+        System.out.println();
+    }
+
+    @Test
+    void testStreamSimpleStream() {
+        List<String> strings = List.of("aa", "bb", "cc");
+
         SimpleStream simpleStream = new SimpleStream(strings);
         simpleStream.map(s -> s + "dd").print();
+    }
+
+    @Test
+    void testReuseStream() {
+        Stream<String> stream = List.of("1", "2", "3").stream();
+
+        stream.map(Integer::valueOf).map(x -> x + 1).forEach(System.out::println);
+
+        assertThrows(IllegalStateException.class, () -> stream.forEach(System.out::println));
     }
 
     class SimpleStream {
@@ -132,13 +214,10 @@ class MainTest {
                 .map(s -> s + "dd")
                 .map(s -> s + " ii")
                 .map(s -> s.getBytes(StandardCharsets.UTF_8))
-                .map(fefe -> fefe.length)
+                .map(bytes -> bytes.length)
                 .map(integer -> integer + 1)
-                .forEach(integer -> System.out.println(integer));
-
-        for (String string : strings) {
-            String s = string + "dd";
-        }
+                .mapToInt(Integer::intValue)
+                .forEach(System.out::println);
     }
 
     @Test
@@ -146,17 +225,26 @@ class MainTest {
         List<String> strings = List.of("aa", "bb", "cc");
         String reduce = strings.stream()
                 // FIRST + aa -> FIRSTaa + bb -> aabb + cc -> aabbcc
-                .reduce("FIRST", (s, s2) -> s + s2);
+                .reduce("FIRST", (s, s2) -> {
+                    System.out.println(s);
+                    System.out.println(s2);
+                    String result = s + s2;
+                    System.out.println(result);
+                    System.out.println();
+                    return result;
+                });
 
         System.out.println(strings);
         System.out.println(reduce);
 
-        Optional<String> optionalReduce = strings.stream()
+        List<String> empty = List.of();
+        Optional<String> optionalReduce = empty.stream()
                 .reduce((s, s2) -> s + s2);
-        System.out.println(optionalReduce
-                .or(() -> Optional.of("fsfes"))
-                .map(s -> s + "")
-                .orElse("DEFAULT"));
+
+        List<Boolean> booleans = List.of(true, false, true, false);
+        booleans.stream().reduce((aBoolean, aBoolean2) -> aBoolean || aBoolean2);
+
+        System.out.println(optionalReduce.orElse("DEFAULT"));
     }
 
     class MyOptional<R> {
@@ -184,13 +272,28 @@ class MainTest {
         List<String> strings = List.of("aa", "bb", "cc");
 
         int size = strings.size();
-        System.out.println(size);
+        //System.out.println(size);
 
         Integer reduce = strings.stream()
                 .map(s -> 1)
-                .reduce(0, (integer, integer2) -> integer + integer2);
+                .reduce(0, Integer::sum);
 
-        System.out.println(reduce);
+        int sum = List.of(1, 2, 3, 4)
+                .stream()
+                .reduce(0, Integer::sum);
+
+        System.out.println(List.of("aa", "aaa", "aa")
+                .stream()
+                .map(String::length)
+                .map(x -> x >= 2)
+                .reduce(true, (b1, b2) -> b1 && b2)
+                .booleanValue());
+
+        System.out.println("aresxdghftjgymhujhkvjghmfcngmv".chars()
+                .map(x -> x == 'a' ? 1 : 0)
+                .sum());
+
+        //System.out.println(reduce);
     }
 
     @Test
@@ -199,15 +302,15 @@ class MainTest {
 
         strings.stream()
                 .filter(s -> s.equals("aa"))
-                .forEach(s -> System.out.println(s));
+                .forEach(System.out::println);
 
         strings.stream().map(s -> {
-            if(s.equals("aa")) {
+            if (s.equals("aa")) {
                 return s;
             } else {
                 return "";
             }
-        }).forEach(s -> System.out.println(s));
+        }).forEach(System.out::println);
 
     }
 
@@ -222,6 +325,7 @@ class MainTest {
 
         boolean anyMatch = strings.stream()
                 .anyMatch(s -> s.equals("aa"));
+
         System.out.println(anyMatch);
 
         boolean allMatchReduce = strings.stream()
@@ -240,17 +344,64 @@ class MainTest {
         System.out.println(anyMatchReduce);
 
         System.out.println(strings);
-
-        Predicate<String> predicate = s -> s.equals("");
-        Function<String, Boolean> function = s -> s.equals("");
     }
 
     @Test
     void testSorted() {
         List<Integer> integers = List.of(1, 3, 4, 2);
 
-        integers.stream().sorted()
-                .forEach(integer -> System.out.println(integer));
+        integers.stream()
+                .sorted()
+                .forEach(System.out::println);
+
+        System.out.println(List.of("Cотников", "Цоцонова", "Фоменков")
+                .stream()
+                .sorted(Comparator.comparingInt(s -> s.charAt(0)))
+                .findFirst()
+                .orElse("Азарнов"));
+    }
+
+    @Test
+    void testStreamStudent() {
+        List.of(new Student("Ivan", "Petrov", 1),
+                new Student("Fedor", "Smirnov", 2),
+                new Student("Fedot", "Matveev", 3)
+        ).stream()
+                .filter(student -> student.getCourse() >= 2)
+                .forEach(System.out::println);
+    }
+
+    class Student {
+        private final String firstName;
+        private final String lastName;
+        private final int course;
+
+        public Student(String firstName, String lastName, int course) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.course = course;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public int getCourse() {
+            return course;
+        }
+
+        @Override
+        public String toString() {
+            return "Student{" +
+                    "firstName='" + firstName + '\'' +
+                    ", lastName='" + lastName + '\'' +
+                    ", course=" + course +
+                    '}';
+        }
     }
 
     @Test
@@ -274,7 +425,18 @@ class MainTest {
                 .map(s -> s + " F")
                 .collect(Collectors.toList());
 
+
         collect1.add("fsfs");
+    }
+
+    @Test
+    void testWalk() throws IOException {
+        Files.walk(Path.of("../lesson-1/dir"))
+                .filter(Files::isRegularFile)
+                .map(Path::toAbsolutePath)
+                .map(Path::toString)
+                .flatMap(s -> s.chars().boxed())
+                .forEach(System.out::println);
     }
 
     @Test
