@@ -12,9 +12,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
+    private MyMessage textMessage;
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx){
         System.out.println("Клиент подключился");
     }
 
@@ -24,16 +25,16 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
-        //System.out.println(msg.getClass().getName());
+    public void channelRead(ChannelHandlerContext ctx, Object msg){
 
         if (msg instanceof MyMessage) {
-            System.out.println("Сообщение от клиента: " + ((MyMessage) msg).getText());
-            //if (msg.equals("/quit"))
-            //{
-            //    ctx.close();
-            //}
+            System.out.println("Сообщение от клиента: " + ((MyMessage)msg).getText());
+            if (((MyMessage) msg).getText().equals("/quit"))
+            {
+                textMessage = new MyMessage("/quit");
+                ctx.writeAndFlush(textMessage);
+                ctx.close();
+            }
         }
         else if (msg instanceof FileMessage) {
             System.out.println("save file..");
@@ -50,7 +51,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         Scanner scanner = new Scanner(System.in);
         String srvMsg = scanner.nextLine();
 
-        MyMessage textMessage = new MyMessage(srvMsg);
+        textMessage = new MyMessage(srvMsg);
         ctx.writeAndFlush(textMessage);
     }
 
