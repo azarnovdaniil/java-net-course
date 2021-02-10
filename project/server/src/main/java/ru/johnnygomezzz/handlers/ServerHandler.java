@@ -28,26 +28,23 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg){
 
         if (msg instanceof MyMessage) {
-            System.out.println("Сообщение от клиента: " + ((MyMessage)msg).getText());
-            if (((MyMessage) msg).getText().equals("/quit"))
-            {
+            System.out.println("Сообщение от клиента: " + ((MyMessage) msg).getText());
+            if (((MyMessage) msg).getText().equals("/quit")) {
                 textMessage = new MyMessage("/quit");
                 ctx.writeAndFlush(textMessage);
-                ctx.close();
+                System.exit(0);
             }
-        }
-        else if (msg instanceof FileMessage) {
-            System.out.println("save file..");
-            ctx.writeAndFlush(new MyMessage("Your file was successfully saved"));
-            try {
-                Files.write(Path.of(((FileMessage) msg).getFileName()), ((FileMessage) msg).getContent(), StandardOpenOption.CREATE_NEW);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        //} else if (msg instanceof FileMessage) {
+        //    System.out.println("save file..");
+        //    ctx.writeAndFlush(new MyMessage("Your file was successfully saved"));
+        //    try {
+        //        Files.write(Path.of(((FileMessage) msg).getFileName()), ((FileMessage) msg).getContent(), StandardOpenOption.CREATE_NEW);
+        //    } catch (IOException e) {
+        //        e.printStackTrace();
+        //    }
         } else {
-            System.out.printf("Server received wrong object!");
+            System.out.println("Server received wrong object!");
         }
-
         Scanner scanner = new Scanner(System.in);
         String srvMsg = scanner.nextLine();
 

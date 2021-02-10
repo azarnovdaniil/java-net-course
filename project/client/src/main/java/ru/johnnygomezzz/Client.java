@@ -21,10 +21,10 @@ public class Client extends ChannelInboundHandlerAdapter {
             System.out.println("Добро пожаловать в Хранилище №13!\n/help для подсказки.\n\n" +
                     "Введите команду:");
 
-            Scanner scanner = new Scanner(System.in);
-            String msg = scanner.nextLine();
-
             while (true){
+                Scanner scanner = new Scanner(System.in);
+                String msg = scanner.nextLine();
+
                 MyMessage textMessage = new MyMessage(msg);
                 out.writeObject(textMessage);
                 out.flush();
