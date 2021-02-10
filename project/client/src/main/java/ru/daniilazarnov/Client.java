@@ -28,6 +28,7 @@ public class Client {
              ObjectDecoderInputStream objectIn = new ObjectDecoderInputStream(socket.getInputStream(),1024 * 1024 * 100)) {
 
             ClientHandler clientHandler = new ClientHandler(objectOut);
+
             new Thread(() -> {
                 try {
                     while (true) {

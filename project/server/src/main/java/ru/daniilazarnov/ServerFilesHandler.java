@@ -25,16 +25,7 @@ public class ServerFilesHandler extends ChannelInboundHandlerAdapter {
                     receivedFile.getData(),
                     StandardOpenOption.CREATE);
         }
-    }
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("hi");
-    }
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("bye");
+        else ctx.fireChannelRead(msg);
     }
 
     @Override

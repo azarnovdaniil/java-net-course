@@ -59,6 +59,12 @@ public class ClientHandler {
             objectOut.writeObject(am);
             objectOut.flush();
         }
+        else if (msg.startsWith("reg")) {
+            System.out.println("Stand by for registration");
+            DBMessage dbm = new DBMessage(msgParts[0], msgParts[1], msgParts[2]);
+            objectOut.writeObject(dbm);
+            objectOut.flush();
+        }
         else System.out.println("Unknown command");
     }
 

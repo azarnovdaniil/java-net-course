@@ -39,7 +39,8 @@ public class Server {
                                     .addLast(new ObjectEncoder())
                                     .addLast(new ServerAuthHandler())
                                     .addLast(new ServerRequestHandler())
-                                    .addLast(new ServerFilesHandler());
+                                    .addLast(new ServerFilesHandler())
+                                    .addLast(new ServerDBHandler());
                         }
                     })
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
