@@ -1,57 +1,148 @@
 package clientserver.commands;
 
-import clientserver.Command;
-import clientserver.Commands;
+import clientserver.FileLoaded;
+import clientserver.FilePartLoaded;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 
-import java.io.File;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 public class CommandUpload implements Command {
+    //[команда 1б][длина сообщения 4б][номер части 4б] prefix{[хэш 4б][длина имени 4б][имя][размер файла 8б]} [содержимое]
+    //если номер части =-1, значит она одна
+
     public static int getPartSize() {
-        return partSize;
+        return PART_SIZE;
     }
 
-    private static final int partSize = 5*1024 * 1024;
+    private static final int PART_SIZE = 5 * 1024 * 1024;
 
-    public static byte[] makeResponse(String fileName) {
-        //[команда 1б][длина сообщения 4б][хэш 4б][номер части 4б][длина имени 4б][имя][размер файла 8б][содержимое]
-        //если номер части =-1, значит она одна
+    @Override
+    public void send(ChannelHandlerContext ctx, String content, byte signal) {
+        // клиент отправляет на сервер
+
+        // запаковать в массив
+        byte[] bytes = makePrefix(content);
+        if (bytes.length > 0) {
+            try {
+                Path file = Path.of(content);
+                FileInputStream fileInputStream = new FileInputStream(file.toFile());
+
+                long volume = Files.size(file);
+                int countPar = (int) volume / PART_SIZE + 1;
+
+                int lenServiceData = 1 + 4 + 4 + bytes.length;
+                byte[] buffer = new byte[PART_SIZE];
+
+                int partNum = countPar == 1 ? -1 : 1;
+
+                for (int i = 0; i < countPar; i++) {
+                    int readLength = fileInputStream.read(buffer, i * (PART_SIZE - lenServiceData), PART_SIZE - lenServiceData);
+                    ByteBuf bufOut = ByteBufAllocator.DEFAULT.buffer(PART_SIZE);
+                    bufOut.writeByte(signal); // команда
+                    bufOut.writeInt(lenServiceData + readLength); // длина сообщения
+                    bufOut.writeInt(partNum + i); // 3 номер части
+                    bufOut.writeBytes(bytes); // служебные данные. все, кроме содержимого файла
+                    bufOut.writeBytes(buffer, 0, readLength); // содержимое файла
+
+                    ctx.writeAndFlush(bufOut);
+                    System.out.println("отправлено байт: " + (readLength + lenServiceData));
+                    bufOut.release();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Файл не найден");
+        }
+    }
+
+    @Override
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, String currentDir, Map<Integer, FileLoaded> uploadedFiles) {
+        buf.readInt(); // длина всего сообщения
+        int partNum = buf.readInt();
+        int hash = buf.readInt();
+        int fileNameSize = buf.readInt();
+        ByteBuf fileNameBuf = buf.readBytes(fileNameSize);
+        String fileName = fileNameBuf.toString(StandardCharsets.UTF_8);
+        long fileSize = buf.readLong();
+        FileLoaded fileLoaded;
+        if (uploadedFiles.containsKey(hash)) {
+            fileLoaded = uploadedFiles.get(hash);
+        } else {
+            fileLoaded = new FileLoaded(hash, fileName, fileSize);
+            uploadedFiles.put(hash, fileLoaded);
+        }
+
+        try {
+            Path path = Path.of(currentDir, fileLoaded.getName());
+//            if (!file.exists()) file.createNewFile();
+//            FileOutputStream fileOutputStream = new FileOutputStream(path.toFile());
+            byte[] bufIn = new byte[(int) fileSize];
+            int writeSize = buf.readableBytes();
+
+            fileLoaded.addPart(partNum, writeSize);
+            long startIndex = fileLoaded.getSizeCounter() - writeSize;
+
+
+//            buf.readBytes(fileOutputStream, writeSize);
+            buf.readBytes(bufIn);
+
+            RandomAccessFile raFile = new RandomAccessFile(path.toFile(), "rw");
+            //file.skipBytes(...);
+            raFile.write(bufIn, Math.toIntExact(startIndex), writeSize);
+//            wfile.writeBytes(...);
+            raFile.close();
+
+//            fileOutputStream.flush();
+//            fileOutputStream.close();
+            System.out.println("Сохранен файл " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf) {
+        // клиент обрабатывает что получил от сервера
+
+    }
+
+    public static byte[] makePrefix(String fileName) {
+
         File file = new File(fileName);
-        if (!file.exists()) return null;
+        if (!file.exists()) return new byte[]{(byte) 0};
         String name = file.getName();
         int hash = getHash(file);
-        int partNum;
         int lengthResponse;
         long volume = file.length();
-        int countPar = (int) volume / partSize + 1;
-        partNum = countPar == 1 ? -1 : 1;
-        lengthResponse = 4 + 4 + 4 + name.getBytes(StandardCharsets.UTF_8).length + 8;
+        int countPar = (int) volume / PART_SIZE + 1;
+        int partNum = countPar == 1 ? -1 : 1;
+        lengthResponse = 4 + 4 + name.getBytes(StandardCharsets.UTF_8).length + 8;
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(lengthResponse);
 
-//        buf.writeByte(Commands.UPLOAD.getSignal()); // 1 команда
-        buf.writeInt(hash); // 2 хэш
-        buf.writeInt(partNum); // 3 номер части
-        buf.writeInt(name.getBytes(StandardCharsets.UTF_8).length); // 4 длина имени
-        buf.writeBytes(name.getBytes(StandardCharsets.UTF_8)); // 5 имя
+//        buf.writeInt(partNum); // 3 номер части
+        buf.writeInt(hash); // 4 хэш
+        buf.writeInt(name.getBytes(StandardCharsets.UTF_8).length); // 5 длина имени
+        buf.writeBytes(name.getBytes(StandardCharsets.UTF_8)); // 6 имя
         buf.writeLong(volume);
 
         byte[] bufOut = new byte[lengthResponse];
         buf.readBytes(bufOut, 0, lengthResponse);
         return bufOut;
-}
+    }
 
 
     private static int getHash(File file) {
         return file.hashCode();
     }
 
-
-    @Override
-    public void apply(ChannelHandlerContext ctx, String content, byte signal) {
-
-    }
 }

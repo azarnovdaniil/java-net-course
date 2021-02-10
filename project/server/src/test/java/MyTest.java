@@ -27,4 +27,13 @@ public class MyTest {
     void TestCommands() {
         Arrays.stream(Commands.values()).forEach(System.out::println);
     }
+
+    @Test
+    void TestReadLine() {
+        String readLine="";
+        String[] commandPart = readLine.split("\\s", 2);
+        System.out.println(commandPart[0]);
+        System.out.println(commandPart[1]);
+        Arrays.stream(commandPart).forEach(System.out::println);
+    }
 }

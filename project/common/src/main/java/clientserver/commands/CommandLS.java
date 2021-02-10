@@ -1,21 +1,64 @@
 package clientserver.commands;
 
-import clientserver.Command;
 import clientserver.Commands;
+import clientserver.FileLoaded;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
 
 public class CommandLS implements Command {
+    //[команда 1б][длина сообщения 4б][кол объектов 4 байта][длина имени1 4б][имя1][длина имени2 4б][имя2]...
+
+    @Override
+    public void send(ChannelHandlerContext ctx, String content, byte signal) {
+        // клиент отправляет запрос на сервер
+        ByteBuf byBuf = ByteBufAllocator.DEFAULT.buffer();
+        byBuf.writeByte(signal);
+        byBuf.writeInt(5);
+        ctx.writeAndFlush(byBuf);
+    }
+
+    @Override
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, String currentDir, Map<Integer, FileLoaded> uploadedFiles) {
+        // сервер получает команду и отправляет клиенту ответ
+        try {
+            byte[] answer;
+            List<String> filesInDir = null;
+            filesInDir = Files.list(Path.of(currentDir))
+                    .map(Path::toFile)
+                    .map(File::getName)
+                    .collect(toList());
+            answer = CommandLS.makeResponse(filesInDir);
+            // отправляем этот список
+            ByteBuf bufOut = ctx.alloc().buffer(answer.length);
+            bufOut.writeBytes(answer);
+            ctx.writeAndFlush(bufOut);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf) {
+        // клиент получает ответ от сервера
+        System.out.println(readResponse(buf));
+    }
+
     public static byte[] makeResponse(List<String> listFile) {
-        //[команда 1б][длина сообщения 4б][кол объектов 4 байта][длина имени1 4б][имя1][длина имени2 4б][имя2]...
-        int lengthResponse = (listFile.size()+2)*4+1;
+        int lengthResponse = (listFile.size() + 2) * 4 + 1;
         for (String s : listFile) {
             lengthResponse += s.getBytes(StandardCharsets.UTF_8).length;
         }
@@ -53,13 +96,5 @@ public class CommandLS implements Command {
             list.add(buf.readBytes(buf.readInt()).toString(CharsetUtil.UTF_8));
         }
         return list;
-    }
-
-    @Override
-    public void apply(ChannelHandlerContext ctx, String content, byte signal) {
-        ByteBuf byBuf = ByteBufAllocator.DEFAULT.buffer();
-        byBuf.writeByte(signal);
-        byBuf.writeInt(5);
-        ctx.writeAndFlush(byBuf);
     }
 }

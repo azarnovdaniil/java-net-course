@@ -1,8 +1,7 @@
 package clientserver;
 
-import clientserver.commands.CommandLS;
-import clientserver.commands.CommandUnknown;
-import clientserver.commands.CommandUpload;
+import clientserver.commands.*;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.util.Arrays;
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
 
 public enum Commands {
     UPLOAD("upload", (byte) 1, new CommandUpload()),  // [команда][имя файла на клиенте][путь назначения на сервере][размер файла][файл][][][]
-    LS("ls", (byte) 3, new CommandLS()), // [команда]  // [ответ][список файлов ???]
+    LS("ls", (byte) 2, new CommandLS()), // [команда]  // [ответ][список файлов ???]
     //    DOWNLOAD("download", (byte) 2),
 //    RM("rm", (byte) 4), // [команда][длина имени файла][имя файла] // [ответ]
 //    MKDIR("mkdir", (byte) 5), // [команда][длина имени][имя директории]
@@ -34,7 +33,15 @@ public enum Commands {
     }
 
     public void sendToServer(ChannelHandlerContext ctx, String readLine) {
-        commandApply.apply(ctx, readLine, signal);
+        commandApply.send(ctx, readLine, signal);
+    }
+
+    public void receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, String currentDir, Map<Integer, FileLoaded> uploadedFiles) {
+        commandApply.response(ctx, buf, currentDir, uploadedFiles);
+    }
+
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf) {
+        commandApply.receive(ctx, buf);
     }
 
     public byte getSignal() {
