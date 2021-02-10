@@ -48,12 +48,12 @@ public class Client {
 
                             System.out.println(dim.getFilesAtDirectory().toString());
                         }
-                        else if (receivedFile instanceof AuthMessage) {
-                            AuthMessage am = (AuthMessage) receivedFile;
+                        else if (receivedFile instanceof DBMessage) {
+                            DBMessage dbm = (DBMessage) receivedFile;
                             System.out.println("Auth was successful");
-                            login = am.getLogin();
+                            login = dbm.getLogin();
                             clientHandler.setClientLogin(login);
-                            Path newClientDir = Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + am.getLogin());
+                            Path newClientDir = Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + dbm.getLogin());
                             if (!newClientDir.toFile().exists()) {
                                 Files.createDirectories(newClientDir);
                             }

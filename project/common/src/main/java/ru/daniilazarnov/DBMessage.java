@@ -6,10 +6,10 @@ public class DBMessage extends AbstractMessage{
     private String login;
     private String password;
 
-    public DBMessage(String cmd, String login) {
-        this.cmd = cmd;
+    public DBMessage(String login) {
         this.login = login;
     }
+
     public DBMessage(String cmd, String login, String password) {
         this.cmd = cmd;
         this.login = login;

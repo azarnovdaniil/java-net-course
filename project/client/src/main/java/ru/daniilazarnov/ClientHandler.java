@@ -1,13 +1,10 @@
 package ru.daniilazarnov;
 
-import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
 
 public class ClientHandler {
 
@@ -55,8 +52,8 @@ public class ClientHandler {
         }
         else if (msg.startsWith("auth")) {
             System.out.println("Waiting for auth server");
-            AuthMessage am = new AuthMessage(msgParts[1], msgParts[2]);
-            objectOut.writeObject(am);
+            DBMessage dbm = new DBMessage(msgParts[0], msgParts[1], msgParts[2]);
+            objectOut.writeObject(dbm);
             objectOut.flush();
         }
         else if (msg.startsWith("reg")) {

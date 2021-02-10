@@ -17,20 +17,29 @@ public class ServerAuthHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof AuthMessage) {
+        if (msg instanceof DBMessage) {
             DBService dbService = new DBService();
-            AuthMessage am = (AuthMessage) msg;
+            DBMessage dbm = (DBMessage) msg;
+            String dbCmd = dbm.getCmd();
 
-            if (dbService.findUser(am.getLogin(), am.getPassword())) {
-                AuthMessage authOK = new AuthMessage(am.getLogin(),"");
-                Path newServerDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + am.getLogin());
-                if (!newServerDir.toFile().exists()) {
-                    Files.createDirectories(newServerDir);
-                }
-                ctx.writeAndFlush(authOK);
-                ctx.pipeline().remove(this);
+            switch (dbCmd) {
+                case "auth":
+                    if (dbService.findUser(dbm.getLogin(), dbm.getPassword())) {
+                        DBMessage authOK = new DBMessage(dbm.getLogin());
+                        Path newServerDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + dbm.getLogin());
+                        if (!newServerDir.toFile().exists()) {
+                            Files.createDirectories(newServerDir);
+                        }
+                        ctx.writeAndFlush(authOK);
+                        ctx.pipeline().remove(this);
+
+                    }
+                    break;
+                case "reg":
+                    dbService.addUser(dbm.getLogin(), dbm.getPassword());
+                    break;
+
             }
-
         }
     }
 
