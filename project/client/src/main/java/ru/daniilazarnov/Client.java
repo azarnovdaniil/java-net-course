@@ -1,30 +1,40 @@
 package ru.daniilazarnov;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class Client {
 
-
-
     public static void main(String[] args) {
+        System.out.println("Client!");
         try {
-            Socket socket = new Socket("localhost", 8189);
+            Socket socket = new Socket("Localhost", 8888);
+            DataInputStream in = new DataInputStream(socket.getInputStream());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            Scanner in = new Scanner(socket.getInputStream());
-            out.write(new byte[]{21, 21, 21});
-            String x = in.nextLine();
-            System.out.println("A: " + x);
-            in.close();
-            out.close();
-            socket.close();
+
+            new Thread(() -> {
+                try {
+                    while (true) {
+                        String message = in.readUTF();
+                        System.out.println(message);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Something went wrong ...", e);
+                }
+            }).start();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            while (true) {
+                try {
+                    System.out.println("...");
+                    out.writeUTF(br.readLine());
+                } catch (IOException e) {
+                    throw new RuntimeException("Something went wrong ...", e);
+                }
+            }
         } catch (IOException e) {
-            throw new RuntimeException("SWW", e);
+            e.printStackTrace();
         }
 
-
-        System.out.println("Client!");
     }
 }

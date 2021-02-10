@@ -1,59 +1,76 @@
 package ru.daniilazarnov;
 
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import ru.daniilazarnov.discard.DiscardServerHandler;
-import ru.daniilazarnov.pipeline.handlers.in.FinalInboundHandler;
-import ru.daniilazarnov.pipeline.handlers.in.FirstInboundHandler;
-import ru.daniilazarnov.pipeline.handlers.in.GatewayInboundHandler;
-import ru.daniilazarnov.pipeline.handlers.in.SecondInboundHandler;
-import ru.daniilazarnov.pipeline.handlers.out.StringToByteBufOutboundHandler;
-import ru.daniilazarnov.pipeline.handlers.out.StringToStringOutboundHandler;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Server {
 
-    public static void main(String[] args) throws Exception {
-        new Server().run();
-        System.out.println("Server is started up!");
+    private final  int SEVER_PORT = 8888;
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
+    private DataInputStream in;
+    private DataOutputStream out;
+
+    public Server () {
+        try {
+            System.out.println("Server: starting up....");
+            serverSocket = new ServerSocket(SEVER_PORT);
+
+            System.out.println("Server: waiting for a connection...");
+            clientSocket = serverSocket.accept();
+            System.out.println("Server: client " + clientSocket +  " is connected");
+
+            in = new DataInputStream(clientSocket.getInputStream());
+            out = new DataOutputStream(clientSocket.getOutputStream());
+
+            while (true) {
+                String incomingMessage = in.readUTF();
+                if (incomingMessage.contains("-exit")) {
+                    out.writeUTF("cmd Exit");
+                    break;
+                }
+                out.writeUTF("Echo: " + incomingMessage);
+            }
+
+            System.out.println("Server: socket shutdown");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void run() throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+    private void closeConnection() {
         try {
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 100)
-                    .handler(new LoggingHandler(LogLevel.DEBUG))
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline()
-                            .addLast(new DiscardServerHandler())
-                            //.addLast(new ())
-                                    // .addLast(new StringToStringOutboundHandler())
-                                    // .addLast(new FirstInboundHandler())
-                                    // .addLast(new StringToByteBufOutboundHandler())
-                                    // .addLast(new SecondInboundHandler())
-                                    // .addLast(new GatewayInboundHandler())
-                                    // .addLast(new FinalInboundHandler())
-                            ;
-                        }
-                    });
-            ChannelFuture future = bootstrap.bind(8189).sync();
-            future.channel().closeFuture().sync();
-        }finally {
-            workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void main(String[] args) {
+        new Server();
+        System.out.println("Server!");
     }
 }
