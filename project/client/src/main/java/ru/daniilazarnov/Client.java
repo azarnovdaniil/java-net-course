@@ -37,7 +37,7 @@ public class Client {
                         if (receivedFile instanceof FileMessage) {
                             FileMessage fm = (FileMessage) receivedFile;
 
-                            Path newFile = Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + login + "/" + fm.getFilename());
+                            Path newFile = Paths.get("./project/clients_vault/" + login + "/" + fm.getFilename());
                             Files.write(
                                     newFile,
                                     fm.getData(),
@@ -53,7 +53,7 @@ public class Client {
                             System.out.println("Auth was successful");
                             login = dbm.getLogin();
                             clientHandler.setClientLogin(login);
-                            Path newClientDir = Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + dbm.getLogin());
+                            Path newClientDir = Paths.get("./project/clients_vault/" + dbm.getLogin());
                             if (!newClientDir.toFile().exists()) {
                                 Files.createDirectories(newClientDir);
                             }

@@ -23,14 +23,14 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
 
             switch (clientCmd) {
                 case "download":
-                    if (Files.exists(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin() + "/" + request.getFilename()))) {
-                        FileMessage fm = new FileMessage(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin() + "/" + request.getFilename()), request.getLogin());
+                    if (Files.exists(Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename()))) {
+                        FileMessage fm = new FileMessage(Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename()), request.getLogin());
                         ctx.writeAndFlush(fm);
                     }
                     break;
                 case "list":
                     List<String> files = new ArrayList<>();
-                    Files.walkFileTree(Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin()),
+                    Files.walkFileTree(Paths.get("./project/server_vault/" + request.getLogin()),
                             new SimpleFileVisitor<Path>() {
                                 @Override
                                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -42,14 +42,14 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
                     ctx.writeAndFlush(dim);
                     break;
                 case "remove":
-                    Path removeDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin() + "/" + request.getFilename());
+                    Path removeDir = Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename());
                     if (Files.exists(removeDir)) {
                         removeDir.toFile().delete();
                     }
                     break;
                 case "rename":
-                    Path renameDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin() + "/" + request.getFilename());
-                    Path newDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + request.getLogin() + "/" + request.getNewFileName());
+                    Path renameDir = Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename());
+                    Path newDir = Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getNewFileName());
                     if (Files.exists(renameDir)) {
                         renameDir.toFile().renameTo(newDir.toFile());
                     }

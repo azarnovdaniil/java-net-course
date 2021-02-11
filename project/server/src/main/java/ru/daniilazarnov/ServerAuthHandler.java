@@ -26,7 +26,7 @@ public class ServerAuthHandler extends ChannelInboundHandlerAdapter {
                 case "auth":
                     if (dbService.findUser(dbm.getLogin(), dbm.getPassword())) {
                         DBMessage authOK = new DBMessage(dbm.getLogin());
-                        Path newServerDir = Paths.get("./project/server/src/main/java/ru/daniilazarnov/server_vault/" + dbm.getLogin());
+                        Path newServerDir = Paths.get("./project/server_vault/" + dbm.getLogin());
                         if (!newServerDir.toFile().exists()) {
                             Files.createDirectories(newServerDir);
                         }

@@ -20,8 +20,8 @@ public class ClientHandler {
 
         if (msg.startsWith("upload")) {
             System.out.println("Upload started...");
-            if (Files.exists(Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + clientLogin + "/" + msgParts[1]))) {
-                FileMessage fm = new FileMessage(Paths.get("./project/client/src/main/java/ru/daniilazarnov/client_vault/" + clientLogin + "/" + msgParts[1]), clientLogin);
+            if (Files.exists(Paths.get("./project/clients_vault/" + clientLogin + "/" + msgParts[1]))) {
+                FileMessage fm = new FileMessage(Paths.get("./project/clients_vault/" + clientLogin + "/" + msgParts[1]), clientLogin);
                 objectOut.writeObject(fm);
                 objectOut.flush();
             }
