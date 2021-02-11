@@ -11,13 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InboundHandler extends ChannelInboundHandlerAdapter {
-    private final String storageDir = "storage";
-    private final String userName = "user_1";
     private String currentDir;
     private Map<Integer, FileLoaded> uploadedFiles;
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
+        String storageDir = "storage";
+        String userName = "user_1";
         System.out.println("Подключился клиент "+ctx.channel().remoteAddress().toString());
         currentDir = storageDir + File.separator + userName;
         uploadedFiles = new HashMap<>();
@@ -28,12 +28,12 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
 
-//        System.out.println("пришло сообщение "+buf.readableBytes()+" байт");
         if (buf.readableBytes() > 0) {
             byte b = buf.readByte();
             Commands command = Commands.getCommand(b);
             command.receiveAndSend(ctx, buf, currentDir, uploadedFiles);
         }
+        buf.release();
     }
 
     @Override

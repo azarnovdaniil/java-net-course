@@ -29,7 +29,7 @@ public class RealNettyClient {
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     socketChannel.pipeline()
                             .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE, 1, 4, -5, 0, true))
-                            .addLast(new ClientHandlerNetty(PART_SIZE));
+                            .addLast(new ClientHandlerNetty());
                 }
             });
             ChannelFuture channelFuture = clientBootstrap.connect().sync();
