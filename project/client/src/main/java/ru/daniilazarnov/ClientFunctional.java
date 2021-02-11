@@ -2,6 +2,7 @@ package ru.daniilazarnov;
 
 import io.netty.channel.ChannelHandlerContext;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class ClientFunctional {
@@ -11,12 +12,28 @@ public class ClientFunctional {
             System.out.println("\t" + cmd.getCommand() + cmd.getDescription());
         }
     }
-    protected void downloadFile(ChannelHandlerContext ctx, Scanner scanner) {
+
+    protected void list(DataMsg dataMsg){
+        byte[] obj = dataMsg.getBytes();
+        String paths = null;
+        try {
+            paths = (String) ConvertToByte.deserialize(obj);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        String[] list = paths.split(";");
+        for (String o : list) {
+            System.out.println(o);
+        }
+    }
+
+    protected void downloadFile(DataMsg dataMsg) {
         System.out.print("Enter path to file: ");
-        String[] arg = {scanner.nextLine()};
         Command download = Command.DOWNLOAD;
-        //download.setArg(arg);
-        ctx.writeAndFlush(download);
+
+
     }
 
     protected void uploadFile(ChannelHandlerContext ctx, Scanner scanner){
@@ -29,5 +46,15 @@ public class ClientFunctional {
 
     protected void moveFile(ChannelHandlerContext ctx, Scanner scanner){
 
+    }
+
+    protected DataMsg createMsg(Command command, Object obj){
+        try {
+            return new DataMsg(command, ConvertToByte.serialize(obj));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            return new DataMsg(Command.createError(""), null);
+        }
     }
 }

@@ -3,9 +3,7 @@ package ru.daniilazarnov.handlers;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.AttributeKey;
 import ru.daniilazarnov.FunctionalServer;
-import ru.daniilazarnov.User;
 
 import java.util.ArrayList;
 import java.util.List;

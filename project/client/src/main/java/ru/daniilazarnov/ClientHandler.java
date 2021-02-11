@@ -10,7 +10,8 @@ import java.util.Scanner;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
     private ClientFunctional cf = new ClientFunctional();
-    private DataMsg dataMsg;
+    private DataMsg dataMsgRead;
+    private DataMsg dataMsgLoad;
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         sendCommand(ctx);
@@ -21,23 +22,19 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         int i = 0;
         if (msg instanceof DataMsg){
-            dataMsg = (DataMsg) msg;
+            dataMsgRead = (DataMsg) msg;
         } else {
             System.out.println("Incorrect data from server");
-            ctx.writeAndFlush(Command.SERVER_ERROR);
+            ctx.writeAndFlush(Command.ERROR);
             return;
         }
 
-        switch (dataMsg.getCommand()){
+        switch (dataMsgRead.getCommand()){
             case LIST:
-                byte[] obj = dataMsg.getBytes();
-                String paths = (String) ConvertToByte.deserialize(obj);
-                String[] list = paths.split(";");
-                for (String o : list) {
-                    System.out.println(o);
-                }
+                cf.list(dataMsgRead);
                 break;
             case DOWNLOAD:
+                cf.downloadFile(dataMsgRead);
                 break;
             case UPLOAD:
                 break;
@@ -77,6 +74,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         cf.getInfo();
                         break;
                     case "/download":
+                        dataMsgLoad = cf.createMsg(Command.DOWNLOAD, "");
                         ctx.writeAndFlush(Command.DOWNLOAD);
                         //cf.downloadFile(ctx, scanner);
                         break;

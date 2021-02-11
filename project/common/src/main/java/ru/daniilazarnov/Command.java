@@ -10,7 +10,7 @@ public enum Command implements Serializable {
     REMOVE("/remove", " - delete file on server", null),
     MOVE("/move", " - moves the file to another directory", null),
     CREATEDIR("/crdir", " - create directory on server", null),
-    SERVER_ERROR(""," - command from server was incorrect", null),
+    ERROR(""," - command from server was incorrect", null),
     EXIT("/exit", " - disconnect from server", null);
 
     private final String command;
@@ -42,5 +42,11 @@ public enum Command implements Serializable {
 
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
+    }
+
+    public static Command createError(String description){
+        Command command = Command.ERROR;
+        command.setDescription(description);
+        return command;
     }
 }
