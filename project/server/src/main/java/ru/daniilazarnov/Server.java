@@ -31,6 +31,7 @@ public class Server {
                     });
             ChannelFuture future = b.bind(8189).sync();
             future.channel().closeFuture().sync();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
@@ -44,7 +45,9 @@ public class Server {
     public static void main(String[] args) throws Exception {
         new Server().run();
 
+
     }
+
 
 
 
