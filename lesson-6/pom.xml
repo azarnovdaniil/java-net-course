@@ -48,7 +48,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>ru.daniilazarnov.Main</mainClass>
+                            <mainClass>ru.daniilazarnov.StartClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

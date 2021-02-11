@@ -33,7 +33,7 @@ class MainTest {
 
     @Test
     void testIterator() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList ("aa", "bb", "cc");
 
         Iterator<String> iterator = strings.iterator();
         while (iterator.hasNext()) {
@@ -78,7 +78,7 @@ class MainTest {
 
     @Test
     void testSpliterator() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList("aa", "bb", "cc");
 
         Spliterator<String> spliterator = strings.spliterator();
         spliterator.forEachRemaining(s -> System.out.println(s));
@@ -86,7 +86,7 @@ class MainTest {
 
     @Test
     void testStream() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList("aa", "bb", "cc");
 
         strings.stream().map(s -> s + "dd").forEach(s -> System.out.println(s));
 
@@ -119,7 +119,7 @@ class MainTest {
 
     @Test
     void testMap() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList("aa", "bb", "cc");
         Stream<String> stringStream = strings.stream().map(s -> s + "dd");
 
         stringStream.forEach(s -> System.out.println(s));
@@ -127,7 +127,7 @@ class MainTest {
 
     @Test
     void testMap1() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList("aa", "bb", "cc");
         strings.stream()
                 .map(s -> s + "dd")
                 .map(s -> s + " ii")
@@ -143,7 +143,7 @@ class MainTest {
 
     @Test
     void testReduce() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList("aa", "bb", "cc");
         String reduce = strings.stream()
                 // FIRST + aa -> FIRSTaa + bb -> aabb + cc -> aabbcc
                 .reduce("FIRST", (s, s2) -> s + s2);
@@ -181,7 +181,7 @@ class MainTest {
 
     @Test
     void testSize() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList("aa", "bb", "cc");
 
         int size = strings.size();
         System.out.println(size);
@@ -195,7 +195,7 @@ class MainTest {
 
     @Test
     void testFilter() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList("aa", "bb", "cc");
 
         strings.stream()
                 .filter(s -> s.equals("aa"))
@@ -213,7 +213,7 @@ class MainTest {
 
     @Test
     void testMatch() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList("aa", "bb", "cc");
 
         boolean allMatch = strings.stream()
                 .allMatch(s -> s.equals("aa"));
@@ -247,15 +247,15 @@ class MainTest {
 
     @Test
     void testSorted() {
-        List<Integer> integers = List.of(1, 3, 4, 2);
+        List<Integer> integers = List.of (1, 3, 4, 2);
 
         integers.stream().sorted()
-                .forEach(integer -> System.out.println(integer));
+                .forEach(integer -> System.out.print(integer + " "));
     }
 
     @Test
     void testCollect() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList("aa", "bb", "cc");
 
         ArrayList<Object> result = new ArrayList<>();
         strings.stream()
@@ -279,7 +279,7 @@ class MainTest {
 
     @Test
     void testParallel() {
-        List<String> strings = List.of("aa", "bb", "cc");
+        List<String> strings = Arrays.asList("aa", "bb", "cc");
 
         strings.stream()
                 .parallel()
@@ -298,7 +298,7 @@ class MainTest {
 
     @Test
     void testFlatMap() {
-        List<List<String>> aa = List.of(List.of("aa", "bb"), List.of("cc", "dd"));
+        List<List<String>> aa = Arrays.asList(Arrays.asList("aa", "bb"), Arrays.asList("cc", "dd"));
 
         aa.stream()
                 .flatMap(list -> list.stream())
