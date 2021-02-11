@@ -35,13 +35,20 @@ public class Client {
                         AbstractMessage receivedFile = (AbstractMessage) objectIn.readObject();
 
                         if (receivedFile instanceof FileMessage) {
-                            FileMessage fm = (FileMessage) receivedFile;
+                                FileMessage fm = (FileMessage) receivedFile;
+                                System.out.println(fm.getPartNumber() + " / " + fm.getPartsCount());
 
-                            Path newFile = Paths.get("./project/clients_vault/" + login + "/" + fm.getFilename());
-                            Files.write(
-                                    newFile,
-                                    fm.getData(),
-                                    StandardOpenOption.CREATE);
+                                boolean append = true;
+                                if (fm.getPartNumber() == 1) {
+                                    append = false;
+                                }
+
+                                File newFile = new File("./project/clients_vault/" + login + "/" + fm.getFilename());
+                                FileOutputStream fos = new FileOutputStream(newFile, append);
+
+                                fos.write(fm.getData());
+                                fos.close();
+
                         }
                         else if (receivedFile instanceof DirectoryInfoMessage) {
                             DirectoryInfoMessage dim = (DirectoryInfoMessage) receivedFile;

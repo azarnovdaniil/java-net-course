@@ -3,10 +3,13 @@ package ru.daniilazarnov;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
@@ -23,9 +26,32 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
 
             switch (clientCmd) {
                 case "download":
-                    if (Files.exists(Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename()))) {
-                        FileMessage fm = new FileMessage(Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename()), request.getLogin());
-                        ctx.writeAndFlush(fm);
+                    try {
+                        if (Files.exists(Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename()))) {
+                            File file = new File("./project/server_vault/" + request.getLogin() + "/" + request.getFilename());
+                            int bufSize = 1024 * 1024 * 10;
+                            int partsCount = (int) (file.length() / bufSize);
+                            if (file.length() % bufSize != 0) {
+                                partsCount++;
+                            }
+
+                            FileMessage fm = new FileMessage(file.getName(), -1, partsCount, new byte[bufSize], request.getLogin());
+                            FileInputStream in = new FileInputStream(file);
+
+                            for (int i = 0; i < partsCount; i++) {
+                                int readedBytes = in.read(fm.getData());
+                                fm.setPartNumber(i + 1);
+                                if (readedBytes < bufSize) {
+                                    fm.setData(Arrays.copyOfRange(fm.getData(), 0, readedBytes));
+                                }
+                                ctx.writeAndFlush(fm);
+                                System.out.println("Отправлена часть: " + (i + 1));
+                                System.out.println(fm.getPartNumber());
+                            }
+                            in.close();
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException("SWW", e);
                     }
                     break;
                 case "list":
@@ -34,7 +60,7 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
                             new SimpleFileVisitor<Path>() {
                                 @Override
                                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                                    files.add(file.toString());
+                                    files.add(file.getFileName().toString());
                                     return FileVisitResult.CONTINUE;
                                 }
                             });

@@ -2,9 +2,12 @@ package ru.daniilazarnov;
 
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class ClientHandler {
 
@@ -20,11 +23,42 @@ public class ClientHandler {
 
         if (msg.startsWith("upload")) {
             System.out.println("Upload started...");
-            if (Files.exists(Paths.get("./project/clients_vault/" + clientLogin + "/" + msgParts[1]))) {
-                FileMessage fm = new FileMessage(Paths.get("./project/clients_vault/" + clientLogin + "/" + msgParts[1]), clientLogin);
-                objectOut.writeObject(fm);
-                objectOut.flush();
+
+            try {
+                if (Files.exists(Paths.get("./project/clients_vault/" + clientLogin + "/" + msgParts[1]))) {
+                    File file = new File("./project/clients_vault/" + clientLogin + "/" + msgParts[1]);
+                    int bufSize = 1024 * 1024 * 10;
+                    int partsCount = (int) (file.length() / bufSize);
+                    if (file.length() % bufSize != 0) {
+                        partsCount++;
+                    }
+
+                    FileMessage fm = new FileMessage(file.getName(), -1, partsCount, new byte[bufSize], clientLogin);
+                    FileInputStream in = new FileInputStream(file);
+
+                    for (int i = 0; i < partsCount; i++) {
+                        int readedBytes = in.read(fm.getData());
+                        fm.setPartNumber(i + 1);
+                        if (readedBytes < bufSize) {
+                            fm.setData(Arrays.copyOfRange(fm.getData(), 0, readedBytes));
+                        }
+                        objectOut.writeObject(fm);
+                        objectOut.flush();
+                        System.out.println("Отправлена часть: " + (i + 1));
+                        System.out.println(fm.getPartNumber());
+                    }
+                    in.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("SWW", e);
             }
+
+
+//            if (Files.exists(Paths.get("./project/clients_vault/" + clientLogin + "/" + msgParts[1]))) {
+//                FileMessage fm = new FileMessage(Paths.get("./project/clients_vault/" + clientLogin + "/" + msgParts[1]), clientLogin);
+//                objectOut.writeObject(fm);
+//                objectOut.flush();
+//            }
         }
         else if (msg.startsWith("download")) {
             System.out.println("Download started...");

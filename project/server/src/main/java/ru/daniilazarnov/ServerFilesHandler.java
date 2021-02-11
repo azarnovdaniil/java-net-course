@@ -3,10 +3,8 @@ package ru.daniilazarnov;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.io.File;
+import java.io.FileOutputStream;
 
 public class ServerFilesHandler extends ChannelInboundHandlerAdapter {
 
@@ -19,11 +17,19 @@ public class ServerFilesHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof FileMessage) {
             FileMessage receivedFile = (FileMessage) msg;
 
-            Path newFile = Paths.get("./project/server_vault/" + receivedFile.getLogin() + "/" + receivedFile.getFilename());
-            Files.write(
-                    newFile,
-                    receivedFile.getData(),
-                    StandardOpenOption.CREATE);
+            System.out.println(receivedFile.getPartNumber() + " / " + receivedFile.getPartsCount());
+
+            boolean append = true;
+            if (receivedFile.getPartNumber() == 1) {
+                append = false;
+            }
+
+            File newFile = new File("./project/server_vault/" + receivedFile.getLogin() + "/" + receivedFile.getFilename());
+            FileOutputStream fos = new FileOutputStream(newFile, append);
+
+            fos.write(receivedFile.getData());
+            fos.close();
+
         }
         else ctx.fireChannelRead(msg);
     }

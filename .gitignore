@@ -1,4 +1,6 @@
 .idea
 *.iml
+./project/clients_vault
+./project/server_vault
 
 **/target
