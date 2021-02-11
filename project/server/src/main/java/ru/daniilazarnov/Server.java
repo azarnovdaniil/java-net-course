@@ -16,19 +16,19 @@ public class Server {
         try {
             ServerBootstrap srvBoot = new ServerBootstrap(); // установка параметров сервера
             srvBoot.group(parentGroup, childGroup); // установка пулов потоков
-            srvBoot.channel(NioServerSocketChannel.class);  // не понимаю эту запись, канал для подключения клиентов,
+            srvBoot.channel(NioServerSocketChannel.class);  // канал для подключения клиентов,
 
-            ChannelInitializer channelInit = new ChannelInitializer<SocketChannel>() { // не понимаю эту запись, SocketChannel информация о соединении
+            ChannelInitializer channelInit = new ChannelInitializer<SocketChannel>() { // SocketChannel информация о соединении
                 @Override
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
 
                 }
             };
 
-            srvBoot.childHandler(channelInit); // не понимаю эту запись, настройка процесса общения,
+            srvBoot.childHandler(channelInit); // настройка процесса общения,
 
             ChannelFuture future = srvBoot.bind(50505).sync(); // привязка порта, запуск сервера, future - информация о какой-то выполняемой задаче.
-            future.channel().closeFuture().sync(); // loseFuture() - ожидание остановки сервера, sync() - запуск ожидания,
+            future.channel().closeFuture().sync(); // closeFuture() - ожидание остановки сервера, sync() - запуск ожидания,
 
         } catch (Exception e) {
             e.printStackTrace();
