@@ -32,34 +32,40 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = ((ByteBuf) msg);
 
-        if (currentState == State.IDLE) {
+
+//        if (currentState == State.IDLE) {
             byte readed = buf.readByte();
+            Command command = Command.valueOf(readed);
 
-            switch (readed) {
-                case (byte) 2:
-                    uploadFileToServer(buf);
+            switch (command) {
+                case DOWNLOAD:
+                    uploadFileToServer(buf); //2
                     break;
 
-                case (byte) 1:
-                    downloadFileFromServer(ctx, buf);
+                case UPLOAD:
+                    downloadFileFromServer(ctx, buf);  //1
                     break;
 
-                case (byte) 4:
-                    String folderName = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
-
-                  String fileList =   UtilMethod.getFolderContents(folderName, "server");
-
-                    ReceivingAndSendingStrings
-                            .sendString(("\n" + fileList), ctx.channel(), (byte) 4,
-                                    UtilMethod.getChannelFutureListener("Список файлов успешно передан"));
-                    System.out.println(folderName);
+                case LS:
+                    LSHandle(ctx, buf);
                     break;
 
                 default:
-                    invalidControlByte(buf, "(class FileReceiveHandler) ERROR: Invalid first byte - ", readed);
+                    invalidControlByte(buf, "(class ServerHandler) ERROR: Invalid first byte - ", readed);
 
             }
         }
+//    }
+
+    private void LSHandle(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
+        String folderName = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
+
+        String fileList = UtilMethod.getFolderContents(folderName, "server");
+
+        ReceivingAndSendingStrings
+                .sendString(("\n" + fileList), ctx.channel(), (byte) 4,
+                        UtilMethod.getChannelFutureListener("Список файлов успешно передан"));
+        System.out.println(folderName);
     }
 
     /**
@@ -103,13 +109,16 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private void uploadFileToServer(ByteBuf buf) throws IOException {
 //        invalidControlByte(buf, "STATE: Start file receiving");
         ReceivingFiles.fileReceive(buf, user);
-        buf.clear();
+        buf.resetReaderIndex();
+        buf.resetWriterIndex();
+        System.out.println("buf.readableBytes(): " + buf.readableBytes());
+//        buf.clear();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         System.err.println(cause.getMessage());
-        cause.printStackTrace();
+//        cause.printStackTrace();
         log.error(cause);
 //        ctx.close();
     }

@@ -50,9 +50,11 @@ public class Client {
      */
     private static void godHandle() throws IOException {
         String inputLine;
+        InputStream in = System.in;
+        bufferedReader = new BufferedReader(new InputStreamReader(in));
+//        System.out.println("client.isConnect() " + client.isConnect());
         while (true) {
-            InputStream in = System.in;
-            bufferedReader = new BufferedReader(new InputStreamReader(in));
+
             if (client.isConnect()) {
                 while (true) {
                     if (!FileSender.isLoadingStatus()) {
@@ -72,9 +74,7 @@ public class Client {
                         System.out.println(getFilesList(inputLine));
                         break;
                     case "exit":
-                        client.close();
-                        System.out.println("Bye");
-                        System.exit(0);
+                        exit();
                         return;
                     case "connect":
                         System.out.println(connectedToServer());
@@ -94,9 +94,7 @@ public class Client {
 
                     case "server":
                         System.out.println(accessingTheServer(inputLine));
-
                         break;
-
 
                     default:
                         throw new IllegalStateException("Unexpected value: " + inputLine);
@@ -105,8 +103,15 @@ public class Client {
         }
     }
 
+    private static void exit() {
+        client.close();
+        System.out.println("Bye");
+        System.exit(0);
+    }
+
     /**
      * В этом методе обратимся к серверу за получением списка файлов находящемся в удаленном хранилище
+     *
      * @param inputLine ввод;
      */
     private static String accessingTheServer(String inputLine) {
@@ -115,8 +120,8 @@ public class Client {
         if (isThereaThirdElement(inputLine)) { // если после ls введено имя каталога получаем его
             command = getSecondElement(inputLine);
             String folderName = getThirdElement(inputLine);
-            if (command.equals("ls")){
-               client.sendStringAndCommand(folderName, (byte) 4);
+            if (command.equals("ls")) {
+                client.sendStringAndCommand(folderName, (byte) 4);
 
             } else return "Неизвестная команда";
         } else {
@@ -124,8 +129,7 @@ public class Client {
         }
 
 
-
-            result = "Запрос отправлен на сервер";
+        result = "Запрос отправлен на сервер";
         return result;
     }
 
@@ -204,91 +208,107 @@ public class Client {
     private static void init() {
         client = new Network();
         System.out.print(WELCOME_MESSAGE);
-    }
-
-    /**
-     * Метод берет из второго элемента массива ввода имя файла
-     * и если файл существует отправляет его на сервер
-     *
-     * @param inputLine строка ввода
-     */
-    private static void sendCommand(String inputLine) {
-        if (isThereaSecondElement(inputLine)) {
-            String fileName = getSecondElement(inputLine);
-            if (isFileExists(fileName)) { // проверяем, существует ли файл
-                client.sendFile(HOME_FOLDER_PATH + fileName); // Отправка файла
-
-            } else {
-                System.out.println("local_storage: Файл не найден");
+        while (true) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } else {
-            System.out.println("local_storage: некорректный аргумент");
+            if (client.isConnect()) {
+                break;
+            }
         }
-    }
+//        while (true) {
+//            if (client.isConnect()) {
+//                printPrompt();
+//                break;
+//            }
+//        }
+            }
 
-    /**
-     * Метод отправляет имя файла взятое из введённой в консоль строки на сервер
-     * если на сервере есть такой файл, сервер отправляет файл на загрузку.
-     */
-    private static void sendNameFIleForDownloading(String inputLine) {
-        if (isThereaSecondElement(inputLine)) {
-            String command = getSecondElement(inputLine);
-            client.sendStringAndCommand(command, (byte) 1);
-            printPrompt();
-        } else {
-            System.out.println("local_storage: некорректный управляющий байт");
+            /**
+             * Метод берет из второго элемента массива ввода имя файла
+             * и если файл существует отправляет его на сервер
+             *
+             * @param inputLine строка ввода
+             */
+            private static void sendCommand (String inputLine){
+                if (isThereaSecondElement(inputLine)) {
+                    String fileName = getSecondElement(inputLine);
+                    if (isFileExists(fileName)) { // проверяем, существует ли файл
+                        client.sendFile(HOME_FOLDER_PATH + fileName); // Отправка файла
+
+                    } else {
+                        System.out.println("local_storage: Файл не найден");
+                    }
+                } else {
+                    System.out.println("local_storage: некорректный аргумент");
+                }
+            }
+
+            /**
+             * Метод отправляет имя файла взятое из введённой в консоль строки на сервер
+             * если на сервере есть такой файл, сервер отправляет файл на загрузку.
+             */
+            private static void sendNameFIleForDownloading (String inputLine){
+                if (isThereaSecondElement(inputLine)) {
+                    String command = getSecondElement(inputLine);
+                    client.sendStringAndCommand(command, (byte) 1);
+                    printPrompt();
+                } else {
+                    System.out.println("local_storage: некорректный управляющий байт");
+                }
+            }
+
+
+            /**
+             * Метод проверяет есть ли второй элемент в строке
+             *
+             * @param inputLine входные данные
+             * @return если есть второй элемент в строке = true
+             */
+            private static boolean isThereaSecondElement (String inputLine){
+                return inputLine.split(" ").length == 2;
+            }
+
+            /**
+             * Метод проверяет есть ли третий элемент в строке
+             *
+             * @param inputLine входные данные
+             * @return если есть третий элемент в строке = true
+             */
+            private static boolean isThereaThirdElement (String inputLine){
+                return inputLine.split(" ").length == 3;
+            }
+
+            /**
+             * Получает второй элемент ввода
+             *
+             * @param inputLine входящая строка
+             * @return второй элемент строки
+             */
+            private static String getSecondElement (String inputLine){
+                return inputLine.split(" ")[1];
+            }
+
+            /**
+             * Получает третий элемент ввода
+             *
+             * @param inputLine входящая строка
+             * @return второй элемент строки
+             */
+            private static String getThirdElement (String inputLine){
+                return inputLine.split(" ")[2];
+            }
+
+            /**
+             * метод ищет в папке local_storage файл с переданным именем
+             *
+             * @param fileName имя файла
+             * @return истина, если файл в папке обнаружен
+             */
+            private static boolean isFileExists (String fileName){
+                return Files.exists(Path.of(HOME_FOLDER_PATH + fileName));
+            }
+
         }
-    }
-
-
-    /**
-     * Метод проверяет есть ли второй элемент в строке
-     *
-     * @param inputLine входные данные
-     * @return если есть второй элемент в строке = true
-     */
-    private static boolean isThereaSecondElement(String inputLine) {
-        return inputLine.split(" ").length == 2;
-    }
-
-    /**
-     * Метод проверяет есть ли третий элемент в строке
-     *
-     * @param inputLine входные данные
-     * @return если есть третий элемент в строке = true
-     */
-    private static boolean isThereaThirdElement(String inputLine) {
-        return inputLine.split(" ").length == 3;
-    }
-
-    /**
-     * Получает второй элемент ввода
-     *
-     * @param inputLine входящая строка
-     * @return второй элемент строки
-     */
-    private static String getSecondElement(String inputLine) {
-        return inputLine.split(" ")[1];
-    }
-
-    /**
-     * Получает третий элемент ввода
-     *
-     * @param inputLine входящая строка
-     * @return второй элемент строки
-     */
-    private static String getThirdElement(String inputLine) {
-        return inputLine.split(" ")[2];
-    }
-
-    /**
-     * метод ищет в папке local_storage файл с переданным именем
-     *
-     * @param fileName имя файла
-     * @return истина, если файл в папке обнаружен
-     */
-    private static boolean isFileExists(String fileName) {
-        return Files.exists(Path.of(HOME_FOLDER_PATH + fileName));
-    }
-
-}

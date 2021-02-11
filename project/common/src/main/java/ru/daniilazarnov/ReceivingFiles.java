@@ -9,11 +9,11 @@ import java.io.IOException;
 
 /**
  * Класс реализующий получение файла по протоколу
- *     [] - 1b управляющий байт
- *     [][][][] - 1 int длинна имени файла
- *     [] - byte[?] имя файла
- *     [][][][][][][][] long размер файла в байтах
- *     [] data[] - содержимое файла
+ * [] - 1b управляющий байт
+ * [][][][] - 1 int длинна имени файла
+ * [] - byte[?] имя файла
+ * [][][][][][][][] long размер файла в байтах
+ * [] data[] - содержимое файла
  */
 public class ReceivingFiles {
     private static State currentState = State.IDLE;
@@ -29,7 +29,7 @@ public class ReceivingFiles {
     /**
      * Метод реализующий получение файла по протоколу
      *
-     * @param msg - данные
+     * @param msg  - данные
      * @param user - пользователь (сервер или клиент) параметр нужен для того что бы
      *             корректно составить путь для сохранения файла
      */
@@ -45,16 +45,9 @@ public class ReceivingFiles {
 
         ByteBuf buf = ((ByteBuf) msg);
         if (currentState == State.IDLE) {
-                buf.resetReaderIndex();
-            byte readed = buf.readByte();
-            if (readed == (byte) 2) {
-                currentState = State.NAME_LENGTH;
-                System.out.println("Client: Start file receiving");
-            } else {
-                System.out.println("(class ReceivingFiles)ERROR: Invalid first byte - " + readed);
-                return;
+            currentState = State.NAME_LENGTH;
+            System.out.println("Client: Start file receiving");
 
-            }
         }
 
         if (currentState == State.NAME_LENGTH) {
@@ -98,6 +91,7 @@ public class ReceivingFiles {
             }
         }
         buf.clear();
+
     }
 
 

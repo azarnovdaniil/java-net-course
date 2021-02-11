@@ -21,25 +21,27 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
         ByteBuf buf = ((ByteBuf) msg);
 
-        if (currentState == State.IDLE) {
+//        if (currentState == State.IDLE) {
             byte readed = buf.readByte();
+        Command command = Command.valueOf(readed);
 
-            switch (readed) {
-                case (byte) 2:
+            switch (command) {
+                case DOWNLOAD:
                     ReceivingFiles.fileReceive(msg, user);
                     Client.printPrompt(); // вывод строки приглашения к вводу
                     break;
 
-                case (byte) 4:
+                case LS:
                     String catalogStrings = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
                     System.out.println(catalogStrings);
                     break;
 
                 default:
+                    System.err.println("(class ClientHandler) ERROR: Invalid first byte - " + readed);
 //                    invalidControlByte(buf, "(class FileReceiveHandler) ERROR: Invalid first byte - ", readed);
 
             }
-        }
+//        }
 
 
 

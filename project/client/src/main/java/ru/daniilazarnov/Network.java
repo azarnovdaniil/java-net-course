@@ -6,7 +6,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
+//import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -69,7 +69,7 @@ public class Network {
         }
     }
 
-    @NotNull
+//    @NotNull
     private ChannelFutureListener getChannelFutureListenerSendFile(String s) {
         return future -> {
             if (!future.isSuccess()) {
@@ -83,7 +83,7 @@ public class Network {
         };
     }
 
-    @NotNull
+//    @NotNull
     private ChannelFutureListener getChannelFutureListener(String s) {
         return future -> {
             if (!future.isSuccess()) {

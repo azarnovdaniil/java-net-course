@@ -1,7 +1,7 @@
 package ru.daniilazarnov;
 
 import io.netty.channel.ChannelFutureListener;
-import org.jetbrains.annotations.NotNull;
+//import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +62,7 @@ public class UtilMethod {
         return sb.toString();
     }
 
-    @NotNull
+//    @NotNull
     private static String getStringPath(String path, String folderName) {
         String folder;
         folder = path + (folderName.length() > 0 ? folderName + File.separator : "");
@@ -82,7 +82,7 @@ public class UtilMethod {
 //    }
 
 
-    @NotNull
+//    @NotNull
     public static ChannelFutureListener getChannelFutureListener(String s) {
         return future -> {
             if (!future.isSuccess()) {
