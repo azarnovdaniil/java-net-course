@@ -4,11 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.nio.charset.Charset;
-
 public class MessageToServerEncoder extends MessageToByteEncoder<MessagePacket> {
 
 //    private final Charset charset = Charset.forName("UTF-8");

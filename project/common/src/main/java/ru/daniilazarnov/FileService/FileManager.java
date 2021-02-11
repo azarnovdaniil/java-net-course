@@ -1,10 +1,10 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.FileService;
 
+import ru.daniilazarnov.MessagePacket;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+
+//import static ru.daniilazarnov.commandToServer.*;
 
 public class FileManager {
 
@@ -12,14 +12,28 @@ public class FileManager {
     Path defaultDir = Paths.get("client-storage");// Задаем каталог по-умолчанию откуда пользователь может копировать файлы на сервер, куда по-умолчанию пользователь может скачать файлы с сервера
     Path specificDir = defaultDir; //
     private Enum commandFile;
+    private byte[] content;
+    int segment;
+    int allSegments;
 
     public FileManager(Path defaultPath, Enum commandFile) {
         this.defaultDir = defaultPath;
         this.commandFile = commandFile;
+        this.segment = 1;
+        this.allSegments = 1;
+
     }
 
     public FileManager() {
 
+    }
+
+    public FileManager(MessagePacket inComingMessage) {
+        this.defaultDir= Path.of(inComingMessage.getPathToFileName());
+        this.commandFile=inComingMessage;
+        this.content=inComingMessage.getContent();
+        this.allSegments=inComingMessage.getAllSegments();
+        this.segment=inComingMessage.getSegment();
     }
 
     //Методы менеджера файлов
@@ -40,13 +54,13 @@ public class FileManager {
 
     // 2) fileAction(команда, "путь") - метод принимает на вход команду для работы с файлом, и путь к фалу, возвращает объект Path
 
-    Path fileAction(commandToServer command, Path fileName) {
+    Path fileAction() {
         Path file=null;
 
-        switch (command) {
-           case CREATE:
+        switch (this.commandFile) {
+            case this.commandFile.:
                try {
-                   file=Files.createFile(fileName);
+                   Files.write(defaultDir, content, StandardOpenOption.CREATE_NEW);
                    break;
                } catch (IOException e) {
                    e.printStackTrace();
@@ -62,10 +76,7 @@ public class FileManager {
                 } finally {
                     return file;    //  для случая удаления файла возвращаем null
                 }
-            case WRITE:
-                break;
-            case READ:
-                break;
+
         }
         return file;
     }
