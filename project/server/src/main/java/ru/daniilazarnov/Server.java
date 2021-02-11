@@ -1,53 +1,66 @@
 package ru.daniilazarnov;
 
 
-import java.io.*;
-import java.net.*;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.Delimiters;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 
 public class Server {
+    public String HOST;
+    public  int PORT;
+    ServerHandler SRVHAND = new ServerHandler();
 
-    private final static String fileToSend = "C:\\java_log\\1\\test_in.txt";
+    public Server(String host, int port) {
+        this.HOST = host;
+        this.PORT = port;
+    }
 
-    public static void main(String args[]) {
-        System.out.println("Сервер запущен, ожидаем передачи файла...");
-        while (true) {
-            ServerSocket ServSocket;
-            Socket clientSocket = null;
-            BufferedOutputStream outToClient = null;
+    public void run() throws InterruptedException, IOException {
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-            try {
-                ServSocket = new ServerSocket(8189);
-                clientSocket = ServSocket.accept();
-                outToClient = new BufferedOutputStream(clientSocket.getOutputStream());
-            } catch (IOException ex) {
+        try {
+            ServerBootstrap bootstrap = new ServerBootstrap()
+                    .group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            ChannelPipeline pipeline = ch.pipeline().addLast(
+                                    new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()),
+                                    new StringDecoder(),
+                                    new StringEncoder(),
+                                    new ServerHandler()
+                            );
+                        }
+                    });
 
-                          }
+            bootstrap.bind(HOST, PORT).sync().channel();
 
-            if (outToClient != null) {
-                File myFile = new File( fileToSend );
-                FileInputStream fis = null;
-                byte[] byteArray = new byte[(int) myFile.length()];
-
-                try {
-                    fis = new FileInputStream(myFile);
-                } catch (FileNotFoundException ex) {
-
-                }
-                BufferedInputStream bis = new BufferedInputStream(fis);
-
-                try {
-                    bis.read(byteArray, 0, byteArray.length);
-                    outToClient.write(byteArray, 0, byteArray.length);
-                    outToClient.flush();
-                    outToClient.close();
-                    clientSocket.close();
-                    System.out.println("Файл принят, закрываем соединение...");
-
-                    return;
-                } catch (IOException ex) {
-                    System.out.println("Что-то пошло не так...");
-                }
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            while (true) {
+                SRVHAND.send(in.readLine());
             }
+
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
+    }
+
+    public static void main(String[] args) throws InterruptedException, IOException {
+        new Server("localhost", 8189).run();
     }
 }
