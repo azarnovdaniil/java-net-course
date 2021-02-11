@@ -10,6 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class ProtoServer {
 
+    public static final int INET_PORT = 8189;
+
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -23,7 +25,7 @@ public class ProtoServer {
                             ch.pipeline().addLast(new ProtoHandler());
                         }
                     });
-            ChannelFuture f = b.bind(8189).sync();
+            ChannelFuture f = b.bind(INET_PORT).sync();
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
