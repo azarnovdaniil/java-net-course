@@ -1,107 +1,46 @@
 package ru.daniilazarnov;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.Iterator;
 
-public class Server implements Runnable{
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
+import ru.daniilazarnov.handler.ServerHandler;
 
-    private final ServerSocketChannel serverSocketChannel;
-    private final Selector selector;
-    private int acceptedClientIndex = 1;
-    private final ByteBuffer welcomeBuf = ByteBuffer.wrap("Добро пожаловать в чат!\n".getBytes());
-    private final ByteBuffer buf = ByteBuffer.allocate(256);
+public class Server{
 
-
-    public static void main(String[] args) throws IOException {
-        new Thread(new Server()).start();
-    }
-
-    public Server() throws IOException {
-        this.serverSocketChannel = ServerSocketChannel.open();
-        this.serverSocketChannel.socket().bind(new InetSocketAddress(8189));
-        this.serverSocketChannel.configureBlocking(false);
-        this.selector = Selector.open();
-        this.serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-    }
-
-    @Override
-    public void run() {
+    public void run() throws Exception {
+        EventLoopGroup mainGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            System.out.println("Сервер запущен! (Порт 8189)");
-            Iterator<SelectionKey> iter;
-            SelectionKey key;
-            while (this.serverSocketChannel.isOpen()) {
-                selector.select();
-                iter = this.selector.selectedKeys().iterator();
-                while (iter.hasNext()) {
-                    key = iter.next();
-                    iter.remove();
-                    if (key.isAcceptable()) {
-                        handleAccept(key);
-                    }
-                    if (key.isReadable()) {
-                        handleRead(key);
-                    }
-                }
-
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            ServerBootstrap b = new ServerBootstrap();
+            b.group(mainGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            socketChannel.pipeline().addLast(
+                                    new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
+                                    new ObjectEncoder(),
+                                    new ServerHandler()
+                            );
+                        }
+                    });
+            ChannelFuture future = b.bind(8189).sync();
+            future.channel().closeFuture().sync();
+        } finally {
+            mainGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
-
     }
 
-    private void handleAccept(SelectionKey key) throws IOException {
-        SocketChannel sc = ((ServerSocketChannel) key.channel()).accept();
-        String clientName = "Клиент №" + acceptedClientIndex;
-        acceptedClientIndex++;
-        sc.configureBlocking(false);
-        sc.register(selector, SelectionKey.OP_READ, clientName);
-        sc.write(welcomeBuf);
-        welcomeBuf.rewind();
-        System.out.println("Подключился новый клиент " + clientName);
-    }
-
-    private void handleRead(SelectionKey key) throws IOException {
-        SocketChannel ch = (SocketChannel) key.channel();
-        StringBuilder sb = new StringBuilder();
-
-        buf.clear();
-        int read = 0;
-        while ((read = ch.read(buf)) > 0) {
-            buf.flip();
-            byte[] bytes = new byte[buf.limit()];
-            buf.get(bytes);
-            sb.append(new String(bytes));
-            buf.clear();
-        }
-        String msg;
-        if (read < 0) {
-            msg = key.attachment() + " покинул чат\n";
-            ch.close();
-        } else {
-            msg = key.attachment() + ": " + sb.toString();
-        }
-
-        System.out.println(msg);
-        broadcastMessage(msg);
-    }
-
-    private void broadcastMessage(String msg) throws IOException {
-        ByteBuffer msgBuf = ByteBuffer.wrap(msg.getBytes());
-        for (SelectionKey key : selector.keys()) {
-            if (key.isValid() && key.channel() instanceof SocketChannel) {
-                SocketChannel sch = (SocketChannel) key.channel();
-                sch.write(msgBuf);
-                msgBuf.rewind();
-            }
-        }
+    public static void main(String[] args) throws Exception {
+        new Server().run();
     }
 }

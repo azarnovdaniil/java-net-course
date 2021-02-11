@@ -1,46 +1,36 @@
 package ru.daniilazarnov;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
+import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
+import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+
+import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
 
-
     public static void main(String[] args) {
 
-        SocketChannel sc = null;
+        try (Socket socket = new Socket("localhost", 8189);
+             ObjectEncoderOutputStream encoder = new ObjectEncoderOutputStream(socket.getOutputStream());
+             ObjectDecoderInputStream decoder = new ObjectDecoderInputStream(socket.getInputStream(), 100 * 1024 * 1024)) {
 
-        try {
-            sc = SocketChannel.open();
-            sc.connect(new InetSocketAddress(8189));
+            var scanner = new Scanner(System.in);
 
-            ByteBuffer buf = ByteBuffer.allocate(1024);
-            Scanner console = new Scanner(System.in);
-
+            Message message;
             while (true) {
-                String str = console.nextLine();
-                buf.put(str.getBytes(StandardCharsets.UTF_8));
-                buf.flip();
-                while (buf.hasRemaining()) {
-                    sc.write(buf);
-                }
-                buf.clear();
+                message = new Message(scanner.nextLine());
+                encoder.writeObject(message);
+                encoder.flush();
+                if (message.getText().startsWith("/end")) break;
             }
-        } catch (IOException e) {
+
+            //сделать поток для приемки сообщения (либо настрооить Loop)
+            Message msgFromServer = (Message) decoder.readObject();
+            System.out.println("Answer from server: " + msgFromServer.getText());
+
+        } catch (Exception e) {
             e.printStackTrace();
-
-        } finally {
-            try {
-                sc.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-
     }
 
 }
