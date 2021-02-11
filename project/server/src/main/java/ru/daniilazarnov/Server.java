@@ -8,9 +8,8 @@ public class Server {
 
     public static void main(String[] args) {
         System.out.println("Server started!");
-        try (ServerSocket server = new ServerSocket(8000))
+        try (ServerSocket server = new ServerSocket(8888))
         {
-
             while (true)
                 try (
                         Socket socket = server.accept();
@@ -24,9 +23,17 @@ public class Server {
                                               socket.getInputStream()))
             ) {
                     String request = reader.readLine();
-                    System.out.println("Request: +" + request);
-                    String response = "Hello from server";
-                    System.out.println(response);
+                    System.out.println(request);
+                    String response = null;
+                    if (request.equals("Hello")) {
+                        response = "Hello from server";
+                    }
+                    else if (request.equals("Buy")) {
+                        response = "Good buy";
+                    }
+                    else {
+                        response = "unknown request";
+                    }
                     writer.write(response);
                     writer.newLine();
                     writer.flush();
