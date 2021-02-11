@@ -52,13 +52,6 @@ public class ClientHandler {
             } catch (IOException e) {
                 throw new RuntimeException("SWW", e);
             }
-
-
-//            if (Files.exists(Paths.get("./project/clients_vault/" + clientLogin + "/" + msgParts[1]))) {
-//                FileMessage fm = new FileMessage(Paths.get("./project/clients_vault/" + clientLogin + "/" + msgParts[1]), clientLogin);
-//                objectOut.writeObject(fm);
-//                objectOut.flush();
-//            }
         }
         else if (msg.startsWith("download")) {
             System.out.println("Download started...");
