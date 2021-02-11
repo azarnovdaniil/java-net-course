@@ -23,7 +23,7 @@ public class CommandUpload implements Command {
         return PART_SIZE;
     }
 
-    private static final int PART_SIZE = 10*1024 * 1024;
+    private static final int PART_SIZE = 10 * 1024 * 1024;
 
     @Override
     public void send(ChannelHandlerContext ctx, String content, byte signal) {
@@ -32,6 +32,7 @@ public class CommandUpload implements Command {
         if (bytes.length > 0) {
             try {
                 Path file = Path.of(content);
+                System.out.println("Выгружается файл "+file.toFile().getName());
 
                 long volume = Files.size(file);
                 long sendVolume = 0;
@@ -41,10 +42,10 @@ public class CommandUpload implements Command {
                 byte[] buffer = new byte[PART_SIZE - lenServiceData];
 
                 int partNum = countPar == 1 ? -1 : 1;
-                int i=0;
+                int i = 0;
                 FileInputStream fileInputStream = new FileInputStream(file.toFile());
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream, PART_SIZE - lenServiceData);
-                while (sendVolume<volume) {
+                while (sendVolume < volume) {
                     int readLength = bufferedInputStream.read(buffer);
                     ByteBuf bufOut = ByteBufAllocator.DEFAULT.buffer(PART_SIZE);
                     bufOut.writeByte(signal); // команда
@@ -55,12 +56,11 @@ public class CommandUpload implements Command {
 
                     ctx.writeAndFlush(bufOut);
                     sendVolume += readLength;
-                    i ++;
-                    System.out.println("отправлено байт: " + (readLength + lenServiceData));
-//                    bufOut.release();
+                    i++;
                 }
                 bufferedInputStream.close();
                 fileInputStream.close();
+                System.out.println("Выгрузка завершена");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -88,28 +88,16 @@ public class CommandUpload implements Command {
             fileLoaded = new FileLoaded(hash, fileName, fileSize, path);
             uploadedFiles.put(hash, fileLoaded);
         }
-
         try {
-//            Path path = Path.of(currentDir, fileLoaded.getName());
             int writeSize = buf.readableBytes();
             byte[] bufIn = new byte[writeSize];
-
-//            long startIndex = fileLoaded.getSizeCounter() - writeSize;
 
             buf.readBytes(bufIn);
             fileLoaded.addPart(partNum, writeSize, bufIn);
 
-            FileOutputStream fileOutputStream = new FileOutputStream(path.toFile(), true);
-            fileOutputStream.write(bufIn);
-            fileOutputStream.close();
-
-//            RandomAccessFile raFile = new RandomAccessFile(path.toFile(), "rw");
-//            raFile.seek(startIndex);
-//            raFile.write(bufIn);
-//            raFile.close();
-
-            if (fileLoaded.getSizeCounter()==fileSize) {
+            if (fileLoaded.getSizeCounter() == fileSize) {
                 System.out.println("Сохранен файл " + fileName);
+                uploadedFiles.remove(hash);
             }
         } catch (IOException e) {
             e.printStackTrace();

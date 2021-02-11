@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public enum Commands {
     UPLOAD("upload", (byte) 1, new CommandUpload()),  // [команда][имя файла на клиенте][путь назначения на сервере][размер файла][файл][][][]
     LS("ls", (byte) 2, new CommandLS()), // [команда]  // [ответ][список файлов ???]
-    //    DOWNLOAD("download", (byte) 2),
+//    DOWNLOAD("download", (byte) 3),
 //    RM("rm", (byte) 4), // [команда][длина имени файла][имя файла] // [ответ]
 //    MKDIR("mkdir", (byte) 5), // [команда][длина имени][имя директории]
 //    MV("mv", (byte) 6), // [команда][]

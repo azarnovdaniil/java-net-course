@@ -3,30 +3,22 @@ package client;
 import clientserver.Commands;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class ClientHandlerNetty extends SimpleChannelInboundHandler {
-    private int partSize;
-
-    public ClientHandlerNetty(int partSize) {
-        super();
-        this.partSize = partSize;
-    }
-
+public class ClientHandlerNetty extends ChannelInboundHandlerAdapter { //SimpleChannelInboundHandler
     @Override
     public void channelActive(ChannelHandlerContext channelHandlerContext) {
         consoleRead(channelHandlerContext);
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
-        System.out.println("Пришло сообщение");
-
-        ByteBuf buf = (ByteBuf) o;
+    public void channelRead(ChannelHandlerContext channelHandlerContext, Object msg) throws Exception {
+        ByteBuf buf = (ByteBuf) msg;
         if (buf.readableBytes() > 0) {
             byte firstByte = buf.readByte();
             Commands command = Commands.getCommand(firstByte);
