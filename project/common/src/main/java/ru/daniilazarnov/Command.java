@@ -1,24 +1,26 @@
 package ru.daniilazarnov;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 
 public enum Command implements Serializable {
-    LIST("/list", " - get a list of all available files and directories"),
-    DOWNLOAD("/download", " - download file from server"),
-    UPLOAD("/upload", " - send file to server"),
-    REMOVE("/remove", " - delete file on server"),
-    MOVE("/move", " - moves the file to another directory"),
-    CREATEDIR("/crdir", " - create directory on server"),
-    EXIT("/exit", " - disconnect from server");
+    LIST("/list", " - get a list of all available files and directories", null),
+    DOWNLOAD("/download", " - download file from server", null),
+    UPLOAD("/upload", " - send file to server", null),
+    REMOVE("/remove", " - delete file on server", null),
+    MOVE("/move", " - moves the file to another directory", null),
+    CREATEDIR("/crdir", " - create directory on server", null),
+    SERVER_ERROR(""," - command from server was incorrect", null),
+    EXIT("/exit", " - disconnect from server", null);
 
     private final String command;
-    private final String description;
-    private Object[] arg;
+    private String description;
+    private byte[] bytes;
 
-    Command(String command, String description, Object... arg) {
+    Command(String command, String description, byte[] bytes) {
         this.command = command;
         this.description = description;
-        this.arg = arg;
+        this.bytes = bytes;
     }
 
 
@@ -30,11 +32,15 @@ public enum Command implements Serializable {
         return description;
     }
 
-    public Object[] getArg() {
-        return arg;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setArg(Object[] arg) {
-        this.arg = arg;
+    public byte[] getBytes() {
+        return bytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
     }
 }

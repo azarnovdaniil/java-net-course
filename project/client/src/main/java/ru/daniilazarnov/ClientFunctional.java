@@ -15,7 +15,7 @@ public class ClientFunctional {
         System.out.print("Enter path to file: ");
         String[] arg = {scanner.nextLine()};
         Command download = Command.DOWNLOAD;
-        download.setArg(arg);
+        //download.setArg(arg);
         ctx.writeAndFlush(download);
     }
 

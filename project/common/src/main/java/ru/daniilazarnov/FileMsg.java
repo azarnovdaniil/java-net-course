@@ -1,4 +1,7 @@
 package ru.daniilazarnov;
 
-public class FileMsg {
+import java.io.Serializable;
+
+public class FileMsg implements Serializable {
+
 }

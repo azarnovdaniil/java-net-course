@@ -8,12 +8,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import ru.daniilazarnov.handlers.ServerHandler;
-
-import java.io.IOException;
-import java.nio.channels.SelectionKey;
 
 public class ServerApp {
     private FunctionalServer functionalServer;
@@ -33,7 +28,7 @@ public class ServerApp {
                                     new ServerHandler());
                         }
                     });
-            ChannelFuture channelFuture = boot.bind(8189).sync();
+            ChannelFuture channelFuture = boot.bind("localhost",8189).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
