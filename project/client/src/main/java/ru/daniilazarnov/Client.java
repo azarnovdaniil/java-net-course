@@ -8,6 +8,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.file.*;
 
 public class Client {
@@ -76,8 +77,7 @@ public class Client {
                         }
                     }
                 } catch (IOException | ClassNotFoundException e) {
-                    logger.error("SWW at main client thread", e);
-                    throw new RuntimeException("SWW", e);
+                    logger.info("Connection was closed by client");
                 }
             }).start();
 
@@ -88,6 +88,10 @@ public class Client {
             while (true) {
                 try {
                     String msg = reader.readLine();
+                    if (msg.startsWith("exit")) {
+                        socket.close();
+                        break;
+                    }
                     clientHandler.chooseCommand(msg);
                 } catch (IOException e) {
                     throw new RuntimeException("SWW", e);

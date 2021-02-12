@@ -93,7 +93,7 @@ public class ClientHandler {
             objectOut.writeObject(dbm);
             objectOut.flush();
         }
-        else System.out.println("Unknown command");
+        else logger.info("Unknown command");
     }
 
     public void setClientLogin(String clientLogin) {
