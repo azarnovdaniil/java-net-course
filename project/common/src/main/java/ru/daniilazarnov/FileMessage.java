@@ -7,9 +7,11 @@ import java.nio.file.Path;
 public class FileMessage extends AbstractMessage {
 
     private final String fileName;
-    private final  byte[] data;
+    private final byte[] data;
 
-    public String getFileName() {return fileName;}
+    public String getFileName() {
+        return fileName;
+    }
 
     public byte[] getData() {
         return data;
