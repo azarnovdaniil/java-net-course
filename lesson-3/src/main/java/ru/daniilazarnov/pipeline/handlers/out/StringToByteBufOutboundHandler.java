@@ -9,7 +9,6 @@ public class StringToByteBufOutboundHandler extends ChannelOutboundHandlerAdapte
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         System.out.println("string to byte");
-        String str = (String) msg;
         ctx.writeAndFlush(msg + "StringToByteBufHandler ");
     }
 }
