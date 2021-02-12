@@ -1,16 +1,30 @@
 package client;
 
 import clientserver.Commands;
+import clientserver.FileLoaded;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class ClientHandlerNetty extends ChannelInboundHandlerAdapter { //SimpleChannelInboundHandler
+public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
+    private String currentDir;
+    private Map<Integer, FileLoaded> uploadedFiles;
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) {
+        currentDir = "client";
+        uploadedFiles = new HashMap<>();
+        ctx.fireChannelRegistered();
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext channelHandlerContext) {
         consoleRead(channelHandlerContext);
@@ -22,7 +36,7 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter { //SimpleC
         if (buf.readableBytes() > 0) {
             byte firstByte = buf.readByte();
             Commands command = Commands.getCommand(firstByte);
-            command.receive(channelHandlerContext, buf);
+            command.receive(channelHandlerContext, buf, currentDir, uploadedFiles);
         }
     }
 
@@ -43,6 +57,7 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter { //SimpleC
                     String[] commandPart = readLine.split("\\s", 2);
                     Commands command = Commands.valueOf(commandPart[0].toUpperCase(Locale.ROOT));
                     String commandParam = commandPart.length > 1 ? commandPart[1] : commandPart[0];
+
 
                     command.sendToServer(ctx, commandParam);
                     try {

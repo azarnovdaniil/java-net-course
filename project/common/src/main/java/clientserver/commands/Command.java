@@ -9,7 +9,7 @@ import java.util.Map;
 public interface Command {
     void send(ChannelHandlerContext ctx, String content, byte signal);
 
-    void response(ChannelHandlerContext ctx, ByteBuf buf, String currentDir, Map<Integer, FileLoaded> uploadedFiles);
+    void response(ChannelHandlerContext ctx, ByteBuf buf, String currentDir, Map<Integer, FileLoaded> uploadedFiles, byte signal);
 
-    void receive(ChannelHandlerContext ctx, ByteBuf buf);
+    void receive(ChannelHandlerContext ctx, ByteBuf buf, String currentDir, Map<Integer, FileLoaded> uploadedFiles);
 }

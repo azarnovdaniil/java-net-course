@@ -14,12 +14,12 @@ public class CommandUnknown implements Command {
     }
 
     @Override
-    public void response(ChannelHandlerContext ctx, ByteBuf buf, String currentDir, Map<Integer, FileLoaded> uploadedFiles) {
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, String currentDir, Map<Integer, FileLoaded> uploadedFiles, byte signal) {
         // сервер ничего не делает
     }
 
     @Override
-    public void receive(ChannelHandlerContext ctx, ByteBuf buf) {
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf, String currentDir, Map<Integer, FileLoaded> uploadedFiles) {
         System.out.println("Неизвестная команда");
     }
 }
