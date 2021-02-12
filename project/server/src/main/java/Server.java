@@ -9,16 +9,11 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.List;
-
 
 public class Server {
-    private ServerSocket server;
-    private Socket socket;
+
     private final int PORT = 8189;
-    private List<ClientHandler> clients;
+
 
 
     public static void main(String[] args) throws Exception {
@@ -38,12 +33,12 @@ public class Server {
                             .addLast(
                             new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
                             new ObjectEncoder(),
-                            new ClientHandler()
+                            new ServerHandler()
                     );
                 }
             });
-//                    .childOption(ChannelOption.SO_KEEPALIVE, true);
-            ChannelFuture future = b.bind(8189).sync();
+
+            ChannelFuture future = b.bind(PORT).sync();
             future.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();

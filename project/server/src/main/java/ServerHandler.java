@@ -2,13 +2,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
+import ru.daniilazarnov.FileMessage;
+import ru.daniilazarnov.FileRequest;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 
-public class ClientHandler extends ChannelInboundHandlerAdapter {
+public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -24,18 +26,18 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(io.netty.channel.ChannelHandlerContext ctx, java.lang.Object msg) throws java.lang.Exception {
 
 
+        if (msg instanceof FileRequest) {
 
+            FileRequest fr = (FileRequest) msg;
 
+            if (Files.exists(Paths.get("project", "server", "src", "main", "java", "file/" + fr.getFilename()))) {
+                FileMessage fm = new FileMessage(Paths.get("project", "server", "src", "main", "java", "file/" + fr.getFilename()));
+                ctx.writeAndFlush(fm);
+                System.out.println(" скачал");
+            }
 
-//        String buf = (String) msg;
-
-
-        if (msg.equals("/all")) {
-            Path path = Paths.get("project", "server","src","main","java","file","1.txt");
-//            path.resolve("654654.txt");
-
-            ctx.writeAndFlush(Files.exists(path));
         }
+
 
     }
 
@@ -44,5 +46,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
         ctx.close();
+    }
+
+    public void search(io.netty.channel.ChannelHandlerContext ctx, java.lang.String files) {
+        Path path = Paths.get("project", "server", "src", "main", "java", "file", files);
+        ctx.writeAndFlush(Files.exists(path));
     }
 }
