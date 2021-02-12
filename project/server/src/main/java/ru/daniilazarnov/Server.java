@@ -24,9 +24,10 @@ public class Server {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline()
-                                    .addLast(new StringDecoder())
+//                                    .addLast(new StringDecoder())
                                     .addLast(new StringEncoder())
-                                    .addLast(new MainHandler());
+                                    .addLast(new ServerInboundHandler())
+                                    .addLast(new CommandHandler());
                         }
                     });
             ChannelFuture future = b.bind(PORT).sync();
