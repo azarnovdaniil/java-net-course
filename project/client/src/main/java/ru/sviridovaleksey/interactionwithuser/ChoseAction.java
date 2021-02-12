@@ -1,9 +1,7 @@
 package ru.sviridovaleksey.interactionwithuser;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import ru.sviridovaleksey.Command;
-import ru.sviridovaleksey.network.Connection;
 
 import java.util.Scanner;
 
@@ -86,6 +84,23 @@ public class ChoseAction {
                 if (message.equals("0")) { break;}
                 command = Command.message(userName, message);
                 channel.write(command);
+                break;
+            }
+
+            case  "8" : {
+                System.out.println("Выбрано действие открыть директорию, введите название директории");
+                String message = scanner.next();
+                if (message.equals("0")) { break;}
+                command = Command.getShowDir(userName, message);
+                channel.write(command);
+                break;
+            }
+
+            case "9" : {
+                System.out.println("Выбрано действие 'назад'");
+                command = Command.getBackDir(userName,"");
+                channel.write(command);
+                break;
             }
 
 

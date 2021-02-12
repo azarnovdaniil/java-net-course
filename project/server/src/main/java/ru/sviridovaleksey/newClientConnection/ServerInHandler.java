@@ -6,7 +6,6 @@ import ru.sviridovaleksey.Command;
 import ru.sviridovaleksey.TypeCommand;
 import ru.sviridovaleksey.clientHandler.DataBaseUser;
 import ru.sviridovaleksey.clientHandler.RegistrationProcess;
-import ru.sviridovaleksey.commands.MessageCommandData;
 import ru.sviridovaleksey.workwithfiles.WorkWithFile;
 
 public class ServerInHandler extends ChannelInboundHandlerAdapter {
@@ -28,11 +27,11 @@ public class ServerInHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         System.out.println("Подключился новый пользователь");
+        this.registrationProcess = new RegistrationProcess(dataBaseUser);
         ctx.write(Command.ping());
         this.messageForClient = new MessageForClient(ctx);
         this.workWithFile = new WorkWithFile(messageForClient);
-        this.whatDo = new WhatDo(workWithFile);
-        this.registrationProcess = new RegistrationProcess(dataBaseUser, workWithFile);
+        this.whatDo = new WhatDo(workWithFile, messageForClient);
     }
 
 
@@ -49,8 +48,9 @@ public class ServerInHandler extends ChannelInboundHandlerAdapter {
                       break;
                   } else {
                       login = isLogin;
-                      isChanelReg = true;
                       ctx.write(Command.authOkCommand(login));
+                      whatDo.firstStep(login);
+                      isChanelReg = true;
                       System.out.println("Удачная авторизация" + ctx);
 
                   }

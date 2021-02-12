@@ -9,7 +9,8 @@ public class HelloMessage {
     public void helloMessage() {
         System.out.println("Выбирете действие:");
         System.out.println("0 - отменить действие; 1 - создать директорию; 2 - удалить директорию; 3 - создать файл; 4 - удалить файл");
-        System.out.println("5 - копировать файл; 6 - Вставить файл; 7 - отправить сообщение на сервер");
+        System.out.println("5 - копировать файл; 6 - Вставить файл; 7 - отправить сообщение на сервер; 8 - открыть директорию;" +
+                " 9 - назад");
     }
 
     public void  needRegMessage () {

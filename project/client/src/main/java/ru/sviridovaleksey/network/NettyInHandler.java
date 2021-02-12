@@ -41,6 +41,7 @@ public class NettyInHandler extends ChannelInboundHandlerAdapter {
                 autoK =true;
                 AuthOkCommandData data = (AuthOkCommandData) ((Command) msg).getData();
                 this.userName = data.getUsername();
+                ctx.write(Command.getShowDir(userName,""));
                 Thread thread = new Thread(() -> {
                     interaction.startInteraction(helloMessage, userName);
                 });

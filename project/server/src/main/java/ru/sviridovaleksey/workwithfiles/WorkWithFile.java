@@ -9,50 +9,48 @@ import java.nio.file.Path;
 
 public class WorkWithFile {
 
-    private final String defaultAddress = "project/server/Storage/";
     private MessageForClient messageForClient;
 
     public WorkWithFile(MessageForClient messageForClient){
         this.messageForClient = messageForClient;
-        createDefaultDirectory();
-    }
-
-
-    public void createNewFile (String userName, String fileName, String cellDirectory) {
-        String fullAddress = defaultAddress + userName + "/" + fileName;
-
-        if (Files.exists(Path.of(fullAddress))) {
-            messageForClient.errCreateFile("Файл уже существует");
-        } else {
-            processCreate(fullAddress, false, userName);
-        }
 
     }
 
-    public void createNewDirectory (String userName, String directoryName) {
-        String fullAddress = defaultAddress + userName + "/" + directoryName;
-        if (Files.isDirectory(Path.of(defaultAddress+userName+"/"+directoryName))) {
-            messageForClient.errCreateFile("Такая папка уже существует");
-        } else {
-            processCreate(fullAddress, true, userName);
-        }
-    }
-
-    public void createFirsDirectory (String userName) {
-        String fullAddress = defaultAddress + userName;
-        if (Files.isDirectory(Path.of(defaultAddress+userName))) {
-            System.out.println("Папка пользователя уже существует");
-        } else {
-            processCreate(fullAddress, true, userName);
-        }
-    }
-
-    private void createDefaultDirectory(){
+    public void createDefaultDirectory(String defaultAddress){
         if (Files.isDirectory(Path.of(defaultAddress))) {
         } else {
             processCreate(defaultAddress, true, "");
         }
     }
+
+
+    public void createNewFile (String userName, String address) {
+
+        if (Files.exists(Path.of(address))) {
+            messageForClient.err("Файл уже существует");
+        } else {
+            processCreate(address, false, userName);
+        }
+
+    }
+
+    public void createNewDirectory (String userName, String address) {
+
+        if (Files.isDirectory(Path.of(address))) {
+            messageForClient.err("Такая папка уже существует");
+        } else {
+            processCreate(address, true, userName);
+        }
+    }
+
+    public void createFirsDirectory (String defaultAddress) {
+        if (Files.isDirectory(Path.of(defaultAddress))) {
+            System.out.println("Папка пользователя уже существует");
+        } else {
+            processCreate(defaultAddress, true, "");
+        }
+    }
+
 
     private void processCreate(String fullAddress, Boolean isCreateDirectoryOrFile, String userName) {
         try {
@@ -68,27 +66,27 @@ public class WorkWithFile {
                         }
                 }
         } catch (IOException e) {
-            messageForClient.errCreateFile(e.getMessage() + "Не удалось создать " + fullAddress);
+            messageForClient.err(e.getMessage() + "Не удалось создать " + fullAddress);
         }
     }
 
-    public void deleteDirectory(String userName, String nameDirectory) {
-        String fullAddress = (defaultAddress + userName + "/" + nameDirectory);
-        File file = new File(defaultAddress + userName + "/" + nameDirectory);
+    public void deleteDirectory(String userName, String address) {
 
-        if (!Files.isDirectory(Path.of(fullAddress))) {
-            messageForClient.errCreateFile("Такой папки не существует");
+        File file = new File(address);
+
+        if (!Files.isDirectory(Path.of(address))) {
+            messageForClient.err("Такой папки не существует");
         } else {
             recursiveDeleteDirectory(file);
         }
     }
 
-    public void deleteFile(String userName, String nameDirectory) {
-        String fullAddress = (defaultAddress + userName + "/" + nameDirectory);
-        File file = new File(defaultAddress + userName + "/" + nameDirectory);
+    public void deleteFile(String userName, String address) {
 
-        if (!Files.exists(Path.of(fullAddress))) {
-            messageForClient.errCreateFile("Такого файла не существует");
+        File file = new File(address);
+
+        if (!Files.exists(Path.of(address))) {
+            messageForClient.err("Такого файла не существует");
         } else {
             recursiveDeleteDirectory(file);
         }
@@ -112,6 +110,7 @@ public class WorkWithFile {
         messageForClient.successfulAction("Удаленный файл или папка: " + file.getName());
         System.out.println("Удаленный файл или папка: " + file.getAbsolutePath());
     }
+
 
 }
 

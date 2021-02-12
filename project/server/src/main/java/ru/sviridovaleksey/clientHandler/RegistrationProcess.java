@@ -9,9 +9,8 @@ public class RegistrationProcess {
     private DataBaseUser dataBaseUser;
     private WorkWithFile workWithFile;
 
-    public RegistrationProcess (DataBaseUser dataBaseUser, WorkWithFile workWithFile) {
+    public RegistrationProcess (DataBaseUser dataBaseUser) {
         this.dataBaseUser = dataBaseUser;
-        this.workWithFile = workWithFile;
 
     }
 
@@ -24,7 +23,6 @@ public class RegistrationProcess {
         if (dataBaseUser.getUserNameByLogin(login, password) == null) {
             return null;
         } else {
-            workWithFile.createFirsDirectory(login);
             return login;
         }
     }

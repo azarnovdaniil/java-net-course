@@ -112,5 +112,26 @@ public class Command implements Serializable {
         return command;
     }
 
+    public static Command showAllInDirectory (String userName, String message) {
+        Command command = new Command();
+        command.type = TypeCommand.SHOW_ALL_IN_DIR;
+        command.data = new ShowAllInDirectory(userName, message);
+        return command;
+    }
+
+    public static Command getShowDir (String userName, String message) {
+        Command command = new Command();
+        command.type = TypeCommand.GET_SHOW_DIR;
+        command.data = new GetShowDir(userName, message);
+        return command;
+    }
+
+    public static Command getBackDir (String userName, String message) {
+        Command command = new Command();
+        command.type = TypeCommand.GET_BACK_DIR;
+        command.data = new GetBackDir(userName, message);
+        return command;
+    }
+
 }
 

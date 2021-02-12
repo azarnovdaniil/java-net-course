@@ -14,7 +14,10 @@ public enum TypeCommand {
     PATE_FILE,
     PING,
     ERR_ACTION_MESSAGE,
-    SUCCESS_ACTION
+    SUCCESS_ACTION,
+    SHOW_ALL_IN_DIR,
+    GET_SHOW_DIR,
+    GET_BACK_DIR
 
 
 }

@@ -53,6 +53,13 @@ public class WhatDoClient {
                 break;
             }
 
+            case SHOW_ALL_IN_DIR: {
+                ShowAllInDirectory data = (ShowAllInDirectory) command.getData();
+                String message = data.getMessage();
+                System.out.println(message);
+                break;
+            }
+
 
         }
 
