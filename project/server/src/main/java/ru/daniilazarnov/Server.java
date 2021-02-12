@@ -11,16 +11,22 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 public class Server {
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
 
-    private int port;
+    private static int port;
 
     public Server(int port) {
         this.port = port;
     }
 
     public static void main(String[] args) throws Exception {
+        PropertyConfigurator.configure("./project/server/log4j.properties");
+        logger.debug("Client starting at localhost " + port);
         new Server(8888).run();
     }
 

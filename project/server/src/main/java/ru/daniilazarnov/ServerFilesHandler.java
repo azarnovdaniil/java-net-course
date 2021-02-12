@@ -2,22 +2,21 @@ package ru.daniilazarnov;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
 
 public class ServerFilesHandler extends ChannelInboundHandlerAdapter {
 
-    /**
-     * Хэндлер для чтения файлов, которые были присланы клиентом
-     */
+    private static final Logger logger = Logger.getLogger(ServerFilesHandler.class.getName());
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FileMessage) {
             FileMessage receivedFile = (FileMessage) msg;
 
-            System.out.println(receivedFile.getPartNumber() + " / " + receivedFile.getPartsCount());
+            logger.debug("File message from client was received: " + receivedFile.getPartNumber() + " / " + receivedFile.getPartsCount());
 
             boolean append = true;
             if (receivedFile.getPartNumber() == 1) {
@@ -36,6 +35,7 @@ public class ServerFilesHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error("SWW at files handler", cause);
         super.exceptionCaught(ctx, cause);
     }
 }

@@ -1,6 +1,7 @@
 package ru.daniilazarnov;
 
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class ClientHandler {
+    private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
 
     private ObjectEncoderOutputStream objectOut;
     private String clientLogin;
@@ -22,7 +24,7 @@ public class ClientHandler {
         String[] msgParts = msg.split("\\s");
 
         if (msg.startsWith("upload")) {
-            System.out.println("Upload started...");
+            logger.info("Upload started...");
 
             try {
                 if (Files.exists(Paths.get("./project/clients_vault/" + clientLogin + "/" + msgParts[1]))) {
@@ -36,6 +38,7 @@ public class ClientHandler {
                     FileMessage fm = new FileMessage(file.getName(), -1, partsCount, new byte[bufSize], clientLogin);
                     FileInputStream in = new FileInputStream(file);
 
+                    logger.debug("Uploading started");
                     for (int i = 0; i < partsCount; i++) {
                         int readedBytes = in.read(fm.getData());
                         fm.setPartNumber(i + 1);
@@ -44,47 +47,48 @@ public class ClientHandler {
                         }
                         objectOut.writeObject(fm);
                         objectOut.flush();
-                        System.out.println("Отправлена часть: " + (i + 1));
-                        System.out.println(fm.getPartNumber());
+                        logger.debug("Part: " + (i + 1) + " was sent");
                     }
                     in.close();
+                    logger.debug("File was fully uploaded");
                 }
             } catch (IOException e) {
+                logger.error("SWW while uploading file");
                 throw new RuntimeException("SWW", e);
             }
         }
         else if (msg.startsWith("download")) {
-            System.out.println("Download started...");
+            logger.info("Download started...");
             RequestMessage rm = new RequestMessage(msgParts[0], msgParts[1], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
         }
         else if (msg.startsWith("list")) {
-            System.out.println("Your files: ");
+            logger.info("Waiting the list from server");
             RequestMessage rm = new RequestMessage(msgParts[0], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
         }
         else if (msg.startsWith("remove")) {
-            System.out.println("F");
+            logger.info("F, file was removed");
             RequestMessage rm = new RequestMessage(msgParts[0], msgParts[1], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
         }
         else if (msg.startsWith("rename")) {
-            System.out.println("Name was changed");
+            logger.info("Name was changed");
             RequestMessage rm = new RequestMessage(msgParts[0], msgParts[1], msgParts[2], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
         }
         else if (msg.startsWith("auth")) {
-            System.out.println("Waiting for auth server");
+            logger.info("Waiting for auth server");
             DBMessage dbm = new DBMessage(msgParts[0], msgParts[1], msgParts[2]);
             objectOut.writeObject(dbm);
             objectOut.flush();
         }
         else if (msg.startsWith("reg")) {
-            System.out.println("Stand by for registration");
+            logger.info("Stand by for registration");
             DBMessage dbm = new DBMessage(msgParts[0], msgParts[1], msgParts[2]);
             objectOut.writeObject(dbm);
             objectOut.flush();
