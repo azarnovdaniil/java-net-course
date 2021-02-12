@@ -14,12 +14,12 @@ public class ServerOutHandler extends ChannelInboundHandlerAdapter {
             System.out.println("Client connected...");
             String s = "Добро пожаловать в облачное хранилище!" + System.lineSeparator()
                     + "Вам доступны следующие команды:" + System.lineSeparator()
-                    + "*send - отправить сообщение в хранилище" + System.lineSeparator()
-                    + "*dl  - получить данные из хранилища" + System.lineSeparator()
+                    + "*send - отправить файл в хранилище" + System.lineSeparator()
+                    + "*dl  - получить файл из хранилища" + System.lineSeparator()
                     + "*exit - выход";
             ctx.writeAndFlush(s);
             while (true){
-                ctx.writeAndFlush(scanner.next());
+                ctx.writeAndFlush(scanner.nextLine());
             }
         });
         t1.start();
