@@ -93,10 +93,26 @@ public class ClientHandler {
             objectOut.writeObject(dbm);
             objectOut.flush();
         }
+        else if (msg.startsWith("help")) {
+            helpInfo();
+        }
         else logger.info("Unknown command");
     }
 
     public void setClientLogin(String clientLogin) {
         this.clientLogin = clientLogin;
+    }
+
+    private static void helpInfo() {
+        logger.info("Greetings, client");
+        logger.info("Here is list of actual commands with samples: ");
+        logger.info("auth - authorize before using your storage (auth user1 1)");
+        logger.info("reg - if you didn't use our net storage before, create your account now! (reg user10 10)");
+        logger.info("upload - uploads files from your personal directory to server (upload 1.txt)");
+        logger.info("download - downloads file from remote server storage to your directory (download 2.png)");
+        logger.info("list - shows you files at your remote storage at server (list)");
+        logger.info("remove - delete file from server (remove ai.zip)");
+        logger.info("rename - change name of your file at storage (rename ai.zip qwerty.zip)");
+        logger.info("exit - closes application");
     }
 }

@@ -77,14 +77,14 @@ public class Client {
                         }
                     }
                 } catch (IOException | ClassNotFoundException e) {
-                    logger.info("Connection was closed by client");
+                    logger.info("Connection was closed");
                 }
             }).start();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
             logger.info("You can write commands now, connection was successful");
-            logger.info("Don't forget authorize first");
+            logger.info("Don't forget authorize first, or use help for see available commands");
             while (true) {
                 try {
                     String msg = reader.readLine();
