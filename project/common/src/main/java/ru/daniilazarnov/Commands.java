@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 public class Commands {
 
     public void listFiles(ChannelHandlerContext ctx) {
-        File dir = new File("D://testDir");
+        File dir = new File("D:\\testDir");
         if(dir.isDirectory()){
             for(File item : dir.listFiles()){
                 if(item.isDirectory()){
@@ -27,7 +27,19 @@ public class Commands {
         String fileName = msg.split("\\s")[1];
         String fileText = msg.split("\\s", 3)[2];
         byte[] arr = fileText.getBytes();
-        Files.write(Paths.get("D:/testDir/" + fileName), arr);
+        Files.write(Paths.get("D:\\testDir\\" + fileName), arr);
         ctx.writeAndFlush("File created: " + fileName);
+    }
+
+    public void removeFile(ChannelHandlerContext ctx, String msg){
+        String fileName = msg.split("\\s")[1];
+        File file = new File("D:\\TestDir\\" + fileName);
+        boolean deleted = file.delete();
+        if(deleted) {
+            ctx.writeAndFlush("File deleted: " + fileName);
+        } else {
+            ctx.writeAndFlush("Field to delete the file: " + fileName);
+        }
+
     }
 }

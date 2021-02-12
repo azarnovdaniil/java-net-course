@@ -19,6 +19,9 @@ public class CommandHandler extends ChannelInboundHandlerAdapter {
         } else if (str.startsWith("upload ")){
             System.out.println("command: " + str);
             command.uploadFile(ctx, str);  // /upload 123.txt hello world!
+        } else if(str.startsWith("rm ")){
+            System.out.println("command: " + str);
+            command.removeFile(ctx, str);
         }
     }
 
