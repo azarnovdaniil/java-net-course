@@ -9,8 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ClientHandler {
@@ -32,21 +30,6 @@ public class ClientHandler {
             out = new DataOutputStream(socket.getOutputStream());
             isAuth = new AtomicBoolean();
             isAuth.set(false);
-
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if(!isAuth.get()){
-                        try {
-                            sendMessage("-exit");
-                            socket.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }, 120000);
 
             doListen();
         } catch (IOException e) {
