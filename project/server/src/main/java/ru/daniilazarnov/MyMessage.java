@@ -6,13 +6,15 @@ public class MyMessage implements Serializable {
 
     private static final long serialVersionUID = 5193392663743561680L;
 
-    private final String text;
+    private final String message;
 
     public MyMessage(String text) {
-        this.text = text;
+
+        this.message = text;
     }
 
     public String getText() {
-        return text;
+
+        return message;
     }
 }

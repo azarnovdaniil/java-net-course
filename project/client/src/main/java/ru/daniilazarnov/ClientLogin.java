@@ -1,15 +1,24 @@
 package ru.daniilazarnov;
 
 public class ClientLogin {
-    static String clientLogin;
+
+    private static String login;
+    private static String password;
 
 
-    public static void setClientLogin(String login){
+    public void setClientLogin(String login, String password){
 
-        clientLogin = login;
+        this.login = login;
+        this.password = password;
+
     }
 
-    public static String getClientLogin(){
-        return clientLogin;
+    public static String getLogin(){
+
+        return login;
+    }
+
+    public static String getPassword(){
+        return password;
     }
 }

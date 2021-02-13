@@ -1,49 +1,113 @@
 package ru.daniilazarnov;
 
-import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
-import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+import javafx.application.Platform;
+import ru.daniilazarnov.CommandsType.ErrorCommandData;
 
-import java.io.IOException;
+
+import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class ClientServerConnection {
 
-    private static Socket socket;
-    private static ObjectEncoderOutputStream outStream;
-    private static ObjectDecoderInputStream incStream;
+    private Socket socket;
+    private ObjectInputStream dataInputStream;
+    private ObjectOutputStream dataOutputStream;
 
 
-    public static void startConnect(){
+    public ObjectOutputStream getDataOutputStream() {
+
+        return dataOutputStream;
+    }
+
+    public ObjectInputStream getDataInputStream() {
+
+        return dataInputStream;
+    }
+
+
+
+    public boolean startConnect(){
         try{
             Socket socket = new Socket("localhost", 8189);
-            outStream = new ObjectEncoderOutputStream(socket.getOutputStream());
-            incStream = new ObjectDecoderInputStream(socket.getInputStream(), 20971520);
+            dataInputStream = new ObjectInputStream(socket.getInputStream());
+            dataOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            return true;
 
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
         } catch (IOException e) {
+            System.out.println("Connection lost...");
             e.printStackTrace();
+            return false;
         }
     }
 
-    public static void stopConnect(){
+    public void OptionPanel(OptionsController optionsController){
+
+        Thread thread = new Thread( () -> {
+            try {
+                while (true) {
+
+                    Commands commands = executeCommands();
+                    if (commands == null) {
+                        optionsController.showError("Server Error", "Incorrect command");
+                        continue;
+                    }
+                    switch (commands.getType()) {
+                        case ERROR: {
+                            ErrorCommandData data = (ErrorCommandData) commands.getData();
+                            String errorMessage = data.getErrorMessage();
+                            Platform.runLater(() -> {
+                                optionsController.showError("Server error", errorMessage);
+
+                            });
+                            break;
+                        }
+                        case DELETE_FILES:
+
+                    default:
+                        Platform.runLater(() -> {
+                            optionsController.showError("Unknown command from server!", commands.getType().toString());
+                        });
+                }
+
+            }
+                }catch (IOException e) {
+                        e.printStackTrace();
+                        System.out.println("Connection lost!");
+                    }
+                });
+                thread.setDaemon(true);
+                thread.start();
+            }
+
+
+
+    private Commands executeCommands() throws IOException{
+
         try{
-            outStream.close();
-        } catch (IOException e) {
+            return (Commands) dataInputStream.readObject();
+        } catch (ClassNotFoundException e){
+            String errorMessage = "Incorrect data!";
+            System.err.println(errorMessage);
             e.printStackTrace();
+            sendMessage(Commands.errorCommand(errorMessage));
+            return null;
         }
-        try {
-            incStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            socket.close();
+    }
+
+    private void sendMessage(Commands commands) throws IOException{
+
+        dataOutputStream.writeObject(commands);
+    }
+
+    public void stopConnect(){
+        try{
+           socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 
 
 

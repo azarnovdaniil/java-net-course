@@ -1,5 +1,8 @@
 package ru.daniilazarnov.auth;
 
+import javafx.scene.web.HTMLEditorSkin;
+import ru.daniilazarnov.CommandsType.AuthCommandData;
+
 import java.util.Objects;
 
 public class User {
@@ -15,17 +18,20 @@ public class User {
     }
 
     public String getLogin() {
+
         return login;
     }
 
     public String getPassword() {
+
         return password;
     }
 
 
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(login, password);
-    }
+
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(login, password);
+//    }
 }

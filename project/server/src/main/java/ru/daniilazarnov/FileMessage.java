@@ -13,10 +13,12 @@ public class FileMessage implements Serializable {
     }
 
     public String getFileName() {
+
         return fileName;
     }
 
     public byte[] getContent() {
+
         return content;
     }
 }

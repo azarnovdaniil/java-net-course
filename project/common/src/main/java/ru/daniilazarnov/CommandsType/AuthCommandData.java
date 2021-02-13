@@ -13,10 +13,12 @@ public class AuthCommandData implements Serializable {
     }
 
     public String getLogin() {
+
         return login;
     }
 
     public String getPassword() {
+
         return password;
     }
 }

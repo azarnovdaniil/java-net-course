@@ -10,10 +10,12 @@ public class Commands implements Serializable {
     private Object data;
 
     public CommandsList getType() {
+
         return type;
     }
 
     public Object getData() {
+
         return data;
     }
 
@@ -47,40 +49,48 @@ public class Commands implements Serializable {
     }
 
 
-//    public static Commands showFilesListCommand(List<String> users) {
-//        Commands command = new Commands();
-//        command.type = CommandsList.SHOW_FILES_LIST;
-//        command.data = new ShowFilesListCommandData(users);
-//        return command;
-//    }
-//
-//    public static Commands uploadFilesCommand(List<String> users) {
-//        Commands command = new Commands();
-//        command.type = CommandsList.UPLOAD;
-//        command.data = new UploadFilesCommandData(users);
-//        return command;
-//    }
-//
-//    public static Commands downloadFilesCommand(List<String> users) {
-//        Commands command = new Commands();
-//        command.type = CommandsList.DOWNLOAD;
-//        command.data = new DownloadFilesCommandData(users);
-//        return command;
-//    }
-//
-//    public static Commands renameFilesCommand(List<String> users) {
-//        Commands command = new Commands();
-//        command.type = CommandsList.RENAME_FILES;
-//        command.data = new RenameFilesCommandData(users);
-//        return command;
-//    }
-//
-//        public static Commands deleteFilesCommand(List<String> users) {
-//        Commands command = new Commands();
-//        command.type = CommandsList.DELETE_FILES;
-//        command.data = new DeleteFilesCommandData(users);
-//        return command;
-//    }
+    public static Commands uploadFilesCommand(String fileName) {
+        Commands command = new Commands();
+        command.type = CommandsList.SHOW_FILES_LIST;
+        command.data = new UploadFilesCommand(fileName);
+        return command;
+    }
+
+
+    public static Commands showFilesListCommand(List<String> files) {
+        Commands command = new Commands();
+        command.type = CommandsList.UPLOAD;
+        command.data = new ShowFilesListCommandData(files);
+        return command;
+    }
+
+    public static Commands downloadFilesCommand(List<String> fileName) {
+        Commands command = new Commands();
+        command.type = CommandsList.DOWNLOAD;
+        command.data = new DownloadFilesCommandData(fileName);
+        return command;
+    }
+
+    public static Commands renameFilesCommand(String oldName, String newName) {
+        Commands command = new Commands();
+        command.type = CommandsList.RENAME_FILES;
+        command.data = new RenameFilesCommandData(oldName, newName);
+        return command;
+    }
+
+        public static Commands deleteFilesCommand(String fileName) {
+        Commands command = new Commands();
+        command.type = CommandsList.DELETE_FILES;
+        command.data = new DeleteFilesCommandData(fileName);
+        return command;
+    }
+
+    public static Commands errorCommand(String errorMessage) {
+        Commands command = new Commands();
+        command.type = CommandsList.ERROR;
+        command.data = new ErrorCommandData(errorMessage);
+        return command;
+    }
 
     public static Commands endCommand() {
         Commands command = new Commands();

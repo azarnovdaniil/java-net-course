@@ -12,5 +12,6 @@ public enum CommandsList {
     SHOW_FILES_LIST,
     RENAME_FILES,
     DELETE_FILES,
+    ERROR,
 
 }
