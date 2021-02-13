@@ -63,23 +63,4 @@ public class FileServer implements Server {
         return authenticationService;
     }
 
-    /**
-     * Отправляет сообщение только слиенту с именем clientName
-     * @param message Сообщение
-     * @param clientName Клиент которому адресованно сообщение
-     * @return false - если пользователя нет , true - если отправленно
-     */
-    @Override
-    public boolean whisper(String message, String clientName) {
-        if (!isLoggedIn(clientName)){
-            return false;
-        }
-        for (ClientHandler client : clients) {
-            if (client.getName().equals(clientName)){
-                client.sendMessage(message);
-                return true;
-            }
-        }
-        return false;
-    }
 }

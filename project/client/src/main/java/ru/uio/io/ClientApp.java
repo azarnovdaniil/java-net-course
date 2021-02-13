@@ -26,6 +26,7 @@ public class ClientApp {
             handlerMap.put(LIST, new ListHandler(in, out));
             handlerMap.put(DOWNLOAD, new DownloadHandler(in, out));
             handlerMap.put(HELP, new HelpHandler(in, out));
+            BaseHandler baseHandler;
             isClose.set(false);
 
             Scanner scanner = new Scanner(System.in);
@@ -40,26 +41,23 @@ public class ClientApp {
                     System.out.println("Enter command:");
                     String command = scanner.nextLine();
                     if (command.startsWith("-help")){
-                        BaseHandler baseHandler = handlerMap.get(HELP);
-                        baseHandler.workWithMessage();
+                        execute(handlerMap.get(HELP));
                         continue;
                     }
 
                     if (command.startsWith("-auth")){
-                        BaseHandler baseHandler = handlerMap.get(AUTH);
+                        baseHandler = handlerMap.get(AUTH);
                         baseHandler.setCommand(command);
-                        baseHandler.workWithMessage();
+                        execute(baseHandler);
                         continue;
                     }
                     if (command.startsWith("-u") || command.startsWith("-upload")){
                         System.out.println("upload");
-                        BaseHandler baseHandler = handlerMap.get(UPLOAD);
-                        baseHandler.workWithMessage();
+                        execute(handlerMap.get(UPLOAD));
                         continue;
                     }
                     if (command.startsWith("-l") || command.startsWith("-list")){
-                        BaseHandler baseHandler = handlerMap.get(LIST);
-                        baseHandler.workWithMessage();
+                        execute(handlerMap.get(LIST));
                         continue;
                     }
                     if (command.startsWith("-d") || command.startsWith("-download")){
@@ -68,9 +66,9 @@ public class ClientApp {
                             System.out.println("Please write number file. Like: -d 1");
                             continue;
                         }
-                        BaseHandler baseHandler = handlerMap.get(DOWNLOAD);
+                        baseHandler = handlerMap.get(DOWNLOAD);
                         baseHandler.setCommand(str[1]);
-                        baseHandler.workWithMessage();
+                        execute(baseHandler);
                         continue;
                     }
                     if (command.startsWith("-exit")){
@@ -86,5 +84,9 @@ public class ClientApp {
         } catch (IOException e) {
             throw new RuntimeException("SWW10", e);
         }
+    }
+
+    private static void execute(BaseHandler baseHandler){
+        baseHandler.workWithMessage();
     }
 }

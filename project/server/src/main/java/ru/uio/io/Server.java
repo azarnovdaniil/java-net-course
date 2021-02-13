@@ -9,5 +9,4 @@ public interface Server {
     void subscribe(ClientHandler client);
     void unsubscribe(ClientHandler client);
     AuthenticationService getAuthenticationService();
-    boolean whisper(String message, String toClientName);
 }
