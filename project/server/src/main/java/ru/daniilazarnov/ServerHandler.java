@@ -33,7 +33,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         ByteBuf buf = ((ByteBuf) msg);
 
 
-//        if (currentState == State.IDLE) {
+        if (ReceivingFiles.getCurrentState() == State.IDLE) {
             byte readed = buf.readByte();
             Command command = Command.valueOf(readed);
 
@@ -41,11 +41,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 case DOWNLOAD:
                     uploadFileToServer(buf); //2
                     break;
-
                 case UPLOAD:
                     downloadFileFromServer(ctx, buf);  //1
                     break;
-
                 case LS:
                     LSHandle(ctx, buf);
                     break;
@@ -55,6 +53,16 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
             }
         }
+
+        if (ReceivingFiles.getCurrentState() == State.FILE) {
+            uploadFileToServer(msg);
+        }
+
+    }
+
+
+
+
 //    }
 
     private void LSHandle(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
@@ -104,22 +112,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     /**
      * Загружает файл на сервер
      *
-     * @param buf буфер
      */
-    private void uploadFileToServer(ByteBuf buf) throws IOException {
-//        invalidControlByte(buf, "STATE: Start file receiving");
-        ReceivingFiles.fileReceive(buf, user);
-        buf.resetReaderIndex();
-        buf.resetWriterIndex();
-        System.out.println("buf.readableBytes(): " + buf.readableBytes());
-//        buf.clear();
+    private void uploadFileToServer(Object msg) throws IOException {
+        ReceivingFiles.fileReceive(msg, user);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         System.err.println(cause.getMessage());
-//        cause.printStackTrace();
         log.error(cause);
-//        ctx.close();
     }
 }

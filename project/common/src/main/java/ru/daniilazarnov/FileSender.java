@@ -21,8 +21,14 @@ public class FileSender {
     }
 
     public static boolean isLoadingStatus() {
+        try {
+            Thread.sleep(1); //без задержки не проходит проверку
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return loadingStatus;
     }
+
 
 
     /**
@@ -39,42 +45,29 @@ public class FileSender {
      */
     public static void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
         FileRegion region = new DefaultFileRegion(new FileInputStream(path.toFile()).getChannel(), 0, Files.size(path));
-        long totalTransferred = 0;
-
 
         ByteBuf buf;
-        buf = ByteBufAllocator.DEFAULT.directBuffer(1);  //[] - 1b управляющий байт
+        buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         buf.writeByte((byte) 2);
         channel.write(buf);
-        totalTransferred += 1;
-        System.out.printf("Control byte transmitted: %d; total: %d%n;", 1, totalTransferred);
 
-        buf = ByteBufAllocator.DEFAULT.directBuffer(4); //[][][][] - 1 int длинна имени файла
+        buf = ByteBufAllocator.DEFAULT.directBuffer(4);
         buf.writeInt(path.getFileName().toString().length());
         channel.write(buf);
-        totalTransferred += 4;
-        System.out.printf("File length passed: %d; total: %d%n;", 4, totalTransferred);
 
-        byte[] filenameBytes = path.getFileName().toString().getBytes();  //[] - byte[?] имя файла
+        byte[] filenameBytes = path.getFileName().toString().getBytes();
         buf = ByteBufAllocator.DEFAULT.directBuffer(filenameBytes.length);
         buf.writeBytes(filenameBytes);
         channel.write(buf);
-        totalTransferred += filenameBytes.length;
-        System.out.printf("File name passed: %d; total: %d%n;", filenameBytes.length, totalTransferred);
 
-        buf = ByteBufAllocator.DEFAULT.directBuffer(8); // [][][][][][][][] long размер файла в байтах
+        buf = ByteBufAllocator.DEFAULT.directBuffer(8);
         buf.writeLong(Files.size(path));
         channel.write(buf);
-        totalTransferred += 8;
-        System.out.printf("File size transferred: %d; total: %d%n;", 8, totalTransferred);
 
-
-        ChannelFuture transferOperationFuture = channel.writeAndFlush(region); //[] data[] - содержимое файла
+        ChannelFuture transferOperationFuture = channel.writeAndFlush(region);
         if (finishListener != null) {
             transferOperationFuture.addListener(finishListener);
         }
-        totalTransferred += Files.size(path);
-        System.out.printf("File transfer complete: %d; total: %d%n;", Files.size(path), totalTransferred);
-        buf.clear();
+
     }
 }
