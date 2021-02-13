@@ -1,7 +1,6 @@
-import io.netty.buffer.ByteBuf;
+
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.ReferenceCountUtil;
 import ru.daniilazarnov.FileMessage;
 import ru.daniilazarnov.FileRequest;
 
@@ -25,7 +24,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(io.netty.channel.ChannelHandlerContext ctx, java.lang.Object msg) throws java.lang.Exception {
 
-
         if (msg instanceof FileRequest) {
 
             FileRequest fr = (FileRequest) msg;
@@ -33,7 +31,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             if (Files.exists(Paths.get("project", "server", "src", "main", "java", "file/" + fr.getFilename()))) {
                 FileMessage fm = new FileMessage(Paths.get("project", "server", "src", "main", "java", "file/" + fr.getFilename()));
                 ctx.writeAndFlush(fm);
-                System.out.println(" скачал");
+                System.out.println("скачал");
             }
 
         }

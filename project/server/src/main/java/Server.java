@@ -15,7 +15,6 @@ public class Server {
     private final int PORT = 8189;
 
 
-
     public static void main(String[] args) throws Exception {
         new Server().server();
     }
@@ -31,10 +30,10 @@ public class Server {
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     socketChannel.pipeline()
                             .addLast(
-                            new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
-                            new ObjectEncoder(),
-                            new ServerHandler()
-                    );
+                                    new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
+                                    new ObjectEncoder(),
+                                    new ServerHandler()
+                            );
                 }
             });
 
