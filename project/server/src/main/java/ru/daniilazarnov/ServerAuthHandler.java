@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ServerAuthHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger logger = Logger.getLogger(ServerAuthHandler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ServerAuthHandler.class.getName());
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -21,7 +21,7 @@ public class ServerAuthHandler extends ChannelInboundHandlerAdapter {
 
             switch (dbCmd) {
                 case "auth":
-                    logger.info("Authentication request from client");
+                    LOGGER.info("Authentication request from client");
                     if (dbService.findUser(dbm.getLogin(), dbm.getPassword())) {
                         DBMessage authOK = new DBMessage(dbm.getLogin());
                         Path newServerDir = Paths.get("./project/server_vault/" + dbm.getLogin());
@@ -34,7 +34,7 @@ public class ServerAuthHandler extends ChannelInboundHandlerAdapter {
                     }
                     break;
                 case "reg":
-                    logger.info("Registration request from new client");
+                    LOGGER.info("Registration request from new client");
                     dbService.addUser(dbm.getLogin(), dbm.getPassword());
                     break;
 
@@ -44,7 +44,7 @@ public class ServerAuthHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("SWW at auth handler", cause);
+        LOGGER.error("SWW at auth handler", cause);
         super.exceptionCaught(ctx, cause);
     }
 }

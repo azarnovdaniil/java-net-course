@@ -2,17 +2,15 @@ package ru.daniilazarnov;
 
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.file.*;
 
 public class Client {
-    private static final Logger logger = Logger.getLogger(Client.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Client.class.getName());
 
     private String host;
     private int port;
@@ -25,7 +23,7 @@ public class Client {
 
     public static void main(String[] args) {
         PropertyConfigurator.configure("./project/client/log4j.properties");
-        logger.debug("Client starting");
+        LOGGER.debug("Client starting");
         new Client("localhost", 8888).run();
     }
 
@@ -33,7 +31,7 @@ public class Client {
         try (Socket socket = new Socket(host, port);
              ObjectEncoderOutputStream objectOut = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream objectIn = new ObjectDecoderInputStream(socket.getInputStream(),1024 * 1024 * 100)) {
-            logger.debug("Connection was successful");
+            LOGGER.debug("Connection was successful");
 
             ClientHandler clientHandler = new ClientHandler(objectOut);
 
@@ -41,11 +39,11 @@ public class Client {
                 try {
                     while (true) {
                         AbstractMessage receivedFile = (AbstractMessage) objectIn.readObject();
-                        logger.debug("Message received");
+                        LOGGER.debug("Message received");
 
                         if (receivedFile instanceof FileMessage) {
                                 FileMessage fm = (FileMessage) receivedFile;
-                                logger.debug("File message received: " + fm.getPartNumber() + " / " + fm.getPartsCount());
+                                LOGGER.debug("File message received: " + fm.getPartNumber() + " / " + fm.getPartsCount());
 
                                 boolean append = true;
                                 if (fm.getPartNumber() == 1) {
@@ -60,14 +58,14 @@ public class Client {
                         }
                         else if (receivedFile instanceof DirectoryInfoMessage) {
                             DirectoryInfoMessage dim = (DirectoryInfoMessage) receivedFile;
-                            logger.debug("Directory info message received");
-                            logger.info("Files at directory: ");
+                            LOGGER.debug("Directory info message received");
+                            LOGGER.info("Files at directory: ");
                             System.out.println(dim.getFilesAtDirectory().toString());
                         }
                         else if (receivedFile instanceof DBMessage) {
                             DBMessage dbm = (DBMessage) receivedFile;
-                            logger.debug("Database message received");
-                            logger.info("Auth was successful");
+                            LOGGER.debug("Database message received");
+                            LOGGER.info("Auth was successful");
                             login = dbm.getLogin();
                             clientHandler.setClientLogin(login);
                             Path newClientDir = Paths.get("./project/clients_vault/" + dbm.getLogin());
@@ -77,14 +75,14 @@ public class Client {
                         }
                     }
                 } catch (IOException | ClassNotFoundException e) {
-                    logger.info("Connection was closed");
+                    LOGGER.info("Connection was closed");
                 }
             }).start();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-            logger.info("You can write commands now, connection was successful");
-            logger.info("Don't forget authorize first, or use help for see available commands");
+            LOGGER.info("You can write commands now, connection was successful");
+            LOGGER.info("Don't forget authorize first, or use help for see available commands");
             while (true) {
                 try {
                     String msg = reader.readLine();
@@ -99,7 +97,7 @@ public class Client {
             }
 
         } catch (Exception e) {
-            logger.error("SWW", e);
+            LOGGER.error("SWW", e);
             throw new RuntimeException("SWW", e);
         }
     }

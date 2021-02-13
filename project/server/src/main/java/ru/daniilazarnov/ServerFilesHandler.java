@@ -9,14 +9,14 @@ import java.io.FileOutputStream;
 
 public class ServerFilesHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger logger = Logger.getLogger(ServerFilesHandler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ServerFilesHandler.class.getName());
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FileMessage) {
             FileMessage receivedFile = (FileMessage) msg;
 
-            logger.debug("File message from client was received: " + receivedFile.getPartNumber() + " / " + receivedFile.getPartsCount());
+            LOGGER.debug("File message from client was received: " + receivedFile.getPartNumber() + " / " + receivedFile.getPartsCount());
 
             boolean append = true;
             if (receivedFile.getPartNumber() == 1) {
@@ -35,7 +35,7 @@ public class ServerFilesHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("SWW at files handler", cause);
+        LOGGER.error("SWW at files handler", cause);
         super.exceptionCaught(ctx, cause);
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger logger = Logger.getLogger(ServerRequestHandler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ServerRequestHandler.class.getName());
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -37,7 +37,7 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
                             FileMessage fm = new FileMessage(file.getName(), -1, partsCount, new byte[bufSize], request.getLogin());
                             FileInputStream in = new FileInputStream(file);
 
-                            logger.debug("Downloading started");
+                            LOGGER.debug("Downloading started");
                             for (int i = 0; i < partsCount; i++) {
                                 int readedBytes = in.read(fm.getData());
                                 fm.setPartNumber(i + 1);
@@ -45,19 +45,19 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
                                     fm.setData(Arrays.copyOfRange(fm.getData(), 0, readedBytes));
                                 }
                                 ctx.writeAndFlush(fm);
-                                logger.debug("Part: " + (i + 1) + " was sent");
+                                LOGGER.debug("Part: " + (i + 1) + " was sent");
                                 System.out.println(fm.getPartNumber());
                             }
                             in.close();
-                            logger.debug("File was fully downloaded by client");
+                            LOGGER.debug("File was fully downloaded by client");
                         }
                     } catch (IOException e) {
-                        logger.error("SWW while sending file for client", e);
+                        LOGGER.error("SWW while sending file for client", e);
                         throw new RuntimeException("SWW", e);
                     }
                     break;
                 case "list":
-                    logger.debug("Command LIST from client was received");
+                    LOGGER.debug("Command LIST from client was received");
                     List<String> files = new ArrayList<>();
                     Files.walkFileTree(Paths.get("./project/server_vault/" + request.getLogin()),
                             new SimpleFileVisitor<Path>() {
@@ -71,14 +71,14 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
                     ctx.writeAndFlush(dim);
                     break;
                 case "remove":
-                    logger.debug("Command REMOVE from client was received");
+                    LOGGER.debug("Command REMOVE from client was received");
                     Path removeDir = Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename());
                     if (Files.exists(removeDir)) {
                         removeDir.toFile().delete();
                     }
                     break;
                 case "rename":
-                    logger.debug("Command RENAME from client was received");
+                    LOGGER.debug("Command RENAME from client was received");
                     Path renameDir = Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename());
                     Path newDir = Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getNewFileName());
                     if (Files.exists(renameDir)) {
@@ -92,17 +92,17 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("Client connected");
+        LOGGER.info("Client connected");
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("Client disconnected");
+        LOGGER.info("Client disconnected");
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("SWW at auth handler", cause);
+        LOGGER.error("SWW at auth handler", cause);
         super.exceptionCaught(ctx, cause);
     }
 }
