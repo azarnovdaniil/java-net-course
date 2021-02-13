@@ -12,11 +12,12 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 
-public class Network {
-    private static Network ourInstance = new Network();
+public final class Network {
+    private static final Network NETWORK = new Network();
+    public static final int PORT = 8189;
 
     public static Network getInstance() {
-        return ourInstance;
+        return NETWORK;
     }
 
     private Network() {
@@ -34,7 +35,7 @@ public class Network {
             Bootstrap clientBootstrap = new Bootstrap();
             clientBootstrap.group(group)
                     .channel(NioSocketChannel.class)
-                    .remoteAddress(new InetSocketAddress("localhost", 8189))
+                    .remoteAddress(new InetSocketAddress("localhost", PORT))
                     .handler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline().addLast();

@@ -7,7 +7,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-public class DiscardServer {
+public final class DiscardServer {
+
+    public static final int INET_PORT = 8189;
 
     public static void main(String[] args) throws Exception {
         new DiscardServer().run();
@@ -27,7 +29,7 @@ public class DiscardServer {
                                     .addLast(new DiscardServerHandler());
                         }
                     });
-            ChannelFuture f = b.bind(8189).sync();
+            ChannelFuture f = b.bind(INET_PORT).sync();
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();

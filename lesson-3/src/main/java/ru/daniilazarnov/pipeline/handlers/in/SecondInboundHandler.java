@@ -11,7 +11,7 @@ public class SecondInboundHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         System.out.println("second");
         byte[] arr = (byte[]) msg;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < arr.length; i++) {
             arr[i]++;
         }
         System.out.println("Второй шаг: " + Arrays.toString(arr));
