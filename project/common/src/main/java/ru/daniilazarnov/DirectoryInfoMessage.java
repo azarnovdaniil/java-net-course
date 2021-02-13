@@ -2,7 +2,7 @@ package ru.daniilazarnov;
 
 import java.util.List;
 
-public class DirectoryInfoMessage extends AbstractMessage{
+public class DirectoryInfoMessage extends AbstractMessage {
     private List<String> filesAtDirectory;
 
     public DirectoryInfoMessage(List<String> filesAtDirectory) {

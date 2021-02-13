@@ -1,6 +1,6 @@
 package ru.daniilazarnov;
 
-public class DBMessage extends AbstractMessage{
+public class DBMessage extends AbstractMessage {
 
     private String cmd;
     private String login;
