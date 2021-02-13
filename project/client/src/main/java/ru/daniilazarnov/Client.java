@@ -1,8 +1,16 @@
 package ru.daniilazarnov;
 
-public class Client {
+import ru.daniilazarnov.util.command.CommandUtilImpl;
 
-    public static void main(String[] args) {
-        System.out.println("Client!");
-    }
+public class Client {
+  private final String host;
+  private final int port;
+  public CommandUtilImpl commandPanel;
+
+  public Client(String host, int port) {
+    this.host = host;
+    this.port = port;
+    this.commandPanel = new CommandUtilImpl();
+  }
+
 }

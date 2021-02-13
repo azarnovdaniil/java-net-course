@@ -7,14 +7,14 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import ru.daniilazarnov.pipeline.handlers.in.FinalHandler;
-import ru.daniilazarnov.pipeline.handlers.in.FirstHandler;
-import ru.daniilazarnov.pipeline.handlers.in.GatewayHandler;
-import ru.daniilazarnov.pipeline.handlers.in.SecondHandler;
-import ru.daniilazarnov.pipeline.handlers.out.StringToByteBufHandler;
-import ru.daniilazarnov.pipeline.handlers.out.StringToByteBufHandler2;
+import ru.daniilazarnov.pipeline.handlers.in.FinalInboundHandler;
+import ru.daniilazarnov.pipeline.handlers.in.FirstInboundHandler;
+import ru.daniilazarnov.pipeline.handlers.in.GatewayInboundHandler;
+import ru.daniilazarnov.pipeline.handlers.in.SecondInboundHandler;
+import ru.daniilazarnov.pipeline.handlers.out.StringToByteBufOutboundHandler;
+import ru.daniilazarnov.pipeline.handlers.out.StringToStringOutboundHandler;
 
-public class BlockServer {
+public class MyServer {
 
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -28,12 +28,12 @@ public class BlockServer {
                         @Override
                         public void initChannel(SocketChannel ch) {
                             ch.pipeline()
-                                    .addLast(new StringToByteBufHandler2())
-                                    .addLast(new FirstHandler())
-                                    .addLast(new StringToByteBufHandler())
-                                    .addLast(new SecondHandler())
-                                    .addLast(new GatewayHandler())
-                                    .addLast(new FinalHandler());
+                                    .addLast(new StringToStringOutboundHandler())
+                                    .addLast(new FirstInboundHandler())
+                                    .addLast(new StringToByteBufOutboundHandler())
+                                    .addLast(new SecondInboundHandler())
+                                    .addLast(new GatewayInboundHandler())
+                                    .addLast(new FinalInboundHandler());
                         }
                     });
             ChannelFuture f = b.bind(8189).sync();
@@ -45,6 +45,6 @@ public class BlockServer {
     }
 
     public static void main(String[] args) throws Exception {
-        new BlockServer().run();
+        new MyServer().run();
     }
 }
