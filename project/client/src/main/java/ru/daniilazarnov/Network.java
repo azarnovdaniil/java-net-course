@@ -30,14 +30,13 @@ public class Network {
                         .channel(NioSocketChannel.class)
                         .handler(new ChannelInitializer<SocketChannel>() {
                             @Override
-                            protected void initChannel(SocketChannel socketChannel){
+                            protected void initChannel(SocketChannel socketChannel) {
                                 channel = socketChannel;
-                                socketChannel.pipeline().addLast(new ClientHandler());
-//                                log.info("Соединение с сервером установлено!");
+                                socketChannel.pipeline().addLast(new ClientConnectHandler());
                             }
                         });
+                log.info("Соединение установлено");
                 ChannelFuture future = b.connect(HOST, PORT).sync();
-
                 future.channel().closeFuture().sync();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -69,7 +68,6 @@ public class Network {
         }
     }
 
-//    @NotNull
     private ChannelFutureListener getChannelFutureListenerSendFile(String s) {
         return future -> {
             if (!future.isSuccess()) {
@@ -83,7 +81,6 @@ public class Network {
         };
     }
 
-//    @NotNull
     private ChannelFutureListener getChannelFutureListener(String s) {
         return future -> {
             if (!future.isSuccess()) {
@@ -98,6 +95,6 @@ public class Network {
     }
 
     public void sendStringAndCommand(String fileName, byte command) {
-        ReceivingAndSendingStrings.sendString(fileName, channel,command, getChannelFutureListener("\nИмя файла передано"));
+        ReceivingAndSendingStrings.sendString(fileName, channel, command, getChannelFutureListener("\nИмя файла передано"));
     }
 }

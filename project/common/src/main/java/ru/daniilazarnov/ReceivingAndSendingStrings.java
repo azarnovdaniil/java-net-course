@@ -19,7 +19,8 @@ public class ReceivingAndSendingStrings {
      * @param fileName - имя файла;
      * @param channel - канал для передачи;
      */
-    public static void sendString(String fileName, Channel channel, byte commandByte, ChannelFutureListener finishListener){
+    public static void sendString(String fileName, Channel channel, byte commandByte,
+                                  ChannelFutureListener finishListener){
 
         ByteBuf  buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         buf.writeByte(commandByte); //управляющий байт
@@ -32,7 +33,6 @@ public class ReceivingAndSendingStrings {
         buf.writeBytes(stringSource);
         channel.write(buf);
         channel.flush();
-//        buf.release(); //на этой строке рвет соединение с сервером
     }
 
     /**
@@ -46,6 +46,4 @@ public class ReceivingAndSendingStrings {
         buf.readBytes(messageContent);
         return new String(messageContent);
     }
-
-
 }

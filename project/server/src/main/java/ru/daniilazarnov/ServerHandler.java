@@ -17,7 +17,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private State currentState = State.IDLE;
     public static final String HOME_FOLDER_PATH = "project/server/cloud_storage/user1";
 
-
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         System.out.println("Клиент подключился");
@@ -31,12 +30,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = ((ByteBuf) msg);
-
-
         if (ReceivingFiles.getCurrentState() == State.IDLE) {
             byte readed = buf.readByte();
             Command command = Command.valueOf(readed);
-
             switch (command) {
                 case DOWNLOAD:
                     uploadFileToServer(buf); //2
@@ -47,29 +43,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 case LS:
                     LSHandle(ctx, buf);
                     break;
-
                 default:
                     invalidControlByte(buf, "(class ServerHandler) ERROR: Invalid first byte - ", readed);
-
             }
         }
 
         if (ReceivingFiles.getCurrentState() == State.FILE) {
             uploadFileToServer(msg);
         }
-
     }
-
-
-
-
-//    }
 
     private void LSHandle(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
         String folderName = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
-
         String fileList = UtilMethod.getFolderContents(folderName, "server");
-
         ReceivingAndSendingStrings
                 .sendString(("\n" + fileList), ctx.channel(), (byte) 4,
                         UtilMethod.getChannelFutureListener("Список файлов успешно передан"));
@@ -87,7 +73,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         System.out.println(s + readed);
         buf.resetReaderIndex();
         throw new IllegalStateException("Unexpected value: " + readed);
-//                ctx.fireChannelRead(buf);
     }
 
     /**
@@ -106,12 +91,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 ctx.channel(),
                 UtilMethod.getChannelFutureListener("Файл успешно передан"));
         buf.clear();
-        return; // TODO: 09.02.2021 удалить
     }
 
     /**
      * Загружает файл на сервер
-     *
      */
     private void uploadFileToServer(Object msg) throws IOException {
         ReceivingFiles.fileReceive(msg, user);

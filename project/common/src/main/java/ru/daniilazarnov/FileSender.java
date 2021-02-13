@@ -9,12 +9,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-
 /**
  * Утилитный класс, содержит метод отправки файла
  */
 public class FileSender {
-    private static boolean loadingStatus = false; //переменная нужна для отправки статуса загрузки из других классов
+    private static boolean loadingStatus = false;
 
     public static void setLoadingStatus(boolean loadingStatus) {
         FileSender.loadingStatus = loadingStatus;
@@ -22,14 +21,12 @@ public class FileSender {
 
     public static boolean isLoadingStatus() {
         try {
-            Thread.sleep(1); //без задержки не проходит проверку
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return loadingStatus;
     }
-
-
 
     /**
      * [] - 1b управляющий байт

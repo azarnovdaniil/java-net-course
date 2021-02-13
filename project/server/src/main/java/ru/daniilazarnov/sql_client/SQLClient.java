@@ -1,4 +1,4 @@
-package ru.daniilazarnov.sqlClient;
+package ru.daniilazarnov.sql_client;
 
 import org.apache.log4j.Logger;
 
@@ -14,7 +14,7 @@ public class SQLClient {
     private static final Logger log = Logger.getLogger(SQLClient.class);
     private static Connection connection;
 
-     private static void connect() { // для sqLite
+    private static void connect() { // для sqLite
         //path from repository root
         String sDbUrl = "jdbc:sqlite:project/server/src/main/java/ru/daniilazarnov/sqlClient/netty_server.db";
         try {
@@ -30,7 +30,7 @@ public class SQLClient {
         }
     }
 
-     private static void disconnect() {
+    private static void disconnect() {
         try {
             connection.close();
             log.info("SQL connection close");
@@ -47,7 +47,8 @@ public class SQLClient {
      * 0 - удалось найти пользователя с такой комбинацией логина и пароля и пользователь НЕИМЕЕТ доступ к
      * локальному хранилищу;
      * -1 - не удалось найти пользователя;
-     * @param login логин пользователя
+     *
+     * @param login    логин пользователя
      * @param password пароль пользователя
      * @return целочисленной значение.
      */

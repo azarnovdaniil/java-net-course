@@ -1,12 +1,5 @@
 package ru.daniilazarnov;
 
-/*
- * Netty fileServer ServerApp
- *
- * @author Valeriy Lazarev
- * @since 09.02.2021
- */
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -23,36 +16,28 @@ public class Server {
     private static final Logger log = Logger.getLogger(Server.class);
 
     public void run() throws Exception {
-        // Пул потоков для обработки подключений клиентов
         EventLoopGroup bossGroup = new NioEventLoopGroup();
-        // Пул потоков для обработки сетевых сообщений
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            // Создание настроек сервера
             ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup) // указание пулов потоков для работы сервера
-                    .channel(NioServerSocketChannel.class) // указание канала для подключения новых клиентов
+            b.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
-                        public void initChannel(SocketChannel ch) { // настройка конвеера для каждого подключившегося клиента
-//                            ch.pipeline().addLast(new StringDecoder(), new StringEncoder(),new StringToByteBufHandler(), new FirstHandler(), new SecondHandler(), new GatewayHandler(), new FinalHandler());
-                            ch.pipeline().addLast(new ServerHandler(), new FirstHandler());
+                        public void initChannel(SocketChannel ch) {
+                            ch.pipeline().addLast(new ServerHandler());
                         }
                     });
-            ChannelFuture f = b.bind(8189).sync(); // запуск прослушивания порта 8189 для подключения клиентов
+            ChannelFuture f = b.bind(8189).sync();
             log.info("SERVER: Запустился, жду подключений...");
-            f.channel().closeFuture().sync(); // ожидание завершения работы сервера
+            f.channel().closeFuture().sync();
         } finally {
-            workerGroup.shutdownGracefully(); // закрытие пула
-            bossGroup.shutdownGracefully(); // закрытие пула
+            workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
         }
     }
 
     public static void main(String[] args) throws Exception {
             new Server().run();
-
     }
-
-
-
 }

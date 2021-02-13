@@ -8,20 +8,18 @@ import org.apache.log4j.Logger;
 /**
  * Класс содержит логику обработки принятых сообщений на стороне клиента
  */
-public class ClientHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger log = Logger.getLogger(ClientHandler.class);
+public class ClientConnectHandler extends ChannelInboundHandlerAdapter {
+    private static final Logger log = Logger.getLogger(ClientConnectHandler.class);
     private static final String user ="user1";
     private State currentState = State.IDLE;
 
-    public ClientHandler() {
+    public ClientConnectHandler() {
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
+        if (ReceivingFiles.getCurrentState() == State.IDLE) {
         ByteBuf buf = ((ByteBuf) msg);
-
-//        if (currentState == State.IDLE) {
             byte readed = buf.readByte();
         Command command = Command.valueOf(readed);
 
@@ -38,20 +36,15 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
                 default:
                     System.err.println("(class ClientHandler) ERROR: Invalid first byte - " + readed);
-//                    invalidControlByte(buf, "(class FileReceiveHandler) ERROR: Invalid first byte - ", readed);
-
             }
-//        }
-
-
-
-
-
+        }
+        if (ReceivingFiles.getCurrentState() == State.FILE) {
+            ReceivingFiles.fileReceive(msg, user);
+        }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
-        ctx.close();
-        cause.printStackTrace();
+        log.error(cause);
     }
 }
