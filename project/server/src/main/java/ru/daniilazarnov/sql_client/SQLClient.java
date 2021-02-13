@@ -11,33 +11,9 @@ import java.sql.SQLException;
 
 
 public class SQLClient {
-    private static final Logger log = Logger.getLogger(SQLClient.class);
+    private static final Logger LOG = Logger.getLogger(SQLClient.class);
     private static Connection connection;
 
-    private static void connect() { // для sqLite
-        //path from repository root
-        String sDbUrl = "jdbc:sqlite:project/server/src/main/java/ru/daniilazarnov/sqlClient/netty_server.db";
-        try {
-            Class.forName("org.sqlite.JDBC");
-            log.info("Trying to connect DB");
-            connection = DriverManager.getConnection(sDbUrl);
-
-            log.info("Connection Established Successfull and the DATABASE NAME IS:"
-                    + connection.getMetaData().getDatabaseProductName());
-//            statement = connection.createStatement();
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void disconnect() {
-        try {
-            connection.close();
-            log.info("SQL connection close");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Метод проверяет наличие в базе пользователя с заданным логином и паролем
@@ -52,7 +28,7 @@ public class SQLClient {
      * @param password пароль пользователя
      * @return целочисленной значение.
      */
-    synchronized public static int getAuth(String login, String password) {
+     public static synchronized int getAuth(String login, String password) {
         connect();
         PreparedStatement preparedStatement = null;
         String sql = "select status FROM users where login = ? and password = ?";
@@ -62,19 +38,49 @@ public class SQLClient {
             preparedStatement.setString(2, password);
 
         } catch (SQLException e) {
-            log.error("line #62", e);
+            LOG.error("line #62", e);
         }
         try (ResultSet set = preparedStatement.executeQuery()) {  //Если вопрос вернет множество результатов
 
-            if (set.next())
-                return Integer.parseInt(set.getString(1/*номер столбца или название столбца, например "number_order"*/));//забираем строку
+            if (set.next()) {
+                return Integer
+                        .parseInt(set.getString(
+                                1/*номер столбца или название столбца, например "number_order"*/));
+            } //забираем строку
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
             disconnect();
         }
         return -1; //вернем -1, если запрос вернулся пустым
-
     }
+
+
+
+    private static void connect() { // для sqLite
+        //path from repository root
+        String sDbUrl = "jdbc:sqlite:project/server/src/main/java/ru/daniilazarnov/sqlClient/netty_server.db";
+        try {
+            Class.forName("org.sqlite.JDBC");
+            LOG.info("Trying to connect DB");
+            connection = DriverManager.getConnection(sDbUrl);
+
+            LOG.info("Connection Established Successfull and the DATABASE NAME IS:"
+                    + connection.getMetaData().getDatabaseProductName());
+//            statement = connection.createStatement();
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void disconnect() {
+        try {
+            connection.close();
+            LOG.info("SQL connection close");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }

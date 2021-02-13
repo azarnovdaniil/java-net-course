@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
  * Класс содержит логику обработки принятых сообщений на стороне клиента
  */
 public class ClientConnectHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger log = Logger.getLogger(ClientConnectHandler.class);
-    private static final String user ="user1";
+    private static final Logger LOG = Logger.getLogger(ClientConnectHandler.class);
+    private static final String USER = "user1";
     private State currentState = State.IDLE;
 
     public ClientConnectHandler() {
@@ -25,7 +25,7 @@ public class ClientConnectHandler extends ChannelInboundHandlerAdapter {
 
             switch (command) {
                 case DOWNLOAD:
-                    ReceivingFiles.fileReceive(msg, user);
+                    ReceivingFiles.fileReceive(msg, USER);
                     Client.printPrompt(); // вывод строки приглашения к вводу
                     break;
 
@@ -39,12 +39,12 @@ public class ClientConnectHandler extends ChannelInboundHandlerAdapter {
             }
         }
         if (ReceivingFiles.getCurrentState() == State.FILE) {
-            ReceivingFiles.fileReceive(msg, user);
+            ReceivingFiles.fileReceive(msg, USER);
         }
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
-        log.error(cause);
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        LOG.error(cause);
     }
 }

@@ -14,6 +14,9 @@ import java.nio.file.Path;
  */
 public class FileSender {
     private static boolean loadingStatus = false;
+    private static final int FOUR = 4;
+    private static final int EIGHTS = 8;
+
 
     public static void setLoadingStatus(boolean loadingStatus) {
         FileSender.loadingStatus = loadingStatus;
@@ -48,7 +51,7 @@ public class FileSender {
         buf.writeByte((byte) 2);
         channel.write(buf);
 
-        buf = ByteBufAllocator.DEFAULT.directBuffer(4);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(FOUR);
         buf.writeInt(path.getFileName().toString().length());
         channel.write(buf);
 
@@ -57,7 +60,7 @@ public class FileSender {
         buf.writeBytes(filenameBytes);
         channel.write(buf);
 
-        buf = ByteBufAllocator.DEFAULT.directBuffer(8);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(EIGHTS);
         buf.writeLong(Files.size(path));
         channel.write(buf);
 

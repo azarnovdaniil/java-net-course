@@ -13,7 +13,8 @@ import org.apache.log4j.Logger;
  * Класс содержит логику работы с сетью на стороне сервера
  */
 public class Server {
-    private static final Logger log = Logger.getLogger(Server.class);
+    private static final Logger LOG = Logger.getLogger(Server.class);
+    private static final int PORT = 8189;
 
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -28,8 +29,8 @@ public class Server {
                             ch.pipeline().addLast(new ServerHandler());
                         }
                     });
-            ChannelFuture f = b.bind(8189).sync();
-            log.info("SERVER: Запустился, жду подключений...");
+            ChannelFuture f = b.bind(PORT).sync();
+            LOG.info("SERVER: Запустился, жду подключений...");
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();

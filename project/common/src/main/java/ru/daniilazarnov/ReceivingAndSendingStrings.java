@@ -9,6 +9,7 @@ import io.netty.channel.ChannelFutureListener;
  * Класс содержит логику отправления побайтово имени файла на сервер
  */
 public class ReceivingAndSendingStrings {
+    private static final int FOUR = 4;
 
     /**
      * Формирует для отправки на сервер имя файла по протоколу
@@ -17,15 +18,15 @@ public class ReceivingAndSendingStrings {
      * [] byte[] - имя файла;
      *
      * @param fileName - имя файла;
-     * @param channel - канал для передачи;
+     * @param channel  - канал для передачи;
      */
-    public static void sendString(String fileName, Channel channel, byte commandByte,
-                                  ChannelFutureListener finishListener){
+    public static void sendString(String fileName,
+                                  Channel channel, byte commandByte, ChannelFutureListener finishListener) {
 
-        ByteBuf  buf = ByteBufAllocator.DEFAULT.directBuffer(1);
+        ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         buf.writeByte(commandByte); //управляющий байт
         channel.write(buf);
-        buf = ByteBufAllocator.DEFAULT.directBuffer(4);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(FOUR);
         buf.writeInt(fileName.length()); // длинна имени файла
         channel.write(buf);
         byte[] stringSource = fileName.getBytes();

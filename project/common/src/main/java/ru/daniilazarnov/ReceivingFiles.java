@@ -20,6 +20,8 @@ public class ReceivingFiles {
     private static final String DEFAULT_PATH_USER = "project/client/local_storage/";
     private static final String PREFIX_FILE_NAME = "/_";
     private static final String SERVER_NAME = "server";
+    private static final int FOUR = 4;
+    private static final int EIGHTS = 8;
     private static int nextLength;
     private static long fileLength;
     private static long receivedFileLength;
@@ -39,14 +41,15 @@ public class ReceivingFiles {
     public static void fileReceive(Object msg, String user) throws IOException {
         // собираем путь до целевой папки
         String fileNameStr;
-        String fullPathString = user.equals(SERVER_NAME) ? // собираем путь до целевой папки
-                DEFAULT_PATH_SERVER +
-                        "user1" +
-                        PREFIX_FILE_NAME :
-                DEFAULT_PATH_USER + PREFIX_FILE_NAME
-                        .replace("/", "");
+        String fullPathString = user.equals(SERVER_NAME)
+                ? DEFAULT_PATH_SERVER   // собираем путь до целевой папки
+                + "user1"
+                + PREFIX_FILE_NAME : DEFAULT_PATH_USER
+                + PREFIX_FILE_NAME
+                .replace("/", "");
 
         ByteBuf buf = ((ByteBuf) msg);
+
         if (currentState == State.IDLE) {
             receivedFileLength = 0;
             buf.resetReaderIndex();
@@ -60,17 +63,23 @@ public class ReceivingFiles {
                 return;
             }
         }
+
         if (currentState == State.NAME_LENGTH) {
-            if (buf.readableBytes() < 4) return;
-            if (buf.readableBytes() >= 4) {
+            if (buf.readableBytes() < FOUR) {
+                return;
+            }
+            if (buf.readableBytes() >= FOUR) {
                 System.out.println("STATE: Get filename length");
                 nextLength = buf.readInt();
                 currentState = State.NAME;
                 System.out.println("currentState changed: " + currentState);
             }
         }
+
         if (currentState == State.NAME) {
-            if (buf.readableBytes() < nextLength) return;
+            if (buf.readableBytes() < nextLength) {
+                return;
+            }
             if (buf.readableBytes() >= nextLength) {
                 byte[] fileName = new byte[nextLength];
                 buf.readBytes(fileName);
@@ -81,9 +90,12 @@ public class ReceivingFiles {
                 System.out.println("currentState changed: " + currentState);
             }
         }
+
         if (currentState == State.FILE_LENGTH) {
-            if (buf.readableBytes() < 8) return;
-            if (buf.readableBytes() >= 8) {
+            if (buf.readableBytes() < EIGHTS) {
+                return;
+            }
+            if (buf.readableBytes() >= EIGHTS) {
                 fileLength = buf.readLong();
                 System.out.println("STATE: File length received - " + fileLength);
                 currentState = State.FILE;
@@ -91,8 +103,8 @@ public class ReceivingFiles {
             }
         }
         if (currentState == State.FILE) {
-            while (buf.readableBytes() > 0) {//Записываем в цикле напрямую в файл
-                out.write(buf.readByte());
+            while (buf.readableBytes() > 0) {
+                out.write(buf.readByte()); //Записываем в цикле напрямую в файл
                 receivedFileLength++;
                 if (fileLength == receivedFileLength) {
                     currentState = State.IDLE;

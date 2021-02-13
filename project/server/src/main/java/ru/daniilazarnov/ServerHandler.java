@@ -12,10 +12,11 @@ import java.nio.file.Path;
  * Класс содержит обработку принятых сообщений на стороне сервера
  */
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger log = Logger.getLogger(ServerHandler.class);
+    private static final Logger LOG = Logger.getLogger(ServerHandler.class);
     private final String user = "server";
     private State currentState = State.IDLE;
     public static final String HOME_FOLDER_PATH = "project/server/cloud_storage/user1";
+    private static final int FOUR = 4;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -41,7 +42,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     downloadFileFromServer(ctx, buf);  //1
                     break;
                 case LS:
-                    LSHandle(ctx, buf);
+                    lshandle(ctx, buf);
                     break;
                 default:
                     invalidControlByte(buf, "(class ServerHandler) ERROR: Invalid first byte - ", readed);
@@ -53,11 +54,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void LSHandle(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
+    private void lshandle(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
         String folderName = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
         String fileList = UtilMethod.getFolderContents(folderName, "server");
         ReceivingAndSendingStrings
-                .sendString(("\n" + fileList), ctx.channel(), (byte) 4,
+                .sendString(("\n" + fileList), ctx.channel(), (byte) FOUR,
                         UtilMethod.getChannelFutureListener("Список файлов успешно передан"));
         System.out.println(folderName);
     }
@@ -103,6 +104,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         System.err.println(cause.getMessage());
-        log.error(cause);
+        LOG.error(cause);
     }
 }

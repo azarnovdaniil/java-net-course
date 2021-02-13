@@ -4,13 +4,13 @@ import io.netty.channel.Channel;
 
 public class User {
    private Channel channel;
-   private String ClientName;
-   private String HomeDirectory;
+   private String clientName;
+   private String homeDirectory;
 
     public User(Channel channel, String clientName, String homeDirectory) {
         this.channel = channel;
-        ClientName = clientName;
-        HomeDirectory = homeDirectory;
+        this.clientName = clientName;
+        this.homeDirectory = homeDirectory;
     }
 
     public Channel getChannel() {
@@ -22,18 +22,18 @@ public class User {
     }
 
     public String getClientName() {
-        return ClientName;
+        return clientName;
     }
 
     public void setClientName(String clientName) {
-        ClientName = clientName;
+        this.clientName = clientName;
     }
 
     public String getHomeDirectory() {
-        return HomeDirectory;
+        return homeDirectory;
     }
 
     public void setHomeDirectory(String homeDirectory) {
-        HomeDirectory = homeDirectory;
+        this.homeDirectory = homeDirectory;
     }
 }

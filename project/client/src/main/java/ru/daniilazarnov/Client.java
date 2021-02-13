@@ -10,15 +10,17 @@ import java.nio.file.Path;
  * Содержит основную логику обработки введенных с консоли команд
  */
 public class Client {
-    private static final Logger log = Logger.getLogger(Client.class);
+    private static final Logger LOG = Logger.getLogger(Client.class);
     private static Network client;
+    private static final byte FOUR_BYTE = 4;
+    private static final byte THREE_INT = 3;
     private static final String PROMPT_TO_ENTER = ">";
     private static final String PROGRAM_NAME = "local_storage ";
     private static final String USERNAME = "~/user1";
     private static final String HOME_FOLDER_PATH = "project/client/local_storage/";
-    private static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n" +
-            "ver: 0.002a\n" +
-            "uod: 09.02.2021\n";
+    private static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n"
+            + "ver: 0.002a\n"
+            + "uod: 09.02.2021\n";
 
     public static void main(String[] args) throws IOException {
         init();
@@ -92,11 +94,13 @@ public class Client {
             command = getSecondElement(inputLine);
             String folderName = getThirdElement(inputLine);
             if (command.equals("ls")) {
-                client.sendStringAndCommand(folderName, (byte) 4);
+                client.sendStringAndCommand(folderName, FOUR_BYTE);
 
-            } else return "Неизвестная команда";
+            } else {
+                return "Неизвестная команда";
+            }
         } else {
-            client.sendStringAndCommand("", (byte) 4);
+            client.sendStringAndCommand("", FOUR_BYTE);
         }
 
         result = "Запрос отправлен на сервер";
@@ -109,17 +113,20 @@ public class Client {
      * @return строку содержащую команды и результат их работы
      */
     private static String helpPrint() {
-        return "\n'down' - скачивает файл с сервера\n" +
-                "'up' - загружает файл на сервер\n" +
-                "'connect' - если соединение разорвано - восстанавливает его\n" +
-                "'ls' - вывести имена файлов и каталогов расположенных в корне папки пользователя в локальном хранилище\n" +
-                "'ls [catalog_name]' - вывести имена файлов и каталогов расположенных в папке [catalog_name] на локальном хранилище\n" +
-                "'status' - вывести статус подключения к серверу\n" +
-                "'server ls [catalog_name]' - вывести имена файлов и каталогов расположенных в папке [catalog_name] на удаленном хранилище\n" +
-                "'exit' - разорвать соединение и выйти из приложения\n" +
-                "пример:\n up fileclient - загрузка файла 'fileclient 'на сервер;" +
-                "\n down fileserver - скачивание файла 'fileserver' с сервера;\n" +
-                "";
+        return "\n'down' - скачивает файл с сервера\n"
+                + "'up' - загружает файл на сервер\n"
+                + "'connect' - если соединение разорвано - восстанавливает его\n"
+                + "'ls' - вывести имена файлов и каталогов расположенных в корне папки пользователя в локальном "
+                + "хранилище\n"
+                + "'ls [catalog_name]' - вывести имена файлов и каталогов расположенных в папке "
+                + "[catalog_name] на локальном хранилище\n"
+                + "'status' - вывести статус подключения к серверу\n"
+                + "'server ls [catalog_name]' - вывести имена файлов и каталогов расположенных в папке "
+                + "[catalog_name] на удаленном хранилище\n"
+                + "'exit' - разорвать соединение и выйти из приложения\n"
+                + "пример:\n up fileclient - загрузка файла 'fileclient 'на сервер;"
+                + "\n down fileserver - скачивание файла 'fileserver' с сервера;\n"
+                + "";
     }
 
     /**
@@ -128,8 +135,11 @@ public class Client {
      * @return возвращает готовую для вывода строку
      */
     private static String getStatus() {
-        if (client.isConnect()) return "Сервер доступен";
-        else return "соединение с сервером отсутствует";
+        if (client.isConnect()) {
+            return "Сервер доступен";
+        } else {
+            return "соединение с сервером отсутствует";
+        }
     }
 
     /**
@@ -158,12 +168,13 @@ public class Client {
             if (!Files.isDirectory(Path.of(HOME_FOLDER_PATH + fileName))) {
                 return "Файл не является каталогом";
             }
-        } else fileName = ""; // если имени каталога нет
-
+        } else {
+            fileName = ""; // если имени каталога нет
+        }
         try {
-            result = UtilMethod.getFolderContents(fileName, "user"); // TODO: 09.02.2021
+            result = UtilMethod.getFolderContents(fileName, "user");
         } catch (IOException e) {
-            log.debug(e);
+            LOG.debug(e);
         }
         return result;
     }
@@ -231,7 +242,7 @@ public class Client {
      * @return если есть третий элемент в строке = true
      */
     private static boolean isThereaThirdElement(String inputLine) {
-        return inputLine.split(" ").length == 3;
+        return inputLine.split(" ").length == THREE_INT;
     }
 
     /**
@@ -264,3 +275,4 @@ public class Client {
         return Files.exists(Path.of(HOME_FOLDER_PATH + fileName));
     }
 }
+

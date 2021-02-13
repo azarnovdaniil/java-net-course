@@ -15,7 +15,7 @@ import java.nio.file.Path;
  * Класс содержит реализацию сетевого соединения
  */
 public class Network {
-    private static final Logger log = Logger.getLogger(Network.class);
+    private static final Logger LOG = Logger.getLogger(Network.class);
     private SocketChannel channel;
 
     private static final String HOST = "localhost";
@@ -35,7 +35,7 @@ public class Network {
                                 socketChannel.pipeline().addLast(new ClientConnectHandler());
                             }
                         });
-                log.info("Соединение установлено");
+                LOG.info("Соединение установлено");
                 ChannelFuture future = b.connect(HOST, PORT).sync();
                 future.channel().closeFuture().sync();
             } catch (Exception e) {
@@ -53,9 +53,11 @@ public class Network {
     }
 
     public boolean isConnect() {
-        if (channel != null)
+        if (channel != null) {
             return channel.isActive();
-        else return false;
+        } else {
+            return false;
+        }
     }
 
     public void sendFile(String file) {
@@ -95,6 +97,7 @@ public class Network {
     }
 
     public void sendStringAndCommand(String fileName, byte command) {
-        ReceivingAndSendingStrings.sendString(fileName, channel, command, getChannelFutureListener("\nИмя файла передано"));
+        ReceivingAndSendingStrings.sendString(fileName, channel, command,
+                getChannelFutureListener("\nИмя файла передано"));
     }
 }

@@ -52,7 +52,9 @@ public class UtilMethod {
                 .map(s -> {
                     if (Files.isDirectory(Path.of(folder + s))) {
                         s = "[" + s + "] "; //папка выделяется квадратной скобкой
-                    } else s = "'" + s + "' "; // файл выделяется одинарной кавычкой
+                    } else {
+                        s = "'" + s + "' ";
+                    } // файл выделяется одинарной кавычкой
                     return s;
                 })
                 .sorted() //сортируем
