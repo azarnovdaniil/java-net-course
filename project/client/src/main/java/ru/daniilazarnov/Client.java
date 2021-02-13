@@ -44,35 +44,35 @@ public class Client {
                 }
                 inputLine = bufferedReader.readLine().trim().toLowerCase();
                 String firstCommand = inputLine.split(" ")[0];
+                Command command = Command.valueOf(firstCommand.toUpperCase());
 
-                switch (firstCommand) {
-                    case "up":
+                switch (command) {
+                    case UPLOAD:
                         sendCommand(inputLine);
                         break;
-                    case "ls":
+                    case LS:
                         System.out.println(getFilesList(inputLine));
                         break;
-                    case "exit":
+                    case EXIT:
                         client.close();
                         System.out.println("Bye");
                         System.exit(0);
-                        return;
-                    case "connect":
+                    case CONNECT:
                         System.out.println(connectedToServer());
                         break;
-                    case "disconnect":
+                    case DISCONNECT:
                         client.close();
                         break;
-                    case "down":
+                    case DOWNLOAD:
                         sendNameFIleForDownloading(inputLine);
                         break;
-                    case "help":
-                        System.out.println(helpPrint());
+                    case HELP:
+                        System.out.println(Command.getHelpInfo());
                         break;
-                    case "status":
+                    case STATUS:
                         System.out.println(getStatus());
                         break;
-                    case "server":
+                    case SERVER:
                         System.out.println(accessingTheServer(inputLine));
                         break;
                     default:
@@ -105,28 +105,6 @@ public class Client {
 
         result = "Запрос отправлен на сервер";
         return result;
-    }
-
-    /**
-     * Метод отвечает за вывод справки на консоль
-     *
-     * @return строку содержащую команды и результат их работы
-     */
-    private static String helpPrint() {
-        return "\n'down' - скачивает файл с сервера\n"
-                + "'up' - загружает файл на сервер\n"
-                + "'connect' - если соединение разорвано - восстанавливает его\n"
-                + "'ls' - вывести имена файлов и каталогов расположенных в корне папки пользователя в локальном "
-                + "хранилище\n"
-                + "'ls [catalog_name]' - вывести имена файлов и каталогов расположенных в папке "
-                + "[catalog_name] на локальном хранилище\n"
-                + "'status' - вывести статус подключения к серверу\n"
-                + "'server ls [catalog_name]' - вывести имена файлов и каталогов расположенных в папке "
-                + "[catalog_name] на удаленном хранилище\n"
-                + "'exit' - разорвать соединение и выйти из приложения\n"
-                + "пример:\n up fileclient - загрузка файла 'fileclient 'на сервер;"
-                + "\n down fileserver - скачивание файла 'fileserver' с сервера;\n"
-                + "";
     }
 
     /**

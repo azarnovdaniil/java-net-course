@@ -159,7 +159,7 @@ class MainTest {
     }
 
     @Test
-    @DisabledOnOs(OS.WINDOWS)
+//    @DisabledOnOs(OS.WINDOWS)
     void testExists() throws IOException {
         Path path = Paths.get("dir/2.txt");
 
