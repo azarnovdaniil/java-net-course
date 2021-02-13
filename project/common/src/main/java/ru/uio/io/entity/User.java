@@ -37,10 +37,10 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "nickname='" + nickname + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        return "User{"
+                + "nickname='" + nickname + '\''
+                + ", email='" + email + '\''
+                + ", password='" + password + '\''
+                + '}';
     }
 }

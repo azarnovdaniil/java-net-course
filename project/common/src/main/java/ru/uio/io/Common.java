@@ -5,32 +5,35 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class Common {
-    private Common(){}
+    private Common() {
+    }
 
     public static byte[] readStream(DataInputStream din) {
-        byte[] data_buff = null;
+        byte[] dataBuff = null;
         try {
             int b = 0;
-            String buff_length = "";
-            while ((b = din.read()) != 4) {
-                buff_length += (char) b;
+            String buffLength = "";
+            while ((b = din.read()) != getNumber("read")) {
+                buffLength += (char) b;
             }
-            int data_length = Integer.parseInt(buff_length);
-            data_buff = new byte[Integer.parseInt(buff_length)];
-            int byte_read = 0;
-            int byte_offset = 0;
-            while (byte_offset < data_length) {
-                byte_read = din.read(data_buff, byte_offset, data_length - byte_offset);
-                byte_offset += byte_read;
+            int dataLength = Integer.parseInt(buffLength);
+            dataBuff = new byte[Integer.parseInt(buffLength)];
+            int byteRead = 0;
+            int byteOffset = 0;
+            while (byteOffset < dataLength) {
+                byteRead = din.read(dataBuff, byteOffset, dataLength - byteOffset);
+                byteOffset += byteRead;
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        return data_buff;
+        return dataBuff;
     }
 
     public static byte[] createDataPacket(byte[] cmd, byte[] data) {
@@ -40,14 +43,17 @@ public final class Common {
             initialize[0] = 2;
             byte[] separator = new byte[1];
             separator[0] = 4;
-            byte[] data_length = String.valueOf(data.length).getBytes("UTF8");
-            packet = new byte[initialize.length + cmd.length + separator.length + data_length.length + data.length];
+            byte[] dataLength = String.valueOf(data.length).getBytes("UTF8");
+            packet = new byte[initialize.length + cmd.length + separator.length + dataLength.length + data.length];
 
             System.arraycopy(initialize, 0, packet, 0, initialize.length);
             System.arraycopy(cmd, 0, packet, initialize.length, cmd.length);
-            System.arraycopy(data_length, 0, packet, initialize.length + cmd.length, data_length.length);
-            System.arraycopy(separator, 0, packet, initialize.length + cmd.length + data_length.length, separator.length);
-            System.arraycopy(data, 0, packet, initialize.length + cmd.length + data_length.length + separator.length, data.length);
+            System.arraycopy(dataLength, 0, packet, initialize.length + cmd.length, dataLength.length);
+            System.arraycopy(separator, 0, packet, initialize.length + cmd.length + dataLength.length,
+                    separator.length);
+            System.arraycopy(data, 0, packet,
+                    initialize.length + cmd.length + dataLength.length + separator.length,
+                    data.length);
 
         } catch (UnsupportedEncodingException ex) {
             ex.printStackTrace();
@@ -61,5 +67,12 @@ public final class Common {
                 .map(Path::getFileName)
                 .map(Path::toString)
                 .collect(Collectors.toList());
+    }
+
+    private static int getNumber(String str){
+        Map<String, Integer> numberMap = new HashMap<>();
+        numberMap.put("read", 4);
+
+        return numberMap.get(str);
     }
 }
