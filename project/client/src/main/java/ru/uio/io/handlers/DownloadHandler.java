@@ -28,7 +28,7 @@ public class DownloadHandler extends BaseHandler {
                     switch (Integer.parseInt(new String(cmd_buff))) {
                         case 124://create new file from store (upload)
                             System.out.println(String.format("download/%s", new String(recv_data)));
-                            rw = new RandomAccessFile(String.format("download/%s", new String(recv_data)), "rw");
+                            rw = new RandomAccessFile(String.format("download%s%s",File.separator, new String(recv_data)), "rw");
                             out.write(Common.createDataPacket("125".getBytes("UTF8"), String.valueOf(current_file_pointer).getBytes("UTF8")));
                             out.flush();
                             break;
