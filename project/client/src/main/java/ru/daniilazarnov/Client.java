@@ -1,27 +1,10 @@
 package ru.daniilazarnov;
 
-/*
- * Netty fileServer ClientApp
- *
- * @author Valeriy Lazarev
- * @since 09.02.2021
- */
-
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-   /*
-    Нереализованный протокол:
-            [byte [] ] 1b управляющий байт →
-            [short [][]] 2b длинна имени файла →
-            [byte[]?] nb  имя файла →
-            [long  [][][][][][][][]] 8b размер файла →
-            [byte[]?] nb содержимое файла
-
-     */
 
 /**
  * Содержит основную логику обработки введенных с консоли команд
@@ -29,7 +12,6 @@ import java.nio.file.Path;
 public class Client {
     private static final Logger log = Logger.getLogger(Client.class);
     private static Network client;
-    private static BufferedReader bufferedReader = null;
     private static final String PROMPT_TO_ENTER = ">";
     private static final String PROGRAM_NAME = "local_storage ";
     private static final String USERNAME = "~/user1";
@@ -38,35 +20,28 @@ public class Client {
             "ver: 0.002a\n" +
             "uod: 09.02.2021\n";
 
-
     public static void main(String[] args) throws IOException {
         init();
-        godHandle();
+        mainHandler();
     }
-
 
     /**
      * Метод содержит основную логику введенных с консоли команд
      */
-    private static void godHandle() throws IOException {
-        System.out.println("godHandle");
+    private static void mainHandler() throws IOException {
         String inputLine;
         while (true) {
             InputStream in = System.in;
-            bufferedReader = new BufferedReader(new InputStreamReader(in));
-//                System.out.println("if (client.isConnect()) {  " + client.isConnect());
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
             if (client.isConnect()) {
                 while (true) {
-//                System.out.println("(!FileSender.isLoadingStatus() " + !FileSender.isLoadingStatus());
                     if (!FileSender.isLoadingStatus()) {
                         printPrompt();
                         break;
                     }
-
                 }
                 inputLine = bufferedReader.readLine().trim().toLowerCase();
                 String firstCommand = inputLine.split(" ")[0];
-
 
                 switch (firstCommand) {
                     case "up":
@@ -95,13 +70,9 @@ public class Client {
                     case "status":
                         System.out.println(getStatus());
                         break;
-
                     case "server":
                         System.out.println(accessingTheServer(inputLine));
-
                         break;
-
-
                     default:
                         throw new IllegalStateException("Unexpected value: " + inputLine);
                 }
@@ -111,6 +82,7 @@ public class Client {
 
     /**
      * В этом методе обратимся к серверу за получением списка файлов находящемся в удаленном хранилище
+     *
      * @param inputLine ввод;
      */
     private static String accessingTheServer(String inputLine) {
@@ -119,15 +91,13 @@ public class Client {
         if (isThereaThirdElement(inputLine)) { // если после ls введено имя каталога получаем его
             command = getSecondElement(inputLine);
             String folderName = getThirdElement(inputLine);
-            if (command.equals("ls")){
+            if (command.equals("ls")) {
                 client.sendStringAndCommand(folderName, (byte) 4);
 
             } else return "Неизвестная команда";
         } else {
             client.sendStringAndCommand("", (byte) 4);
         }
-
-
 
         result = "Запрос отправлен на сервер";
         return result;
@@ -244,7 +214,6 @@ public class Client {
         }
     }
 
-
     /**
      * Метод проверяет есть ли второй элемент в строке
      *
@@ -294,5 +263,4 @@ public class Client {
     private static boolean isFileExists(String fileName) {
         return Files.exists(Path.of(HOME_FOLDER_PATH + fileName));
     }
-
 }

@@ -13,17 +13,15 @@ public enum Command {
     AUTH((byte) 6),
     HELP((byte) 7);
 
-    byte commandByte;
+   private byte commandByte;
 
-
-
-    private static Command getCommandInt(byte i) {
+    private static Command getCommandByte(byte b) {
         return Arrays.stream(Command.values())
-                .filter(command -> command.getCommandByte() == i).findFirst().orElse(Command.UNKNOWN);
+                .filter(command -> command.getCommandByte() == b).findFirst().orElse(Command.UNKNOWN);
     }
 
     public static Command valueOf(byte readed) {
-       return getCommandInt(readed);
+        return getCommandByte(readed);
     }
 
     public byte getCommandByte() {

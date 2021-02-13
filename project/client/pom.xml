@@ -15,9 +15,6 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
-
-
-
     <dependencies>
         <dependency>
             <groupId>ru.daniilazarnov</groupId>
@@ -31,24 +28,12 @@
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.jetbrains</groupId>-->
-<!--            <artifactId>annotations-java5</artifactId>-->
-<!--            <version>20.1.0</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>4.1.42.Final</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.42.Final</version>
-            <scope>compile</scope>
-        </dependency>
-
     </dependencies>
 
 </project>
