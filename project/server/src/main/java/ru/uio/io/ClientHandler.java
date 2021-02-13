@@ -1,7 +1,6 @@
 package ru.uio.io;
 
 import ru.uio.io.commands.Command;
-import ru.uio.io.commands.CreateNewFileCommand;
 import ru.uio.io.entity.User;
 
 import java.io.*;
@@ -125,7 +124,12 @@ public class ClientHandler {
                     byte[] recv_data = Common.readStream(in);
                     switch (Integer.parseInt(new String(cmd_buff))) {
                         case 124://create new upload file in store (upload)
-                            executeCommand(new CreateNewFileCommand(this, rw, recv_data, current_file_pointer));
+                            System.out.println(String.format("store/%s/%s", storePath, new String(recv_data)));
+                            rw = new RandomAccessFile(String.format("store/%s/%s", storePath, new String(recv_data)), "rw");
+                            System.out.println("124");
+                            System.out.println(Files.exists(Paths.get(String.format("store/%s/%s", storePath, new String(recv_data)))));
+                            out.write(Common.createDataPacket("125".getBytes("UTF8"), String.valueOf(current_file_pointer).getBytes("UTF8")));
+                            out.flush();
                             break;
                         case 126://write data in file (upload)
                             System.out.println("126");
