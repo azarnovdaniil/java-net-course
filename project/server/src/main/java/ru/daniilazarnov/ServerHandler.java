@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -13,9 +14,11 @@ import java.nio.file.Path;
  */
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger LOG = Logger.getLogger(ServerHandler.class);
-    private final String user = "server";
+    private final String server = "server";
     private State currentState = State.IDLE;
-    public static final String HOME_FOLDER_PATH = "project/server/cloud_storage/user1";
+    public static final String USER = "user1";
+    public static final String HOME_FOLDER_PATH = Path.of("project", "server", "cloud_storage", USER)
+            .toString() + File.separator;
     private static final int FOUR = 4;
 
     @Override
@@ -98,7 +101,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
      * Загружает файл на сервер
      */
     private void uploadFileToServer(Object msg) throws IOException {
-        ReceivingFiles.fileReceive(msg, user);
+        ReceivingFiles.fileReceive(msg, server);
     }
 
     @Override

@@ -3,8 +3,10 @@ package ru.daniilazarnov;
 import io.netty.buffer.ByteBuf;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * Класс реализующий получение файла по протоколу
@@ -15,10 +17,11 @@ import java.io.IOException;
  * [] data[] - содержимое файла
  */
 public class ReceivingFiles {
+    private static final String USER = "user1";
     private static State currentState = State.IDLE;
-    private static final String DEFAULT_PATH_SERVER = "project/server/cloud_storage/";
-    private static final String DEFAULT_PATH_USER = "project/client/local_storage/";
-    private static final String PREFIX_FILE_NAME = "/_";
+    private static final String DEFAULT_PATH_SERVER = Path.of("project", "server", "cloud_storage", USER).toString();
+    private static final String DEFAULT_PATH_USER = Path.of("project", "client", "local_storage").toString();
+    private static final String PREFIX_FILE_NAME = File.separator + "_";
     private static final String SERVER_NAME = "server";
     private static final int FOUR = 4;
     private static final int EIGHTS = 8;
@@ -43,10 +46,9 @@ public class ReceivingFiles {
         String fileNameStr;
         String fullPathString = user.equals(SERVER_NAME)
                 ? DEFAULT_PATH_SERVER   // собираем путь до целевой папки
-                + "user1"
                 + PREFIX_FILE_NAME : DEFAULT_PATH_USER
                 + PREFIX_FILE_NAME
-                .replace("/", "");
+                .replace(File.separator, "");
 
         ByteBuf buf = ((ByteBuf) msg);
 
@@ -117,6 +119,5 @@ public class ReceivingFiles {
                 }
             }
         }
-
     }
 }

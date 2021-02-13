@@ -12,12 +12,14 @@ import java.nio.file.Path;
 public class Client {
     private static final Logger LOG = Logger.getLogger(Client.class);
     private static Network client;
+    private static final int DELAY = 10;
     private static final byte FOUR_BYTE = 4;
     private static final byte THREE_INT = 3;
     private static final String PROMPT_TO_ENTER = ">";
     private static final String PROGRAM_NAME = "local_storage ";
-    private static final String USERNAME = "~/user1";
-    private static final String HOME_FOLDER_PATH = "project/client/local_storage/";
+    private static final String USERNAME = "~" + File.separator + "user1";
+    private static final String HOME_FOLDER_PATH = Path.of("project", "client", "local_storage")
+            .toString() + File.separator;
     private static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n"
             + "ver: 0.002a\n"
             + "uod: 09.02.2021\n";
@@ -74,6 +76,7 @@ public class Client {
                         break;
                     case SERVER:
                         System.out.println(accessingTheServer(inputLine));
+                        printPrompt();
                         break;
                     default:
                         throw new IllegalStateException("Unexpected value: " + inputLine);
@@ -89,13 +92,11 @@ public class Client {
      */
     private static String accessingTheServer(String inputLine) {
         String result;
-        String command;
         if (isThereaThirdElement(inputLine)) { // если после ls введено имя каталога получаем его
-            command = getSecondElement(inputLine);
             String folderName = getThirdElement(inputLine);
-            if (command.equals("ls")) {
+            Command command = Command.valueOf(getThirdElement(inputLine).toUpperCase());
+            if (command == Command.LS) {
                 client.sendStringAndCommand(folderName, FOUR_BYTE);
-
             } else {
                 return "Неизвестная команда";
             }
@@ -161,6 +162,11 @@ public class Client {
      * Метод выводит на консоль строку приглашение ко вводу
      */
     protected static void printPrompt() {
+        try {
+            Thread.sleep(DELAY);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.print(PROGRAM_NAME + USERNAME + PROMPT_TO_ENTER);
     }
 
@@ -197,7 +203,6 @@ public class Client {
         if (isThereaSecondElement(inputLine)) {
             String command = getSecondElement(inputLine);
             client.sendStringAndCommand(command, (byte) 1);
-            printPrompt();
         } else {
             System.out.println("local_storage: некорректный управляющий байт");
         }

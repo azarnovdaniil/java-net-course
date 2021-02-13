@@ -10,11 +10,11 @@ import java.nio.file.*;
  * Класс содержащий утилитные методы используемые как на стороне сервера, так и на стороне клиента
  */
 public class UtilMethod {
-    public static final String USER_FOLDER_PATH = "project\\client\\local_storage\\";
-    //    public static final String USER_FOLDER_PATH = Path.of("project", "client", "local_storage" ).toString();
-    public static final String SERVER_FOLDER_PATH = "project\\server\\cloud_storage\\user1\\";
+    public static final String USER_FOLDER_PATH = Path.of("project", "client", "local_storage")
+            .toString() + File.separator;
     public static final String USER = "user1";
-//    public static final String SERVER_FOLDER_PATH = Path.of("project","server", "cloud_storage", user ).toString();
+    public static final String SERVER_FOLDER_PATH = Path.of("project", "server", "cloud_storage", USER)
+            .toString() + File.separator;
 
     /**
      * Создание каталога по указанному пути
