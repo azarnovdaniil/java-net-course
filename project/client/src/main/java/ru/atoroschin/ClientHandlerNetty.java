@@ -1,8 +1,5 @@
-package client;
+package ru.atoroschin;
 
-import clientserver.Commands;
-import clientserver.FileLoaded;
-import clientserver.FileWorker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

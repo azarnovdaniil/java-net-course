@@ -1,8 +1,8 @@
 package server.storage.inHandler;
 
-import clientserver.Commands;
-import clientserver.FileLoaded;
-import clientserver.FileWorker;
+import ru.atoroschin.Commands;
+import ru.atoroschin.FileLoaded;
+import ru.atoroschin.FileWorker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

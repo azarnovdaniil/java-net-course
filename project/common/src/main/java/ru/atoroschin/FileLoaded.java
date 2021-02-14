@@ -1,4 +1,4 @@
-package clientserver;
+package ru.atoroschin;
 
 import java.io.*;
 import java.nio.file.Files;

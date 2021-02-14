@@ -1,7 +1,7 @@
-package clientserver.commands;
+package ru.atoroschin.commands;
 
-import clientserver.FileLoaded;
-import clientserver.FileWorker;
+import ru.atoroschin.FileLoaded;
+import ru.atoroschin.FileWorker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -27,7 +27,8 @@ public class CommandUpload implements Command {
     }
 
     @Override
-    public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles, byte signal) {
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles, byte signal) {
         String name = fileWorker.receiveFile(buf, uploadedFiles);
         if (!name.equals("")) {
             System.out.println("Сохранен файл " + name);
@@ -35,6 +36,7 @@ public class CommandUpload implements Command {
     }
 
     @Override
-    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles) {
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles) {
     }
 }

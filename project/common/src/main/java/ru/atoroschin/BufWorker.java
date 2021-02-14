@@ -1,4 +1,4 @@
-package clientserver;
+package ru.atoroschin;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.util.CharsetUtil;
@@ -10,28 +10,32 @@ import java.util.List;
 
 public class BufWorker {
     public static byte[] makeArrayFromList(List<String> listFile) {
-        int lengthResponse = (listFile.size() + 2) * 4 + 1;
+        final int countFour = 4;
+        final int countTwo = 2;
+        int lengthResponse = (listFile.size() + countTwo) * countFour + 1;
         for (String s : listFile) {
             lengthResponse += s.getBytes(StandardCharsets.UTF_8).length;
         }
 
         byte[] response = new byte[lengthResponse];
         response[0] = 0;
-        byte[] arrayCount = ByteBuffer.allocate(4).putInt(lengthResponse).array();
+        byte[] arrayCount = ByteBuffer.allocate(countFour).putInt(lengthResponse).array();
         System.arraycopy(arrayCount, 0, response, 1, arrayCount.length);
 
         int count = listFile.size();
-        arrayCount = ByteBuffer.allocate(4).putInt(count).array();
-        System.arraycopy(arrayCount, 0, response, 5, arrayCount.length);
+        final int countFive = 5;
+        arrayCount = ByteBuffer.allocate(countFour).putInt(count).array();
+        System.arraycopy(arrayCount, 0, response, countFive, arrayCount.length);
 
-        int i = 9;
+        final int i = 9;
+        int sum = i;
         for (String s : listFile) {
-            arrayCount = ByteBuffer.allocate(4).putInt(s.getBytes().length).array();
-            System.arraycopy(arrayCount, 0, response, i, arrayCount.length);
-            i += arrayCount.length;
+            arrayCount = ByteBuffer.allocate(countFour).putInt(s.getBytes().length).array();
+            System.arraycopy(arrayCount, 0, response, sum, arrayCount.length);
+            sum += arrayCount.length;
             arrayCount = s.getBytes(StandardCharsets.UTF_8);
-            System.arraycopy(arrayCount, 0, response, i, arrayCount.length);
-            i += arrayCount.length;
+            System.arraycopy(arrayCount, 0, response, sum, arrayCount.length);
+            sum += arrayCount.length;
         }
         return response;
     }

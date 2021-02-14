@@ -1,4 +1,4 @@
-package clientserver;
+package ru.atoroschin;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -47,13 +47,15 @@ public class FileWorker {
                 long sendVolume = 0;
                 int countPar = (int) volume / PART_SIZE + 1;
 
-                int lenServiceData = 1 + 4 + 4 + bytes.length;
-                byte[] buffer = new byte[PART_SIZE - lenServiceData];
+                final int countFour = 4;
+                int lenServiceData = 1 + countFour + countFour + bytes.length;
+                int lengthReadData = PART_SIZE - lenServiceData;
+                byte[] buffer = new byte[lengthReadData];
 
                 int partNum = countPar == 1 ? -1 : 1;
                 int i = 0;
                 FileInputStream fileInputStream = new FileInputStream(file.toFile());
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream, PART_SIZE - lenServiceData);
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream, lengthReadData);
                 while (sendVolume < volume) {
                     int readLength = bufferedInputStream.read(buffer);
                     ByteBuf bufOut = ByteBufAllocator.DEFAULT.buffer(PART_SIZE);
@@ -77,17 +79,21 @@ public class FileWorker {
 
     public byte[] makePrefixForFileSend(String fileName) {
         File file = Path.of(currentDir, fileName).toFile();
-        if (!file.exists()) return new byte[]{(byte) 0};
+        if (!file.exists()) {
+            return new byte[]{(byte) 0};
+        }
         String name = file.getName();
         int hash = getHash(file);
         int lengthResponse;
         long volume = file.length();
-        lengthResponse = 4 + 4 + name.getBytes(StandardCharsets.UTF_8).length + 8;
+        final int countFour = 4;
+        final int countEight = 8;
+        lengthResponse = countFour + countFour + name.getBytes(StandardCharsets.UTF_8).length + countEight;
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(lengthResponse);
 
-        buf.writeInt(hash); // 4 хэш
-        buf.writeInt(name.getBytes(StandardCharsets.UTF_8).length); // 5 длина имени
-        buf.writeBytes(name.getBytes(StandardCharsets.UTF_8)); // 6 имя
+        buf.writeInt(hash);
+        buf.writeInt(name.getBytes(StandardCharsets.UTF_8).length);
+        buf.writeBytes(name.getBytes(StandardCharsets.UTF_8));
         buf.writeLong(volume);
 
         byte[] bufOut = new byte[lengthResponse];
@@ -190,7 +196,8 @@ public class FileWorker {
         try {
             Path pathFile = currentPath.resolve(fileName);
             Path pathDir = currentPath.resolve(dirName);
-            if (Files.exists(pathFile) && Files.exists(pathDir) && Files.isRegularFile(pathFile) && Files.isDirectory(pathDir)) {
+            if (Files.exists(pathFile) && Files.exists(pathDir)
+                    && Files.isRegularFile(pathFile) && Files.isDirectory(pathDir)) {
                 Files.move(pathFile, pathDir.resolve(fileName));
             }
         } catch (IOException e) {

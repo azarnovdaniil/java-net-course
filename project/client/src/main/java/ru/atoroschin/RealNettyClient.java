@@ -1,4 +1,4 @@
-package client;
+package ru.atoroschin;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -26,7 +26,7 @@ public class RealNettyClient {
             clientBootstrap.channel(NioSocketChannel.class);
             clientBootstrap.remoteAddress(new InetSocketAddress(host, SERVER_PORT));
             clientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
-                protected void initChannel(SocketChannel socketChannel) throws Exception {
+                protected void initChannel(SocketChannel socketChannel) {
                     socketChannel.pipeline()
                             .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE, 1, 4, -5, 0, true))
                             .addLast(new ClientHandlerNetty());

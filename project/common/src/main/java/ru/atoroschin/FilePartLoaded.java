@@ -1,4 +1,4 @@
-package clientserver;
+package ru.atoroschin;
 
 public class FilePartLoaded {
     private int num;

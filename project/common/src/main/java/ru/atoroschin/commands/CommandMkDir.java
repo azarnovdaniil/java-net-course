@@ -1,8 +1,8 @@
-package clientserver.commands;
+package ru.atoroschin.commands;
 
-import clientserver.BufWorker;
-import clientserver.FileLoaded;
-import clientserver.FileWorker;
+import ru.atoroschin.BufWorker;
+import ru.atoroschin.FileLoaded;
+import ru.atoroschin.FileWorker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -16,12 +16,14 @@ public class CommandMkDir implements Command {
     }
 
     @Override
-    public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles, byte signal) {
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles, byte signal) {
         fileWorker.makeDir(BufWorker.readFileListFromBuf(buf).get(0));
     }
 
     @Override
-    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles) {
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles) {
 
     }
 }

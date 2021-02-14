@@ -1,8 +1,8 @@
-package clientserver.commands;
+package ru.atoroschin.commands;
 
-import clientserver.BufWorker;
-import clientserver.FileLoaded;
-import clientserver.FileWorker;
+import ru.atoroschin.BufWorker;
+import ru.atoroschin.FileLoaded;
+import ru.atoroschin.FileWorker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -23,9 +23,10 @@ public class CommandDownload implements Command {
     }
 
     @Override
-    public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles, byte signal) {
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles, byte signal) {
         String fileName = BufWorker.readFileListFromBuf(buf).get(0);
-        byte[] bytes = fileWorker.makePrefixForFileSend(fileName); // служебные данные в начале сообщения
+        byte[] bytes = fileWorker.makePrefixForFileSend(fileName);
         if (bytes.length > 0) {
             fileWorker.sendFile(ctx, fileName, signal, bytes);
             System.out.println("Выгрузка завершена");
@@ -35,7 +36,8 @@ public class CommandDownload implements Command {
     }
 
     @Override
-    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles) {
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles) {
         String name = fileWorker.receiveFile(buf, uploadedFiles);
         if (!name.equals("")) {
             System.out.println("Сохранен файл " + name);
