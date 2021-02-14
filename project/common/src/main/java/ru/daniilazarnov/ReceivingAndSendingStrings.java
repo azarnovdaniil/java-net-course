@@ -45,6 +45,7 @@ public class ReceivingAndSendingStrings {
         int msgLength = (byte) buf.readInt();
         byte[] messageContent = new byte[msgLength];
         buf.readBytes(messageContent);
+
         return new String(messageContent);
     }
 }

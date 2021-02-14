@@ -18,6 +18,12 @@ public class Network {
     private static final Logger LOG = Logger.getLogger(Network.class);
     private SocketChannel channel;
 
+    public boolean isStatusNetwork() {
+        return statusNetwork;
+    }
+
+    private boolean statusNetwork = false;
+
     private static final String HOST = "localhost";
     private static final int PORT = 8189;
 
@@ -36,8 +42,10 @@ public class Network {
                             }
                         });
                 LOG.info("Соединение установлено");
+                statusNetwork = true;
                 ChannelFuture future = b.connect(HOST, PORT).sync();
                 future.channel().closeFuture().sync();
+                statusNetwork = false;
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

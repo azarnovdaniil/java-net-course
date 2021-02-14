@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 /**
  * Содержит основную логику обработки введенных с консоли команд
@@ -14,7 +15,7 @@ public class Client {
     private static Network client;
     private static final int DELAY = 10;
     private static final byte FOUR_BYTE = 4;
-    private static final byte THREE_INT = 3;
+    private static final byte THREE_BYTE = 3;
     private static final String PROMPT_TO_ENTER = ">";
     private static final String PROGRAM_NAME = "local_storage ";
     private static final String USERNAME = "~" + File.separator + "user1";
@@ -26,6 +27,7 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
         init();
+        auth();
         mainHandler();
     }
 
@@ -46,43 +48,97 @@ public class Client {
                 }
                 inputLine = bufferedReader.readLine().trim().toLowerCase();
                 String firstCommand = inputLine.split(" ")[0];
-                Command command = Command.valueOf(firstCommand.toUpperCase());
+                Command command;
+                try {
+                    command = Command.valueOf(firstCommand.toUpperCase());
 
-                switch (command) {
-                    case UPLOAD:
-                        sendCommand(inputLine);
-                        break;
-                    case LS:
-                        System.out.println(getFilesList(inputLine));
-                        break;
-                    case EXIT:
-                        client.close();
-                        System.out.println("Bye");
-                        System.exit(0);
-                    case CONNECT:
-                        System.out.println(connectedToServer());
-                        break;
-                    case DISCONNECT:
-                        client.close();
-                        break;
-                    case DOWNLOAD:
-                        sendNameFIleForDownloading(inputLine);
-                        break;
-                    case HELP:
-                        System.out.println(Command.getHelpInfo());
-                        break;
-                    case STATUS:
-                        System.out.println(getStatus());
-                        break;
-                    case SERVER:
-                        System.out.println(accessingTheServer(inputLine));
-                        printPrompt();
-                        break;
-                    default:
-                        throw new IllegalStateException("Unexpected value: " + inputLine);
+
+                    switch (command) {
+                        case AUTH:
+//                        auth(inputLine);
+                            break;
+                        case UPLOAD:
+                            sendCommand(inputLine);
+                            break;
+                        case LS:
+                            System.out.println(getFilesList(inputLine));
+                            break;
+                        case EXIT:
+                            client.close();
+                            System.out.println("Bye");
+                            System.exit(0);
+                        case CONNECT:
+                            System.out.println(connectedToServer());
+                            break;
+                        case DISCONNECT:
+                            client.close();
+                            break;
+                        case DOWNLOAD:
+                            sendNameFIleForDownloading(inputLine);
+                            break;
+                        case HELP:
+                            System.out.println(Command.getHelpInfo());
+                            break;
+                        case STATUS:
+                            System.out.println(getStatus());
+                            break;
+                        case SERVER:
+                            System.out.println(accessingTheServer(inputLine));
+                            printPrompt();
+                            break;
+                        default:
+                            LOG.error("Unexpected value: " + inputLine);
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Некорректная команда");
+                    LOG.error(e);
+                    mainHandler();
                 }
+
             }
         }
+    }
+
+    private static boolean auth() {
+        InputStream in = System.in;
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+
+        String userName = "";
+        char[] password = new char[0];
+
+        while (!client.isConnect()) {
+            try {
+                Thread.sleep(DELAY);
+            } catch (InterruptedException e) {
+                LOG.error(e);
+            }
+        }
+
+        Console console = System.console();
+        if (console == null) {
+            System.out.println("Логин: ");
+            try {
+                userName = bufferedReader.readLine().trim();
+                System.out.println("Пароль: ");
+                password = bufferedReader.readLine().trim().toCharArray();
+
+                System.out.println(userName + " - " + Arrays.toString(password));
+
+            } catch (IOException e) {
+                LOG.error(e);
+            }
+        } else {
+            System.out.println("Enter username: ");
+            userName = console.readLine("Username: ");
+            password = console.readPassword("Password: ");
+        }
+
+
+        String passString = new String(password);
+        client.sendStringAndCommand((userName + "%-%" + passString), Command.AUTH.getCommandByte());
+
+
+        return false;
     }
 
     /**
@@ -225,7 +281,7 @@ public class Client {
      * @return если есть третий элемент в строке = true
      */
     private static boolean isThereaThirdElement(String inputLine) {
-        return inputLine.split(" ").length == THREE_INT;
+        return inputLine.split(" ").length == THREE_BYTE;
     }
 
     /**

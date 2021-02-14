@@ -4,10 +4,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
+import ru.daniilazarnov.sql_client.SQLClient;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Класс содержит обработку принятых сообщений на стороне сервера
@@ -45,7 +49,16 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     downloadFileFromServer(ctx, buf);  //1
                     break;
                 case LS:
-                    lshandle(ctx, buf);
+                    lsHandle(ctx, buf);
+                    break;
+                case AUTH:
+                    LOG.info("Запрос авторизации");
+                    String rawAuthData = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
+                    List<String> authData = Arrays.stream(rawAuthData.split("%-%")).collect(Collectors.toList());
+                    System.out.println(SQLClient.getAuth(authData.get(0), authData.get(1)));
+                    System.out.println(authData);
+
+
                     break;
                 default:
                     invalidControlByte(buf, "(class ServerHandler) ERROR: Invalid first byte - ", readed);
@@ -57,7 +70,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void lshandle(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
+    private void lsHandle(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
         String folderName = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
         String fileList = UtilMethod.getFolderContents(folderName, "server");
         ReceivingAndSendingStrings
