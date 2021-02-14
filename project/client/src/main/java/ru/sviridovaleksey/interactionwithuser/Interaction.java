@@ -1,19 +1,14 @@
 package ru.sviridovaleksey.interactionwithuser;
 
 import io.netty.channel.Channel;
-import ru.sviridovaleksey.Command;
-import ru.sviridovaleksey.network.Connection;
+import ru.sviridovaleksey.workwithfile.WorkWithFileClient;
 
 import java.util.Scanner;
 
 public class Interaction {
 
-    private Scanner scanner = new Scanner(System.in);
-    private ChoseAction choseAction;
-    private io.netty.channel.Channel channel;
-    private boolean authOk = false;
-
-
+    private final Scanner scanner = new Scanner(System.in);
+    private final io.netty.channel.Channel channel;
 
 
 public Interaction(Channel channel) {
@@ -21,9 +16,9 @@ public Interaction(Channel channel) {
 }
 
 
-    public void startInteraction (HelloMessage helloMessage, String userName) {
+    public void startInteraction (HelloMessage helloMessage, String userName, WorkWithFileClient workWithFileClient) {
 
-        choseAction = new ChoseAction(scanner, channel);
+        ChoseAction choseAction = new ChoseAction(channel, workWithFileClient);
 
         while (true) {
             helloMessage.helloMessage();

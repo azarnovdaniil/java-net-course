@@ -7,7 +7,6 @@ import java.util.logging.*;
 
 public class Server {
     private static final Logger logger = Logger.getLogger(Server.class.getName());
-    private static Handler fileHandler;
     private static final int defaultPort = 8189;
 
     public static void main(String[] args) {
@@ -18,7 +17,7 @@ public class Server {
         }
 
         try {
-            fileHandler = new FileHandler("log_%g.txt", 10*1024, 20, true);
+            Handler fileHandler = new FileHandler("log_%g.txt", 10 * 1024, 20, true);
             fileHandler.setFormatter(new SimpleFormatter());
 
             new ClientConnection(fileHandler, usePort).startConnection();

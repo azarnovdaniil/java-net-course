@@ -2,17 +2,23 @@ package ru.sviridovaleksey.interactionwithuser;
 
 import io.netty.channel.Channel;
 import ru.sviridovaleksey.Command;
-
+import ru.sviridovaleksey.workwithfile.WorkWithFileClient;
+import java.io.File;
 import java.util.Scanner;
 
 public class ChoseAction {
 
-    private Scanner scanner;
-    private Channel channel;
+    private Scanner scanner = new Scanner(System.in);
+    private final Channel channel;
+    private final WorkWithFileClient workWithFileClient;
+    private  final String ANSI_RESET = "\u001B[0m";
+    private  final String ANSI_RED = "\u001B[31m";
 
-    public ChoseAction(Scanner scanner, Channel channel) {
-        this.scanner = scanner;
+
+
+    public ChoseAction(Channel channel, WorkWithFileClient workWithFileClient) {
         this.channel = channel;
+        this.workWithFileClient = workWithFileClient;
     }
 
     public void choseAction (String chose, String userName) {
@@ -22,6 +28,12 @@ public class ChoseAction {
         switch (chose) {
 
             case "0" : {
+                break;
+            }
+
+            case "a" : {
+                command = Command.getShowDir(userName, "");
+                channel.write(command);
                 break;
             }
 
@@ -35,7 +47,7 @@ public class ChoseAction {
             }
 
             case "2" : {
-                System.out.println("Выбрано действие удалить директорию, введите номер директории:");
+                System.out.println("Выбрано действие удалить директорию, введите имя директории:");
                 String numberDirectory = scanner.next();
                 if (numberDirectory.equals("0")) { break;}
                 command = Command.deleteDirectory(userName, numberDirectory);
@@ -53,20 +65,20 @@ public class ChoseAction {
             }
 
             case "4" : {
-                System.out.println("Выбрано действие удалить файл, введите номер файла:");
-                String numberFile = scanner.next();
-                if (numberFile.equals("0")) { break;}
-                command = Command.deleteFile(userName, numberFile);
+                System.out.println("Выбрано действие удалить файл, введите имя файла:");
+                String nameFile = scanner.next();
+                if (nameFile.equals("0")) { break;}
+                command = Command.deleteFile(userName, nameFile);
                 channel.write(command);
                 break;
 
             }
 
             case "5" : {
-                System.out.println("Выбрано действие копировать файл, введите номер файла:");
-                String numberFile = scanner.next();
-                if (numberFile.equals("0")) { break;}
-                command = Command.copyFile(userName, numberFile);
+                System.out.println("Выбрано действие копировать файл, введите имя файла:");
+                String nameFile = scanner.next();
+                if (nameFile.equals("0")) { break;}
+                command = Command.copyFile(userName, nameFile);
                 channel.write(command);
                 break;
             }
@@ -103,9 +115,33 @@ public class ChoseAction {
                 break;
             }
 
+            case "10" : {
+                System.out.println("Выбрано действие отправить файл на серер");
+                System.out.println("Введите путь к файлу (пример D:/test.txt) :    (0 - назад)");
+                String way = scanner.next();
+                if (way.equals("0")) { break;}
+                File file = new File(way);
+                command = Command.createNewFile(userName, file.getName());
+                channel.write(command);
+                System.out.println(ANSI_RED + "Дождитесь ответа от сервера о завершении" + ANSI_RESET);
+                workWithFileClient.sendFileInServer(file, userName, channel);
+                break;
+            }
 
+            case "11" : {
+                System.out.println("Выбрано действие скачать файл, введине название файла     (0 - назад)");
+                String fileName = scanner.next();
+                if (fileName.equals("0")) { break;}
+                command = Command.requestFile(userName, fileName);
+                channel.write(command);
+                break;
+            }
         }
 
+
     }
+
+
+
 
 }

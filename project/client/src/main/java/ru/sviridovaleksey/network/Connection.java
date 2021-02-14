@@ -6,17 +6,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
-import ru.sviridovaleksey.interactionwithuser.HelloMessage;
-import ru.sviridovaleksey.interactionwithuser.Interaction;
-;
-import java.util.Scanner;
+
 
 
 public class Connection {
 
-    private String serverAddress;
-    private int usePort;
-    private Scanner scanner = new Scanner(System.in);
+    private final String serverAddress;
+    private final int usePort;
+
 
 
     public Connection(String serverAddress, int usePort) {
@@ -30,13 +27,13 @@ public class Connection {
        EventLoopGroup workerGroup = new NioEventLoopGroup();
 
        try {
-           Bootstrap b = new Bootstrap(); // (1)
-           b.group(workerGroup); // (2)
-           b.channel(NioSocketChannel.class); // (3)
-           b.option(ChannelOption.SO_KEEPALIVE, true); // (4)
+           Bootstrap b = new Bootstrap();
+           b.group(workerGroup);
+           b.channel(NioSocketChannel.class);
+           b.option(ChannelOption.SO_KEEPALIVE, true);
            b.handler(new ChannelInitializer<SocketChannel>() {
                @Override
-               public void initChannel(SocketChannel socketChannel) throws Exception {
+               public void initChannel(SocketChannel socketChannel) {
                    socketChannel.pipeline().addFirst(new Encoder(),
                            new DecoderClient(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())),
                            new NettyOutHandler(), new NettyInHandler());

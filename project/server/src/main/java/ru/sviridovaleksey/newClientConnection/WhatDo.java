@@ -6,16 +6,19 @@ import ru.sviridovaleksey.commands.*;
 import ru.sviridovaleksey.workwithfiles.ShowAllDirectory;
 import ru.sviridovaleksey.workwithfiles.WorkWithFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.HashMap;
 
 
 public class WhatDo {
 
-private WorkWithFile workWithFile;
-private MessageForClient messageForClient;
+private final WorkWithFile workWithFile;
+private final MessageForClient messageForClient;
 private final String defAddress = "project/server/Storage/";
-private ShowAllDirectory showAllDirectory = new ShowAllDirectory(defAddress);
-private HashMap<String, String> whenClient = new HashMap<String, String>();
+private final ShowAllDirectory showAllDirectory = new ShowAllDirectory(defAddress);
+private final HashMap<String, String> whenClient = new HashMap<>();
 
 
 public WhatDo(WorkWithFile workWithFile, MessageForClient messageForClient){
@@ -46,7 +49,7 @@ workWithFile.createDefaultDirectory(defAddress);
                 DeleteDirectory data = (DeleteDirectory) command.getData();
                 String directoryName = data.getDirectoryName();
                 String userName = data.getUserName();
-                workWithFile.deleteDirectory(userName, whenClient.get(userName) + directoryName);
+                workWithFile.deleteDirectory(whenClient.get(userName) + directoryName);
                 showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
                 break;
             }
@@ -55,7 +58,7 @@ workWithFile.createDefaultDirectory(defAddress);
                 DeleteFile data = (DeleteFile) command.getData();
                 String fileName = data.getFileName();
                 String userName = data.getUserName();
-                workWithFile.deleteFile(userName, whenClient.get(userName) + fileName);
+                workWithFile.deleteFile(whenClient.get(userName) + fileName);
                 showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
                 break;
             }
@@ -103,6 +106,60 @@ workWithFile.createDefaultDirectory(defAddress);
                 System.out.println(whenClient.get(userName));
                 break;
             }
+
+            case WRITE_INTO_FILE: {
+                WriteInToFile data = (WriteInToFile) command.getData();
+                String userName = data.getUserName();
+                String fileName = data.getFileName();
+                boolean endWrite = data.getEndWrite();
+                byte[] dataForFile = data.getData();
+                long cell = data.getCell();
+                workWithFile.writeByteToFile(whenClient.get(userName)+"/" + fileName, dataForFile, cell);
+                if (endWrite) {
+                    messageForClient.successfulAction("Передача файла " + fileName + " окончена");
+                    showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
+                }
+                break;
+            }
+
+            case REQUEST_FILE: {
+                RequestFileFromClient data = (RequestFileFromClient) command.getData();
+                String userName = data.getUserName();
+                String fileName = data.getFileName();
+                sendFileForClient(userName, fileName);
+                break;
+            }
+
+        }
+
+    }
+
+    private void sendFileForClient(String userName, String fileName) {
+
+        File file = new File(whenClient.get(userName) + fileName);
+
+        try {
+            long cell = 0;
+            int step = 980000;
+            int sendSize;
+            boolean endWrite = false;
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            raf.seek(cell);
+            int length = (int) raf.length();
+
+            while (length != 0) {
+                if (length > step) {sendSize = step; length = length - step;}
+                else {sendSize = length; length = 0; endWrite = true;}
+                byte[] bt = new byte[sendSize];
+                raf.read(bt);
+                Command command = Command.writeInToFile(userName, file.getName(), bt, cell, endWrite);
+                cell = cell + sendSize;
+                messageForClient.sendCommandForClient(command);
+            }
+            raf.close();
+            showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
@@ -113,7 +170,6 @@ workWithFile.createDefaultDirectory(defAddress);
     }
 
     private void showDirectoryFoClient (String shad) {
-        System.out.println(shad);
         messageForClient.responseShowDirectory(shad);
     }
 

@@ -4,33 +4,24 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ru.sviridovaleksey.Command;
 import ru.sviridovaleksey.TypeCommand;
-import ru.sviridovaleksey.clientHandler.DataBaseUser;
-import ru.sviridovaleksey.clientHandler.RegistrationProcess;
+import ru.sviridovaleksey.clientHandler.BaseAuthService;
 import ru.sviridovaleksey.workwithfiles.WorkWithFile;
 
 public class ServerInHandler extends ChannelInboundHandlerAdapter {
 
     private Boolean isChanelReg= false;
-    private DataBaseUser dataBaseUser;
     private String login;
-    private RegistrationProcess registrationProcess;
-    private MessageForClient messageForClient;
-    private WorkWithFile workWithFile;
     private WhatDo whatDo;
+    private final BaseAuthService baseAuthService = new BaseAuthService();
 
 
-
-    public ServerInHandler(DataBaseUser dataBaseUser) {
-        this.dataBaseUser = dataBaseUser;
-    }
 
     @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+    public void channelRegistered(ChannelHandlerContext ctx) {
         System.out.println("Подключился новый пользователь");
-        this.registrationProcess = new RegistrationProcess(dataBaseUser);
         ctx.write(Command.ping());
-        this.messageForClient = new MessageForClient(ctx);
-        this.workWithFile = new WorkWithFile(messageForClient);
+        MessageForClient messageForClient = new MessageForClient(ctx);
+        WorkWithFile workWithFile = new WorkWithFile(messageForClient);
         this.whatDo = new WhatDo(workWithFile, messageForClient);
     }
 
@@ -41,7 +32,7 @@ public class ServerInHandler extends ChannelInboundHandlerAdapter {
 
               if (((Command) msg).getType().equals(TypeCommand.AUTH)) {
                   System.out.println("Попытка авторизоваться" + ctx);
-                  String isLogin = registrationProcess.isAuthOk((Command) msg);
+                  String isLogin = baseAuthService.getUsernameByLoginAndPassword((Command) msg);
                   if ( isLogin == null) {
                       ctx.write(Command.authErrorCommand("ошибка авторизации, пароль или логин не верны"));
                       System.out.println("Ошибка авторизации" + ctx);
@@ -61,7 +52,7 @@ public class ServerInHandler extends ChannelInboundHandlerAdapter {
               }
            }
         }
-        else if (msg instanceof Command && isChanelReg) {
+        else if (msg instanceof Command) {
             whatDo.whatDo((Command) msg, login);
         }
 

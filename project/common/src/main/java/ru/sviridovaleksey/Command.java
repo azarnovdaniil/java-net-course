@@ -1,10 +1,9 @@
 package ru.sviridovaleksey;
 
-import io.netty.util.AttributeKey;
 import ru.sviridovaleksey.commands.*;
 
 import java.io.Serializable;
-import java.util.concurrent.CyclicBarrier;
+
 
 public class Command implements Serializable {
 
@@ -130,6 +129,20 @@ public class Command implements Serializable {
         Command command = new Command();
         command.type = TypeCommand.GET_BACK_DIR;
         command.data = new GetBackDir(userName, message);
+        return command;
+    }
+
+    public static Command writeInToFile (String userName, String fileName, byte[] data, long cell, boolean endWrite) {
+        Command command = new Command();
+        command.type = TypeCommand.WRITE_INTO_FILE;
+        command.data = new WriteInToFile(userName, fileName, data, cell, endWrite);
+        return command;
+    }
+
+    public static Command requestFile (String userName, String fileName) {
+        Command command = new Command();
+        command.type = TypeCommand.REQUEST_FILE;
+        command.data = new RequestFileFromClient(userName, fileName);
         return command;
     }
 

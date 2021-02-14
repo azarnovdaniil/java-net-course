@@ -17,7 +17,9 @@ public enum TypeCommand {
     SUCCESS_ACTION,
     SHOW_ALL_IN_DIR,
     GET_SHOW_DIR,
-    GET_BACK_DIR
+    GET_BACK_DIR,
+    WRITE_INTO_FILE,
+    REQUEST_FILE
 
 
 }

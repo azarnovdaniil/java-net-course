@@ -9,11 +9,11 @@ import java.util.Collections;
 
 public class ShowAllDirectory {
 
-    private static StringBuilder readyMessage = new StringBuilder();
+    private static final StringBuilder readyMessage = new StringBuilder();
     private static String defaultLink;
 
     public ShowAllDirectory(String defaultLink) {
-        this.defaultLink = defaultLink;
+        ShowAllDirectory.defaultLink = defaultLink;
     }
 
 
@@ -39,22 +39,22 @@ public class ShowAllDirectory {
         }
 
         @Override
-        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            readyMessage.append("Дирректория: " + StringUtils.substringAfter(dir.toString(),
-                    Path.of(defaultLink).toString()) + "\n");
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+            readyMessage.append("Дирректория: ").append(StringUtils.substringAfter(dir.toString(),
+                    Path.of(defaultLink).toString())).append("\n");
             return FileVisitResult.CONTINUE;
         }
 
         @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
             String fileName = file.getFileName().toString();
             count++;
-            readyMessage.append(count + ". " + fileName + "\n");
+            readyMessage.append(count).append(". ").append(fileName).append("\n");
             return FileVisitResult.CONTINUE;
         }
 
         @Override
-        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+        public FileVisitResult visitFileFailed(Path file, IOException exc) {
             readyMessage.append("такой папки не существует"  + "\n");
             readyMessage.append("//////////////////////////////////////////////////////////////////");
             return FileVisitResult.TERMINATE;
@@ -62,7 +62,7 @@ public class ShowAllDirectory {
         }
 
         @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
             readyMessage.append("//////////////////////////////////////////////////////////////////");
             return FileVisitResult.CONTINUE;
         }

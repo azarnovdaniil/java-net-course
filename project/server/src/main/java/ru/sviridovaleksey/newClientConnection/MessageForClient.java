@@ -5,9 +5,9 @@ import ru.sviridovaleksey.Command;
 
 public class MessageForClient {
 
-    private String name = "server";
+    private final String name = "server";
 
-    private ChannelHandlerContext ctx;
+    private final ChannelHandlerContext ctx;
 
    public MessageForClient (ChannelHandlerContext ctx) {
        this.ctx = ctx;
@@ -24,6 +24,8 @@ public class MessageForClient {
    public void responseShowDirectory (String message) {
        ctx.write(Command.showAllInDirectory(name, message));
    }
+
+   public void sendCommandForClient (Command command) {ctx.write(command);}
 
 
 }

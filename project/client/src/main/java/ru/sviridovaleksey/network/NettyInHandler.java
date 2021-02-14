@@ -6,6 +6,7 @@ import ru.sviridovaleksey.TypeCommand;
 import ru.sviridovaleksey.commands.AuthOkCommandData;
 import ru.sviridovaleksey.interactionwithuser.HelloMessage;
 import ru.sviridovaleksey.interactionwithuser.Interaction;
+import ru.sviridovaleksey.workwithfile.WorkWithFileClient;
 
 import java.util.Scanner;
 
@@ -14,20 +15,21 @@ public class NettyInHandler extends ChannelInboundHandlerAdapter {
 
     private Interaction interaction;
     private WhatDoClient whatDoClient;
-    private HelloMessage helloMessage = new HelloMessage();
-    private Scanner scanner = new Scanner(System.in);
+    private final HelloMessage helloMessage = new HelloMessage();
+    private final Scanner scanner = new Scanner(System.in);
     private Boolean autoK = false;
     private String userName;
+    private final WorkWithFileClient workWithFileClient = new WorkWithFileClient();
 
     @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+    public void channelRegistered(ChannelHandlerContext ctx) {
         interaction = new Interaction(ctx.channel());
         whatDoClient = new WhatDoClient();
 
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
 
     }
 
@@ -42,9 +44,7 @@ public class NettyInHandler extends ChannelInboundHandlerAdapter {
                 AuthOkCommandData data = (AuthOkCommandData) ((Command) msg).getData();
                 this.userName = data.getUsername();
                 ctx.write(Command.getShowDir(userName,""));
-                Thread thread = new Thread(() -> {
-                    interaction.startInteraction(helloMessage, userName);
-                });
+                Thread thread = new Thread(() -> interaction.startInteraction(helloMessage, userName, workWithFileClient));
                 thread.start();
             }
 

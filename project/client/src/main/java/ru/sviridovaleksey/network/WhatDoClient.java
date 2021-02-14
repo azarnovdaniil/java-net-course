@@ -2,18 +2,19 @@ package ru.sviridovaleksey.network;
 
 import ru.sviridovaleksey.Command;
 import ru.sviridovaleksey.commands.*;
-import ru.sviridovaleksey.interactionwithuser.Interaction;
+import ru.sviridovaleksey.workwithfile.WorkWithFileClient;
 
-import java.nio.channels.SelectionKey;
 
 public class WhatDoClient {
 
     private  final String ANSI_RESET = "\u001B[0m";
     private  final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_BLUE = "\u001B[34m";
+    private  final String ANSI_BLUE = "\u001B[34m";
+    private final WorkWithFileClient workWithFileClient = new WorkWithFileClient();
+    private final String defaultDirectoryForDownload = "project/client/Download/" ;
 
     public WhatDoClient () {
-
+        workWithFileClient.createDefaultDirectory(defaultDirectoryForDownload);
     }
 
 
@@ -22,7 +23,6 @@ public class WhatDoClient {
         switch (command.getType()) {
             case MESSAGE: {
                 MessageCommandData data = (MessageCommandData) command.getData();
-                String username = data.getUserName();
                 String message = data.getMessage();
                 System.out.println("Ответ от сервера: " + message);
                 break;
@@ -57,6 +57,20 @@ public class WhatDoClient {
                 ShowAllInDirectory data = (ShowAllInDirectory) command.getData();
                 String message = data.getMessage();
                 System.out.println(message);
+                break;
+            }
+
+            case WRITE_INTO_FILE: {
+                WriteInToFile data = (WriteInToFile) command.getData();
+                String fileName = data.getFileName();
+                boolean endWrite = data.getEndWrite();
+                byte[] dataForFile = data.getData();
+                long cell = data.getCell();
+                workWithFileClient.writeByteToFile(defaultDirectoryForDownload + fileName,dataForFile,cell);
+                if (endWrite) {
+                    System.out.println(ANSI_BLUE + "Скачивание завершено, загляните в папку "
+                            + defaultDirectoryForDownload + ANSI_RESET);
+                }
                 break;
             }
 

@@ -3,13 +3,16 @@ package ru.sviridovaleksey.workwithfiles;
 import ru.sviridovaleksey.newClientConnection.MessageForClient;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class WorkWithFile {
 
-    private MessageForClient messageForClient;
+    private final MessageForClient messageForClient;
 
     public WorkWithFile(MessageForClient messageForClient){
         this.messageForClient = messageForClient;
@@ -70,7 +73,7 @@ public class WorkWithFile {
         }
     }
 
-    public void deleteDirectory(String userName, String address) {
+    public void deleteDirectory(String address) {
 
         File file = new File(address);
 
@@ -81,7 +84,7 @@ public class WorkWithFile {
         }
     }
 
-    public void deleteFile(String userName, String address) {
+    public void deleteFile(String address) {
 
         File file = new File(address);
 
@@ -98,17 +101,32 @@ public class WorkWithFile {
         if (!file.exists())
             return;
 
-        //если это папка, то идем внутрь этой папки и вызываем рекурсивное удаление всего, что там есть
         if (file.isDirectory()) {
-            for (File f : file.listFiles()) {
-                // рекурсивный вызов
+            for (File f : Objects.requireNonNull(file.listFiles())) {
+
                 recursiveDeleteDirectory(f);
             }
         }
-        // вызываем метод delete() для удаления файлов и пустых(!) папок
+
         file.delete();
         messageForClient.successfulAction("Удаленный файл или папка: " + file.getName());
         System.out.println("Удаленный файл или папка: " + file.getAbsolutePath());
+    }
+
+    public synchronized void writeByteToFile (String way, byte[] data, long cell) {
+        try {
+            File file = new File(way);
+            RandomAccessFile rafWrite = new RandomAccessFile(file, "rw");
+            rafWrite.seek(cell);
+            rafWrite.write(data);
+            rafWrite.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage() + "Неудачная запись в файл");
+        } catch (IOException e) {
+            System.out.println(e.getMessage() + "Неудачная запись в файл");
+            e.printStackTrace();
+        }
     }
 
 
