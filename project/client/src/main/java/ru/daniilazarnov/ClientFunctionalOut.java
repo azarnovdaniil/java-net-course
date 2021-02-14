@@ -27,11 +27,5 @@ public class ClientFunctionalOut {
         return list.toArray(String[]::new);
     }
 
-    protected DataMsg createMsg(Command command, Object obj){
-        try {
-            return new DataMsg(command, ConvertToByte.serialize(obj));
-        } finally {
-            return new DataMsg(Command.createError(""), null);
-        }
-    }
+
 }

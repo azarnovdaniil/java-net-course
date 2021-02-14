@@ -3,7 +3,9 @@ package ru.daniilazarnov;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,9 +38,22 @@ public class FunctionalServer {
         }
     }
 
-    private void downloadFile(ChannelHandlerContext ctx, Object msg){
-        String [] paths = getPaths((DataMsg) msg);
+    private void downloadFile(ChannelHandlerContext ctx, Object msg) {
+        String[] paths = getPaths((DataMsg) msg);
+        try {
+            RandomAccessFile file = new RandomAccessFile(paths[0], "r");
+            byte[] bytes = new byte[(int) file.length()];
+            file.readFully(bytes);
+            FileMsg fileMsg = new FileMsg(getFileName(paths[0]), bytes);
+            ctx.writeAndFlush(Command.createMsg(Command.DOWNLOAD, fileMsg));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private String getFileName(String path) {
+        File file = new File(path);
+        return file.getName();
     }
 
     private String[] getPaths(DataMsg msg) {
@@ -46,7 +61,7 @@ public class FunctionalServer {
         return (String[]) ConvertToByte.deserialize(bytes);
     }
 
-    private void uploadFile(){
+    private void uploadFile() {
 
     }
 

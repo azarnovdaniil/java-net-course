@@ -9,8 +9,8 @@ public enum Command implements Serializable {
     UPLOAD("/upload", " - send file to server \n\t\t[Example: /upload (path_to_file_client) (path_where_to_save_server)]", null),
     REMOVE("/remove", " - delete file on server \n\t\t[Example: /remove (path_to_file_server)]", null),
     MOVE("/move", " - moves the file to another directory \n\t\t[Example: /move (path_to_file_server) (path_where_to_move_server)]", null),
-    CREATEDIR("/crdir", " - create directory on server \n\t\t[Example: /crdir (path_where_create_server)]", null),
-    ERROR(""," - command from server was incorrect", null),
+    CREATE_DIR("/crdir", " - create directory on server \n\t\t[Example: /crdir (path_where_create_server)]", null),
+    ERROR("", " - command from server was incorrect", null),
     START("", " - this command is needed at the start of client connection", null),
     EXIT("/exit", " - disconnect from server", null);
 
@@ -45,9 +45,17 @@ public enum Command implements Serializable {
         this.bytes = bytes;
     }
 
-    public static Command createError(String description){
+    public static Command createError(String description) {
         Command command = Command.ERROR;
         command.setDescription(description);
         return command;
+    }
+
+    protected static DataMsg createMsg(Command command, Object obj) {
+        try {
+            return new DataMsg(command, ConvertToByte.serialize(obj));
+        } catch (Exception e) {
+            return new DataMsg(Command.createError(""), null);
+        }
     }
 }

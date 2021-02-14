@@ -34,7 +34,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 cfIn.list(dataMsgRead);
                 break;
             case DOWNLOAD:
-                //cfIn.downloadFile(dataMsgRead, scanner);
+                cfIn.downloadFile(dataMsgRead, scanner);
                 break;
             case UPLOAD:
                 break;
@@ -67,9 +67,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         break;
                     case "/download":
                         String[] list = cfOut.dialog(scanner,
-                                "Enter the path to the downloaded file: ",
-                                "Enter the path where to save the file: ");
-                        ctx.writeAndFlush(cfOut.createMsg(Command.DOWNLOAD, list));
+                                "Enter the path to the downloaded file: ");
+                        ctx.writeAndFlush(Command.createMsg(Command.DOWNLOAD, list));
                         //cf.downloadFile(ctx, scanner);
                         break;
                     case "/upload":
@@ -84,6 +83,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         break;
                     default:
                         System.out.println("Entered incorrect command, please, try again");
+                        sendCommand(ctx, scanner);
                         break;
                 }
             //}
