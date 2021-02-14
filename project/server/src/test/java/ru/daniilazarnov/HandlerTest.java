@@ -27,10 +27,9 @@ class HandlerTest {
 
     @Test
     void testMethod3() {
-        String s = "auth";
+     String   names = "Tror Gvigris Deriana Nori";
 
-        Command command = Command.valueOf(s.toUpperCase());
-        System.out.println(command.getCommandByte());
+        System.out.println((int) Arrays.stream(names.split(" ")).filter(s -> s.length() == 4).count());
     }
 
     @Test
@@ -46,4 +45,13 @@ class HandlerTest {
 
     }
 
+    @Test
+    public static int fourLetters(String names) {
+
+
+        return (int) Arrays.stream(names.split(" ")).filter(s -> s.length() == 4).count();
+        // Напишите ваш код здесь...
+    }
+
 }
+

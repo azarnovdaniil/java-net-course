@@ -2,6 +2,8 @@ package ru.daniilazarnov.sql_client;
 
 import org.apache.log4j.Logger;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 
 
@@ -28,7 +30,7 @@ public class SQLClient {
      * @param password пароль пользователя
      * @return целочисленной значение.
      */
-     public static synchronized int getAuth(String login, String password) {
+    public static synchronized int getAuth(String login, String password) {
         connect();
         PreparedStatement preparedStatement = null;
         String sql = "select status FROM users where login = ? and password = ?";
@@ -55,11 +57,10 @@ public class SQLClient {
         return -1; //вернем -1, если запрос вернулся пустым
     }
 
-
-
     private static void connect() { // для sqLite
-        //path from repository root
-        String sDbUrl = "jdbc:sqlite:project/server/src/main/java/ru/daniilazarnov/sqlClient/netty_server.db";
+        Path pathDB = Paths.get("project", "server", "src", "main", "java", "ru",
+                "daniilazarnov", "sql_client", "netty_server.db");
+        String sDbUrl = "jdbc:sqlite:" + pathDB.toString();
         try {
             Class.forName("org.sqlite.JDBC");
             LOG.info("Trying to connect DB");
