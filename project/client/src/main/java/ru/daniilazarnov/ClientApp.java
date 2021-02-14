@@ -13,7 +13,8 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class ClientApp {
     private SocketChannel socket;
-
+    private static final String HOST = "localhost";
+    private static final int PORT = 8189;
     public ClientApp(){
         new Thread(() -> {
             EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -31,7 +32,7 @@ public class ClientApp {
                                         new ClientHandler());
                             }
                         });
-                ChannelFuture channelFuture = bootstrap.connect("localhost", 8189).sync();
+                ChannelFuture channelFuture = bootstrap.connect(HOST, PORT).sync();
                 channelFuture.channel().closeFuture().sync();
             } catch (Exception e){
                 e.printStackTrace();

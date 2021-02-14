@@ -3,6 +3,8 @@ package ru.daniilazarnov.handlers;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import ru.daniilazarnov.Command;
+import ru.daniilazarnov.DataMsg;
 import ru.daniilazarnov.FunctionalServer;
 
 import java.util.ArrayList;
@@ -13,14 +15,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private FunctionalServer functionalServer = new FunctionalServer();
     private String clientName;
     private static int clientIndex = 1;
-    private String userPath;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("Client connected");
         clientName = "User" + clientIndex;
         clientIndex++;
-
+        ctx.writeAndFlush(new DataMsg(Command.START, null));
     }
 
     @Override

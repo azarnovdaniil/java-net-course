@@ -3,24 +3,24 @@ package ru.daniilazarnov;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
-    private ClientFunctional cf = new ClientFunctional();
+    private ClientFunctionalIn cfIn = new ClientFunctionalIn();
+    private ClientFunctionalOut cfOut = new ClientFunctionalOut();
     private DataMsg dataMsgRead;
     private DataMsg dataMsgLoad;
+    private Scanner scanner = new Scanner(System.in);
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        sendCommand(ctx);
-        //ctx.writeAndFlush(Command.LIST);
+        System.out.println("Connection completed");
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        int i = 0;
+
         if (msg instanceof DataMsg){
             dataMsgRead = (DataMsg) msg;
         } else {
@@ -31,10 +31,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
         switch (dataMsgRead.getCommand()){
             case LIST:
-                cf.list(dataMsgRead);
+                cfIn.list(dataMsgRead);
                 break;
             case DOWNLOAD:
-                cf.downloadFile(dataMsgRead);
+                //cfIn.downloadFile(dataMsgRead, scanner);
                 break;
             case UPLOAD:
                 break;
@@ -44,16 +44,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 //ctx.channel().close();
                 break;
         }
-
-        if (msg instanceof String){
-            System.out.println((String) msg);
-        }
-        if (msg instanceof List) {
-            List<Path> list = (List<Path>) msg;
-            for (Path o : list) {
-                System.out.println(o);
-            }
-        }
+        sendCommand(ctx, scanner);
     }
 
     @Override
@@ -61,31 +52,32 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         System.out.println(Arrays.toString(cause.getStackTrace()));
     }
 
-    private void sendCommand(ChannelHandlerContext ctx) {
+    private void sendCommand(ChannelHandlerContext ctx, Scanner scanner) {
         //new Thread(() -> {
-            Scanner scanner = new Scanner(System.in);
-            while (true) {
+
+            //while (true) {
                 System.out.print("Enter command (enter /help for to get a list of commands): ");
                 switch (scanner.nextLine()) {
                     case "/list":
-                        ctx.writeAndFlush(Command.LIST);
+                        ctx.writeAndFlush(new DataMsg(Command.LIST, null));
                         break;
                     case "/help":
-                        cf.getInfo();
+                        cfOut.getInfo();
+                        sendCommand(ctx, scanner);
                         break;
                     case "/download":
-                        dataMsgLoad = cf.createMsg(Command.DOWNLOAD, "");
-                        ctx.writeAndFlush(Command.DOWNLOAD);
+                        String[] list = cfOut.dialog(scanner,
+                                "Enter the path to the downloaded file: ",
+                                "Enter the path where to save the file: ");
+                        ctx.writeAndFlush(cfOut.createMsg(Command.DOWNLOAD, list));
                         //cf.downloadFile(ctx, scanner);
                         break;
                     case "/upload":
-                        cf.uploadFile(ctx, scanner);
+                        cfOut.dialog(scanner, "");
                         break;
                     case "/remove":
-                        cf.removeFile(ctx, scanner);
                         break;
                     case "/move":
-                        cf.moveFile(ctx, scanner);
                         break;
                     case "/exit":
                         ctx.writeAndFlush(Command.EXIT);
@@ -94,7 +86,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         System.out.println("Entered incorrect command, please, try again");
                         break;
                 }
-            }
+            //}
        // }).start();
 
     }

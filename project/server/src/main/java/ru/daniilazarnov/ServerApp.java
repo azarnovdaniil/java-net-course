@@ -11,7 +11,8 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import ru.daniilazarnov.handlers.ServerHandler;
 
 public class ServerApp {
-    private FunctionalServer functionalServer;
+    private static final String HOST = "localhost";
+    private static final int PORT = 8189;
     public static void main(String[] args) {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -28,7 +29,7 @@ public class ServerApp {
                                     new ServerHandler());
                         }
                     });
-            ChannelFuture channelFuture = boot.bind("localhost",8189).sync();
+            ChannelFuture channelFuture = boot.bind(HOST, PORT).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();

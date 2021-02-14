@@ -12,17 +12,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FunctionalServer {
-//    private final SelectionKey key;
-//    private final User user;
-    private final String separator = File.separator;
+    private final String GENERAL_PATH = "project/server/directories/";
     public FunctionalServer() {
     }
 
     private void list(ChannelHandlerContext ctx, String clientName){
         try {
-            //Stream<Path> list = Files.walk(Path.of(".."+ separator + "directories" + separator + clientName));
-            //TODO
-            Path path = Paths.get("project/server/directories/" + clientName);
+            Path path = Paths.get(GENERAL_PATH + clientName);
             Stream<Path> list = Files.walk(path);
             List<Path> paths = list.collect(Collectors.toList());
 
@@ -31,7 +27,6 @@ public class FunctionalServer {
                 stringPaths += o.toString() + ";";
             }
             DataMsg msg = new DataMsg(Command.LIST, ConvertToByte.serialize(stringPaths));
-            //                cmdList.setBytes(ConvertToByte.serialize(stringPaths));
             ctx.writeAndFlush(msg);
         } catch (IOException e) {
             e.printStackTrace();
@@ -41,8 +36,14 @@ public class FunctionalServer {
         }
     }
 
-    private void downloadFile(){
+    private void downloadFile(ChannelHandlerContext ctx, Object msg){
+        String [] paths = getPaths((DataMsg) msg);
 
+    }
+
+    private String[] getPaths(DataMsg msg) {
+        byte[] bytes = msg.getBytes();
+        return (String[]) ConvertToByte.deserialize(bytes);
     }
 
     private void uploadFile(){
@@ -54,15 +55,14 @@ public class FunctionalServer {
     }
 
     public void executeCommand(ChannelHandlerContext ctx, Object msg, String clientName){
-        if (msg instanceof Command){
-            Command command = (Command) msg;
+        if (msg instanceof DataMsg){
+            Command command = ((DataMsg) msg).getCommand();
             switch (command){
                 case LIST:
                     list(ctx, clientName);
                     break;
                 case DOWNLOAD:
-                    ctx.writeAndFlush(Command.DOWNLOAD);
-                    //downloadFile();
+                    downloadFile(ctx, msg);
                     break;
                 case UPLOAD:
                     uploadFile();
@@ -80,4 +80,9 @@ public class FunctionalServer {
             System.out.println("Incorrect message");
         }
     }
+
+    private String[] splitLine(String cmd){
+        return cmd.replaceAll("[\\s]+", " ").split(" ");
+    }
+
 }
