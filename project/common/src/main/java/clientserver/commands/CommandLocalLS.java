@@ -5,21 +5,28 @@ import clientserver.FileWorker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-public class CommandUnknown implements Command {
-
+public class CommandLocalLS implements Command {
     @Override
     public void send(ChannelHandlerContext ctx, String content, FileWorker fileWorker, byte signal) {
-        System.out.println("Неизвестная команда");
+        try {
+            List<String> filesInDir = fileWorker.getFileListInDir();
+            System.out.println(filesInDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles, byte signal) {
+
     }
 
     @Override
     public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles) {
-        System.out.println("Неизвестная команда");
+
     }
 }

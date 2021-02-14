@@ -43,7 +43,6 @@ public class FileLoaded {
 
         bufferedOutputStream.write(content);
 
-        // проверить не пора ли завершить запись
         if (size == sizeCounter) {
             bufferedOutputStream.flush();
             bufferedOutputStream.close();

@@ -34,8 +34,6 @@ public class ServerStorage {
                         public void initChannel(SocketChannel ch) {
                             ch.pipeline()
                                     .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE, 1, 4, -5, 0, true))
-//                                    .addLast(new ObjectDecoder(1024*1024, ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
-//                                    .addLast(new ObjectEncoder())
                                     .addLast(new InboundHandler());
                         }
                     });
