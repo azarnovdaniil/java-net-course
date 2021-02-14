@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class ServerStorage {
     private static final int SERVER_PORT = 8189;
-    private static final int PART_SIZE = 10*1024*1024;
+    private static final int PART_SIZE = 10 * 1024 * 1024;
     private static Logger logger = Logger.getLogger("");
     private int port;
     private String storageDir = "storage";
@@ -25,6 +25,9 @@ public class ServerStorage {
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+        final int countFour = 4;
+        final int countFive = -5;
+
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
@@ -33,7 +36,8 @@ public class ServerStorage {
                         @Override
                         public void initChannel(SocketChannel ch) {
                             ch.pipeline()
-                                    .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE, 1, 4, -5, 0, true))
+                                    .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN,
+                                            PART_SIZE, 1, countFour, countFive, 0, true))
                                     .addLast(new InboundHandler());
                         }
                     });

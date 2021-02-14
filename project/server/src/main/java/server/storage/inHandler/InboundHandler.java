@@ -19,9 +19,9 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
     public void channelRegistered(ChannelHandlerContext ctx) {
         String storageDir = "storage";
         String userName = "user_1";
-        System.out.println("Подключился клиент "+ctx.channel().remoteAddress().toString());
+        System.out.println("Подключился клиент " + ctx.channel().remoteAddress().toString());
         uploadedFiles = new HashMap<>();
-        fileWorker = new FileWorker(storageDir + File.separator + userName,storageDir + File.separator + userName);
+        fileWorker = new FileWorker(storageDir + File.separator + userName, storageDir + File.separator + userName);
         ctx.fireChannelRegistered();
     }
 
@@ -39,7 +39,7 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Отключился клиент "+ctx.channel().remoteAddress().toString());
+        System.out.println("Отключился клиент " + ctx.channel().remoteAddress().toString());
         super.channelUnregistered(ctx);
     }
 
