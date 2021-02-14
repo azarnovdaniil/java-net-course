@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/*
+    Этот класс отвечает за функционал на стороне клиента
+ */
 public class ClientFunctionalOut {
 
     protected void getInfo(){

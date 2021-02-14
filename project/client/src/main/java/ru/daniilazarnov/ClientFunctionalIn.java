@@ -9,9 +9,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
 
+/*
+    Данный класс отвечает за обработку поступающих с сервера данных
+ */
 public class ClientFunctionalIn {
 
-    protected void list(DataMsg dataMsg){
+    protected void list(DataMsg dataMsg) {
         byte[] obj = dataMsg.getBytes();
         String paths = (String) ConvertToByte.deserialize(obj);
         String[] list = paths.split(";");
@@ -48,6 +51,7 @@ public class ClientFunctionalIn {
                     String newFileName = scanner.nextLine();
                     fileMsg.setNameFile(newFileName);
                     checkExistsFile(scanner, path, fileMsg);
+                    break;
             }
         } else {
             Files.write(Path.of(path + fileMsg.getNameFile()), fileMsg.getBytes(), StandardOpenOption.CREATE);
@@ -63,7 +67,7 @@ public class ClientFunctionalIn {
 
     }
 
-    protected void moveFile(ChannelHandlerContext ctx, Scanner scanner){
+    protected void moveFile(ChannelHandlerContext ctx, Scanner scanner) {
 
     }
 

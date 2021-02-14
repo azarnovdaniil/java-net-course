@@ -68,7 +68,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                     case "/download":
                         String[] list = cfOut.dialog(scanner,
                                 "Enter the path to the downloaded file: ");
-                        ctx.writeAndFlush(Command.createMsg(Command.DOWNLOAD, list));
+                        ctx.writeAndFlush(DataMsg.createMsg(Command.DOWNLOAD, list));
                         //cf.downloadFile(ctx, scanner);
                         break;
                     case "/upload":

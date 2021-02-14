@@ -45,7 +45,7 @@ public class FunctionalServer {
             byte[] bytes = new byte[(int) file.length()];
             file.readFully(bytes);
             FileMsg fileMsg = new FileMsg(getFileName(paths[0]), bytes);
-            ctx.writeAndFlush(Command.createMsg(Command.DOWNLOAD, fileMsg));
+            ctx.writeAndFlush(DataMsg.createMsg(Command.DOWNLOAD, fileMsg));
         } catch (IOException e) {
             e.printStackTrace();
         }
