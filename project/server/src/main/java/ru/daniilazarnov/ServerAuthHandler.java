@@ -37,7 +37,6 @@ public class ServerAuthHandler extends ChannelInboundHandlerAdapter {
                     LOGGER.info("Registration request from new client");
                     dbService.addUser(dbm.getLogin(), dbm.getPassword());
                     break;
-
             }
         }
     }

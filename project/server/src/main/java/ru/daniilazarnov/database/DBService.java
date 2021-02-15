@@ -2,7 +2,7 @@ package ru.daniilazarnov.database;
 
 import java.sql.*;
 
-public class DBService implements DBCommands{
+public class DBService implements DBCommands {
 
     @Override
     public boolean findUser(String login, String password) {

@@ -56,47 +56,39 @@ public class ClientHandler {
                 LOGGER.error("SWW while uploading file");
                 throw new RuntimeException("SWW", e);
             }
-        }
-        else if (msg.startsWith("download")) {
+        } else if (msg.startsWith("download")) {
             LOGGER.info("Download started...");
             RequestMessage rm = new RequestMessage(msgParts[0], msgParts[1], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
-        }
-        else if (msg.startsWith("list")) {
+        } else if (msg.startsWith("list")) {
             LOGGER.info("Waiting the list from server");
             RequestMessage rm = new RequestMessage(msgParts[0], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
-        }
-        else if (msg.startsWith("remove")) {
+        } else if (msg.startsWith("remove")) {
             LOGGER.info("F, file was removed");
             RequestMessage rm = new RequestMessage(msgParts[0], msgParts[1], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
-        }
-        else if (msg.startsWith("rename")) {
+        } else if (msg.startsWith("rename")) {
             LOGGER.info("Name was changed");
             RequestMessage rm = new RequestMessage(msgParts[0], msgParts[1], msgParts[2], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
-        }
-        else if (msg.startsWith("auth")) {
+        } else if (msg.startsWith("auth")) {
             LOGGER.info("Waiting for auth server");
             DBMessage dbm = new DBMessage(msgParts[0], msgParts[1], msgParts[2]);
             objectOut.writeObject(dbm);
             objectOut.flush();
-        }
-        else if (msg.startsWith("reg")) {
+        } else if (msg.startsWith("reg")) {
             LOGGER.info("Stand by for registration");
             DBMessage dbm = new DBMessage(msgParts[0], msgParts[1], msgParts[2]);
             objectOut.writeObject(dbm);
             objectOut.flush();
-        }
-        else if (msg.startsWith("help")) {
+        } else if (msg.startsWith("help")) {
             helpInfo();
-        }
-        else LOGGER.info("Unknown command");
+        } else LOGGER.info("Unknown command");
     }
 
     public void setClientLogin(String clientLogin) {

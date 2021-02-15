@@ -30,7 +30,7 @@ public class Client {
     public void run() {
         try (Socket socket = new Socket(host, port);
              ObjectEncoderOutputStream objectOut = new ObjectEncoderOutputStream(socket.getOutputStream());
-             ObjectDecoderInputStream objectIn = new ObjectDecoderInputStream(socket.getInputStream(),1024 * 1024 * 100)) {
+             ObjectDecoderInputStream objectIn = new ObjectDecoderInputStream(socket.getInputStream(), 1024 * 1024 * 100)) {
             LOGGER.debug("Connection was successful");
 
             ClientHandler clientHandler = new ClientHandler(objectOut);
@@ -42,27 +42,25 @@ public class Client {
                         LOGGER.debug("Message received");
 
                         if (receivedFile instanceof FileMessage) {
-                                FileMessage fm = (FileMessage) receivedFile;
-                                LOGGER.debug("File message received: " + fm.getPartNumber() + " / " + fm.getPartsCount());
+                            FileMessage fm = (FileMessage) receivedFile;
+                            LOGGER.debug("File message received: " + fm.getPartNumber() + " / " + fm.getPartsCount());
 
-                                boolean append = true;
-                                if (fm.getPartNumber() == 1) {
-                                    append = false;
-                                }
+                            boolean append = true;
+                            if (fm.getPartNumber() == 1) {
+                                append = false;
+                            }
 
-                                File newFile = new File("./project/clients_vault/" + login + "/" + fm.getFilename());
-                                FileOutputStream fos = new FileOutputStream(newFile, append);
+                            File newFile = new File("./project/clients_vault/" + login + "/" + fm.getFilename());
+                            FileOutputStream fos = new FileOutputStream(newFile, append);
 
-                                fos.write(fm.getData());
-                                fos.close();
-                        }
-                        else if (receivedFile instanceof DirectoryInfoMessage) {
+                            fos.write(fm.getData());
+                            fos.close();
+                        } else if (receivedFile instanceof DirectoryInfoMessage) {
                             DirectoryInfoMessage dim = (DirectoryInfoMessage) receivedFile;
                             LOGGER.debug("Directory info message received");
                             LOGGER.info("Files at directory: ");
                             System.out.println(dim.getFilesAtDirectory().toString());
-                        }
-                        else if (receivedFile instanceof DBMessage) {
+                        } else if (receivedFile instanceof DBMessage) {
                             DBMessage dbm = (DBMessage) receivedFile;
                             LOGGER.debug("Database message received");
                             LOGGER.info("Auth was successful");

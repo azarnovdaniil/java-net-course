@@ -86,17 +86,16 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
                     }
                     break;
             }
-        }
-        else ctx.fireChannelRead(msg);
+        } else ctx.fireChannelRead(msg);
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
         LOGGER.info("Client connected");
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) {
         LOGGER.info("Client disconnected");
     }
 

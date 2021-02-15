@@ -29,8 +29,7 @@ public class ServerFilesHandler extends ChannelInboundHandlerAdapter {
             fos.write(receivedFile.getData());
             fos.close();
 
-        }
-        else ctx.fireChannelRead(msg);
+        } else ctx.fireChannelRead(msg);
     }
 
     @Override
