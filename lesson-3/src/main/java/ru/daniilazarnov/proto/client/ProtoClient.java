@@ -13,6 +13,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class ProtoClient {
 
+    public static final byte MAGIC_BYTE = (byte) 25;
     private final Network network;
 
     public ProtoClient(CountDownLatch networkStarter) {
@@ -47,11 +48,11 @@ public class ProtoClient {
 
         ByteBuf buf;
         buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte((byte) 25);
+        buf.writeByte(MAGIC_BYTE);
         network.getCurrentChannel().writeAndFlush(buf);
 
         byte[] filenameBytes = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);
-        buf = ByteBufAllocator.DEFAULT.directBuffer(4);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(Integer.SIZE / Byte.SIZE);
         buf.writeInt(filenameBytes.length);
         channel.writeAndFlush(buf);
 
@@ -59,7 +60,7 @@ public class ProtoClient {
         buf.writeBytes(filenameBytes);
         channel.writeAndFlush(buf);
 
-        buf = ByteBufAllocator.DEFAULT.directBuffer(8);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(Long.SIZE / Byte.SIZE);
         buf.writeLong(Files.size(path));
         channel.writeAndFlush(buf);
 
