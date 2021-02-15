@@ -27,29 +27,20 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg){
 
-        if (msg instanceof MyMessage) {
-            System.out.println("Сообщение от клиента: " + ((MyMessage) msg).getText());
-            if (((MyMessage) msg).getText().equals("/quit")) {
-                textMessage = new MyMessage("/quit");
-                ctx.writeAndFlush(textMessage);
-                System.exit(0);
-            }
-        //} else if (msg instanceof FileMessage) {
-        //    System.out.println("save file..");
-        //    ctx.writeAndFlush(new MyMessage("Your file was successfully saved"));
-        //    try {
-        //        Files.write(Path.of(((FileMessage) msg).getFileName()), ((FileMessage) msg).getContent(), StandardOpenOption.CREATE_NEW);
-        //    } catch (IOException e) {
-        //        e.printStackTrace();
-        //    }
-        } else {
-            System.out.println("Server received wrong object!");
-        }
-        Scanner scanner = new Scanner(System.in);
-        String srvMsg = scanner.nextLine();
+            String message = ((MyMessage) msg).getText();
+            System.out.println("Сообщение от клиента: " + message);
 
-        textMessage = new MyMessage(srvMsg);
-        ctx.writeAndFlush(textMessage);
+        if (!message.startsWith("/"))
+        {
+            textMessage = new MyMessage(message + " не является командой. Введите команду:");
+            ctx.writeAndFlush(textMessage);
+        }
+        if (message.equals("/quit"))
+        {
+            textMessage = new MyMessage("/quit");
+            ctx.writeAndFlush(textMessage);
+            System.exit(0);
+        }
     }
 
     @Override
