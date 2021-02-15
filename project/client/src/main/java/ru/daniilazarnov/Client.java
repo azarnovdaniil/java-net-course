@@ -1,30 +1,37 @@
 package ru.daniilazarnov;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.Socket;
+public class Client {
+    public static void main(String[] args) throws Exception {
+        String host = "localhost";
+        int port = 8189;
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-public class Client {public static void main(String[] args) {
-    System.out.println("Client!");
+        try {
+            Bootstrap b = new Bootstrap();
+            b.group(workerGroup)
+                    .channel(NioSocketChannel.class)
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            ch.pipeline().addLast(new StringEncoder(),
+                                    new StringDecoder(),
+                                    new ClientHandler(),
+                                    new ClientOutHandler());
+                        }
+                    });
 
 
-    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-    try {
-        Socket socket = new Socket("localhost", 8189);
-        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-        BufferedReader reader1 = new BufferedReader(new InputStreamReader(System.in));
-        out.write(new byte[]{21, 21, 21});
-        String x = reader1.readLine();
-        System.out.println("A: " + x);
-        reader1.close();
-        out.close();
-        socket.close();
-    } catch (Exception e) {
-        e.printStackTrace();
+        } finally{
+            workerGroup.shutdownGracefully();
+        }
     }
-
-
-}
 }
