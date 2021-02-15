@@ -8,11 +8,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 public class Server {
-    private int port;
+    private final int port;
 
     public Server (int port){
         this.port = port;
@@ -28,11 +25,10 @@ public class Server {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch){
                             ch.pipeline().addLast(new StringEncoder(),
                                     new StringDecoder(),
-                                    new ServerHandler(),
-                                    new ServerOutHandler());
+                                    new ServerHandler());
                         }
                     });
 

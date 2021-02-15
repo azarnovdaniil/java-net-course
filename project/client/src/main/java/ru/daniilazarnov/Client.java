@@ -22,11 +22,10 @@ public class Client {
                     .channel(NioSocketChannel.class)
                     .handler(new ChannelInitializer<SocketChannel>() {
                 @Override
-                protected void initChannel(SocketChannel ch) throws Exception {
+                protected void initChannel(SocketChannel ch){
                     ch.pipeline().addLast(new StringEncoder(),
                             new StringDecoder(),
-                            new ClientInHandler(),
-                            new ClientOutHandler());
+                            new ClientHandler());
                 }
             });
 
