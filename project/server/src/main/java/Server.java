@@ -34,7 +34,8 @@ public class Server {
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     socketChannel.pipeline()
                             .addLast(
-                                    new ObjectDecoder(SIZE_100 * SIZE_1024 * SIZE_1024, ClassResolvers.cacheDisabled(null)),
+                                    new ObjectDecoder(SIZE_100 * SIZE_1024 * SIZE_1024,
+                                            ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
                                     new ServerHandler()
                             );

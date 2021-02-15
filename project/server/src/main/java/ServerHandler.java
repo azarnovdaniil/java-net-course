@@ -23,7 +23,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(io.netty.channel.ChannelHandlerContext ctx, java.lang.Object msg) throws java.lang.Exception {
+    public void channelRead(io.netty.channel.ChannelHandlerContext ctx, java.lang.Object msg)
+            throws java.lang.Exception {
 
 
         // Отправка пакета на клиент
@@ -32,7 +33,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
             FileRequest fr = (FileRequest) msg;
 
-            if (Files.exists(Paths.get("project", "server", "src", "main", "java", "file/" + fr.getFilename()))) {
+            if (Files.exists(Paths.get("project", "server", "src", "main", "java", "file/"
+                    + fr.getFilename()))) {
                 downLoad(ctx, fr);
             }
 
