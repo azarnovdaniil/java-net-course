@@ -1,39 +1,84 @@
 package ru.daniilazarnov;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
-import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
-import io.netty.util.ReferenceCountUtil;
 
 import java.io.*;
-import java.net.Socket;
-import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-public class Client extends ChannelInboundHandlerAdapter {
+public class Client {
+    private static Network clientNetwork;
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        try (Socket socket = new Socket("localhost", 8189);
-             ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream());
-             ObjectDecoderInputStream in = new ObjectDecoderInputStream(socket.getInputStream(), 100 * 1024 * 1024)
-        ) {
+    static final String HOME_FOLDER_PATH = "project/client/local_storage/";
 
-            while (true) {
-                Scanner scanner = new Scanner(System.in);
-                String msg = scanner.nextLine();
+    public static void main(String[] args) {
 
-                String textMessage = msg;
-                out.writeObject(textMessage);
-                out.flush();
+        init();
+        try {
+            mainHandler();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-                boolean str = (Boolean) in.readObject();
-                System.out.println(str);
+    private static void mainHandler() throws IOException {
+        String inputLine;
+        while (true) {
+            InputStream in = System.in;
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+            if (clientNetwork.isConnect()) {
+
+                inputLine = bufferedReader.readLine().trim().toLowerCase();
+                String firstCommand = inputLine.split(" ")[0];
+
+                Commands commands = Commands.valueOf(firstCommand);
 
 
+                switch (commands) {
+                    case ULF:
+                        sendCommand(inputLine);
+                        break;
+                    case FLS:
+                        System.out.println(commands.getFilesListFromLocalDirectory(inputLine));
+                        break;
+                    case EXIT:
+                        clientNetwork.close();
+                        break;
+                    case DLF:
+                        sendNameFIleForDownloading(inputLine);
+                        break;
+                    case HELP:
+                        System.out.println(commands.help());
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + inputLine);
+                }
             }
         }
     }
 
+    private static void sendNameFIleForDownloading(String inputLine) {
 
+    }
+
+    private static void init() {
+        clientNetwork = new Network();
+    }
+
+    public static void sendCommand(String inputLine) {
+        if (inputLine.split(" ").length == 2) {
+            String fileName = inputLine.split(" ")[1];
+            if (isFileExists(fileName)) {
+                clientNetwork.sendFile(HOME_FOLDER_PATH + fileName);
+            } else {
+                System.out.println("File not founded");
+            }
+        } else {
+            System.out.println("local_storage: некорректный аргумент");
+        }
+    }
+
+    private static boolean isFileExists(String fileName) {
+        return Files.exists(Path.of(HOME_FOLDER_PATH + fileName));
+
+    }
 }
