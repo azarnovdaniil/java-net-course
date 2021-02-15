@@ -35,7 +35,7 @@ public class Server {
                         .addLast(new ObjectEncoder())
                         .addLast(new ServerHandler());
                 }
-            } );
+            });
 
             ChannelFuture future = b.bind(PORT).sync();
             future.channel().closeFuture().sync();
