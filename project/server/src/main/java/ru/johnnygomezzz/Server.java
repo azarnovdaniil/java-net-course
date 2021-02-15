@@ -13,7 +13,7 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import ru.johnnygomezzz.handlers.ServerHandler;
 
 public class Server {
-    private static final int SIZE = 100*1024*1024;
+    private static final int SIZE = 100 * 1024 * 1024;
     private static final int PORT = 8189;
 
     public static void main(String[] args) throws Exception {
@@ -29,13 +29,13 @@ public class Server {
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
 
-                protected void initChannel(SocketChannel socketChannel) throws Exception {socketChannel
+                protected void initChannel(SocketChannel socketChannel) throws Exception { socketChannel
                         .pipeline()
                         .addLast(new ObjectDecoder(SIZE, ClassResolvers.cacheDisabled(null)))
                         .addLast(new ObjectEncoder())
                         .addLast(new ServerHandler());
                 }
-            });
+            } );
 
             ChannelFuture future = b.bind(PORT).sync();
             future.channel().closeFuture().sync();

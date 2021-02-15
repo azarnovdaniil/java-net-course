@@ -2,25 +2,20 @@ package ru.johnnygomezzz.handlers;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import ru.johnnygomezzz.FileMessage;
 import ru.johnnygomezzz.MyMessage;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.Scanner;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private MyMessage textMessage;
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx){
+    public void channelActive(ChannelHandlerContext ctx)
+    {
         System.out.println("Клиент подключился");
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) {
+    public void channelInactive(ChannelHandlerContext ctx)
+    {
         System.out.println("Клиент отключился");
     }
 
