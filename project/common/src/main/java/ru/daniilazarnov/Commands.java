@@ -20,7 +20,6 @@ public enum Commands {
     UF ("UF", (byte) 1, new CommandUpload()),
     UNKNOWN ("UNKNOWN", Byte.MIN_VALUE, new CommandUnknown());
 
-
     byte signal;
     String nameCommand;
     private final Command commandApply;
@@ -34,12 +33,13 @@ public enum Commands {
         this.commandApply = command;
     }
 
-    public void sendToServer(ChannelHandlerContext ctx) {
-        commandApply.send(ctx, signal);
+    public void sendToServer(ChannelHandlerContext ctx, String readLine, FileWorker fileWorker) {
+        commandApply.send(ctx, readLine, fileWorker, signal);
     }
 
-    public void responseToClient(ChannelHandlerContext ctx, ByteBuf buf) {
-        commandApply.response(ctx, buf);
+    public void receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles) {
+        commandApply.response(ctx, buf, fileWorker, uploadedFiles, signal);
     }
 
     public static Commands getCommand(byte code) {

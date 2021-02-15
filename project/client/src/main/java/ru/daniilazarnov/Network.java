@@ -7,37 +7,39 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 import java.net.InetSocketAddress;
+import java.nio.ByteOrder;
 
 public class Network {
+    private static final int PART_SIZE = 10 * 1024 * 1024;
+    private static final int SERVER_PORT = 8189;
+    private static final String HOST = "localhost";
 
-    public static void main(String[] args) throws Exception {
-        new Network().start();
-    }
-    public void start() {
+    public static void main(String[] args) throws InterruptedException {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap clientBootstrap = new Bootstrap();
-            clientBootstrap.group(group)
-                    .channel(NioSocketChannel.class)
-                    .remoteAddress(new InetSocketAddress("localhost", 8189))
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            socketChannel.pipeline()
-                                    .addLast(new ClientHandler());
-                        }
-                    });
+            final int countFour = 4;
+            final int countFive = -5;
+            clientBootstrap.group(group);
+            clientBootstrap.channel(NioSocketChannel.class);
+            clientBootstrap.remoteAddress(new InetSocketAddress(HOST, SERVER_PORT));
+            clientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
+                protected void initChannel(SocketChannel socketChannel) {
+                    socketChannel.pipeline()
+                            .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE, 1,
+                                    countFour, countFive, 0, true))
+                            .addLast(new ClientHandler());
+                }
+            });
             ChannelFuture channelFuture = clientBootstrap.connect().sync();
             channelFuture.channel().closeFuture().sync();
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            try {
-                group.shutdownGracefully().sync();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            group.shutdownGracefully().sync();
         }
     }
 }
