@@ -12,7 +12,9 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class Server {
 
-    private final int PORT = 8189;
+    private static final int PORT = 8189;
+    private static final int SIZE_1024 = 1024;
+    private static final int SIZE_100 = 100;
 
 
     public static void main(String[] args) throws Exception {
@@ -21,16 +23,18 @@ public class Server {
 
     public void server() throws InterruptedException {
 
+
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(new ChannelInitializer<SocketChannel>() {
+            b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
 
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     socketChannel.pipeline()
                             .addLast(
-                                    new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
+                                    new ObjectDecoder(SIZE_100 * SIZE_1024 * SIZE_1024, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
                                     new ServerHandler()
                             );

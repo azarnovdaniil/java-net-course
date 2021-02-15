@@ -51,7 +51,8 @@ public class ClientHendler {
                         if (am instanceof FileMessage) {
 
                             FileMessage fm = (FileMessage) am;
-                            Files.write(Paths.get("project", "client", "src", "main", "java", "file/", fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
+                            Files.write(Paths.get("project", "client", "src", "main", "java", "file/", fm.getFileName()),
+                                    fm.getData(), StandardOpenOption.CREATE);
                             System.out.println("скачал");
                         }
                     }
