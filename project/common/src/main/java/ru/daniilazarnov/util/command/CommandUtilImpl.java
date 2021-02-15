@@ -33,6 +33,14 @@ public class CommandUtilImpl implements CommandUtil {
       paths.forEach(p -> System.out.println(p.getFileName()));
       return;
     }
+    if (commands.size() == 1 && Command.HELP.getCommand().equals(commands.get(0))) {
+      System.out.println(
+        "LS - is show all files and dir in current folder\n" +
+        "CD + ... or dir - move to parent dir or another dir\n" +
+        "MOVE - transfer file to server or client"
+      );
+      return;
+    }
     if (Command.CD.getCommand().equals(commands.get(0))) {
       if (Command.BACK_TO_PARENT_FOLDER.getCommand().equals(commands.get(1))) {
         fileUtil.downToParent();
