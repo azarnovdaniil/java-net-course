@@ -18,7 +18,7 @@ public class Server {
         new Server().run();
     }
 
-    public void run (){
+    public void run() {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 

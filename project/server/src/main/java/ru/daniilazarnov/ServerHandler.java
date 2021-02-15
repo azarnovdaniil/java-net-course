@@ -7,14 +7,14 @@ import java.util.List;
 
 public class ServerHandler extends SimpleChannelInboundHandler<String> {
 
-    private static final List<Channel>channels = new ArrayList<>();
+    private static final List<Channel> CHANNELS = new ArrayList<>();
     private static int newClientIndex = 1;
     private String clientName;
 
     @Override
-    public void channelActive (ChannelHandlerContext ctx) throws Exception{
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("Клиент подключился" + ctx);
-        channels.add(ctx.channel());
+        CHANNELS.add(ctx.channel());
         clientName = "Клиент №" + newClientIndex;
         newClientIndex++;
     }
@@ -23,14 +23,14 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
         System.out.println("Получено сообщение: " + s);
         String out = String.format("%s\n", s);
-        for (Channel c: channels){
+        for (Channel c: CHANNELS) {
             c.writeAndFlush(out);
         }
     }
 
 
     @Override
-    public void exceptionCaught (ChannelHandlerContext ctx, Throwable cause) throws Exception{
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
         ctx.close();
     }
