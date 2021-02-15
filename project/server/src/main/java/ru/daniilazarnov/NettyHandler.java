@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -91,23 +92,19 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
         } else if (s.startsWith("ls")) {
             List<String> userFiles = getFiles();
             String lengthOfNumberFiles = String.valueOf(String.valueOf(userFiles.size()).length());
-            LOG.info(lengthOfNumberFiles);
             context.write(lengthOfNumberFiles);
             context.flush();
             String numberFiles = String.valueOf(userFiles.size());
-            LOG.info(numberFiles);
             context.write(numberFiles);
             context.flush();
             for (String userFile : userFiles) {
-                String lengthOfLength = String.valueOf(String.valueOf(userFile.length()).length());
-                LOG.info(lengthOfLength);
+                byte[] b = userFile.getBytes(StandardCharsets.UTF_8); //Нужно считать количество байт, а не символов, т.к. символ кириллицы имеет длинну - 2 байта, латиницы - 1 байт
+                String lengthOfLength = String.valueOf(String.valueOf(b.length).length());
                 context.write(lengthOfLength);
 
-                String userFileLength = String.valueOf(userFile.length());
-                LOG.info(userFileLength);
+                String userFileLength = String.valueOf(b.length);
                 context.write(userFileLength);
 
-                LOG.info(userFile);
                 context.write(userFile);
             }
             context.flush();
@@ -119,11 +116,6 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
             if (Files.notExists(Path.of(varPath, dirName))) {
                 Files.createDirectory(Path.of(varPath, dirName));
             }
-            // загрузка файла на сервер
-        } else if (s.startsWith("upload:")) {
-            String fileName = s.replace("upload: ", "");
-            fileName = fileName.replace("\r\n", "");
-            LOG.info(fileName);
 
         } else {
             context.writeAndFlush("Unknown command!\r\n");
