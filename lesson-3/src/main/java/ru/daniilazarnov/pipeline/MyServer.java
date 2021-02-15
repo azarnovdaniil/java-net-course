@@ -16,6 +16,8 @@ import ru.daniilazarnov.pipeline.handlers.out.StringToStringOutboundHandler;
 
 public class MyServer {
 
+    public static final int INET_PORT = 8189;
+
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -36,7 +38,7 @@ public class MyServer {
                                     .addLast(new FinalInboundHandler());
                         }
                     });
-            ChannelFuture f = b.bind(8189).sync();
+            ChannelFuture f = b.bind(INET_PORT).sync();
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();

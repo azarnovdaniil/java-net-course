@@ -9,8 +9,9 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
-public class NioChatServerExample implements Runnable {
+public final class NioChatServerExample implements Runnable {
 
+    public static final int PORT = 8189;
     private final ServerSocketChannel serverSocketChannel;
     private final Selector selector;
     private final ByteBuffer buf = ByteBuffer.allocate(256);
@@ -19,7 +20,7 @@ public class NioChatServerExample implements Runnable {
 
     NioChatServerExample() throws IOException {
         this.serverSocketChannel = ServerSocketChannel.open();
-        this.serverSocketChannel.socket().bind(new InetSocketAddress(8189));
+        this.serverSocketChannel.socket().bind(new InetSocketAddress(PORT));
         this.serverSocketChannel.configureBlocking(false);
         this.selector = Selector.open();
         this.serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
