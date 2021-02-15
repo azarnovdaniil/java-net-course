@@ -15,12 +15,15 @@ public class ClientHendler {
     private static Socket socket;
     private static ObjectEncoderOutputStream out;
     private static ObjectDecoderInputStream in;
+    private static final int PORT = 8189;
+    private static final int SIZE_1024 = 1024;
+    private static final int SIZE_100 = 100;
 
     public static void start() {
         try {
-            socket = new Socket("localhost", 8189);
+            socket = new Socket("localhost", PORT);
             out = new ObjectEncoderOutputStream(socket.getOutputStream());
-            in = new ObjectDecoderInputStream(socket.getInputStream(), 50 * 1024 * 1024);
+            in = new ObjectDecoderInputStream(socket.getInputStream(), SIZE_100 * SIZE_1024 * SIZE_1024);
             ClientHendler network = new ClientHendler();
             network.initialize();
         } catch (IOException e) {
@@ -51,7 +54,8 @@ public class ClientHendler {
                         if (am instanceof FileMessage) {
 
                             FileMessage fm = (FileMessage) am;
-                            Files.write(Paths.get("project", "client", "src", "main", "java", "file/", fm.getFileName()),
+                            Files.write(Paths.get("project", "client", "src", "main", "java", "file/",
+                                    fm.getFileName()),
                                     fm.getData(), StandardOpenOption.CREATE);
                             System.out.println("скачал");
                         }
