@@ -1,14 +1,43 @@
 package ru.daniilazarnov;
 
-import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
-import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.serialization.*;
+import ru.daniilazarnov.handler.ClientOutHandler;
 
 import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        EventLoopGroup group = new NioEventLoopGroup();
+
+        try {
+            new Bootstrap().group(group)
+                    .channel(NioSocketChannel.class)
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            ChannelPipeline pipeline = socketChannel.pipeline();
+                            pipeline.addLast(new ObjectEncoder());
+                            pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
+                            pipeline.addLast(new ClientOutHandler());
+                        }
+                    })
+                    .connect("localhost", 8189)
+                    .sync()
+                    .channel()
+                    .closeFuture()
+                    .sync();
+        } finally {
+            group.shutdownGracefully();
+        }
 
         try (Socket socket = new Socket("localhost", 8189);
              ObjectEncoderOutputStream encoder = new ObjectEncoderOutputStream(socket.getOutputStream());
