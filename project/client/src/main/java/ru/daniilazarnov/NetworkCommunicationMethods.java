@@ -10,9 +10,7 @@ import static ru.daniilazarnov.string_method.StringMethod.getSecondElement;
 public class NetworkCommunicationMethods {
     private static final String HOME_FOLDER_PATH = Path.of("project", "client", "local_storage").toString();
     private static Network client;
-    private static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n"
-            + "ver: 0.002a\n"
-            + "uod: 09.02.2021\n";
+
 
     /**
      * В этом методе обратимся к серверу за получением списка файлов находящемся в удаленном хранилище
@@ -45,13 +43,12 @@ public class NetworkCommunicationMethods {
     }
 
     static boolean auth() {
-
         return Auth.auth();
     }
 
     static void init() {
         client = new Network();
-        System.out.print(WELCOME_MESSAGE);
+
     }
 
     /**
@@ -123,10 +120,8 @@ public class NetworkCommunicationMethods {
      */
 
     private static boolean isFileExists(String fileName) {
-
         return Files.exists(Path.of(HOME_FOLDER_PATH, fileName));
     }
-
 
     static void close() {
         client.close();

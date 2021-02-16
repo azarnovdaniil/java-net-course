@@ -17,10 +17,8 @@ public class UtilMethod {
             .toString() + File.separator;
 
 
-
     /**
      * Создание каталога по указанному пути
-     *
      */
     public static void createFile(String userFolder) throws IOException {
         Path path = Paths.get("cloud_storage", userFolder);
@@ -33,17 +31,14 @@ public class UtilMethod {
     }
 
 
-    public static void deleteFile(String folder) throws IOException {
-        Path path = Paths.get("cloud_storage", folder);
-//        Files.createDirectories(path.getParent());
+    public static void deleteFile(String folder) {
+        Path path = Paths.get(folder);
         try {
-            Files.createDirectories(path);
-        } catch (FileAlreadyExistsException e) {
-            System.err.println("already exists: " + e.getMessage());
+            Files.delete(path);
+        } catch (IOException e) {
+            System.err.println("Failed to delete: " + e.getMessage());
         }
     }
-
-
 
 
     public static void createFolder(String folder) throws IOException {

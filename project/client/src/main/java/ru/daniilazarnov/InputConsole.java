@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static ru.daniilazarnov.NetworkCommunicationMethods.*;
 import static ru.daniilazarnov.string_method.StringMethod.*;
@@ -18,13 +19,24 @@ public class InputConsole {
     private static final String PROMPT_TO_ENTER = ">";
     private static final String PROGRAM_NAME = "local_storage ";
     private static final String USERNAME = "~" + File.separator + "user1";
+    private static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n"
+            + "ver: 0.002a\n"
+            + "uod: 09.02.2021\n";
     private static final String HOME_FOLDER_PATH = Path.of("project", "client", "local_storage")
             .toString() + File.separator;
 
 
     public static void main(String[] args) throws IOException {
         init();
-//        auth();
+        while (!ClientNetworkHandler.isAuth()) {
+            auth();
+            if (ClientNetworkHandler.isAuth()) {
+                init();
+            } else {
+                break;
+            }
+        }
+        System.out.print(WELCOME_MESSAGE);
         inputConsoleHandler();
     }
 
@@ -79,6 +91,15 @@ public class InputConsole {
                             System.out.println(accessingTheServer(inputLine));
                             printPrompt();
                             break;
+                        case DELETE:
+                            System.out.println(Command.DELETE);
+                            System.out.println(deleteFile(inputLine));
+                            printPrompt();
+                            break;
+                        case RENAME:
+                            System.out.println(Command.RENAME);
+                            printPrompt();
+                            break;
                         default:
                             LOG.error("Unexpected value: " + inputLine);
                     }
@@ -90,6 +111,30 @@ public class InputConsole {
 
             }
         }
+    }
+
+    private static String deleteFile(String inputLine) {
+        String result = "";
+        String fileName;
+        if (isThereaSecondElement(inputLine)) { // если после ls введено имя каталога получаем его
+            fileName = getSecondElement(inputLine);
+            Path path = Paths.get(HOME_FOLDER_PATH, fileName);
+            if (Files.exists(path)) {
+                UtilMethod.deleteFile(path.toString());
+                if (Files.exists(path)) {
+                    return "Не удалось удалить указанный файл";
+                } else {
+                    return "Файл успешно удален";
+                }
+            } else {
+                return "Неправильное имя файла";
+            }
+        }
+
+
+        return result;
+
+
     }
 
     private static void exit() {

@@ -17,7 +17,9 @@ public enum Command {
     HELP((byte) 7, "'help' - Помощь\n"),
     DISCONNECT((byte) 8, "'disconnect' - Разорвать соединение\n"),
     SERVER((byte) 9, "'server ls [catalog_name]' - вывести имена файлов и каталогов расположенных в папке \n"
-            + "[catalog_name] на удаленном хранилище\n");
+            + "[catalog_name] на удаленном хранилище\n"),
+    DELETE((byte) 10, "'delete [filename]' - удалить файл\n"),
+    RENAME((byte) 11, "'rename [filename]' - переименовать файл\n");
 
     private final byte commandByte;
     private final String helpInfo;
