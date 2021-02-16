@@ -15,7 +15,7 @@ public class InHandler extends ChannelInboundHandlerAdapter {
     private static final byte DOWNLOAD_BYTE = 3;
     private static final int INT_BYTES = 4;
     private static final int LONG_BYTES = 8;
-    private static final String serverDir = "project/server/serverFiles";
+    private final String serverDir = "project/server/serverFiles";
     private State currentState = State.IDLE;
     private int nextLength;
     private long fileLength;
