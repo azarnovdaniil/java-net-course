@@ -12,15 +12,15 @@ import java.util.stream.Collectors;
 
 public enum Commands {
 
-    UPLOAD("upload", (byte) 1, new CommandUpload(), "загрузка файл на сервер"),
-    DOWNLOAD("download", (byte) 3, new CommandDownload(), "скачивание файл с сервера"),
-    LS("ls", (byte) 2, new CommandLS(), "вывод списка файлов, расположенных на удаленном хранилище"),
-    LLS("lls", (byte) 4, new CommandLocalLS(), "вывод списка файлов, расположенных в локальном хранилище"),
-    RM("rm", (byte) 8, new CommandRM(), "удаление файла из локальной папки"),
-    HELP("help", (byte) 9, new CommandHelp(), "help info"),
-    RENAME("rename", (byte) 11, new CommandRename(), "переименовать файл"),
-    EXIT("exit", (byte) 12, new CommandExit(), "выход из приложения"),
-    UNKNOWN("unknown", Byte.MIN_VALUE, new CommandUnknown(), "неизвестная команда");
+    UPLOAD("upload", (byte) 1, new CommandUpload(), "upload - загрузка файл на сервер"),
+    DOWNLOAD("download", (byte) 3, new CommandDownload(), "download - скачивание файл с сервера"),
+    LS("ls", (byte) 2, new CommandLS(), "ls - вывод списка файлов, расположенных на удаленном хранилище"),
+    LLS("lls", (byte) 4, new CommandLocalLS(), "lls - вывод списка файлов, расположенных в локальном хранилище"),
+    RM("rm", (byte) 8, new CommandRM(), "rm - удаление файла из локальной папки"),
+    HELP("help", (byte) 9, new CommandHelp(), "help - вывод команд"),
+    RENAME("rename", (byte) 11, new CommandRename(), "rename - переименовать файл"),
+    EXIT("exit", (byte) 12, new CommandExit(), "exit - выход из приложения"),
+    UNKNOWN("unknown", Byte.MIN_VALUE, new CommandUnknown(), "");
 
     private static final Map<Byte, Commands> COMMANDS_MAP = Arrays.stream(Commands.values())
             .collect(Collectors.toMap(commands -> commands.signal, Function.identity()));
