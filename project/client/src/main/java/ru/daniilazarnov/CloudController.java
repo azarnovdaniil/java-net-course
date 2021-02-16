@@ -114,9 +114,11 @@ public class CloudController implements Initializable {
         }
         FileOutputStream fos = new FileOutputStream(file);
         int bufferSize = 4; // размер буфера
-        byte[] buffer = new byte[bufferSize]; // для передачи целикового буфера, массив может иметь размер не только 4 байта
+        // для передачи целикового буфера, массив может иметь размер не только 4 байта
+        byte[] buffer = new byte[bufferSize];
         for (int i = 0; i < (size + (bufferSize - 1)) / bufferSize; i++) {
-            // последний передаваемый буфер необходимо закидывать побайтово, т.к. целый буфер почему-то не докидывается в сеть
+            // последний передаваемый буфер необходимо закидывать побайтово,
+            // т.к. целый буфер почему-то не докидывается в сеть
             if (i == (size + (bufferSize - 1)) / bufferSize - 1) {
                 // передача последнего целого буфера
                 if (size % bufferSize == 0) {
@@ -135,7 +137,8 @@ public class CloudController implements Initializable {
                 fos.write(buffer, 0, read);
             }
             // Расчетка процентов загрузки
-            double persentDouble = ((double) i + 1) * 100L / (((double) size + (bufferSize - size % bufferSize)) / bufferSize);
+            double persentDouble = ((double) i + 1) * 100L /
+                    (((double) size + (bufferSize - size % bufferSize)) / bufferSize);
             String percent = new DecimalFormat("#0.0").format(persentDouble);
             System.out.println("Loading - " + percent + " %");
         }

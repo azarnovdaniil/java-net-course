@@ -3,15 +3,17 @@ package ru.daniilazarnov;
 import java.io.*;
 import java.net.Socket;
 
-public class Network {
+public final class Network {
 
+    public static final int INET_PORT = 8189;
+    public static final String HOSTNAME = "localhost";
     private static Network network;
     private DataInputStream is;
     private DataOutputStream os;
 
     private Network() {
         try {
-            Socket socket = new Socket("localhost", 8189);
+            Socket socket = new Socket(HOSTNAME, INET_PORT);
             is = new DataInputStream(socket.getInputStream());
             os = new DataOutputStream(socket.getOutputStream());
         } catch (IOException e) {
