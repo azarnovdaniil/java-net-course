@@ -36,7 +36,7 @@ public class ShowCommand implements Command {
                             future.cause().printStackTrace();
                         }
                         if (future.isSuccess()) {
-                            System.out.println("Передан запрос на список файлов!");
+                            System.out.println("Files list request has been sent");
                         }
                     });
         } catch (IOException e) {

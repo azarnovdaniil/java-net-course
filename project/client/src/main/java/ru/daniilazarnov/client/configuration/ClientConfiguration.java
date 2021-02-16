@@ -1,21 +1,19 @@
-package ru.daniilazarnov.server.configuration;
+package ru.daniilazarnov.client.configuration;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ServerConfiguration {
+public class ClientConfiguration {
+    private String downloads;
 
-    private String root;
-
-    public ServerConfiguration() {
+    public ClientConfiguration() {
         InputStream is = null;
         Properties property = new Properties();
         try {
-            var cls = getClass();
             is = getClass().getClassLoader().getResourceAsStream("config.properties");
             property.load(is);
-            root = property.getProperty("root");
+            downloads = property.getProperty("downloads");
         } catch (IOException e) {
             System.err.println("Error has been occurred while reading client configuration!");
         } finally {
@@ -27,7 +25,7 @@ public class ServerConfiguration {
         }
     }
 
-    public String getRoot() {
-        return root;
+    public String getDownloads() {
+        return downloads;
     }
 }

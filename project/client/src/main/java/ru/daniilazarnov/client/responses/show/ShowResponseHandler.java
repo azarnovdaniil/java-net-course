@@ -2,9 +2,7 @@ package ru.daniilazarnov.client.responses.show;
 
 import io.netty.buffer.ByteBuf;
 import ru.daniilazarnov.common.handlers.Handler;
-
 import java.nio.charset.StandardCharsets;
-
 
 public class ShowResponseHandler implements Handler {
 
@@ -27,7 +25,7 @@ public class ShowResponseHandler implements Handler {
             if (buf.readableBytes() >= PATHS_SIZE) {
                 pathsNum = buf.readInt();
                 if (pathsNum > 0) {
-                    System.out.println(pathsNum + " files in the storage:");
+                    System.out.println(pathsNum + " files in the storage");
                     state = ShowHandlerState.PATH_LENGTH;
                 } else {
                     state = ShowHandlerState.COMPLETE;

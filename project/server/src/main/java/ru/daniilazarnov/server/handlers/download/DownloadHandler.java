@@ -1,15 +1,14 @@
 package ru.daniilazarnov.server.handlers.download;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
+import ru.daniilazarnov.common.files.FileSender;
 import ru.daniilazarnov.common.handlers.Handler;
 import ru.daniilazarnov.common.FilePackageConstants;
 
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class DownloadHandler implements Handler {
 
@@ -47,13 +46,18 @@ public class DownloadHandler implements Handler {
         }
 
         if (state == DownloadHandlerState.SEND_FILE) {
-            Path path = Path.of(pathString);
-            FileChannel fileChannel = FileChannel.open(path); // to do: check path.contains(root) // violation
-            ByteBuf fileBuf = ByteBufAllocator.DEFAULT.buffer(pathLength);
-            fileBuf.writeBytes(fileChannel, pathLength);
             ctx.channel().flush();
-            ctx.channel().writeAndFlush(fileBuf);
-            state = DownloadHandlerState.COMPLETE;
+            FileSender fileSender = new FileSender(ctx.channel());
+            fileSender.sendFile(Paths.get(pathString),
+                    future -> {
+                        if (!future.isSuccess()) {
+                            future.cause().printStackTrace();
+                        }
+                        if (future.isSuccess()) {
+                            System.out.println("File has been sent to the client");
+                            state = DownloadHandlerState.COMPLETE;
+                        }
+                    });
         }
     }
 

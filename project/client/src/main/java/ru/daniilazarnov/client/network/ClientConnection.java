@@ -9,6 +9,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import ru.daniilazarnov.client.Client;
+import ru.daniilazarnov.client.configuration.ClientConfiguration;
 import ru.daniilazarnov.client.responses.ResponseHandler;
 
 import java.io.IOException;
@@ -20,10 +21,12 @@ public class ClientConnection {
     private Channel currentChannel;
     private final int port;
     private final String host;
+    private final ClientConfiguration clientConfiguration;
 
-    public ClientConnection(String host, int port) {
+    public ClientConnection(String host, int port, ClientConfiguration clientConfiguration) {
         this.port = port;
         this.host = host;
+        this.clientConfiguration = clientConfiguration;
     }
 
     public Channel getCurrentChannel() {
@@ -40,7 +43,7 @@ public class ClientConnection {
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) {
-                            socketChannel.pipeline().addLast(new ResponseHandler());
+                            socketChannel.pipeline().addLast(new ResponseHandler(clientConfiguration.getDownloads()));
                             currentChannel = socketChannel;
                         }
                     });

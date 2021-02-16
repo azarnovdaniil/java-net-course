@@ -1,18 +1,19 @@
-package ru.daniilazarnov.server.handlers.upload;
+package ru.daniilazarnov.client.responses.download;
 
 import io.netty.buffer.ByteBuf;
 import ru.daniilazarnov.common.files.FileReader;
 import ru.daniilazarnov.common.files.ReadState;
 import ru.daniilazarnov.common.handlers.Handler;
-import java.io.*;
+import java.io.IOException;
 
-public class UploadHandler implements Handler {
+public class DownloadResponseHandler implements Handler {
 
-    private final FileReader fileReader;
     private ByteBuf buf;
 
-    public UploadHandler(String root) {
-        fileReader = new FileReader(root);
+    private final FileReader fileReader;
+
+    public DownloadResponseHandler(String downloadsRoot) {
+        fileReader = new FileReader(downloadsRoot);
     }
 
     @Override

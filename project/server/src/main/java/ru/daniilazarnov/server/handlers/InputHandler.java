@@ -55,16 +55,16 @@ public class InputHandler extends ChannelInboundHandlerAdapter {
     private Handler readOperationType(ChannelHandlerContext ctx, ByteBuf buf) {
         byte read = buf.readByte();
         if (read == OperationTypes.DOWNLOAD.getCode()) {
-            System.out.println("DOWNLOAD operation");
+            System.out.println("DOWNLOAD operation request is received");
             return new DownloadHandler(ctx, root);
         } else if (read == OperationTypes.UPLOAD.getCode()) {
-            System.out.println("UPLOAD operation");
-            return new UploadHandler(ctx, root);
+            System.out.println("UPLOAD operation request is received");
+            return new UploadHandler(root);
         } else if (read == OperationTypes.SHOW.getCode()) {
-            System.out.println("SHOW operation");
+            System.out.println("SHOW operation request is received");
             return new ShowHandler(ctx, root);
         } else {
-            System.out.println("ERROR: Invalid first byte - " + read);
+            System.out.println("ERROR: Invalid first byte: " + read);
             return null;
         }
     }

@@ -49,7 +49,7 @@ public class DownloadCommand implements Command {
                             future.cause().printStackTrace();
                         }
                         if (future.isSuccess()) {
-                            System.out.println("Передан запрос на скачивание!");
+                            System.out.println("Download request has been sent");
                         }
                     });
         } catch (IOException e) {

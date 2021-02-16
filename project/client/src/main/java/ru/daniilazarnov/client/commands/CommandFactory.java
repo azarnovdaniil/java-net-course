@@ -19,13 +19,13 @@ public class CommandFactory {
             } else if (command.equals(ClientCommand.UPLOAD.getTitle())) {
                 return new UploadCommand(channel, pathString);
             } else {
-                throw new IllegalArgumentException("Unknown command.");
+                throw new IllegalArgumentException("Unknown command: " + command);
             }
         } else {
             if (inputString.equals(ClientCommand.SHOW.getTitle())) {
                 return new ShowCommand(channel);
             } else {
-                throw new IllegalArgumentException("Unknown command.");
+                throw new IllegalArgumentException("Unknown command:" + inputString);
             }
         }
     }
