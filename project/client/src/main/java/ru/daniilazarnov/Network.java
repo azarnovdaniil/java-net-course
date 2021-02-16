@@ -38,7 +38,7 @@ public class Network {
                             @Override
                             protected void initChannel(SocketChannel socketChannel) {
                                 channel = socketChannel;
-                                socketChannel.pipeline().addLast(new ClientConnectHandler());
+                                socketChannel.pipeline().addLast(new ClientNetworkHandler());
                             }
                         });
                 LOG.info("Соединение установлено");

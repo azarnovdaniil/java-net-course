@@ -1,14 +1,14 @@
 package ru.daniilazarnov;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static ru.daniilazarnov.string_method.StringMethod.*;
 import static ru.daniilazarnov.string_method.StringMethod.getSecondElement;
 
-public class ServerNetworkMethods {
+public class NetworkCommunicationMethods {
     private static final String HOME_FOLDER_PATH = Path.of("project", "client", "local_storage").toString();
-    private static final byte FOUR_BYTE = 4;
     private static Network client;
     private static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n"
             + "ver: 0.002a\n"
@@ -25,12 +25,12 @@ public class ServerNetworkMethods {
             String folderName = getThirdElement(inputLine);
             Command command = Command.valueOf(getThirdElement(inputLine).toUpperCase());
             if (command == Command.LS) {
-                sendStringAndCommandByte(folderName, FOUR_BYTE);
+                sendStringAndCommandByte(folderName, Command.LS.getCommandByte());
             } else {
                 return "Неизвестная команда";
             }
         } else {
-            sendStringAndCommandByte("", FOUR_BYTE);
+            sendStringAndCommandByte("", Command.LS.getCommandByte());
         }
         result = "Запрос отправлен на сервер";
         return result;
@@ -102,8 +102,10 @@ public class ServerNetworkMethods {
     static void sendFile(String inputLine) {
         if (isThereaSecondElement(inputLine)) {
             String fileName = getSecondElement(inputLine);
+
+            System.out.println(isFileExists(fileName));
             if (isFileExists(fileName)) { // проверяем, существует ли файл
-                client.sendFile(HOME_FOLDER_PATH + fileName); // Отправка файла
+                client.sendFile(HOME_FOLDER_PATH + File.separator + fileName); // Отправка файла
 
             } else {
                 System.out.println("local_storage: Файл не найден");
@@ -119,9 +121,12 @@ public class ServerNetworkMethods {
      * @param fileName имя файла
      * @return истина, если файл в папке обнаружен
      */
+
     private static boolean isFileExists(String fileName) {
-        return Files.exists(Path.of(HOME_FOLDER_PATH + fileName));
+
+        return Files.exists(Path.of(HOME_FOLDER_PATH, fileName));
     }
+
 
     static void close() {
         client.close();

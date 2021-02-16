@@ -17,20 +17,20 @@ public class ReceivingAndSendingStrings {
      * [][][][] int  = длинна имени файла;
      * [] byte[] - имя файла;
      *
-     * @param fileName - имя файла;
+     * @param string - имя файла;
      * @param channel  - канал для передачи;
      */
-    public static void sendString(String fileName,
+    public static void sendString(String string,
                                   Channel channel, byte commandByte, ChannelFutureListener finishListener) {
 
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         buf.writeByte(commandByte); //управляющий байт
         channel.write(buf);
         buf = ByteBufAllocator.DEFAULT.directBuffer(FOUR);
-        buf.writeInt(fileName.length()); // длинна имени файла
+        buf.writeInt(string.length()); // длинна имени файла
         channel.write(buf);
-        byte[] stringSource = fileName.getBytes();
-        buf = ByteBufAllocator.DEFAULT.directBuffer(fileName.length());
+        byte[] stringSource = string.getBytes();
+        buf = ByteBufAllocator.DEFAULT.directBuffer(string.length());
         buf.writeBytes(stringSource);
         channel.write(buf);
         channel.flush();

@@ -6,14 +6,14 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static ru.daniilazarnov.ServerNetworkMethods.*;
+import static ru.daniilazarnov.NetworkCommunicationMethods.*;
 import static ru.daniilazarnov.string_method.StringMethod.*;
 
 /**
  * Содержит основную логику обработки введенных с консоли команд
  */
-public class Client {
-    private static final Logger LOG = Logger.getLogger(Client.class);
+public class InputConsole {
+    private static final Logger LOG = Logger.getLogger(InputConsole.class);
     private static final int DELAY = 10;
     private static final String PROMPT_TO_ENTER = ">";
     private static final String PROGRAM_NAME = "local_storage ";
@@ -24,14 +24,14 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
         init();
-        auth();
-        mainHandler();
+//        auth();
+        inputConsoleHandler();
     }
 
     /**
      * Метод содержит основную логику введенных с консоли команд
      */
-    private static void mainHandler() throws IOException {
+    private static void inputConsoleHandler() throws IOException {
         String inputLine;
         while (true) {
             InputStream in = System.in;
@@ -85,7 +85,7 @@ public class Client {
                 } catch (IllegalArgumentException e) {
                     System.err.println("Некорректная команда");
                     LOG.error(e);
-                    mainHandler();
+                    inputConsoleHandler();
                 }
 
             }

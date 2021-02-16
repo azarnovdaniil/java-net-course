@@ -15,7 +15,7 @@ public enum Command {
     STATUS((byte) 5, "'status' - вывести статус подключения к серверу\n"),
     AUTH((byte) 6, "'auth' - Авторизация\n"),
     HELP((byte) 7, "'help' - Помощь\n"),
-    DISCONNECT((byte) 8, "'diconnect' - Разорвать соединение\n"),
+    DISCONNECT((byte) 8, "'disconnect' - Разорвать соединение\n"),
     SERVER((byte) 9, "'server ls [catalog_name]' - вывести имена файлов и каталогов расположенных в папке \n"
             + "[catalog_name] на удаленном хранилище\n");
 
@@ -36,13 +36,13 @@ public enum Command {
         return helpInfo;
     }
 
-    private static Command getCommandByte(byte b) {
+    private static Command getCommandFromByte(byte b) {
         return Arrays.stream(Command.values())
                 .filter(command -> command.getCommandByte() == b).findFirst().orElse(Command.UNKNOWN);
     }
 
     public static Command valueOf(byte readed) {
-        return getCommandByte(readed);
+        return getCommandFromByte(readed);
     }
 
     public byte getCommandByte() {

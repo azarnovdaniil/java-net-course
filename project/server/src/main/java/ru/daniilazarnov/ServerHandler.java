@@ -53,7 +53,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     break;
                 case AUTH:
                     LOG.info("Запрос авторизации");
-                    getAuth(buf);
+                    getAuth(ctx, buf);
 
 
                     break;
@@ -67,10 +67,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void getAuth(ByteBuf buf) {
+    private void getAuth(ChannelHandlerContext ctx, ByteBuf buf) {
         String rawAuthData = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
         List<String> authData = Arrays.stream(rawAuthData.split("%-%")).collect(Collectors.toList());
+        int accessRights = SQLClient.getAuth(authData.get(0), authData.get(1));
         System.out.println(SQLClient.getAuth(authData.get(0), authData.get(1)));
+        ReceivingAndSendingStrings
+                .sendString(accessRights + "", ctx.channel(), Command.AUTH.getCommandByte(),
+                        UtilMethod.getChannelFutureListener("Список файлов успешно передан"));
         System.out.println(authData);
     }
 
@@ -78,9 +82,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         String folderName = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
         String fileList = UtilMethod.getFolderContents(folderName, "server");
         ReceivingAndSendingStrings
-                .sendString(("\n" + fileList), ctx.channel(), (byte) FOUR,
+                .sendString(("\n" + fileList), ctx.channel(), Command.LS.getCommandByte(),
                         UtilMethod.getChannelFutureListener("Список файлов успешно передан"));
-        System.out.println(folderName);
     }
 
     /**

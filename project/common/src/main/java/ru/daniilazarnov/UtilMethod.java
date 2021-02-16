@@ -16,16 +16,41 @@ public class UtilMethod {
     public static final String SERVER_FOLDER_PATH = Path.of("project", "server", "cloud_storage", USER)
             .toString() + File.separator;
 
+
+
     /**
      * Создание каталога по указанному пути
      *
-     * @param filePath путь содержащий имя файла
      */
-    public static void createDirectory(String filePath) throws IOException {
-        Path path = Paths.get("project/server/cloud_storage/user1/" + filePath);
+    public static void createFile(String userFolder) throws IOException {
+        Path path = Paths.get("cloud_storage", userFolder);
         Files.createDirectories(path.getParent());
         try {
             Files.createFile(path);
+        } catch (FileAlreadyExistsException e) {
+            System.err.println("already exists: " + e.getMessage());
+        }
+    }
+
+
+    public static void deleteFile(String folder) throws IOException {
+        Path path = Paths.get("cloud_storage", folder);
+//        Files.createDirectories(path.getParent());
+        try {
+            Files.createDirectories(path);
+        } catch (FileAlreadyExistsException e) {
+            System.err.println("already exists: " + e.getMessage());
+        }
+    }
+
+
+
+
+    public static void createFolder(String folder) throws IOException {
+        Path path = Paths.get("cloud_storage", folder);
+//        Files.createDirectories(path.getParent());
+        try {
+            Files.createDirectories(path);
         } catch (FileAlreadyExistsException e) {
             System.err.println("already exists: " + e.getMessage());
         }

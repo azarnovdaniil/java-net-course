@@ -3,12 +3,11 @@ package ru.daniilazarnov;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.util.Arrays;
 
-import static ru.daniilazarnov.ServerNetworkMethods.*;
+import static ru.daniilazarnov.NetworkCommunicationMethods.*;
 
 public class Auth {
-    private static final Logger LOG = Logger.getLogger(ServerNetworkMethods.class);
+    private static final Logger LOG = Logger.getLogger(NetworkCommunicationMethods.class);
     private static final int DELAY = 10;
 
     static boolean auth() {
@@ -33,9 +32,6 @@ public class Auth {
                 userName = bufferedReader.readLine().trim();
                 System.out.println("Пароль: ");
                 password = bufferedReader.readLine().trim().toCharArray();
-
-                System.out.println(userName + " - " + Arrays.toString(password));
-
             } catch (IOException e) {
                 LOG.error(e);
             }
