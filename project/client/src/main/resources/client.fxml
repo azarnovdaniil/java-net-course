@@ -8,7 +8,7 @@
 <VBox fx:controller="ru.daniilazarnov.Controller" xmlns:fx="http://javafx.com/fxml" >
     <TextArea fx:id = "mainArea" editable="false"  VBox.vgrow="ALWAYS"/>
     <HBox>
-        <TextField fx:id="msgField" HBox.hgrow="ALWAYS" promptText="Введите сообщение..." onAction="#sendMsgAction"/>
-        <Button text="Отправить" onAction="#sendMsgAction"/>
+        <TextField fx:id="msgField" HBox.hgrow="ALWAYS" promptText="Enter your message..." onAction="#sendMsgAction"/>
+        <Button text="Send" onAction="#sendMsgAction"/>
     </HBox>
 </VBox>
