@@ -98,7 +98,8 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
             context.write(numberFiles);
             context.flush();
             for (String userFile : userFiles) {
-                //Нужно считать количество байт, а не символов, т.к. символ кириллицы имеет длинну - 2 байта, латиницы - 1 байт
+                // Нужно считать количество байт, а не символов, т.к.
+                // символ кириллицы имеет длинну - 2 байта, латиницы - 1 байт
                 byte[] b = userFile.getBytes(StandardCharsets.UTF_8);
                 String lengthOfLength = String.valueOf(String.valueOf(b.length).length());
                 context.write(lengthOfLength);
