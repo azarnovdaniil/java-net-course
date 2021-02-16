@@ -73,7 +73,7 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
                     setVarPath(directory.toString());
                     String crPath = getVarPath() + "\r\n";
                     context.writeAndFlush(crPath);
-                } else if (newPath.equals("/")){
+                } else if (newPath.equals("/")) {
                     setVarPath(path);
                     String crPath = path + "\r\n";
                     context.writeAndFlush(crPath);
@@ -98,7 +98,8 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
             context.write(numberFiles);
             context.flush();
             for (String userFile : userFiles) {
-                byte[] b = userFile.getBytes(StandardCharsets.UTF_8); //Нужно считать количество байт, а не символов, т.к. символ кириллицы имеет длинну - 2 байта, латиницы - 1 байт
+                //Нужно считать количество байт, а не символов, т.к. символ кириллицы имеет длинну - 2 байта, латиницы - 1 байт
+                byte[] b = userFile.getBytes(StandardCharsets.UTF_8);
                 String lengthOfLength = String.valueOf(String.valueOf(b.length).length());
                 context.write(lengthOfLength);
 
@@ -121,6 +122,7 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
             context.writeAndFlush("Unknown command!\r\n");
         }
     }
+
     public String getPath() {
         return path;
     }
@@ -133,7 +135,7 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
         this.varPath = varPath;
     }
 
-    private Path newPath(String path){
+    private Path newPath(String path) {
         Path newPath = Path.of(getPath() + "\\" + path);
         return newPath;
     }

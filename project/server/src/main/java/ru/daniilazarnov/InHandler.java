@@ -10,7 +10,12 @@ import java.io.FileOutputStream;
 
 public class InHandler extends ChannelInboundHandlerAdapter {
 
-    private String serverDir = "project/server/serverFiles";
+    private final byte LS_BYTE = 1;
+    private final byte UPLOAD_BYTE = 2;
+    private final byte DOWNLOAD_BYTE = 3;
+    private final int INT_BYTES = 4;
+    private final int LONG_BYTES = 8;
+    private final String serverDir = "project/server/serverFiles";
     private State currentState = State.IDLE;
     private int nextLength;
     private long fileLength;
@@ -19,41 +24,44 @@ public class InHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+
         ByteBuf buf = (ByteBuf) msg;
 
         if (currentState == State.IDLE) {
             byte readed = buf.readByte();
 
             // на загрузку файла
-            if (readed == (byte) 2) {
+            if (readed == UPLOAD_BYTE) {
                 System.out.println("Get byte = " + readed);
                 currentState = State.NAME_LENGTH;
                 receivedFileLength = 0L;
                 System.out.println("STATE: Start file receiving");
+                ctx.writeAndFlush(UPLOAD_BYTE);
 
                 // на выгрузку файла
-            } else if (readed == (byte) 3) {
+            } else if (readed == DOWNLOAD_BYTE) {
                 System.out.println("Get byte = " + readed);
                 currentState = State.NAME_LENGTH_DOWNLOAD;
                 System.out.println("STATE: Start file downloading");
+                ctx.writeAndFlush(DOWNLOAD_BYTE);
 
                 // на получение списка файлов на сервере
-            } else if (readed == (byte) 1) {
+            } else if (readed == LS_BYTE) {
                 System.out.println("Get byte = " + readed);
-                buf.release();                //освобождение ByteBuf
                 ctx.fireChannelRead("ls");
             } else {
-                buf.release();
                 System.out.println("ERROR: Invalid first byte - " + readed);
+                buf.release();
             }
         }
 
         // на загрузку файла
         if (currentState == State.NAME_LENGTH) {
-            if (buf.readableBytes() >= 4) {
+            if (buf.readableBytes() >= INT_BYTES) {
                 nextLength = buf.readInt();
                 System.out.println("STATE: Get filename length - " + nextLength + " bytes");
                 currentState = State.NAME;
+                ctx.writeAndFlush(UPLOAD_BYTE);
             }
         }
 
@@ -65,15 +73,17 @@ public class InHandler extends ChannelInboundHandlerAdapter {
                 System.out.println("STATE: Filename received - " + new String(fileName, "UTF-8"));
                 out = new BufferedOutputStream(new FileOutputStream(serverDir + "/" + new String(fileName)));
                 currentState = State.FILE_LENGTH;
+                ctx.writeAndFlush(UPLOAD_BYTE);
             }
         }
 
         // на загрузку файла
         if (currentState == State.FILE_LENGTH) {
-            if (buf.readableBytes() >= 8) {
+            if (buf.readableBytes() >= LONG_BYTES) {
                 fileLength = buf.readLong();
                 System.out.println("STATE: File length received - " + fileLength + " bytes");
                 currentState = State.FILE;
+                ctx.writeAndFlush(UPLOAD_BYTE);
             }
         }
 
@@ -87,9 +97,7 @@ public class InHandler extends ChannelInboundHandlerAdapter {
                     currentState = State.IDLE;
                     System.out.println("File received");
                     out.close();
-                    int i = 2;
-                    ctx.write(i);
-                    ctx.flush();
+                    ctx.writeAndFlush(UPLOAD_BYTE);
                     break;
                 }
             }
@@ -97,10 +105,11 @@ public class InHandler extends ChannelInboundHandlerAdapter {
 
         // на выгрузку файла
         if (currentState == State.NAME_LENGTH_DOWNLOAD) {
-            if (buf.readableBytes() >= 4) {
+            if (buf.readableBytes() >= INT_BYTES) {
                 nextLength = buf.readInt();
                 System.out.println("STATE: Get downloading filename length - " + nextLength + " bytes");
                 currentState = State.NAME_DOWNLOAD;
+                ctx.writeAndFlush(DOWNLOAD_BYTE);
             }
         }
 
@@ -118,8 +127,8 @@ public class InHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (buf.readableBytes() == 0) {
-            buf.release();                           //освобождение ByteBuf
             System.out.println("buf.release");
+            buf.release();                           //освобождение ByteBuf
         }
     }
 
@@ -147,12 +156,14 @@ public class InHandler extends ChannelInboundHandlerAdapter {
     //Исходный вариант для приходящих String
 //            String str = (String) msg;
 //            byte[] arr = (str).getBytes();
-//            ByteBuf buf = ctx.alloc().buffer(arr.length); // alloc() - ссылка на базовый Аллокатор, который выделяет память для буфера
+//            ByteBuf buf = ctx.alloc().buffer(arr.length);
 //            buf.writeBytes(arr);
 //            ctx.writeAndFlush(buf);
 
+
+    //не забывать писать для всех хендлеров
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {      //не забывать писать для всех хендлеров
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
         ctx.close();
     }

@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 
 import java.io.File;
-import java.nio.file.Files;
 
 
 public class OutHandler extends ChannelOutboundHandlerAdapter {
@@ -14,7 +13,7 @@ public class OutHandler extends ChannelOutboundHandlerAdapter {
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         if (msg instanceof String) {
-            System.out.println(msg);
+            System.out.println("Out string - " + msg);
             String str = (String) msg;
             if (str.startsWith("download")) {
                 String fileName = str.replace("download: ", "");
@@ -28,17 +27,26 @@ public class OutHandler extends ChannelOutboundHandlerAdapter {
                 ctx.writeAndFlush(region);
             } else {
                 byte[] arr = (str).getBytes();
-                ByteBuf buf = ctx.alloc().buffer(arr.length); // alloc() - ссылка на базовый Аллокатор, который выделяет память для буфера
+                // alloc() - ссылка на базовый Аллокатор, который выделяет память для буфера
+                ByteBuf buf = ctx.alloc().buffer(arr.length);
                 buf.writeBytes(arr);
                 ctx.writeAndFlush(buf);
             }
         }
 
         if (msg instanceof Integer) {
-            System.out.println(msg);
+            System.out.println("Out Int - " + msg);
             int i = (int) msg;
             ByteBuf buf = ctx.alloc().buffer(); // по сути объявление буфера
             buf.writeInt(i);
+            ctx.writeAndFlush(buf);
+        }
+
+        if (msg instanceof Byte) {
+            System.out.println("Out Byte - " + msg);
+            byte b = (byte) msg;
+            ByteBuf buf = ctx.alloc().buffer(); // по сути объявление буфера
+            buf.writeByte(b);
             ctx.writeAndFlush(buf);
         }
     }

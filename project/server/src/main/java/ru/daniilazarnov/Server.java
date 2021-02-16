@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 public class Server {
 
+    public static final int INET_PORT = 8189;
+
     private static final Logger LOG = LoggerFactory.getLogger(Server.class);
     public Server() throws InterruptedException {
 
@@ -32,7 +34,7 @@ public class Server {
                             );
                         }
                     });
-            ChannelFuture channelFuture = bootstrap.bind(8189).sync();
+            ChannelFuture channelFuture = bootstrap.bind(INET_PORT).sync();
             LOG.info("Server started");
             channelFuture.channel().closeFuture().sync(); // block
         } finally {
