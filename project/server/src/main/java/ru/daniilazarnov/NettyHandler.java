@@ -19,18 +19,18 @@ import java.util.stream.Collectors;
 public class NettyHandler extends SimpleChannelInboundHandler<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NettyHandler.class);
-    private static final ConcurrentLinkedQueue<ChannelHandlerContext> clients
+    private static final ConcurrentLinkedQueue<ChannelHandlerContext> CLIENTS
             = new ConcurrentLinkedQueue<>();
 
     private static int counter = 0;
     private String userName;
-    private String path = "project/server/serverFiles";
+    private final String path = "project/server/serverFiles";
     private String varPath = path;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         counter++;
-        clients.add(ctx);
+        CLIENTS.add(ctx);
         userName = "user" + counter;
 //        ctx.writeAndFlush("Welcome! Show commands with --list\r\n");
         LOG.info("Client with nick: {}, with ip: {} connected", userName, ctx.channel().localAddress());
@@ -39,7 +39,7 @@ public class NettyHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         counter--;
-        clients.remove(ctx);
+        CLIENTS.remove(ctx);
         LOG.info("Client with nick: {}, with ip: {} leave", userName, ctx.channel().localAddress());
     }
 

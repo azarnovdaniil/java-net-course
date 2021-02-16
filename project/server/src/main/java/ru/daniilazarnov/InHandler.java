@@ -10,12 +10,12 @@ import java.io.FileOutputStream;
 
 public class InHandler extends ChannelInboundHandlerAdapter {
 
-    private final byte LS_BYTE = 1;
-    private final byte UPLOAD_BYTE = 2;
-    private final byte DOWNLOAD_BYTE = 3;
-    private final int INT_BYTES = 4;
-    private final int LONG_BYTES = 8;
-    private final String serverDir = "project/server/serverFiles";
+    private static final byte LS_BYTE = 1;
+    private static final byte UPLOAD_BYTE = 2;
+    private static final byte DOWNLOAD_BYTE = 3;
+    private static final int INT_BYTES = 4;
+    private static final int LONG_BYTES = 8;
+    private static final String serverDir = "project/server/serverFiles";
     private State currentState = State.IDLE;
     private int nextLength;
     private long fileLength;
