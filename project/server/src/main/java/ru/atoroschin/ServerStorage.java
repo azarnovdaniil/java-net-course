@@ -1,4 +1,4 @@
-package server;
+package ru.atoroschin;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -6,7 +6,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import server.storage.inHandler.InboundHandler;
 
 import java.nio.ByteOrder;
 import java.util.logging.Logger;
@@ -25,8 +24,8 @@ public class ServerStorage {
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        final int countFour = 4;
-        final int countFive = -5;
+        final int lengthFieldMes = 4;
+        final int countAdjustment = -5;
 
         try {
             ServerBootstrap b = new ServerBootstrap();
@@ -37,7 +36,7 @@ public class ServerStorage {
                         public void initChannel(SocketChannel ch) {
                             ch.pipeline()
                                     .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE,
-                                            1, countFour, countFive, 0, true))
+                                            1, lengthFieldMes, countAdjustment, 0, true))
                                     .addLast(new InboundHandler());
                         }
                     });

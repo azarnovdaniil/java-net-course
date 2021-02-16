@@ -11,20 +11,24 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
 public class FileWorker {
-    private static final int PART_SIZE = 10 * 1024 * 1024;
+    private static final int MEGA_BYTE = 1024 * 1024;
+    private static final int PART_SIZE = 10 * MEGA_BYTE;
     private Path currentPath;
     private Path basePath;
+    private String serverPath;
     private String currentDir;
+    private long maxVolume;
 
-    public FileWorker(String currentPath, String basePath) {
-        this.currentPath = Path.of(currentPath);
-        this.basePath = Path.of(basePath);
+    public FileWorker(String currentDir, String baseDir, long maxVolume) {
+        this.currentPath = Path.of(currentDir);
         this.currentDir = this.currentPath.toAbsolutePath().toString();
         try {
             if (!Files.exists(this.currentPath)) {
@@ -33,6 +37,26 @@ public class FileWorker {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.basePath = Path.of(baseDir);
+        this.serverPath = this.currentPath.relativize(this.basePath).toString();
+        if (maxVolume == 0) {
+            this.maxVolume = (long) MEGA_BYTE * MEGA_BYTE;
+        } else {
+            this.maxVolume = maxVolume * MEGA_BYTE;
+        }
+    }
+
+    public String getServerPathOnServer() {
+        Path pathRelative = basePath.toAbsolutePath().relativize(currentPath);
+        return pathRelative.toString();
+    }
+
+    public String getServerPathOnClient() {
+        return serverPath;
+    }
+
+    public void setServerPath(String serverPath) {
+        this.serverPath = serverPath;
     }
 
     public String getCurrentDir() {
@@ -61,7 +85,7 @@ public class FileWorker {
                     ByteBuf bufOut = ByteBufAllocator.DEFAULT.buffer(PART_SIZE);
                     bufOut.writeByte(signal); // команда
                     bufOut.writeInt(lenServiceData + readLength); // длина сообщения
-                    bufOut.writeInt(partNum + i); // 3 номер части
+                    bufOut.writeInt(partNum + i); // номер части
                     bufOut.writeBytes(bytes); // служебные данные. все, кроме содержимого файла
                     bufOut.writeBytes(buffer, 0, readLength); // содержимое файла
 
@@ -116,28 +140,43 @@ public class FileWorker {
         long fileSize = buf.readLong();
         FileLoaded fileLoaded;
         Path path = Path.of(currentDir, fileName);
-        if (uploadedFiles.containsKey(hash)) {
-            fileLoaded = uploadedFiles.get(hash);
-        } else {
-            fileLoaded = new FileLoaded(hash, fileName, fileSize, path);
-            uploadedFiles.put(hash, fileLoaded);
-        }
-        try {
-            int writeSize = buf.readableBytes();
-            byte[] bufIn = new byte[writeSize];
-
-            buf.readBytes(bufIn);
-            fileLoaded.addPart(partNum, writeSize, bufIn);
-
-            if (fileLoaded.getSizeCounter() == fileSize) {
-                uploadedFiles.remove(hash);
-                return fileName;
+        long busyVolume = getVolumeDir(path);
+        if (busyVolume + fileSize <= maxVolume) {
+            if (uploadedFiles.containsKey(hash)) {
+                fileLoaded = uploadedFiles.get(hash);
+            } else {
+                fileLoaded = new FileLoaded(hash, fileName, fileSize, path);
+                uploadedFiles.put(hash, fileLoaded);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "error";
+            try {
+                int writeSize = buf.readableBytes();
+                byte[] bufIn = new byte[writeSize];
+
+                buf.readBytes(bufIn);
+                fileLoaded.addPart(partNum, writeSize, bufIn);
+
+                if (fileLoaded.getSizeCounter() == fileSize) {
+                    uploadedFiles.remove(hash);
+                    return fileName;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "error";
+            }
         }
         return "";
+    }
+
+    private long getVolumeDir(Path path) {
+        try {
+            return Files.walk(path)
+                    .map(Path::toFile)
+                    .map(File::length)
+                    .reduce((i1, i2) -> i1 + i2).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     public List<String> getFileListInDir() throws IOException {
@@ -175,9 +214,7 @@ public class FileWorker {
     public void makeDir(String nameDir) {
         if (!Files.exists(currentPath.resolve(nameDir))) {
             try {
-                currentPath = currentPath.resolve(nameDir);
-                Files.createDirectory(currentPath);
-                currentDir = currentPath.toAbsolutePath().toString();
+                Files.createDirectory(currentPath.resolve(nameDir));
             } catch (IOException e) {
                 e.printStackTrace();
             }

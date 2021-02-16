@@ -18,7 +18,7 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
         uploadedFiles = new HashMap<>();
-        fileWorker = new FileWorker("client", "");
+        fileWorker = new FileWorker("client", "", -1);
         ctx.fireChannelRegistered();
     }
 
@@ -56,7 +56,8 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
             Scanner scanner = new Scanner(System.in);
             while (active) {
                 String readLine;
-                System.out.print(fileWorker.getCurrentDir() + ">");
+                System.out.println("server: " + fileWorker.getServerPathOnClient() + ">");
+                System.out.print("local: " + fileWorker.getCurrentDir() + ">");
                 if (scanner.hasNext()) {
                     readLine = scanner.nextLine();
                     String[] commandPart = readLine.split("\\s", 2);

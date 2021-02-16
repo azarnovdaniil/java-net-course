@@ -1,4 +1,4 @@
-package server.storage.inHandler;
+package ru.atoroschin;
 
 import ru.atoroschin.Commands;
 import ru.atoroschin.FileLoaded;
@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,9 +20,12 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
     public void channelRegistered(ChannelHandlerContext ctx) {
         String storageDir = "storage";
         String userName = "user_1";
+        String baseDir = storageDir + File.separator + userName;
         System.out.println("Подключился клиент " + ctx.channel().remoteAddress().toString());
+        int maxVolume = 1;
         uploadedFiles = new HashMap<>();
-        fileWorker = new FileWorker(storageDir + File.separator + userName, storageDir + File.separator + userName);
+        fileWorker = new FileWorker(baseDir, baseDir, maxVolume);
+
         ctx.fireChannelRegistered();
     }
 

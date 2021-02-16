@@ -22,6 +22,10 @@ public enum Commands {
     MV("mv", (byte) 10, new CommandMV()),
     RENAME("rename", (byte) 11, new CommandRename()),
     EXIT("exit", (byte) 12, new CommandExit()),
+    LRM("lrm", (byte) 13, new CommandLocalRM()),
+    LMKDIR("lmkdir", (byte) 14, new CommandLocalMkDir()),
+    LMV("lmv", (byte) 15, new CommandLocalMV()),
+    LRENAME("lrename", (byte) 16, new CommandLocalRename()),
     UNKNOWN("unknown", Byte.MIN_VALUE, new CommandUnknown());
 
     private static final Map<Byte, Commands> COMMANDS_MAP = Arrays.stream(Commands.values())

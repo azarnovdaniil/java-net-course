@@ -20,11 +20,14 @@ public class CommandCD implements Command {
             FileLoaded> uploadedFiles, byte signal) {
         String newDir = BufWorker.readFileListFromBuf(buf).get(0);
         fileWorker.changeCurrentDir(newDir);
+        String serverDir = fileWorker.getServerPathOnServer();
+        fileWorker.sendCommandWithStringList(ctx, List.of(serverDir), signal);
     }
 
     @Override
     public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
             FileLoaded> uploadedFiles) {
-
+        String serverDir = BufWorker.readFileListFromBuf(buf).get(0);
+        fileWorker.setServerPath(serverDir);
     }
 }
