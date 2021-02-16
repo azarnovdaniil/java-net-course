@@ -19,7 +19,8 @@ public enum TypeCommand {
     GET_SHOW_DIR,
     GET_BACK_DIR,
     WRITE_INTO_FILE,
-    REQUEST_FILE
+    REQUEST_FILE,
+    RENAME_FILE
 
 
 }

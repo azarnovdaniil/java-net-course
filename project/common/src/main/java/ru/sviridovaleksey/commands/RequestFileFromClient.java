@@ -7,7 +7,7 @@ public class RequestFileFromClient implements Serializable {
     private final String userName;
     private final String fileName;
 
-    public RequestFileFromClient (String userName, String fileName) {
+    public RequestFileFromClient(String userName, String fileName) {
         this.userName = userName;
         this.fileName = fileName;
     }

@@ -7,7 +7,7 @@ public class CreateNewDirectory implements Serializable {
     private final String userName;
     private final String directoryName;
 
-    public CreateNewDirectory (String userName, String fileName) {
+    public CreateNewDirectory(String userName, String fileName) {
         this.userName = userName;
         this.directoryName = fileName;
     }

@@ -1,4 +1,4 @@
-package ru.sviridovaleksey.newClientConnection;
+package ru.sviridovaleksey.newclientconnection;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -15,20 +15,20 @@ import java.util.logging.Logger;
 
 public class ClientConnection {
 
-    private static final Logger logger = Logger.getLogger(ClientConnection.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ClientConnection.class.getName());
     private final int usePort;
 
 
 
 
     public ClientConnection(Handler fileHandler, int usePort) {
-        logger.addHandler(fileHandler);
+        LOGGER.addHandler(fileHandler);
         this.usePort = usePort;
 
     }
 
     public void startConnection() throws Exception {
-
+        final int channelOption = 128;
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -38,13 +38,14 @@ public class ClientConnection {
                     .childHandler(new ChannelInitializer<io.netty.channel.socket.SocketChannel>() { // (4)
                         @Override
                         public void initChannel(SocketChannel ch) {
-                           ch.pipeline().addFirst(new Decoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())),
+                           ch.pipeline().addFirst(
+                                   new Decoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())),
                                    new EncoderServer(),
                                    new ServerOutHandler(),
                                    new ServerInHandler());
                         }
                     })
-                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .option(ChannelOption.SO_BACKLOG, channelOption)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture f = b.bind(usePort).sync(); // (7)

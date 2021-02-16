@@ -1,7 +1,8 @@
-package ru.sviridovaleksey.newClientConnection;
+package ru.sviridovaleksey.newclientconnection;
 
 import org.apache.commons.lang3.StringUtils;
 import ru.sviridovaleksey.Command;
+import ru.sviridovaleksey.TypeCommand;
 import ru.sviridovaleksey.commands.*;
 import ru.sviridovaleksey.workwithfiles.ShowAllDirectory;
 import ru.sviridovaleksey.workwithfiles.WorkWithFile;
@@ -21,117 +22,108 @@ private final ShowAllDirectory showAllDirectory = new ShowAllDirectory(defAddres
 private final HashMap<String, String> whenClient = new HashMap<>();
 
 
-public WhatDo(WorkWithFile workWithFile, MessageForClient messageForClient){
+public WhatDo(WorkWithFile workWithFile, MessageForClient messageForClient) {
 this.workWithFile = workWithFile;
 this.messageForClient = messageForClient;
 workWithFile.createDefaultDirectory(defAddress);
 
 }
 
-    protected void whatDo (Command command, String who) {
-        switch (command.getType()) {
-            case MESSAGE: {
-                MessageCommandData data = (MessageCommandData) command.getData();
-                String message = data.getMessage();
-                System.out.println(who + " " + message);
-                break;
-            }
+    protected void whatDo(Command command, String who) {
 
-            case CREATE_NEW_DIRECTORY: {
-                CreateNewDirectory data = (CreateNewDirectory) command.getData();
-                String directoryName = data.getDirectoryName();
-                String userName = data.getUserName();
-                workWithFile.createNewDirectory(userName, whenClient.get(userName) + directoryName);
+        if (command.getType().equals(TypeCommand.MESSAGE)) {
+            MessageCommandData data = (MessageCommandData) command.getData();
+            String message = data.getMessage();
+            System.out.println(who + " " + message);
+
+        } else if (command.getType().equals(TypeCommand.CREATE_NEW_DIRECTORY)) {
+            CreateNewDirectory data = (CreateNewDirectory) command.getData();
+            String directoryName = data.getDirectoryName();
+            String userName = data.getUserName();
+            workWithFile.createNewDirectory(userName, whenClient.get(userName) + directoryName);
+            showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
+
+
+        } else if (command.getType().equals(TypeCommand.DELETE_DIRECTORY)) {
+            DeleteDirectory data = (DeleteDirectory) command.getData();
+            String directoryName = data.getDirectoryName();
+            String userName = data.getUserName();
+            workWithFile.deleteDirectory(whenClient.get(userName) + directoryName);
+            showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
+
+        } else if (command.getType().equals(TypeCommand.DELETE_FILE)) {
+            DeleteFile data = (DeleteFile) command.getData();
+            String fileName = data.getFileName();
+            String userName = data.getUserName();
+            workWithFile.deleteFile(whenClient.get(userName) + fileName);
+            showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
+
+
+        } else if (command.getType().equals(TypeCommand.CREATE_NEW_FILE)) {
+            CreateNewFile data = (CreateNewFile) command.getData();
+            String fileName = data.getFileName();
+            String userName = data.getUserName();
+            workWithFile.createNewFile(userName, whenClient.get(userName) + fileName);
+            showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
+
+        } else if (command.getType().equals(TypeCommand.GET_SHOW_DIR)) {
+            GetShowDir data = (GetShowDir) command.getData();
+            String userName = data.getUserName();
+            String wayToDir = data.getMessage();
+            showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)
+                + wayToDir).toString());
+            whenClient.put(userName, whenClient.get(userName) + wayToDir + "/");
+
+        } else if (command.getType().equals(TypeCommand.GET_BACK_DIR)) {
+            GetBackDir data = (GetBackDir) command.getData();
+            String userName = data.getUserName();
+            String getNewLink = whenClient.get(userName);
+            getNewLink = StringUtils.reverse(getNewLink);
+            getNewLink = StringUtils.substringAfter(getNewLink, "/");
+            String nameDir = StringUtils.substringBefore(getNewLink, "/");
+            nameDir = StringUtils.reverse(nameDir);
+            getNewLink = StringUtils.substringAfter(getNewLink, "/");
+            getNewLink = StringUtils.reverse(getNewLink);
+            if (nameDir.equals(userName)) {
+                messageForClient.err("Дальше некуда");
                 showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
-                break;
+                return;
             }
-            case DELETE_DIRECTORY: {
-                DeleteDirectory data = (DeleteDirectory) command.getData();
-                String directoryName = data.getDirectoryName();
-                String userName = data.getUserName();
-                workWithFile.deleteDirectory(whenClient.get(userName) + directoryName);
+            whenClient.put(userName, getNewLink + "/");
+            showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
+            System.out.println(whenClient.get(userName));
+
+
+        } else if (command.getType().equals(TypeCommand.WRITE_INTO_FILE)) {
+            WriteInToFile data = (WriteInToFile) command.getData();
+            String userName = data.getUserName();
+            String fileName = data.getFileName();
+            boolean endWrite = data.getEndWrite();
+            byte[] dataForFile = data.getData();
+            long cell = data.getCell();
+            workWithFile.writeByteToFile(whenClient.get(userName) + "/" + fileName, dataForFile, cell);
+            if (endWrite) {
+                messageForClient.successfulAction("Передача файла " + fileName + " окончена");
                 showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
-                break;
-            }
-
-            case DELETE_FILE: {
-                DeleteFile data = (DeleteFile) command.getData();
-                String fileName = data.getFileName();
-                String userName = data.getUserName();
-                workWithFile.deleteFile(whenClient.get(userName) + fileName);
-                showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
-                break;
             }
 
 
-            case CREATE_NEW_FILE: {
-                CreateNewFile data = (CreateNewFile) command.getData();
-                String fileName = data.getFileName();
-                String userName = data.getUserName();
-                workWithFile.createNewFile(userName, whenClient.get(userName) + fileName);
-                showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
-                break;
-            }
-
-            case GET_SHOW_DIR: {
-                GetShowDir data = (GetShowDir) command.getData();
-                String userName = data.getUserName();
-                String wayToDir = data.getMessage();
-                showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)
-                         + wayToDir).toString());
-                whenClient.put(userName, whenClient.get(userName) + wayToDir + "/");
-                break;
-
-            }
-
-            case GET_BACK_DIR: {
-                GetBackDir data = (GetBackDir) command.getData();
-                String userName = data.getUserName();
-                String getNewLink = whenClient.get(userName);
-                getNewLink = StringUtils.reverse(getNewLink);
-                getNewLink = StringUtils.substringAfter(getNewLink, "/");
-                String nameDir =  StringUtils.substringBefore(getNewLink, "/");
-                nameDir = StringUtils.reverse(nameDir);
-                getNewLink = StringUtils.substringAfter(getNewLink, "/");
-                getNewLink = StringUtils.reverse(getNewLink);
-
-
-                if (nameDir.equals(userName)) {
-                    messageForClient.err("Дальше некуда");
-                    showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
-                    break; }
-
-                whenClient.put(userName, getNewLink + "/");
-                showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
-                System.out.println(whenClient.get(userName));
-                break;
-            }
-
-            case WRITE_INTO_FILE: {
-                WriteInToFile data = (WriteInToFile) command.getData();
-                String userName = data.getUserName();
-                String fileName = data.getFileName();
-                boolean endWrite = data.getEndWrite();
-                byte[] dataForFile = data.getData();
-                long cell = data.getCell();
-                workWithFile.writeByteToFile(whenClient.get(userName)+"/" + fileName, dataForFile, cell);
-                if (endWrite) {
-                    messageForClient.successfulAction("Передача файла " + fileName + " окончена");
-                    showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
-                }
-                break;
-            }
-
-            case REQUEST_FILE: {
+        } else if (command.getType().equals(TypeCommand.REQUEST_FILE)) {
                 RequestFileFromClient data = (RequestFileFromClient) command.getData();
                 String userName = data.getUserName();
                 String fileName = data.getFileName();
                 sendFileForClient(userName, fileName);
-                break;
-            }
 
+        } else if (command.getType().equals(TypeCommand.RENAME_FILE)) {
+                RenameFile data = (RenameFile) command.getData();
+                String userName = data.getUserName();
+                String oldName = data.getOldName();
+                String newName = data.getNewName();
+                workWithFile.renameFile(userName, whenClient.get(userName) + "/" + oldName,
+                        whenClient.get(userName) + "/" + newName);
+                messageForClient.successfulAction("Файл " + oldName + " переименован в " + newName);
+                showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
         }
-
     }
 
     private void sendFileForClient(String userName, String fileName) {
@@ -140,7 +132,7 @@ workWithFile.createDefaultDirectory(defAddress);
 
         try {
             long cell = 0;
-            int step = 980000;
+            final int step = 980000;
             int sendSize;
             boolean endWrite = false;
             RandomAccessFile raf = new RandomAccessFile(file, "r");
@@ -148,8 +140,14 @@ workWithFile.createDefaultDirectory(defAddress);
             int length = (int) raf.length();
 
             while (length != 0) {
-                if (length > step) {sendSize = step; length = length - step;}
-                else {sendSize = length; length = 0; endWrite = true;}
+                if (length > step) {
+                    sendSize = step;
+                    length = length - step;
+            } else {
+            sendSize = length;
+            length = 0;
+            endWrite = true;
+            }
                 byte[] bt = new byte[sendSize];
                 raf.read(bt);
                 Command command = Command.writeInToFile(userName, file.getName(), bt, cell, endWrite);
@@ -164,12 +162,12 @@ workWithFile.createDefaultDirectory(defAddress);
 
     }
 
-    protected void firstStep (String login) {
-    whenClient.put(login ,defAddress+login);
+    protected void firstStep(String login) {
+    whenClient.put(login, defAddress + login);
     workWithFile.createFirsDirectory(whenClient.get(login));
     }
 
-    private void showDirectoryFoClient (String shad) {
+    private void showDirectoryFoClient(String shad) {
         messageForClient.responseShowDirectory(shad);
     }
 

@@ -8,12 +8,9 @@ import java.util.Scanner;
 
 public class ChoseAction {
 
-    private Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
     private final Channel channel;
     private final WorkWithFileClient workWithFileClient;
-    private  final String ANSI_RESET = "\u001B[0m";
-    private  final String ANSI_RED = "\u001B[31m";
-
 
 
     public ChoseAction(Channel channel, WorkWithFileClient workWithFileClient) {
@@ -21,127 +18,116 @@ public class ChoseAction {
         this.workWithFileClient = workWithFileClient;
     }
 
-    public void choseAction (String chose, String userName) {
+    public void choseAction(String chose, String userName) {
 
         Command command;
 
-        switch (chose) {
 
-            case "0" : {
-                break;
-            }
-
-            case "a" : {
+        if (chose.equals("0")) {
+            return;
+        } else if (chose.equals("a")) {
                 command = Command.getShowDir(userName, "");
                 channel.write(command);
-                break;
-            }
 
-            case "1" : {
+            } else if (chose.equals("1")) {
                 System.out.println("Выбрано действие создать директорию, введите название директории:");
                 String nameDirectory = scanner.next();
-                if (nameDirectory.equals("0")) { break;}
+                if (nameDirectory.equals("0")) {
+                    return;
+                }
                 command = Command.createNewDirectory(userName, nameDirectory);
                 channel.write(command);
-                break;
-            }
 
-            case "2" : {
+            } else if (chose.equals("2")) {
                 System.out.println("Выбрано действие удалить директорию, введите имя директории:");
                 String numberDirectory = scanner.next();
-                if (numberDirectory.equals("0")) { break;}
+                if (numberDirectory.equals("0")) {
+                    return;
+                }
                 command = Command.deleteDirectory(userName, numberDirectory);
                 channel.write(command);
-                break;
-            }
 
-            case "3" : {
+            } else if (chose.equals("3")) {
+
                 System.out.println("Выбрано действие создать файл, введите имя файла:");
                 String fileName = scanner.next();
-                if (fileName.equals("0")) { break;}
+                if (fileName.equals("0")) {
+                    return;
+                }
                 command = Command.createNewFile(userName, fileName);
                 channel.write(command);
-                break;
-            }
 
-            case "4" : {
+            } else if (chose.equals("4")) {
+
                 System.out.println("Выбрано действие удалить файл, введите имя файла:");
                 String nameFile = scanner.next();
-                if (nameFile.equals("0")) { break;}
+                if (nameFile.equals("0")) {
+                    return;
+                }
                 command = Command.deleteFile(userName, nameFile);
                 channel.write(command);
-                break;
 
-            }
-
-            case "5" : {
-                System.out.println("Выбрано действие копировать файл, введите имя файла:");
-                String nameFile = scanner.next();
-                if (nameFile.equals("0")) { break;}
-                command = Command.copyFile(userName, nameFile);
+            } else if (chose.equals("5")) {
+                System.out.println("Выбрано действие переименовать файл, введите название файла,"
+                        + " которое хотите переименовать:");
+                String nameOldFile = scanner.next();
+                if (nameOldFile.equals("0")) {
+                    return;
+                }
+                System.out.println("Введите новое имя");
+                String nameNewFile = scanner.next();
+                if (nameNewFile.equals("0")) {
+                    return;
+                }
+                command = Command.renameFile(userName, nameOldFile, nameNewFile);
                 channel.write(command);
-                break;
-            }
 
-            case "6" : {
-                System.out.println("Выбрано действие вставить файл, введите paste для вставки:");
-                command = Command.pasteFile(userName);
-                channel.write(command);
-                break;
-            }
-
-            case  "7" : {
+            }  else if (chose.equals("7")) {
                 System.out.println("Выбрано действие отправить сообщение на сервер, введите сообщение");
                 String message = scanner.next();
-                if (message.equals("0")) { break;}
+                if (message.equals("0")) {
+                    return;
+                }
                 command = Command.message(userName, message);
                 channel.write(command);
-                break;
-            }
 
-            case  "8" : {
+            } else if (chose.equals("8")) {
                 System.out.println("Выбрано действие открыть директорию, введите название директории");
                 String message = scanner.next();
-                if (message.equals("0")) { break;}
+                if (message.equals("0")) {
+                    return;
+                }
                 command = Command.getShowDir(userName, message);
                 channel.write(command);
-                break;
-            }
 
-            case "9" : {
+            } else if (chose.equals("9")) {
                 System.out.println("Выбрано действие 'назад'");
-                command = Command.getBackDir(userName,"");
+                command = Command.getBackDir(userName, "");
                 channel.write(command);
-                break;
-            }
 
-            case "10" : {
+            } else if (chose.equals("10")) {
                 System.out.println("Выбрано действие отправить файл на серер");
                 System.out.println("Введите путь к файлу (пример D:/test.txt) :    (0 - назад)");
                 String way = scanner.next();
-                if (way.equals("0")) { break;}
+                if (way.equals("0")) {
+                    return;
+                }
                 File file = new File(way);
                 command = Command.createNewFile(userName, file.getName());
                 channel.write(command);
-                System.out.println(ANSI_RED + "Дождитесь ответа от сервера о завершении" + ANSI_RESET);
+                String ansirest = "\u001B[0m";
+                String ansired = "\u001B[31m";
+                System.out.println(ansired + "Дождитесь ответа от сервера о завершении" + ansirest);
                 workWithFileClient.sendFileInServer(file, userName, channel);
-                break;
-            }
 
-            case "11" : {
+            } else if (chose.equals("11")) {
                 System.out.println("Выбрано действие скачать файл, введине название файла     (0 - назад)");
                 String fileName = scanner.next();
-                if (fileName.equals("0")) { break;}
+                if (fileName.equals("0")) {
+                    return;
+                }
                 command = Command.requestFile(userName, fileName);
                 channel.write(command);
-                break;
             }
         }
-
-
     }
-
-
-
-
-}

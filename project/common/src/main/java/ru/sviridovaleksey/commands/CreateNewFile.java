@@ -7,7 +7,7 @@ public class CreateNewFile implements Serializable {
     private final String userName;
     private final String fileName;
 
-    public CreateNewFile (String userName, String fileName) {
+    public CreateNewFile(String userName, String fileName) {
         this.userName = userName;
         this.fileName = fileName;
     }

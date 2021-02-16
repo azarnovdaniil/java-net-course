@@ -12,7 +12,7 @@ public class BaseAuthService {
 
 
 
-    public BaseAuthService(){
+    public BaseAuthService() {
         try {
             connect();
             prepareStatements();
@@ -29,22 +29,24 @@ public class BaseAuthService {
         AuthCommandData data = (AuthCommandData) command.getData();
         String login = data.getLogin();
         String password = data.getPassword();
-
+        final int columnIndexName = 2;
+        final int columnIndexPassword = 3;
+        final int columnIndexLogin = 4;
         try {
-            psGetUser.setString(1,login);
+            psGetUser.setString(1, login);
             ResultSet resultSet = psGetUser.executeQuery();
             while (resultSet.next()) {
-                String userNameFromBAse = resultSet.getString(2);
-                String passwordFromBase = resultSet.getString(3);
-                String loginFromBase = resultSet.getString(4);
+                String userNameFromBAse = resultSet.getString(columnIndexName);
+                String passwordFromBase = resultSet.getString(columnIndexPassword);
+                String loginFromBase = resultSet.getString(columnIndexLogin);
                 if (login.equals(loginFromBase) && password.equals(passwordFromBase)) {
                     resultSet.close(); return userNameFromBAse;
                 }
             }
             resultSet.close();
             return null;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
             return null;
         }
 
@@ -54,7 +56,7 @@ public class BaseAuthService {
     public static void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         connection = DriverManager.getConnection("jdbc:sqlite:project/main.db"); //путь и подключение к базе
-        Statement stnt = connection.createStatement(); // защищенный запрос
+        Statement statement = connection.createStatement(); // защищенный запрос
     }
 
 

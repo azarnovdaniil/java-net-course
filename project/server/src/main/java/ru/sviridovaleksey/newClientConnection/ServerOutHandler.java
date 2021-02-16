@@ -1,4 +1,4 @@
-package ru.sviridovaleksey.newClientConnection;
+package ru.sviridovaleksey.newclientconnection;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;

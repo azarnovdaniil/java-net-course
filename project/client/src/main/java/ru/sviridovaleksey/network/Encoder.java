@@ -4,7 +4,6 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 
 
-public class Encoder extends ObjectEncoder{
-
-
+public class Encoder extends ObjectEncoder {
 }
+

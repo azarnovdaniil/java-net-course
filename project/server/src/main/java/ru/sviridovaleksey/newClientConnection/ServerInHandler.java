@@ -1,4 +1,4 @@
-package ru.sviridovaleksey.newClientConnection;
+package ru.sviridovaleksey.newclientconnection;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -9,7 +9,7 @@ import ru.sviridovaleksey.workwithfiles.WorkWithFile;
 
 public class ServerInHandler extends ChannelInboundHandlerAdapter {
 
-    private Boolean isChanelReg= false;
+    private Boolean isChanelReg = false;
     private String login;
     private WhatDo whatDo;
     private final BaseAuthService baseAuthService = new BaseAuthService();
@@ -33,7 +33,7 @@ public class ServerInHandler extends ChannelInboundHandlerAdapter {
               if (((Command) msg).getType().equals(TypeCommand.AUTH)) {
                   System.out.println("Попытка авторизоваться" + ctx);
                   String isLogin = baseAuthService.getUsernameByLoginAndPassword((Command) msg);
-                  if ( isLogin == null) {
+                  if (isLogin == null) {
                       ctx.write(Command.authErrorCommand("ошибка авторизации, пароль или логин не верны"));
                       System.out.println("Ошибка авторизации" + ctx);
                       break;
@@ -51,12 +51,9 @@ public class ServerInHandler extends ChannelInboundHandlerAdapter {
                   break;
               }
            }
-        }
-        else if (msg instanceof Command) {
+        } else if (msg instanceof Command) {
             whatDo.whatDo((Command) msg, login);
-        }
-
-        else {
+        } else {
             System.out.println("Неизвестная команда");
         }
 

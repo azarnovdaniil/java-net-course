@@ -35,16 +35,18 @@ public class NettyInHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        final String whiteSpace = "/";
+
         if (msg instanceof Command) {
 
             whatDoClient.whatDoClient((Command) msg);
-
             if (((Command) msg).getType().equals(TypeCommand.AUTH_OK)) {
-                autoK =true;
+                autoK = true;
                 AuthOkCommandData data = (AuthOkCommandData) ((Command) msg).getData();
                 this.userName = data.getUsername();
-                ctx.write(Command.getShowDir(userName,""));
-                Thread thread = new Thread(() -> interaction.startInteraction(helloMessage, userName, workWithFileClient));
+                ctx.write(Command.getShowDir(userName, whiteSpace));
+                Thread thread = new Thread(() -> interaction.startInteraction(helloMessage,
+                        userName, workWithFileClient));
                 thread.start();
             }
 

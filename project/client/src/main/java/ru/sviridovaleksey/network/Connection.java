@@ -23,7 +23,7 @@ public class Connection {
 
     }
 
-   public void openConnection () {
+   public void openConnection() {
        EventLoopGroup workerGroup = new NioEventLoopGroup();
 
        try {

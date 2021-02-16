@@ -7,7 +7,7 @@ public class DeleteDirectory implements Serializable {
     private final String userName;
     private final String directoryNumber;
 
-    public DeleteDirectory (String userName, String directoryNumber) {
+    public DeleteDirectory(String userName, String directoryNumber) {
         this.userName = userName;
         this.directoryNumber = directoryNumber;
     }

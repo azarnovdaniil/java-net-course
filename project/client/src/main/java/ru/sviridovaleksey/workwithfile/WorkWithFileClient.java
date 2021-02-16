@@ -14,15 +14,16 @@ public class WorkWithFileClient     {
 
 
 
-    public void createDefaultDirectory(String defaultAddress){
+    public void createDefaultDirectory(String defaultAddress) {
         if (Files.isDirectory(Path.of(defaultAddress))) {
+            return;
         } else {
             processCreate(defaultAddress, true);
         }
     }
 
 
-    public  void writeByteToFile (String way, byte[] data, long cell) {
+    public  void writeByteToFile(String way, byte[] data, long cell) {
     try {
         System.out.println("##### идет скачивание ожидайте сообщения о завершении #####");
         File file = new File(way);
@@ -43,7 +44,7 @@ public class WorkWithFileClient     {
     private void processCreate(String fullAddress, Boolean isCreateDirectoryOrFile) {
         try {
             while (!Files.exists(Path.of(fullAddress))) {
-                if(isCreateDirectoryOrFile) {
+                if (isCreateDirectoryOrFile) {
                     Path path = Files.createDirectory(Path.of(fullAddress));
                     System.out.println("Папка для пользователя " + "" + " создана " + path.toAbsolutePath());
 
@@ -61,7 +62,7 @@ public class WorkWithFileClient     {
     public void sendFileInServer(File file, String userName, Channel channel) {
         try {
             long cell = 0;
-            int step = 980000;
+            final int step = 980000;
             int sendSize;
             boolean endWrite = false;
             RandomAccessFile raf = new RandomAccessFile(file, "r");
@@ -69,8 +70,11 @@ public class WorkWithFileClient     {
             int length = (int) raf.length();
 
             while (length != 0) {
-                if (length > step) {sendSize = step; length = length - step;}
-                else {sendSize = length; length = 0; endWrite = true;}
+                if (length > step) {
+                    sendSize = step; length = length - step;
+                } else {
+                    sendSize = length; length = 0; endWrite = true;
+                }
                 byte[] bt = new byte[sendSize];
                 raf.read(bt);
                 Command command = Command.writeInToFile(userName, file.getName(), bt, cell, endWrite);

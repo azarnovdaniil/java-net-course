@@ -1,7 +1,6 @@
 package ru.sviridovaleksey.workwithfiles;
 
-import ru.sviridovaleksey.newClientConnection.MessageForClient;
-
+import ru.sviridovaleksey.newclientconnection.MessageForClient;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,20 +13,20 @@ public class WorkWithFile {
 
     private final MessageForClient messageForClient;
 
-    public WorkWithFile(MessageForClient messageForClient){
+    public WorkWithFile(MessageForClient messageForClient) {
         this.messageForClient = messageForClient;
-
     }
 
-    public void createDefaultDirectory(String defaultAddress){
+    public void createDefaultDirectory(String defaultAddress) {
         if (Files.isDirectory(Path.of(defaultAddress))) {
+        return;
         } else {
             processCreate(defaultAddress, true, "");
         }
     }
 
 
-    public void createNewFile (String userName, String address) {
+    public void createNewFile(String userName, String address) {
 
         if (Files.exists(Path.of(address))) {
             messageForClient.err("Файл уже существует");
@@ -37,7 +36,7 @@ public class WorkWithFile {
 
     }
 
-    public void createNewDirectory (String userName, String address) {
+    public void createNewDirectory(String userName, String address) {
 
         if (Files.isDirectory(Path.of(address))) {
             messageForClient.err("Такая папка уже существует");
@@ -46,7 +45,7 @@ public class WorkWithFile {
         }
     }
 
-    public void createFirsDirectory (String defaultAddress) {
+    public void createFirsDirectory(String defaultAddress) {
         if (Files.isDirectory(Path.of(defaultAddress))) {
             System.out.println("Папка пользователя уже существует");
         } else {
@@ -58,14 +57,16 @@ public class WorkWithFile {
     private void processCreate(String fullAddress, Boolean isCreateDirectoryOrFile, String userName) {
         try {
             while (!Files.exists(Path.of(fullAddress))) {
-                if(isCreateDirectoryOrFile) {
+                if (isCreateDirectoryOrFile) {
                 Path path = Files.createDirectory(Path.of(fullAddress));
                  System.out.println("Папка для пользователя " + userName + " создана " + path.toAbsolutePath());
-                 messageForClient.successfulAction("Папка для пользователя " + userName + " создана " + path.getFileName());
+                 messageForClient.successfulAction("Папка для пользователя " + userName + " создана "
+                         + path.getFileName());
                 } else {
                     Path path = Files.createFile(Path.of(fullAddress));
                     System.out.println("Файл для пользователя " + userName + " создан " + path.toAbsolutePath());
-                    messageForClient.successfulAction("Файл для пользователя " + userName + " создан " + path.getFileName());
+                    messageForClient.successfulAction("Файл для пользователя " + userName + " создан "
+                            + path.getFileName());
                         }
                 }
         } catch (IOException e) {
@@ -95,15 +96,24 @@ public class WorkWithFile {
         }
     }
 
+    public void renameFile(String userName, String oldName, String newName) {
+        File oldFile = new File(oldName);
+        File newFile = new File(newName);
 
-    private void recursiveDeleteDirectory(File file){
-        // до конца рекурсивного цикла
-        if (!file.exists())
+        if (oldFile.renameTo(newFile)) {
+            System.out.println("Файл переименован для юзера " + userName);
+        } else {
+            System.out.println("Не удалось переименовать файл");
+        }
+    }
+
+
+    private void recursiveDeleteDirectory(File file) {
+        if (!file.exists()) {
             return;
-
+        }
         if (file.isDirectory()) {
             for (File f : Objects.requireNonNull(file.listFiles())) {
-
                 recursiveDeleteDirectory(f);
             }
         }
@@ -113,7 +123,7 @@ public class WorkWithFile {
         System.out.println("Удаленный файл или папка: " + file.getAbsolutePath());
     }
 
-    public synchronized void writeByteToFile (String way, byte[] data, long cell) {
+    public synchronized void writeByteToFile(String way, byte[] data, long cell) {
         try {
             File file = new File(way);
             RandomAccessFile rafWrite = new RandomAccessFile(file, "rw");

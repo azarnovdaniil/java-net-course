@@ -26,11 +26,13 @@ public class WriteInToFile implements Serializable {
         return userName;
     }
 
-    public String getFileName() { return fileName; }
+    public String getFileName() {
+        return fileName; }
 
     public long getCell() {
         return cell;
     }
 
-    public Boolean getEndWrite () { return  endWrite; }
+    public Boolean getEndWrite() {
+        return  endWrite; }
 }
