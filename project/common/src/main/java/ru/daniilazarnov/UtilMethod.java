@@ -9,12 +9,8 @@ import java.nio.file.*;
 /**
  * Класс содержащий утилитные методы используемые как на стороне сервера, так и на стороне клиента
  */
-public class UtilMethod {
-    public static final String USER_FOLDER_PATH = Path.of("project", "client", "local_storage")
-            .toString() + File.separator;
-    public static final String USER = "user1";
-    public static final String SERVER_FOLDER_PATH = Path.of("project", "server", "cloud_storage", USER)
-            .toString() + File.separator;
+public class UtilMethod implements Constants {
+    private static final String USER = "user1";
 
 
     /**
@@ -61,9 +57,9 @@ public class UtilMethod {
         StringBuilder sb = new StringBuilder();
         String folder;
         if (user.equals("user")) {
-            folder = getStringPath(USER_FOLDER_PATH, folderName);
+            folder = getStringPath(DEFAULT_PATH_USER + File.separator, folderName);
         } else {
-            folder = getStringPath(SERVER_FOLDER_PATH, "");
+            folder = getStringPath(DEFAULT_PATH_SERVER + File.separator + USER, "");
         }
         //папка выделяется квадратной скобкой
         Files.list(Path.of(folder + folderName))
@@ -97,5 +93,10 @@ public class UtilMethod {
                 System.out.print(s);
             }
         };
+    }
+
+    @Override
+    public void nothing() {
+
     }
 }

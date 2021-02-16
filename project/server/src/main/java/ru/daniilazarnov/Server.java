@@ -30,7 +30,9 @@ public class Server {
                         }
                     });
             ChannelFuture f = b.bind(PORT).sync();
-            LOG.info("SERVER: Запустился, жду подключений...");
+            ProgressBar.start();
+            String s = new String("SERVER: Launched, waiting for connections ...");
+            LOG.info(s);
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();

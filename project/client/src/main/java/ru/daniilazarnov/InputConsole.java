@@ -29,6 +29,7 @@ public class InputConsole {
     public static void main(String[] args) throws IOException {
         init();
         while (!ClientNetworkHandler.isAuth()) {
+
             auth();
             if (ClientNetworkHandler.isAuth()) {
                 init();
@@ -63,6 +64,7 @@ public class InputConsole {
 
                     switch (command) {
                         case AUTH:
+                            System.out.println(Auth.getStatusAuth());
                             break;
                         case UPLOAD:
                             sendFile(inputLine);
@@ -113,6 +115,7 @@ public class InputConsole {
         }
     }
 
+
     private static String deleteFile(String inputLine) {
         String result = "";
         String fileName;
@@ -130,11 +133,7 @@ public class InputConsole {
                 return "Неправильное имя файла";
             }
         }
-
-
         return result;
-
-
     }
 
     private static void exit() {

@@ -6,9 +6,13 @@ import java.io.*;
 
 import static ru.daniilazarnov.NetworkCommunicationMethods.*;
 
-public class Auth {
+public class Auth implements Constants {
     private static final Logger LOG = Logger.getLogger(NetworkCommunicationMethods.class);
-    private static final int DELAY = 10;
+
+
+    protected static String getStatusAuth() {
+        return "Регистрация " + (ClientNetworkHandler.isAuth() ? "" : "не") + " подтверждена";
+    }
 
     static boolean auth() {
         InputStream in = System.in;
@@ -19,7 +23,7 @@ public class Auth {
 
         while (isConnect()) {
             try {
-                Thread.sleep(DELAY);
+                Thread.sleep(TEN);
             } catch (InterruptedException e) {
                 LOG.error(e);
             }
@@ -41,7 +45,13 @@ public class Auth {
             password = console.readPassword("Password: ");
         }
         String passString = new String(password);
+        ProgressBar.start();
         sendStringAndCommandByte((userName + "%-%" + passString), Command.AUTH.getCommandByte());
         return false;
+    }
+
+    @Override
+    public void nothing() {
+
     }
 }

@@ -41,7 +41,7 @@ public class Network {
                                 socketChannel.pipeline().addLast(new ClientNetworkHandler());
                             }
                         });
-                LOG.info("Соединение установлено");
+                LOG.info("Connection established");
                 statusNetwork = true;
                 ChannelFuture future = b.connect(HOST, PORT).sync();
                 future.channel().closeFuture().sync();
@@ -81,10 +81,10 @@ public class Network {
     private ChannelFutureListener getChannelFutureListenerSendFile(String s) {
         return future -> {
             if (!future.isSuccess()) {
-                System.err.println(s + "не был");
+                LOG.info(s + "не был");
             }
             if (future.isSuccess()) {
-                System.out.print(s);
+                LOG.info(s);
                 FileSender.setLoadingStatus(false);
 
             }
@@ -94,10 +94,10 @@ public class Network {
     private ChannelFutureListener getChannelFutureListener(String s) {
         return future -> {
             if (!future.isSuccess()) {
-                System.err.println(s + "не был");
+                LOG.info(s + "не был");
             }
             if (future.isSuccess()) {
-                System.out.print(s);
+                LOG.info(s);
                 FileSender.setLoadingStatus(false);
 
             }

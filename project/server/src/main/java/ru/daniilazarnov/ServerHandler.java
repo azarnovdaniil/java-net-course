@@ -16,14 +16,11 @@ import java.util.stream.Collectors;
 /**
  * Класс содержит обработку принятых сообщений на стороне сервера
  */
-public class ServerHandler extends ChannelInboundHandlerAdapter {
+public class ServerHandler extends ChannelInboundHandlerAdapter implements Constants {
     private static final Logger LOG = Logger.getLogger(ServerHandler.class);
     private final String server = "server";
     private State currentState = State.IDLE;
     public static final String USER = "user1";
-    public static final String HOME_FOLDER_PATH = Path.of("project", "server", "cloud_storage", USER)
-            .toString() + File.separator;
-    private static final int FOUR = 4;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -52,7 +49,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     lsHandle(ctx, buf);
                     break;
                 case AUTH:
-                    LOG.info("Запрос авторизации");
+                    LOG.info("Request authorization");
                     getAuth(ctx, buf);
 
 
@@ -111,7 +108,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         System.out.println("fileName ".toUpperCase() + fileName);
 
         System.out.println("STATE: Start file download");
-        FileSender.sendFile(Path.of(HOME_FOLDER_PATH, fileName),
+        FileSender.sendFile(Path.of(DEFAULT_PATH_SERVER + File.separator + USER + File.separator, fileName),
                 ctx.channel(),
                 UtilMethod.getChannelFutureListener("Файл успешно передан"));
         buf.clear();
@@ -128,5 +125,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         System.err.println(cause.getMessage());
         LOG.error(cause);
+    }
+
+    @Override
+    public void nothing() {
+
     }
 }

@@ -12,10 +12,10 @@ import java.nio.file.Path;
 /**
  * Утилитный класс, содержит метод отправки файла
  */
-public class FileSender {
+public class FileSender implements Constants {
     private static boolean loadingStatus = false;
-    private static final int FOUR = 4;
-    private static final int EIGHTS = 8;
+
+
 
 
     public static void setLoadingStatus(boolean loadingStatus) {
@@ -68,6 +68,11 @@ public class FileSender {
         if (finishListener != null) {
             transferOperationFuture.addListener(finishListener);
         }
+
+    }
+
+    @Override
+    public void nothing() {
 
     }
 }

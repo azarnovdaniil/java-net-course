@@ -8,8 +8,7 @@ import io.netty.channel.ChannelFutureListener;
 /**
  * Класс содержит логику отправления побайтово имени файла на сервер
  */
-public class ReceivingAndSendingStrings {
-    private static final int FOUR = 4;
+public class ReceivingAndSendingStrings implements Constants {
 
     /**
      * Формирует для отправки на сервер строку по протоколу
@@ -47,5 +46,10 @@ public class ReceivingAndSendingStrings {
         buf.readBytes(messageContent);
 
         return new String(messageContent);
+    }
+
+    @Override
+    public void nothing() {
+
     }
 }

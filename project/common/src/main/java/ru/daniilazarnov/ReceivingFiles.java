@@ -6,7 +6,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 
 /**
  * Класс реализующий получение файла по протоколу
@@ -16,15 +15,12 @@ import java.nio.file.Path;
  * [][][][][][][][] long размер файла в байтах
  * [] data[] - содержимое файла
  */
-public class ReceivingFiles {
+public class ReceivingFiles implements Constants {
     private static final String USER = "user1";
     private static State currentState = State.IDLE;
-    private static final String DEFAULT_PATH_SERVER = Path.of("project", "server", "cloud_storage", USER).toString();
-    private static final String DEFAULT_PATH_USER = Path.of("project", "client", "local_storage").toString();
+
     private static final String PREFIX_FILE_NAME = File.separator + "_";
     private static final String SERVER_NAME = "server";
-    private static final int FOUR = 4;
-    private static final int EIGHTS = 8;
     private static int nextLength;
     private static long fileLength;
     private static long receivedFileLength;
@@ -45,10 +41,9 @@ public class ReceivingFiles {
         // собираем путь до целевой папки
         String fileNameStr;
         String fullPathString = user.equals(SERVER_NAME)
-                ? DEFAULT_PATH_SERVER   // собираем путь до целевой папки
+                ? DEFAULT_PATH_SERVER  + File.separator + USER // собираем путь до целевой папки
                 + PREFIX_FILE_NAME : DEFAULT_PATH_USER
-                + PREFIX_FILE_NAME
-                .replace(File.separator, "");
+                + PREFIX_FILE_NAME;
 
         ByteBuf buf = ((ByteBuf) msg);
 
@@ -119,5 +114,10 @@ public class ReceivingFiles {
                 }
             }
         }
+    }
+
+    @Override
+    public void nothing() {
+
     }
 }
