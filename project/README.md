@@ -1,7 +1,11 @@
 ### Команды
 
-ulf == ULF - uploadFile,
-dlf == DLF - downloadFile,
-fls == FLS - files to list,
-rm_client == RM_CLIENT - removeFileFromClientDirectory,
-rm_server == RM_SERVER - removeFileFromServerDirectory.
+upload - "загрузка файл на сервер"
+download - "скачивание файл с сервера"
+ls - "вывод списка файлов, расположенных на удаленном хранилище"
+lls - "вывод списка файлов, расположенных в локальном хранилище"
+rm - "удаление файла из локальной папки"
+help - "help info"
+rename - "переименовать файл"
+exit - "выход из приложения"
+unknown - "неизвестная команда"
