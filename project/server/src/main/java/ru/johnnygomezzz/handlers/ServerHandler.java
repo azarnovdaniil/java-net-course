@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private final String PATH = Path.of("project/server/storage/").toString();
+    private final String path = Path.of("project/server/storage/").toString();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -39,19 +39,15 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (message.startsWith("/touch") && messagePart.length > 1) {
-            if (Files.exists(Path.of(PATH, messagePart[1]))) {
+            if (Files.exists(Path.of(path, messagePart[1]))) {
                 textMessage = new MyMessage("Файл с именем " + messagePart[1] + " уже существует.");
                 ctx.writeAndFlush(textMessage);
-            }
-
-            else if (messagePart.length == 2){
-                Paths.get(PATH, messagePart[1]);
+            } else if (messagePart.length == 2) {
+                Paths.get(path, messagePart[1]);
                 textMessage = new MyMessage("Файл " + messagePart[1] + " успешно создан.");
                 ctx.writeAndFlush(textMessage);
-            }
-
-            else {
-                Path path = Paths.get(PATH, messagePart[1]);
+            } else {
+                Path path = Paths.get(this.path, messagePart[1]);
                 try {
                     String str = messagePart[2];
                     byte[] bs = str.getBytes();
@@ -67,22 +63,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (message.startsWith("/delete") && messagePart.length > 1) {
-            if (Files.exists(Path.of(PATH, messagePart[1]))) {
+            if (Files.exists(Path.of(path, messagePart[1]))) {
                 try {
-                    Files.delete(Paths.get(PATH, messagePart[1]));
+                    Files.delete(Paths.get(path, messagePart[1]));
                     textMessage = new MyMessage("Файл с именем " + messagePart[1] + " успешно удалён.");
                     ctx.writeAndFlush(textMessage);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-            else {
+            } else {
                 textMessage = new MyMessage("Файл с именем " + messagePart[1] + " отсутствует.");
                 ctx.writeAndFlush(textMessage);
             }
-        }
-
-        else {
+        } else {
             textMessage = new MyMessage("\"" + message + "\""
                     + " неполное значение или не является командой.\nВведите команду:");
             ctx.writeAndFlush(textMessage);
