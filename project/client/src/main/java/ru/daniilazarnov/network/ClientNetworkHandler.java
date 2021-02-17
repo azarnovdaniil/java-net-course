@@ -1,9 +1,13 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
+import ru.daniilazarnov.auth.Auth;
+import ru.daniilazarnov.Command;
+import ru.daniilazarnov.ReceivingFiles;
+import ru.daniilazarnov.State;
 import ru.daniilazarnov.console_IO.OutputConsole;
 import ru.daniilazarnov.files_method.FileList;
 

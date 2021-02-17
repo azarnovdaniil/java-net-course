@@ -1,4 +1,7 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.network;
+
+import ru.daniilazarnov.auth.Auth;
+import ru.daniilazarnov.Command;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -9,7 +12,7 @@ import static ru.daniilazarnov.string_method.StringMethod.getSecondElement;
 
 public class NetworkCommunicationMethods {
     private static final String HOME_FOLDER_PATH = Path.of("project", "client", "local_storage").toString();
-    private static Network client;
+    private static Client client;
 
 
     /**
@@ -43,11 +46,12 @@ public class NetworkCommunicationMethods {
     }
 
     public static boolean auth() {
-        return Auth.auth();
+        Auth auth = new Auth();
+        return auth.auth();
     }
 
     public static void init() {
-        client = new Network();
+        client = new Client();
 
     }
 

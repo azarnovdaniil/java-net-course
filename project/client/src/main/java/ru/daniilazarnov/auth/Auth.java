@@ -1,12 +1,16 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.auth;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.log4j.Logger;
+import ru.daniilazarnov.Command;
+import ru.daniilazarnov.ProgressBar;
+import ru.daniilazarnov.ReceivingAndSendingStrings;
+import ru.daniilazarnov.network.ClientNetworkHandler;
 
 import java.io.*;
 
-import static ru.daniilazarnov.NetworkCommunicationMethods.*;
+import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
 import static ru.daniilazarnov.constants.Constants.*;
 
 
@@ -14,7 +18,7 @@ public class Auth {
     private static final Logger LOG = Logger.getLogger(Auth.class);
 
 
-    protected void authentication(ByteBuf buf, ChannelHandlerContext ctx) {
+    public void authentication(ByteBuf buf, ChannelHandlerContext ctx) {
         String right = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
         if (right.equals("1")) {
             ClientNetworkHandler.setAuth(true);
@@ -28,11 +32,11 @@ public class Auth {
     }
 
 
-    public static String getStatusAuth() {
+    public String getStatusAuth() {
         return "Регистрация " + (ClientNetworkHandler.isAuth() ? "" : "не") + " подтверждена";
     }
 
-    static boolean auth() {
+    public boolean auth() {
         InputStream in = System.in;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
 

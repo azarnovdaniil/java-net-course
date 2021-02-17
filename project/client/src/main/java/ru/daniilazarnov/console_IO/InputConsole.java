@@ -2,42 +2,28 @@ package ru.daniilazarnov.console_IO;
 
 import org.apache.log4j.Logger;
 import ru.daniilazarnov.*;
+import ru.daniilazarnov.auth.Auth;
 import ru.daniilazarnov.files_method.DeleteFile;
 import ru.daniilazarnov.files_method.FileList;
 
 import java.io.*;
 
-import static ru.daniilazarnov.NetworkCommunicationMethods.*;
+import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
 
 /**
  * Содержит основную логику обработки введенных с консоли команд
  */
 public class InputConsole {
     private static final Logger LOG = Logger.getLogger(InputConsole.class);
+   private Auth auth = new Auth();
 
-    private static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n"
-            + "ver: 0.002a\n"
-            + "uod: 09.02.2021\n";
 
-    public static void main(String[] args) throws IOException {
-        init();
-        while (!ClientNetworkHandler.isAuth()) {
 
-            auth();
-            if (ClientNetworkHandler.isAuth()) {
-                init();
-            } else {
-                break;
-            }
-        }
-        System.out.print(WELCOME_MESSAGE);
-        inputConsoleHandler();
-    }
 
     /**
      * Метод содержит основную логику введенных с консоли команд
      */
-    private static void inputConsoleHandler() throws IOException {
+    public void inputConsoleHandler() throws IOException {
         String inputLine;
         while (true) {
             InputStream in = System.in;
@@ -57,7 +43,7 @@ public class InputConsole {
 
                     switch (command) {
                         case AUTH:
-                            System.out.println(Auth.getStatusAuth());
+                            System.out.println(auth.getStatusAuth());
                             break;
                         case UPLOAD:
                             sendFile(inputLine);
@@ -109,10 +95,7 @@ public class InputConsole {
         }
     }
 
-
-
-
-    private static void exit() {
+    private  void exit() {
         close();
         System.out.println("Bye");
         System.exit(0);
