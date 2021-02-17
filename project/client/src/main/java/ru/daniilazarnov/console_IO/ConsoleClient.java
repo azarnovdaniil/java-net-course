@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
 
-public class ClientConsole {
+public class ConsoleClient {
     private static AuthClient authClient = new AuthClient();
     private static InputConsole input = new InputConsole();
 

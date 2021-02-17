@@ -11,9 +11,18 @@ public class OutputConsole {
     private static final String PROMPT_TO_ENTER = ">";
     private static final String PROGRAM_NAME = "local_storage ";
     private static final String USERNAME = "~" + File.separator + AuthClient.getUserFolder();
+    private static boolean consoleBusy = false;
     private static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n"
             + "ver: 0.005a\n"
             + "uod: 17.02.2021\n";
+
+    public static boolean isConsoleBusy() {
+        return consoleBusy;
+    }
+
+    public static void setConsoleBusy(boolean consoleBusy) {
+        OutputConsole.consoleBusy = consoleBusy;
+    }
 
     public static String welcomeMessageString() {
         return WELCOME_MESSAGE;

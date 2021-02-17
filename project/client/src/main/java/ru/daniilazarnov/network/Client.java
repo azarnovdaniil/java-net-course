@@ -35,7 +35,7 @@ public class Client {
                             protected void initChannel(SocketChannel socketChannel) {
                                 channel = socketChannel;
                                 socketChannel.pipeline().addLast(
-                                        new ClientNetworkHandler());
+                                        new ClientReadMessage());
                             }
                         });
                 LOG.debug("Connection established");
@@ -74,7 +74,7 @@ public class Client {
     }
 
     private ChannelFutureListener getChannelFutureListenerSendFile(String s) {
-        return future -> {
+        return (ChannelFuture future) -> {
             if (!future.isSuccess()) {
                 LOG.info(s + "не был");
             }

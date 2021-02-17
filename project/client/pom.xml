@@ -42,7 +42,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>ru.daniilazarnov.console_IO.ClientConsole</mainClass>
+                            <mainClass>ru.daniilazarnov.console_IO.ConsoleClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

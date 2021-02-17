@@ -1,6 +1,7 @@
 package ru.daniilazarnov.network;
 
 import ru.daniilazarnov.Command;
+import ru.daniilazarnov.console_IO.OutputConsole;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -24,6 +25,7 @@ public class NetworkCommunicationMethods {
             String folderName = getThirdElement(inputLine);
             Command command = Command.valueOf(getThirdElement(inputLine).toUpperCase());
             if (command == Command.LS) {
+                OutputConsole.setConsoleBusy(true);
                 sendStringAndCommandByte(folderName, Command.LS.getCommandByte());
             } else {
                 return "Неизвестная команда";
