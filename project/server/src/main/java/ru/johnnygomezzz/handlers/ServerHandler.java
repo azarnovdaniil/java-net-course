@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ru.johnnygomezzz.MyMessage;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,8 +39,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (message.startsWith("/touch") && messagePart.length > 1) {
-            Path tempPath = Path.of(PATH, messagePart[1]);
-            if (Files.exists(tempPath)) {
+            if (Files.exists(Path.of(PATH, messagePart[1]))) {
                 textMessage = new MyMessage("Файл с именем " + messagePart[1] + " уже существует.");
                 ctx.writeAndFlush(textMessage);
             }
@@ -62,6 +62,23 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+            return;
+        }
+
+        if (message.startsWith("/delete") && messagePart.length > 1) {
+            if (Files.exists(Path.of(PATH, messagePart[1]))) {
+                try {
+                    Files.delete(Paths.get(PATH, messagePart[1]));
+                    textMessage = new MyMessage("Файл с именем " + messagePart[1] + " успешно удалён.");
+                    ctx.writeAndFlush(textMessage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                textMessage = new MyMessage("Файл с именем " + messagePart[1] + " отсутствует.");
+                ctx.writeAndFlush(textMessage);
             }
         }
 

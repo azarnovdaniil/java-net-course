@@ -1,8 +1,8 @@
 package ru.johnnygomezzz.commands;
 
 public enum Commands {
-    CREATE ("/create", "Создать файл"),
-    QUIT ("/quit", "Выход");
+    CREATE("/create", "Создать файл"),
+    QUIT("/quit", "Выход");
 
     Commands() {
 
