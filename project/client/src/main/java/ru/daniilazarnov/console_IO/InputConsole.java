@@ -7,6 +7,7 @@ import ru.daniilazarnov.*;
 import ru.daniilazarnov.auth.AuthClient;
 import ru.daniilazarnov.files_method.DeleteFile;
 import ru.daniilazarnov.files_method.FileList;
+import ru.daniilazarnov.network.NetworkCommunicationMethods;
 
 import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
 
@@ -15,6 +16,7 @@ import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
  */
 public class InputConsole {
     private static final Logger LOG = Logger.getLogger(InputConsole.class);
+    private NetworkCommunicationMethods ncm = new NetworkCommunicationMethods();
     private AuthClient auth = new AuthClient();
 
     /**
@@ -57,7 +59,7 @@ public class InputConsole {
                             close();
                             break;
                         case DOWNLOAD:
-                            sendNameFIleForDownloading(inputLine);
+                            ncm.sendNameFIleForDownloading(inputLine);
                             OutputConsole.printPrompt();
                             break;
                         case HELP:
@@ -67,7 +69,7 @@ public class InputConsole {
                             System.out.println(getStatus());
                             break;
                         case SERVER:
-                            System.out.println(accessingTheServer(inputLine));
+                            System.out.println(ncm.accessingTheServer(inputLine));
 //                            OutputConsole.printPrompt();
                             break;
                         case DELETE:

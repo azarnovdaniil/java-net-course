@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 import ru.daniilazarnov.Command;
 import ru.daniilazarnov.ProgressBar;
 import ru.daniilazarnov.ReceivingAndSendingStrings;
+import ru.daniilazarnov.User;
+import ru.daniilazarnov.network.NetworkCommunicationMethods;
 
 import java.io.*;
 
@@ -16,6 +18,14 @@ import static ru.daniilazarnov.constants.Constants.*;
 public class AuthClient {
     private static final Logger LOG = Logger.getLogger(AuthClient.class);
     private static boolean authStatus = false;
+    private NetworkCommunicationMethods ncm = new NetworkCommunicationMethods();
+    private static String userName;
+    private static User user;
+
+    public static String getUserFolder() {
+        return user.getHomeDirectory();
+    }
+
 
     public static boolean isAuthStatus() {
         return authStatus;
@@ -29,6 +39,7 @@ public class AuthClient {
         String right = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
         if (right.equals("1")) {
             setAuthStatus(true);
+            user = new User(ctx.channel(), userName, userName);
             LOG.debug("Access to the remote base received");
 
         } else {
@@ -46,7 +57,7 @@ public class AuthClient {
         return "Регистрация " + (isAuthStatus() ? "" : "не") + " подтверждена";
     }
 
-    public static void auth() {
+    public void auth() {
 
 
         while (isConnect()) {
@@ -57,15 +68,15 @@ public class AuthClient {
             }
         }
 
-        sendStringAndCommandByte(inputLoginAndPassword(), Command.AUTH.getCommandByte());
+        ncm.sendStringAndCommandByte(inputLoginAndPassword(), Command.AUTH.getCommandByte());
         ProgressBar.start(FIVE);
     }
 
-    private static String inputLoginAndPassword() {
+    private String inputLoginAndPassword() {
         InputStream in = System.in;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
 
-        String userName = "";
+//        String userName = "";
         char[] password = new char[0];
 
         Console console = System.console();
@@ -79,10 +90,10 @@ public class AuthClient {
                 LOG.error(e);
             }
         } else {
-            System.out.println("Enter username: ");
             userName = console.readLine("Username: ");
             password = console.readPassword("Password: ");
         }
+
         String passString = new String(password);
         return userName + "%-%" + passString;
 

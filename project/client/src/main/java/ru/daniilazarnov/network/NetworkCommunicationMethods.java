@@ -18,7 +18,7 @@ public class NetworkCommunicationMethods {
      *
      * @param inputLine ввод;
      */
-    public static String accessingTheServer(String inputLine) {
+    public String accessingTheServer(String inputLine) {
         String result;
         if (isThereaThirdElement(inputLine)) { // если после ls введено имя каталога получаем его
             String folderName = getThirdElement(inputLine);
@@ -35,7 +35,7 @@ public class NetworkCommunicationMethods {
         return result;
     }
 
-    public static void sendStringAndCommandByte(String folderName, byte commandByte) {
+    public void sendStringAndCommandByte(String folderName, byte commandByte) {
         client.sendStringAndCommand(folderName, commandByte);
     }
 
@@ -78,7 +78,7 @@ public class NetworkCommunicationMethods {
      * Метод отправляет имя файла взятое из введённой в консоль строки на сервер
      * если на сервере есть такой файл, сервер отправляет файл на загрузку.
      */
-    public static void sendNameFIleForDownloading(String inputLine) {
+    public void sendNameFIleForDownloading(String inputLine) {
         if (isThereaSecondElement(inputLine)) {
             String command = getSecondElement(inputLine);
             sendStringAndCommandByte(command, (byte) 1);
