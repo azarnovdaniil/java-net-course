@@ -37,6 +37,7 @@ public class ServerStorage {
                             ch.pipeline()
                                     .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE,
                                             1, lengthFieldMes, countAdjustment, 0, true))
+                                    .addLast(new AuthHandler())
                                     .addLast(new InboundHandler());
                         }
                     });

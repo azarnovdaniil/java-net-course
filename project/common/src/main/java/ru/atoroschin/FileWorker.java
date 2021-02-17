@@ -11,10 +11,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -204,10 +202,7 @@ public class FileWorker {
     }
 
     public void sendCommandWithStringList(ChannelHandlerContext ctx, List<String> list, byte signal) {
-        byte[] request = BufWorker.makeArrayFromList(list);
-        ByteBuf bufOut = ctx.alloc().buffer(request.length);
-        request[0] = signal;
-        bufOut.writeBytes(request);
+        ByteBuf bufOut = BufWorker.makeBufFromList(list, signal);
         ctx.writeAndFlush(bufOut);
     }
 

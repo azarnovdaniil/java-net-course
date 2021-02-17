@@ -1,6 +1,7 @@
 package ru.atoroschin;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.CharsetUtil;
 
 import java.nio.ByteBuffer;
@@ -9,35 +10,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BufWorker {
-    public static byte[] makeArrayFromList(List<String> listFile) {
-        final int countFour = 4;
-        final int countTwo = 2;
-        int lengthResponse = (listFile.size() + countTwo) * countFour + 1;
+    /**
+     * метод подготавливает сообщение из списка строк
+     * формат сообщения в виде массива байт
+     * [команда 1б][длина сообщения 4б][кол строк 4б][длина стр1][стр1][длина стр2][стр2][...][...]
+     *
+     * @param listFile - список строк для передачи
+     * @return массив ByteBuf
+     */
+    public static ByteBuf makeBufFromList(List<String> listFile, int signal) {
+        final int countByteInInt = 4;
+        int lengthResponse = (listFile.size() + 1 + 1) * countByteInInt + 1;
         for (String s : listFile) {
             lengthResponse += s.getBytes(StandardCharsets.UTF_8).length;
         }
 
-        byte[] response = new byte[lengthResponse];
-        response[0] = 0;
-        byte[] arrayCount = ByteBuffer.allocate(countFour).putInt(lengthResponse).array();
-        System.arraycopy(arrayCount, 0, response, 1, arrayCount.length);
-
+        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(lengthResponse);
+        buf.writeByte(signal); // 1
+        buf.writeInt(lengthResponse); // 2
         int count = listFile.size();
-        final int countFive = 5;
-        arrayCount = ByteBuffer.allocate(countFour).putInt(count).array();
-        System.arraycopy(arrayCount, 0, response, countFive, arrayCount.length);
-
-        final int i = 9;
-        int sum = i;
+        buf.writeInt(count); // 3
         for (String s : listFile) {
-            arrayCount = ByteBuffer.allocate(countFour).putInt(s.getBytes().length).array();
-            System.arraycopy(arrayCount, 0, response, sum, arrayCount.length);
-            sum += arrayCount.length;
-            arrayCount = s.getBytes(StandardCharsets.UTF_8);
-            System.arraycopy(arrayCount, 0, response, sum, arrayCount.length);
-            sum += arrayCount.length;
+            buf.writeInt(s.getBytes().length); // 4
+            buf.writeBytes(s.getBytes(StandardCharsets.UTF_8)); // 5
         }
-        return response;
+        return buf;
     }
 
     public static List<String> readFileListFromBuf(ByteBuf buf) {
