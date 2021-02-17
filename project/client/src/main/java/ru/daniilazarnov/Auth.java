@@ -11,7 +11,7 @@ import static ru.daniilazarnov.constants.Constants.*;
 
 
 public class Auth {
-    private static final Logger LOG = Logger.getLogger(NetworkCommunicationMethods.class);
+    private static final Logger LOG = Logger.getLogger(Auth.class);
 
 
     protected void authentication(ByteBuf buf, ChannelHandlerContext ctx) {
@@ -28,7 +28,7 @@ public class Auth {
     }
 
 
-    protected static String getStatusAuth() {
+    public static String getStatusAuth() {
         return "Регистрация " + (ClientNetworkHandler.isAuth() ? "" : "не") + " подтверждена";
     }
 

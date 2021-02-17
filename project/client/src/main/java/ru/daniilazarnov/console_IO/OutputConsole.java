@@ -1,4 +1,4 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.console_IO;
 
 
 import java.io.File;
@@ -14,7 +14,7 @@ public class OutputConsole {
     /**
      * Метод выводит на консоль строку приглашение ко вводу
      */
-    protected static void printPrompt() {
+    public static void printPrompt() {
         try {
             Thread.sleep(DELAY);
         } catch (InterruptedException e) {

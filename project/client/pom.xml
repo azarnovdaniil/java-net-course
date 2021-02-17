@@ -42,7 +42,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>ru.daniilazarnov.InputConsole</mainClass>
+                            <mainClass>ru.daniilazarnov.console_IO.InputConsole</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

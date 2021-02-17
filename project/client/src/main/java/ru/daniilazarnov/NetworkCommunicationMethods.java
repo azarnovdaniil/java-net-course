@@ -17,7 +17,7 @@ public class NetworkCommunicationMethods {
      *
      * @param inputLine ввод;
      */
-    static String accessingTheServer(String inputLine) {
+    public static String accessingTheServer(String inputLine) {
         String result;
         if (isThereaThirdElement(inputLine)) { // если после ls введено имя каталога получаем его
             String folderName = getThirdElement(inputLine);
@@ -38,15 +38,15 @@ public class NetworkCommunicationMethods {
         client.sendStringAndCommand(folderName, commandByte);
     }
 
-    static boolean isConnect() {
+    public static boolean isConnect() {
         return client.isConnect();
     }
 
-    static boolean auth() {
+    public static boolean auth() {
         return Auth.auth();
     }
 
-    static void init() {
+    public static void init() {
         client = new Network();
 
     }
@@ -54,7 +54,7 @@ public class NetworkCommunicationMethods {
     /**
      * Инициализирует соединение с сервером, если оно не еще не активно
      */
-    static String connectedToServer() {
+    public static String connectedToServer() {
         if (!client.isConnect()) {
 
             init();
@@ -69,7 +69,7 @@ public class NetworkCommunicationMethods {
      *
      * @return возвращает готовую для вывода строку
      */
-    static String getStatus() {
+    public static String getStatus() {
         if (client.isConnect()) {
             return "Сервер доступен";
         } else {
@@ -81,7 +81,7 @@ public class NetworkCommunicationMethods {
      * Метод отправляет имя файла взятое из введённой в консоль строки на сервер
      * если на сервере есть такой файл, сервер отправляет файл на загрузку.
      */
-    static void sendNameFIleForDownloading(String inputLine) {
+    public static void sendNameFIleForDownloading(String inputLine) {
         if (isThereaSecondElement(inputLine)) {
             String command = getSecondElement(inputLine);
             sendStringAndCommandByte(command, (byte) 1);
@@ -96,7 +96,7 @@ public class NetworkCommunicationMethods {
      *
      * @param inputLine строка ввода
      */
-    static void sendFile(String inputLine) {
+    public static void sendFile(String inputLine) {
         if (isThereaSecondElement(inputLine)) {
             String fileName = getSecondElement(inputLine);
 
@@ -123,7 +123,7 @@ public class NetworkCommunicationMethods {
         return Files.exists(Path.of(HOME_FOLDER_PATH, fileName));
     }
 
-    static void close() {
+    public static void close() {
         client.close();
     }
 }

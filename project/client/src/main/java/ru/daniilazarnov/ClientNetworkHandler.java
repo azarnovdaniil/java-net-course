@@ -4,6 +4,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
+import ru.daniilazarnov.console_IO.OutputConsole;
+import ru.daniilazarnov.files_method.FileList;
 
 /**
  * Класс содержит логику обработки принятых сообщений на стороне клиента
@@ -38,13 +40,14 @@ public class ClientNetworkHandler extends ChannelInboundHandlerAdapter {
 
                 case DOWNLOAD:
                     ReceivingFiles.fileReceive(msg, USER);
-                     OutputConsole .printPrompt(); // вывод строки приглашения к вводу
+                     OutputConsole.printPrompt(); // вывод строки приглашения к вводу
                     break;
                 case AUTH:
                     authentication.authentication(buf, ctx);
                     break;
                 case LS:
-                    getLSString(buf);
+                    System.out.println(FileList.getFilesListStringFromServer(buf));
+                    OutputConsole.printPrompt();
                     break;
 
                 default:
@@ -55,13 +58,6 @@ public class ClientNetworkHandler extends ChannelInboundHandlerAdapter {
             ReceivingFiles.fileReceive(msg, USER);
         }
     }
-
-    private void getLSString(ByteBuf buf) {
-        String catalogStrings = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
-        System.out.println(catalogStrings);
-    }
-
-
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
