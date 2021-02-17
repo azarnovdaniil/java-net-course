@@ -9,10 +9,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static ru.daniilazarnov.constants.Constants.*;
+
 /**
  * Утилитный класс, содержит метод отправки файла
  */
-public class FileSender implements Constants {
+public class FileSender {
     private static boolean loadingStatus = false;
 
 
@@ -68,11 +70,6 @@ public class FileSender implements Constants {
         if (finishListener != null) {
             transferOperationFuture.addListener(finishListener);
         }
-
-    }
-
-    @Override
-    public void nothing() {
 
     }
 }

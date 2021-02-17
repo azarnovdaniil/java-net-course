@@ -6,10 +6,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 
+import static ru.daniilazarnov.constants.Constants.*;
+
+
 /**
  * Класс содержащий утилитные методы используемые как на стороне сервера, так и на стороне клиента
  */
-public class UtilMethod implements Constants {
+public class UtilMethod {
     private static final String USER = "user1";
 
 
@@ -93,10 +96,5 @@ public class UtilMethod implements Constants {
                 System.out.print(s);
             }
         };
-    }
-
-    @Override
-    public void nothing() {
-
     }
 }

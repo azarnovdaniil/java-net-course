@@ -13,10 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.daniilazarnov.constants.Constants.*;
+
 /**
  * Класс содержит обработку принятых сообщений на стороне сервера
  */
-public class ServerHandler extends ChannelInboundHandlerAdapter implements Constants {
+public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger LOG = Logger.getLogger(ServerHandler.class);
     private final String server = "server";
     private State currentState = State.IDLE;
@@ -125,10 +127,5 @@ public class ServerHandler extends ChannelInboundHandlerAdapter implements Const
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         System.err.println(cause.getMessage());
         LOG.error(cause);
-    }
-
-    @Override
-    public void nothing() {
-
     }
 }

@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import static ru.daniilazarnov.constants.Constants.*;
+
 /**
  * Класс реализующий получение файла по протоколу
  * [] - 1b управляющий байт
@@ -15,7 +17,7 @@ import java.io.IOException;
  * [][][][][][][][] long размер файла в байтах
  * [] data[] - содержимое файла
  */
-public class ReceivingFiles implements Constants {
+public class ReceivingFiles {
     private static final String USER = "user1";
     private static State currentState = State.IDLE;
 
@@ -114,10 +116,5 @@ public class ReceivingFiles implements Constants {
                 }
             }
         }
-    }
-
-    @Override
-    public void nothing() {
-
     }
 }

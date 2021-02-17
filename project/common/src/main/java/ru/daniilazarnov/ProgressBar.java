@@ -1,37 +1,35 @@
 package ru.daniilazarnov;
 
-public class ProgressBar implements Constants {
-    private int length;
+import static ru.daniilazarnov.constants.Constants.*;
+
+public class ProgressBar {
+    private final int length;
     private String line;
     private String pattern;
-    private boolean isProperlyInitialized;
+    private final boolean isProperlyInitialized;
     private static int done = 0;
 
 
-    public ProgressBar(int length) throws Throwable {
+    public ProgressBar(int length) {
         super();
         this.length = length;
         prepare();
         isProperlyInitialized = true;
     }
 
-    public int getLength() {
-        return length;
-    }
-
-    private void prepare() throws Throwable {
+    private void prepare() {
         if (length < 0 && length > HUNDRED) {
             throw new IllegalArgumentException("Length of line is not in range of 0 and 100");
         }
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            s.append("*");
+            s.append("░"); //176
         }
         line = s.toString();
         pattern = String.format("[%%-%ds%%3d%%%%]\r", length);
     }
 
-    void print(int step) throws Throwable {
+    void print(int step) {
         System.out.format(pattern, line.substring(0, step * line.length() / HUNDRED), step);
     }
 
@@ -45,23 +43,18 @@ public class ProgressBar implements Constants {
         }
     }
 
-    @Override
-    public void nothing() {
-
-    }
-
     public static class NotProperlyInitialized extends Throwable {
         public NotProperlyInitialized(String msg) {
             super(msg);
         }
     }
 
-    public static void start() {
-        ProgressBar pb = null;
+    public static void start(int delay) {
+        ProgressBar pb;
         try {
             pb = new ProgressBar(TWENTY);
             for (int i = 0; i < ONE_HUNDRED_AND_FIVE; i++) {
-                Thread.sleep(TEN);
+                Thread.sleep(delay);
                 pb.nextPercent();
             }
         } catch (Throwable throwable) {

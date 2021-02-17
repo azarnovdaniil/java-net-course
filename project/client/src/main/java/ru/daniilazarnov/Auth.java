@@ -5,8 +5,10 @@ import org.apache.log4j.Logger;
 import java.io.*;
 
 import static ru.daniilazarnov.NetworkCommunicationMethods.*;
+import static ru.daniilazarnov.constants.Constants.*;
 
-public class Auth implements Constants {
+
+public class Auth {
     private static final Logger LOG = Logger.getLogger(NetworkCommunicationMethods.class);
 
 
@@ -45,13 +47,8 @@ public class Auth implements Constants {
             password = console.readPassword("Password: ");
         }
         String passString = new String(password);
-        ProgressBar.start();
+        ProgressBar.start(SEVEN);
         sendStringAndCommandByte((userName + "%-%" + passString), Command.AUTH.getCommandByte());
         return false;
-    }
-
-    @Override
-    public void nothing() {
-
     }
 }

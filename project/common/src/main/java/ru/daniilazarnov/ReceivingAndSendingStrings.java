@@ -5,10 +5,12 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 
+import static ru.daniilazarnov.constants.Constants.*;
+
 /**
  * Класс содержит логику отправления побайтово имени файла на сервер
  */
-public class ReceivingAndSendingStrings implements Constants {
+public class ReceivingAndSendingStrings {
 
     /**
      * Формирует для отправки на сервер строку по протоколу
@@ -46,10 +48,5 @@ public class ReceivingAndSendingStrings implements Constants {
         buf.readBytes(messageContent);
 
         return new String(messageContent);
-    }
-
-    @Override
-    public void nothing() {
-
     }
 }

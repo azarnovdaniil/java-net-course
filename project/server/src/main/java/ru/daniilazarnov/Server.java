@@ -9,6 +9,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.log4j.Logger;
 
+import static ru.daniilazarnov.constants.Constants.EIGHTS;
+
 /**
  * Класс содержит логику работы с сетью на стороне сервера
  */
@@ -30,8 +32,8 @@ public class Server {
                         }
                     });
             ChannelFuture f = b.bind(PORT).sync();
-            ProgressBar.start();
-            String s = new String("SERVER: Launched, waiting for connections ...");
+            ProgressBar.start(EIGHTS);
+            String s = "SERVER: Launched, waiting for connections ...";
             LOG.info(s);
             f.channel().closeFuture().sync();
         } finally {
