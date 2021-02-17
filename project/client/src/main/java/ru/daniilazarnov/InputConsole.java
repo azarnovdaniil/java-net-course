@@ -1,30 +1,25 @@
 package ru.daniilazarnov;
 
 import org.apache.log4j.Logger;
+import ru.daniilazarnov.files_method.DeleteFile;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static ru.daniilazarnov.NetworkCommunicationMethods.*;
 import static ru.daniilazarnov.string_method.StringMethod.*;
+import static ru.daniilazarnov.constants.Constants.*;
 
 /**
  * Содержит основную логику обработки введенных с консоли команд
  */
 public class InputConsole {
     private static final Logger LOG = Logger.getLogger(InputConsole.class);
-    private static final int DELAY = 10;
-    private static final String PROMPT_TO_ENTER = ">";
-    private static final String PROGRAM_NAME = "local_storage ";
-    private static final String USERNAME = "~" + File.separator + "user1";
+
     private static final String WELCOME_MESSAGE = "Добро пожаловать в файловое хранилище!\n"
             + "ver: 0.002a\n"
             + "uod: 09.02.2021\n";
-    private static final String HOME_FOLDER_PATH = Path.of("project", "client", "local_storage")
-            .toString() + File.separator;
-
 
     public static void main(String[] args) throws IOException {
         init();
@@ -52,7 +47,7 @@ public class InputConsole {
             if (isConnect()) {
                 while (true) {
                     if (!FileSender.isLoadingStatus()) {
-                        printPrompt();
+                        OutputConsole .printPrompt();
                         break;
                     }
                 }
@@ -91,16 +86,17 @@ public class InputConsole {
                             break;
                         case SERVER:
                             System.out.println(accessingTheServer(inputLine));
-                            printPrompt();
+                            OutputConsole.printPrompt();
                             break;
                         case DELETE:
                             System.out.println(Command.DELETE);
-                            System.out.println(deleteFile(inputLine));
-                            printPrompt();
+                            System.out.println(
+                                    DeleteFile.deleteFile(inputLine));
+                            OutputConsole.printPrompt();
                             break;
                         case RENAME:
                             System.out.println(Command.RENAME);
-                            printPrompt();
+                            OutputConsole.printPrompt();
                             break;
                         default:
                             LOG.error("Unexpected value: " + inputLine);
@@ -116,25 +112,7 @@ public class InputConsole {
     }
 
 
-    private static String deleteFile(String inputLine) {
-        String result = "";
-        String fileName;
-        if (isThereaSecondElement(inputLine)) { // если после ls введено имя каталога получаем его
-            fileName = getSecondElement(inputLine);
-            Path path = Paths.get(HOME_FOLDER_PATH, fileName);
-            if (Files.exists(path)) {
-                UtilMethod.deleteFile(path.toString());
-                if (Files.exists(path)) {
-                    return "Не удалось удалить указанный файл";
-                } else {
-                    return "Файл успешно удален";
-                }
-            } else {
-                return "Неправильное имя файла";
-            }
-        }
-        return result;
-    }
+
 
     private static void exit() {
         close();
@@ -153,7 +131,7 @@ public class InputConsole {
         String fileName;
         if (isThereaSecondElement(inputLine)) { // если после ls введено имя каталога получаем его
             fileName = getSecondElement(inputLine);
-            if (!Files.isDirectory(Path.of(HOME_FOLDER_PATH + fileName))) {
+            if (!Files.isDirectory(Path.of(DEFAULT_PATH_USER, fileName))) {
                 return "Файл не является каталогом";
             }
         } else {
@@ -167,16 +145,6 @@ public class InputConsole {
         return result;
     }
 
-    /**
-     * Метод выводит на консоль строку приглашение ко вводу
-     */
-    protected static void printPrompt() {
-        try {
-            Thread.sleep(DELAY);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.print(PROGRAM_NAME + USERNAME + PROMPT_TO_ENTER);
-    }
+
 }
 

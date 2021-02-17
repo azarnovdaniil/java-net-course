@@ -1,5 +1,7 @@
 package ru.daniilazarnov;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -10,6 +12,20 @@ import static ru.daniilazarnov.constants.Constants.*;
 
 public class Auth {
     private static final Logger LOG = Logger.getLogger(NetworkCommunicationMethods.class);
+
+
+    protected void authentication(ByteBuf buf, ChannelHandlerContext ctx) {
+        String right = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
+        if (right.equals("1")) {
+            ClientNetworkHandler.setAuth(true);
+
+        } else {
+            ctx.close();
+            System.exit(0);
+        }
+        System.out.println(" [Доступ к удаленной базе " + (right.equals("1") ? "разрешен" : "отсутствует") + "]");
+
+    }
 
 
     protected static String getStatusAuth() {

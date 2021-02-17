@@ -12,6 +12,11 @@ public class ClientNetworkHandler extends ChannelInboundHandlerAdapter {
     private static final Logger LOG = Logger.getLogger(ClientNetworkHandler.class);
     private static final String USER = "user1";
     private static boolean auth = false;
+   private Auth authentication = new Auth();
+
+    public static void setAuth(boolean auth) {
+        ClientNetworkHandler.auth = auth;
+    }
 
     public static boolean isAuth() {
         return auth;
@@ -33,10 +38,10 @@ public class ClientNetworkHandler extends ChannelInboundHandlerAdapter {
 
                 case DOWNLOAD:
                     ReceivingFiles.fileReceive(msg, USER);
-                    InputConsole.printPrompt(); // вывод строки приглашения к вводу
+                     OutputConsole .printPrompt(); // вывод строки приглашения к вводу
                     break;
                 case AUTH:
-                    authentication(buf);
+                    authentication.authentication(buf, ctx);
                     break;
                 case LS:
                     getLSString(buf);
@@ -56,13 +61,7 @@ public class ClientNetworkHandler extends ChannelInboundHandlerAdapter {
         System.out.println(catalogStrings);
     }
 
-    private void authentication(ByteBuf buf) {
-        String right = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
-        if (right.equals("1")) {
-            auth = true;
-        }
-        System.out.println(" [Доступ к удаленной базе " + (right.equals("1") ? "разрешен" : "отсутствует") + "]");
-    }
+
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
