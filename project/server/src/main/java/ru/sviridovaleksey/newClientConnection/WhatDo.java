@@ -6,11 +6,13 @@ import ru.sviridovaleksey.TypeCommand;
 import ru.sviridovaleksey.commands.*;
 import ru.sviridovaleksey.workwithfiles.ShowAllDirectory;
 import ru.sviridovaleksey.workwithfiles.WorkWithFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class WhatDo {
@@ -18,11 +20,14 @@ public class WhatDo {
 private final WorkWithFile workWithFile;
 private final MessageForClient messageForClient;
 private final String defAddress = "project/server/Storage/";
-private final ShowAllDirectory showAllDirectory = new ShowAllDirectory(defAddress);
+private final ShowAllDirectory showAllDirectory;
 private final HashMap<String, String> whenClient = new HashMap<>();
+private static final Logger LOGGER = Logger.getLogger(WhatDo.class.getName());
 
 
-public WhatDo(WorkWithFile workWithFile, MessageForClient messageForClient) {
+public WhatDo(WorkWithFile workWithFile, MessageForClient messageForClient, Handler fileHandler) {
+LOGGER.addHandler(fileHandler);
+showAllDirectory = new ShowAllDirectory(defAddress, fileHandler);
 this.workWithFile = workWithFile;
 this.messageForClient = messageForClient;
 workWithFile.createDefaultDirectory(defAddress);
@@ -91,7 +96,6 @@ workWithFile.createDefaultDirectory(defAddress);
             }
             whenClient.put(userName, getNewLink + "/");
             showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
-            System.out.println(whenClient.get(userName));
 
 
         } else if (command.getType().equals(TypeCommand.WRITE_INTO_FILE)) {
@@ -119,9 +123,12 @@ workWithFile.createDefaultDirectory(defAddress);
                 String userName = data.getUserName();
                 String oldName = data.getOldName();
                 String newName = data.getNewName();
-                workWithFile.renameFile(userName, whenClient.get(userName) + "/" + oldName,
-                        whenClient.get(userName) + "/" + newName);
-                messageForClient.successfulAction("Файл " + oldName + " переименован в " + newName);
+                if (workWithFile.renameFile(userName, whenClient.get(userName) + "/" + oldName,
+                        whenClient.get(userName) + "/" + newName)) {
+                    messageForClient.successfulAction("Файл " + oldName + " переименован в " + newName);
+                } else {
+                    messageForClient.err("Не удалось переименовать файл, возможно вы указали не существующий файл");
+                }
                 showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
         }
     }
@@ -157,7 +164,7 @@ workWithFile.createDefaultDirectory(defAddress);
             raf.close();
             showDirectoryFoClient(showAllDirectory.startShowDirectory(whenClient.get(userName)).toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.getMessage());
         }
 
     }

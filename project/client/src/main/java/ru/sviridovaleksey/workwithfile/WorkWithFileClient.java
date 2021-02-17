@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class WorkWithFileClient     {
 
@@ -84,6 +85,44 @@ public class WorkWithFileClient     {
             raf.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void deleteFile(String address) {
+
+        File file = new File(address);
+
+        if ((!Files.exists(Path.of(address))) | (!Files.isDirectory(Path.of(address)))) {
+            System.out.println("Такого файла не существует");
+        } else {
+            recursiveDeleteDirectory(file);
+        }
+    }
+
+    private void recursiveDeleteDirectory(File file) {
+        if (!file.exists()) {
+            return;
+        }
+        if (file.isDirectory()) {
+            for (File f : Objects.requireNonNull(file.listFiles())) {
+                recursiveDeleteDirectory(f);
+            }
+        }
+
+        file.delete();
+        System.out.println("Удаленный файл или папка: " + file.getAbsolutePath());
+    }
+
+    public boolean renameFile(String oldName, String newName) {
+        File oldFile = new File(oldName);
+        File newFile = new File(newName);
+
+        if (oldFile.renameTo(newFile)) {
+            System.out.println("Файл " + oldName + " переименован в " + newName);
+            return true;
+        } else {
+            System.out.println("Не удалось переименовать файл");
+            return false;
         }
     }
 

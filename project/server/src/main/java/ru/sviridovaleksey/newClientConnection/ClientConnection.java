@@ -10,6 +10,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -17,11 +18,13 @@ public class ClientConnection {
 
     private static final Logger LOGGER = Logger.getLogger(ClientConnection.class.getName());
     private final int usePort;
+    private final Handler fileHandler;
 
 
 
 
     public ClientConnection(Handler fileHandler, int usePort) {
+        this.fileHandler = fileHandler;
         LOGGER.addHandler(fileHandler);
         this.usePort = usePort;
 
@@ -42,14 +45,14 @@ public class ClientConnection {
                                    new Decoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())),
                                    new EncoderServer(),
                                    new ServerOutHandler(),
-                                   new ServerInHandler());
+                                   new ServerInHandler(fileHandler));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, channelOption)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture f = b.bind(usePort).sync(); // (7)
-            System.out.println("Сервер запущен");
+            LOGGER.log(Level.INFO, "Сервер запущен");
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();

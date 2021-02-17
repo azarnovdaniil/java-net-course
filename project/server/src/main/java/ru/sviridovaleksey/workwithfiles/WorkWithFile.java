@@ -8,16 +8,22 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WorkWithFile {
 
     private final MessageForClient messageForClient;
+    private static final Logger LOGGER = Logger.getLogger(WorkWithFile.class.getName());
 
-    public WorkWithFile(MessageForClient messageForClient) {
+    public WorkWithFile(MessageForClient messageForClient, Handler fileHandler) {
         this.messageForClient = messageForClient;
+        LOGGER.addHandler(fileHandler);
     }
 
     public void createDefaultDirectory(String defaultAddress) {
+
         if (Files.isDirectory(Path.of(defaultAddress))) {
         return;
         } else {
@@ -46,8 +52,9 @@ public class WorkWithFile {
     }
 
     public void createFirsDirectory(String defaultAddress) {
+
         if (Files.isDirectory(Path.of(defaultAddress))) {
-            System.out.println("Папка пользователя уже существует");
+            LOGGER.log(Level.INFO, "Папка пользователя уже существует");
         } else {
             processCreate(defaultAddress, true, "");
         }
@@ -59,18 +66,19 @@ public class WorkWithFile {
             while (!Files.exists(Path.of(fullAddress))) {
                 if (isCreateDirectoryOrFile) {
                 Path path = Files.createDirectory(Path.of(fullAddress));
-                 System.out.println("Папка для пользователя " + userName + " создана " + path.toAbsolutePath());
-                 messageForClient.successfulAction("Папка для пользователя " + userName + " создана "
+                LOGGER.log(Level.INFO, "Папка для пользователя " + userName + " создана " + path.toAbsolutePath());
+                messageForClient.successfulAction("Папка для пользователя " + userName + " создана "
                          + path.getFileName());
                 } else {
-                    Path path = Files.createFile(Path.of(fullAddress));
-                    System.out.println("Файл для пользователя " + userName + " создан " + path.toAbsolutePath());
-                    messageForClient.successfulAction("Файл для пользователя " + userName + " создан "
+                 Path path = Files.createFile(Path.of(fullAddress));
+                 LOGGER.log(Level.INFO, "Файл для пользователя " + userName + " создан " + path.toAbsolutePath());
+                 messageForClient.successfulAction("Файл для пользователя " + userName + " создан "
                             + path.getFileName());
                         }
                 }
         } catch (IOException e) {
             messageForClient.err(e.getMessage() + "Не удалось создать " + fullAddress);
+            LOGGER.log(Level.SEVERE, e.getMessage());
         }
     }
 
@@ -96,14 +104,16 @@ public class WorkWithFile {
         }
     }
 
-    public void renameFile(String userName, String oldName, String newName) {
+    public boolean renameFile(String userName, String oldName, String newName) {
         File oldFile = new File(oldName);
         File newFile = new File(newName);
 
         if (oldFile.renameTo(newFile)) {
-            System.out.println("Файл переименован для юзера " + userName);
+            LOGGER.log(Level.INFO, "Файл переименован для юзера " + userName);
+            return true;
         } else {
-            System.out.println("Не удалось переименовать файл");
+            LOGGER.log(Level.INFO, "Не удалось переименовать файл");
+            return false;
         }
     }
 
@@ -120,7 +130,7 @@ public class WorkWithFile {
 
         file.delete();
         messageForClient.successfulAction("Удаленный файл или папка: " + file.getName());
-        System.out.println("Удаленный файл или папка: " + file.getAbsolutePath());
+        LOGGER.log(Level.INFO, "Удаленный файл или папка: " + file.getAbsolutePath());
     }
 
     public synchronized void writeByteToFile(String way, byte[] data, long cell) {
@@ -132,10 +142,9 @@ public class WorkWithFile {
             rafWrite.close();
 
         } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage() + "Неудачная запись в файл");
+            LOGGER.log(Level.INFO, e.getMessage() + "Неудачная запись в файл");
         } catch (IOException e) {
-            System.out.println(e.getMessage() + "Неудачная запись в файл");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.getMessage() + "Неудачная запись в файл");
         }
     }
 

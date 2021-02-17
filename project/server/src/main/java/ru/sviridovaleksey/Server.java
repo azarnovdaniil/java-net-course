@@ -1,8 +1,6 @@
 package ru.sviridovaleksey;
 
 import ru.sviridovaleksey.newclientconnection.ClientConnection;
-
-import java.io.IOException;
 import java.util.logging.*;
 
 public class Server {
@@ -19,15 +17,11 @@ public class Server {
         }
 
         try {
-            Handler fileHandler = new FileHandler("log_%g.txt", LIMITLOGGER, COUNTLOGGER, true);
+            Handler fileHandler = new FileHandler("logServer_%g.txt", LIMITLOGGER, COUNTLOGGER, true);
             fileHandler.setFormatter(new SimpleFormatter());
-
             new ClientConnection(fileHandler, usePort).startConnection();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage());
-            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.getMessage());
         }
 
 

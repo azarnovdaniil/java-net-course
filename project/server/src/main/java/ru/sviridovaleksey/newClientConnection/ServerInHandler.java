@@ -6,6 +6,9 @@ import ru.sviridovaleksey.Command;
 import ru.sviridovaleksey.TypeCommand;
 import ru.sviridovaleksey.clientHandler.BaseAuthService;
 import ru.sviridovaleksey.workwithfiles.WorkWithFile;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerInHandler extends ChannelInboundHandlerAdapter {
 
@@ -13,16 +16,21 @@ public class ServerInHandler extends ChannelInboundHandlerAdapter {
     private String login;
     private WhatDo whatDo;
     private final BaseAuthService baseAuthService = new BaseAuthService();
+    private static final Logger LOGGER = Logger.getLogger(ServerInHandler.class.getName());
+    private final Handler fileHandler;
 
-
+    public ServerInHandler(Handler fileHandler) {
+        this.fileHandler = fileHandler;
+        LOGGER.addHandler(fileHandler);
+    }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
-        System.out.println("Подключился новый пользователь");
+        LOGGER.log(Level.INFO, "Подключился новый пользователь");
         ctx.write(Command.ping());
         MessageForClient messageForClient = new MessageForClient(ctx);
-        WorkWithFile workWithFile = new WorkWithFile(messageForClient);
-        this.whatDo = new WhatDo(workWithFile, messageForClient);
+        WorkWithFile workWithFile = new WorkWithFile(messageForClient, fileHandler);
+        this.whatDo = new WhatDo(workWithFile, messageForClient, fileHandler);
     }
 
 
@@ -31,18 +39,18 @@ public class ServerInHandler extends ChannelInboundHandlerAdapter {
            while (!isChanelReg) {
 
               if (((Command) msg).getType().equals(TypeCommand.AUTH)) {
-                  System.out.println("Попытка авторизоваться" + ctx);
+                  LOGGER.log(Level.INFO, "Попытка авторизоваться" + ctx);
                   String isLogin = baseAuthService.getUsernameByLoginAndPassword((Command) msg);
                   if (isLogin == null) {
                       ctx.write(Command.authErrorCommand("ошибка авторизации, пароль или логин не верны"));
-                      System.out.println("Ошибка авторизации" + ctx);
+                      LOGGER.log(Level.INFO, "Ошибка авторизации" + ctx);
                       break;
                   } else {
                       login = isLogin;
                       ctx.write(Command.authOkCommand(login));
                       whatDo.firstStep(login);
                       isChanelReg = true;
-                      System.out.println("Удачная авторизация" + ctx);
+                      LOGGER.log(Level.INFO, "Удачная авторизация" + ctx);
 
                   }
 
@@ -54,7 +62,7 @@ public class ServerInHandler extends ChannelInboundHandlerAdapter {
         } else if (msg instanceof Command) {
             whatDo.whatDo((Command) msg, login);
         } else {
-            System.out.println("Неизвестная команда");
+            LOGGER.log(Level.INFO, "Пришла неизвестная команда" + ctx);
         }
 
     }

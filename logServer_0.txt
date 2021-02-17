@@ -1,0 +1,22 @@
+февр. 17, 2021 6:30:07 PM ru.sviridovaleksey.newclientconnection.ClientConnection startConnection
+INFO: Сервер запущен
+февр. 17, 2021 6:30:12 PM ru.sviridovaleksey.newclientconnection.ServerInHandler channelRegistered
+INFO: Подключился новый пользователь
+февр. 17, 2021 6:30:17 PM ru.sviridovaleksey.newclientconnection.ServerInHandler channelRead
+INFO: Попытка авторизоватьсяChannelHandlerContext(ServerInHandler#0, [id: 0x06232383, L:/127.0.0.1:8189 - R:/127.0.0.1:50974])
+февр. 17, 2021 6:30:17 PM ru.sviridovaleksey.newclientconnection.ServerInHandler channelRead
+INFO: Удачная авторизацияChannelHandlerContext(ServerInHandler#0, [id: 0x06232383, L:/127.0.0.1:8189 - R:/127.0.0.1:50974])
+февр. 17, 2021 7:59:21 PM ru.sviridovaleksey.newclientconnection.ClientConnection startConnection
+INFO: Сервер запущен
+февр. 17, 2021 7:59:24 PM ru.sviridovaleksey.newclientconnection.ServerInHandler channelRegistered
+INFO: Подключился новый пользователь
+февр. 17, 2021 7:59:34 PM ru.sviridovaleksey.newclientconnection.ServerInHandler channelRead
+INFO: Попытка авторизоватьсяChannelHandlerContext(ServerInHandler#0, [id: 0x2a2bb5c2, L:/127.0.0.1:8189 - R:/127.0.0.1:51504])
+февр. 17, 2021 7:59:34 PM ru.sviridovaleksey.workwithfiles.WorkWithFile createFirsDirectory
+INFO: Папка пользователя уже существует
+февр. 17, 2021 7:59:34 PM ru.sviridovaleksey.newclientconnection.ServerInHandler channelRead
+INFO: Удачная авторизацияChannelHandlerContext(ServerInHandler#0, [id: 0x2a2bb5c2, L:/127.0.0.1:8189 - R:/127.0.0.1:51504])
+февр. 17, 2021 8:00:10 PM ru.sviridovaleksey.workwithfiles.WorkWithFile processCreate
+INFO: Папка для пользователя Кура создана E:\Java\java4\java-net-course\project\server\Storage\Кура\test
+февр. 17, 2021 8:00:29 PM ru.sviridovaleksey.workwithfiles.WorkWithFile processCreate
+INFO: Файл для пользователя Кура создан E:\Java\java4\java-net-course\project\server\Storage\Кура\test\test.txt

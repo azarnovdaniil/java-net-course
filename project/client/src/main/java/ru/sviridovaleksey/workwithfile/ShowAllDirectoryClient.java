@@ -1,25 +1,13 @@
-package ru.sviridovaleksey.workwithfiles;
+package ru.sviridovaleksey.workwithfile;
 
-import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class ShowAllDirectory {
+public class ShowAllDirectoryClient {
 
     private static final StringBuilder READYMESSAGE = new StringBuilder();
-    private static String defaultLink;
-    private static final Logger LOGGER = Logger.getLogger(ShowAllDirectory.class.getName());
-
-
-    public ShowAllDirectory(String defaultLink, Handler fileHandler) {
-        ShowAllDirectory.defaultLink = defaultLink;
-        LOGGER.addHandler(fileHandler);
-    }
 
 
     public  StringBuilder startShowDirectory(String directoryAddress) {
@@ -30,7 +18,7 @@ public class ShowAllDirectory {
             Files.walkFileTree(startingDir, Collections.singleton(FileVisitOption.FOLLOW_LINKS), 1, crawler);
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage());
+            e.printStackTrace();
         }
         return READYMESSAGE;
     }
@@ -44,8 +32,6 @@ public class ShowAllDirectory {
 
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-            READYMESSAGE.append("Дирректория: ").append(StringUtils.substringAfter(dir.toString(),
-                    Path.of(defaultLink).toString())).append("\n");
             return FileVisitResult.CONTINUE;
         }
 
