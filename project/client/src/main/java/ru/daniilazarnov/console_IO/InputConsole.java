@@ -1,12 +1,12 @@
 package ru.daniilazarnov.console_IO;
 
+import java.io.*;
+
 import org.apache.log4j.Logger;
 import ru.daniilazarnov.*;
-import ru.daniilazarnov.auth.Auth;
+import ru.daniilazarnov.auth.AuthClient;
 import ru.daniilazarnov.files_method.DeleteFile;
 import ru.daniilazarnov.files_method.FileList;
-
-import java.io.*;
 
 import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
 
@@ -15,10 +15,7 @@ import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
  */
 public class InputConsole {
     private static final Logger LOG = Logger.getLogger(InputConsole.class);
-   private Auth auth = new Auth();
-
-
-
+    private AuthClient auth = new AuthClient();
 
     /**
      * Метод содержит основную логику введенных с консоли команд
@@ -30,7 +27,7 @@ public class InputConsole {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
             if (isConnect()) {
                 while (true) {
-                    if (!FileSender.isLoadingStatus()) {
+                    if (!FileSender.isLoadingStatus() && ReceivingFiles.getCurrentState() == State.IDLE) {
                         OutputConsole.printPrompt();
                         break;
                     }
@@ -43,10 +40,10 @@ public class InputConsole {
 
                     switch (command) {
                         case AUTH:
-                            System.out.println(auth.getStatusAuth());
+                            System.out.println(auth.getStringStatusAuth());
                             break;
                         case UPLOAD:
-                            sendFile(inputLine);
+                            System.out.println(sendFile(inputLine));
                             break;
                         case LS:
                             System.out.println(FileList.getFilesList(inputLine));
@@ -61,6 +58,7 @@ public class InputConsole {
                             break;
                         case DOWNLOAD:
                             sendNameFIleForDownloading(inputLine);
+                            OutputConsole.printPrompt();
                             break;
                         case HELP:
                             System.out.println(Command.getHelpInfo());
@@ -70,13 +68,12 @@ public class InputConsole {
                             break;
                         case SERVER:
                             System.out.println(accessingTheServer(inputLine));
-                            OutputConsole.printPrompt();
+//                            OutputConsole.printPrompt();
                             break;
                         case DELETE:
-                            System.out.println(Command.DELETE);
                             System.out.println(
                                     DeleteFile.deleteFile(inputLine));
-                            OutputConsole.printPrompt();
+//                            OutputConsole.printPrompt();
                             break;
                         case RENAME:
                             System.out.println(Command.RENAME);
@@ -94,15 +91,4 @@ public class InputConsole {
             }
         }
     }
-
-    private  void exit() {
-        close();
-        System.out.println("Bye");
-        System.exit(0);
-    }
-
-
-
-
 }
-

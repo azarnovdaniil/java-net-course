@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import ru.daniilazarnov.Command;
 import ru.daniilazarnov.ProgressBar;
 import ru.daniilazarnov.ReceivingAndSendingStrings;
-import ru.daniilazarnov.network.ClientNetworkHandler;
 
 import java.io.*;
 
@@ -14,34 +13,41 @@ import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
 import static ru.daniilazarnov.constants.Constants.*;
 
 
-public class Auth {
-    private static final Logger LOG = Logger.getLogger(Auth.class);
+public class AuthClient {
+    private static final Logger LOG = Logger.getLogger(AuthClient.class);
+    private static boolean authStatus = false;
 
+    public static boolean isAuthStatus() {
+        return authStatus;
+    }
+
+    public void setAuthStatus(boolean authStatus) {
+        AuthClient.authStatus = authStatus;
+    }
 
     public void authentication(ByteBuf buf, ChannelHandlerContext ctx) {
         String right = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
         if (right.equals("1")) {
-            ClientNetworkHandler.setAuth(true);
+            setAuthStatus(true);
+            LOG.debug("Access to the remote base received");
 
         } else {
+            setAuthStatus(false);
+            LOG.info("You do not have access to the remote database\n"
+                    + "connection broken");
             ctx.close();
             System.exit(0);
         }
-        System.out.println(" [Доступ к удаленной базе " + (right.equals("1") ? "разрешен" : "отсутствует") + "]");
 
     }
 
 
-    public String getStatusAuth() {
-        return "Регистрация " + (ClientNetworkHandler.isAuth() ? "" : "не") + " подтверждена";
+    public String getStringStatusAuth() {
+        return "Регистрация " + (isAuthStatus() ? "" : "не") + " подтверждена";
     }
 
-    public boolean auth() {
-        InputStream in = System.in;
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+    public static void auth() {
 
-        String userName = "";
-        char[] password = new char[0];
 
         while (isConnect()) {
             try {
@@ -50,6 +56,17 @@ public class Auth {
                 LOG.error(e);
             }
         }
+
+        sendStringAndCommandByte(inputLoginAndPassword(), Command.AUTH.getCommandByte());
+        ProgressBar.start(FIVE);
+    }
+
+    private static String inputLoginAndPassword() {
+        InputStream in = System.in;
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+
+        String userName = "";
+        char[] password = new char[0];
 
         Console console = System.console();
         if (console == null) {
@@ -67,8 +84,7 @@ public class Auth {
             password = console.readPassword("Password: ");
         }
         String passString = new String(password);
-        ProgressBar.start(SEVEN);
-        sendStringAndCommandByte((userName + "%-%" + passString), Command.AUTH.getCommandByte());
-        return false;
+        return userName + "%-%" + passString;
+
     }
 }

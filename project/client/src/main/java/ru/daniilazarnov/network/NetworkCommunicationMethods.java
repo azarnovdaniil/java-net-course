@@ -1,6 +1,5 @@
 package ru.daniilazarnov.network;
 
-import ru.daniilazarnov.auth.Auth;
 import ru.daniilazarnov.Command;
 
 import java.io.File;
@@ -8,12 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static ru.daniilazarnov.string_method.StringMethod.*;
+import static ru.daniilazarnov.constants.Constants.*;
 import static ru.daniilazarnov.string_method.StringMethod.getSecondElement;
 
 public class NetworkCommunicationMethods {
-    private static final String HOME_FOLDER_PATH = Path.of("project", "client", "local_storage").toString();
     private static Client client;
-
 
     /**
      * В этом методе обратимся к серверу за получением списка файлов находящемся в удаленном хранилище
@@ -33,7 +31,7 @@ public class NetworkCommunicationMethods {
         } else {
             sendStringAndCommandByte("", Command.LS.getCommandByte());
         }
-        result = "Запрос отправлен на сервер";
+        result = "local_storage: Запрос отправлен на сервер";
         return result;
     }
 
@@ -43,11 +41,6 @@ public class NetworkCommunicationMethods {
 
     public static boolean isConnect() {
         return client.isConnect();
-    }
-
-    public static boolean auth() {
-        Auth auth = new Auth();
-        return auth.auth();
     }
 
     public static void init() {
@@ -100,35 +93,36 @@ public class NetworkCommunicationMethods {
      *
      * @param inputLine строка ввода
      */
-    public static void sendFile(String inputLine) {
+    public static String sendFile(String inputLine) {
+        String result = "local_storage: ";
         if (isThereaSecondElement(inputLine)) {
             String fileName = getSecondElement(inputLine);
 
-            System.out.println(isFileExists(fileName));
             if (isFileExists(fileName)) { // проверяем, существует ли файл
-                client.sendFile(HOME_FOLDER_PATH + File.separator + fileName); // Отправка файла
+                client.sendFile(DEFAULT_PATH_USER + File.separator + fileName); // Отправка файла
+                result += "Файл отправлен";
 
             } else {
-                System.out.println("local_storage: Файл не найден");
+                result += "Файл не найден";
             }
         } else {
             System.out.println("local_storage: некорректный аргумент");
+                result += " некорректный аргумент";
         }
+        return result;
     }
 
-    /**
-     * метод ищет в папке local_storage файл с переданным именем
-     *
-     * @param fileName имя файла
-     * @return истина, если файл в папке обнаружен
-     */
+    public static void exit() {
+        close();
+        System.out.println("Bye");
+        System.exit(0);
+    }
 
     private static boolean isFileExists(String fileName) {
-        return Files.exists(Path.of(HOME_FOLDER_PATH, fileName));
+        return Files.exists(Path.of(DEFAULT_PATH_USER, fileName));
     }
 
     public static void close() {
         client.close();
     }
 }
-

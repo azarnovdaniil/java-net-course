@@ -7,6 +7,7 @@ public final class Constants {
     public static final String DEFAULT_PATH_USER = Path.of("project", "client", "local_storage").toString();
     public static final int TEN = 10;
     public static final int FOUR = 4;
+    public static final int FIVE = 5;
     public static final int EIGHTS = 8;
     public static final int SEVEN = 7;
     public static final int HUNDRED = 100;

@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
-import ru.daniilazarnov.auth.Auth;
+import ru.daniilazarnov.auth.AuthClient;
 import ru.daniilazarnov.Command;
 import ru.daniilazarnov.ReceivingFiles;
 import ru.daniilazarnov.State;
@@ -18,7 +18,7 @@ public class ClientNetworkHandler extends ChannelInboundHandlerAdapter {
     private static final Logger LOG = Logger.getLogger(ClientNetworkHandler.class);
     private static final String USER = "user1";
     private static boolean auth = false;
-   private Auth authentication = new Auth();
+   private AuthClient authentication = new AuthClient();
 
     public static void setAuth(boolean auth) {
         ClientNetworkHandler.auth = auth;
@@ -32,6 +32,8 @@ public class ClientNetworkHandler extends ChannelInboundHandlerAdapter {
 
     public ClientNetworkHandler() {
     }
+
+
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -47,11 +49,15 @@ public class ClientNetworkHandler extends ChannelInboundHandlerAdapter {
                      OutputConsole.printPrompt(); // вывод строки приглашения к вводу
                     break;
                 case AUTH:
-                    authentication.authentication(buf, ctx);
+                    new Thread(() -> {
+                        authentication.authentication(buf, ctx);
+                        LOG.debug("Authorization: the response came from the server");
+                    }).start();
+
                     break;
                 case LS:
                     System.out.println(FileList.getFilesListStringFromServer(buf));
-                    OutputConsole.printPrompt();
+//                    OutputConsole.printPrompt();
                     break;
 
                 default:

@@ -41,11 +41,7 @@ public class FileList {
         return result;
     }
 
-
     public static String getFilesListStringFromServer(ByteBuf buf) {
          return ReceivingAndSendingStrings.receiveAndEncodeString(buf);
     }
-
-
-
 }
