@@ -277,7 +277,7 @@ class MainTest {
         System.out.println();
         System.out.println(channel.size());
 
-        channel.truncate(channel.size() - 20);
+//        channel.truncate(channel.size() - 20);
         System.out.println(channel.size());
         channel.close();
     }
