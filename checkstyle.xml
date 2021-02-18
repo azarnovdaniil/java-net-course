@@ -4,31 +4,20 @@
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <!--
-
   Checkstyle configuration that checks the sun coding conventions from:
-
     - the Java Language Specification at
       https://docs.oracle.com/javase/specs/jls/se11/html/index.html
-
     - the Sun Code Conventions at https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
-
     - the Javadoc guidelines at
       https://www.oracle.com/technical-resources/articles/java/javadoc-tool.html
-
     - the JDK Api documentation https://docs.oracle.com/en/java/javase/11/
-
     - some best practices
-
   Checkstyle is very configurable. Be sure to read the documentation at
   https://checkstyle.org (or in your downloaded distribution).
-
   Most Checks are configurable, be sure to consult the documentation.
-
   To completely disable a check, just comment it out or delete it from the file.
   To suppress certain violations please review suppression filters.
-
   Finally, it is worth reading the documentation.
-
 -->
 
 <module name="Checker">
@@ -36,7 +25,6 @@
         If you set the basedir property below, then all reported file
         names will be relative to the specified directory. See
         https://checkstyle.org/config.html#Checker
-
         <property name="basedir" value="${basedir}"/>
     -->
     <property name="severity" value="error"/>

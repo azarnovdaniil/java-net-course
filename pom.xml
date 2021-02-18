@@ -4,25 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ru.daniilazarnov</groupId>
+    <groupId>ru.sviridovaleksey</groupId>
     <artifactId>java-net-course</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>lesson-1</module>
-        <module>lesson-2</module>
-        <module>lesson-3</module>
-        <module>lesson-4</module>
-        <module>lesson-6</module>
-        <module>lesson-7</module>
         <module>project</module>
     </modules>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit-jupiter-api.version>5.4.2</junit-jupiter-api.version>
         <junit-jupiter-engine.version>5.4.2</junit-jupiter-engine.version>
     </properties>
@@ -34,6 +27,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M3</version>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -83,6 +77,11 @@
             <artifactId>checkstyle</artifactId>
             <version>8.40</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>3.1.2</version>
         </dependency>
     </dependencies>
 </project>
