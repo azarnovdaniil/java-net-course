@@ -8,15 +8,17 @@ import java.util.Arrays;
 
 public class FirstInboundHandler extends ChannelInboundHandlerAdapter {
 
+    public static final int MESSAGE_SIZE = 3;
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         System.out.println("first");
         ByteBuf buf = (ByteBuf) msg;
-        if (buf.readableBytes() < 3) {
+        if (buf.readableBytes() < MESSAGE_SIZE) {
             buf.release();
             ctx.writeAndFlush("hahahah");
         }
-        byte[] data = new byte[3];
+        byte[] data = new byte[MESSAGE_SIZE];
         buf.readBytes(data);
         buf.release();
         System.out.println(Arrays.toString(data));
