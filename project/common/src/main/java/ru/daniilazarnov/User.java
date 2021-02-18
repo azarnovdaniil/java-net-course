@@ -1,7 +1,6 @@
 package ru.daniilazarnov;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 
 public class User implements Serializable {
     private static int id;

@@ -64,7 +64,9 @@ public class ClientFunctionalIn {
     }
 
     protected void removeFile(ChannelHandlerContext ctx, Scanner scanner) {
-
+        System.out.print("Enter the path where to save the file: ");
+        String path = scanner.nextLine();
+        ctx.writeAndFlush(new DataMsg(Command.REMOVE, ConvertToByte.serialize(path)));
     }
 
     protected void moveFile(ChannelHandlerContext ctx, Scanner scanner) {

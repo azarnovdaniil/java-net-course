@@ -3,7 +3,6 @@ package ru.daniilazarnov;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -15,10 +14,11 @@ import java.util.stream.Stream;
 
 public class FunctionalServer {
     private final String GENERAL_PATH = "project/server/directories/";
+
     public FunctionalServer() {
     }
 
-    private void list(ChannelHandlerContext ctx, String clientName){
+    private void list(final ChannelHandlerContext ctx, final String clientName) {
         try {
             Path path = Paths.get(GENERAL_PATH + clientName);
             Stream<Path> list = Files.walk(path);
@@ -62,17 +62,30 @@ public class FunctionalServer {
     }
 
     private void uploadFile() {
-
     }
 
-    private void removeFile(){
-
+    private void removeFile(ChannelHandlerContext ctx, Object msg) {
+        DataMsg data = (DataMsg) msg;
+        String path = (String) ConvertToByte.deserialize(data.getBytes());
+        if (Files.exists(Path.of(path))) {
+            try {
+                Files.delete(Path.of(path));
+            } catch (IOException e) {
+                Command error = Command.ERROR;
+                error.setDescription("Failed to give file");
+                ctx.writeAndFlush(new DataMsg(error, null));
+            }
+        } else {
+            Command error = Command.ERROR;
+            error.setDescription("Incorrect path to file, try again");
+            ctx.writeAndFlush(new DataMsg(error, null));
+        }
     }
 
-    public void executeCommand(ChannelHandlerContext ctx, Object msg, String clientName){
-        if (msg instanceof DataMsg){
+    public void executeCommand(ChannelHandlerContext ctx, Object msg, String clientName) {
+        if (msg instanceof DataMsg) {
             Command command = ((DataMsg) msg).getCommand();
-            switch (command){
+            switch (command) {
                 case LIST:
                     list(ctx, clientName);
                     break;
@@ -83,20 +96,20 @@ public class FunctionalServer {
                     uploadFile();
                     break;
                 case REMOVE:
-                    removeFile();
+                    removeFile(ctx, msg);
                     break;
                 case EXIT:
                     ctx.channel().close();
                     break;
             }
-        } else if (msg instanceof FileMsg){
+        } else if (msg instanceof FileMsg) {
 
         } else {
             System.out.println("Incorrect message");
         }
     }
 
-    private String[] splitLine(String cmd){
+    private String[] splitLine(String cmd) {
         return cmd.replaceAll("[\\s]+", " ").split(" ");
     }
 

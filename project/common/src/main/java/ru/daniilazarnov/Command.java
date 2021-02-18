@@ -1,7 +1,6 @@
 package ru.daniilazarnov;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 
 public enum Command implements Serializable {
     LIST("/list", " - get a list of all available files and directories", null),
@@ -18,6 +17,7 @@ public enum Command implements Serializable {
     private String description;
     private byte[] bytes;
 
+    @SuppressWarnings("checkstyle:FinalParameters")
     Command(String command, String description, byte[] bytes) {
         this.command = command;
         this.description = description;
