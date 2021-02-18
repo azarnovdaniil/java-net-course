@@ -1,6 +1,6 @@
 package ru.daniilazarnov.files_method;
 
-import ru.daniilazarnov.UtilMethod;
+import ru.daniilazarnov.util.UtilMethod;
 
 import java.io.File;
 import java.nio.file.Files;

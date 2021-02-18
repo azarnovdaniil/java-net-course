@@ -1,10 +1,10 @@
 package ru.daniilazarnov.console_IO;
 
 import org.apache.log4j.Logger;
-import ru.daniilazarnov.Command;
+import ru.daniilazarnov.enumeration.Command;
 import ru.daniilazarnov.FileSender;
 import ru.daniilazarnov.ReceivingFiles;
-import ru.daniilazarnov.State;
+import ru.daniilazarnov.enumeration.State;
 
 public class ConsoleMethod {
     private static final Logger LOG = Logger.getLogger(ConsoleMethod.class);
@@ -18,19 +18,20 @@ public class ConsoleMethod {
         } while (true);
     }
 
-     Command getCommand(String firstCommand) {
+    Command getCommand(String firstCommand) {
         Command command = Command.UNKNOWN;
         try {
-            command = Command.valueOf(firstCommand.toUpperCase());
+            command = Command.valueOf(firstCommand.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
             LOG.error(e);
         }
         return command;
     }
 
-     boolean consoleIsNotBusy() {
-        return !FileSender.isLoadingStatus()
-                && ReceivingFiles.getCurrentState() == State.IDLE
-                && !OutputConsole.isConsoleBusy();
+    boolean consoleIsNotBusy() {
+        return
+                !FileSender.isLoadingStatus()  // удалить
+                        && ReceivingFiles.getCurrentState() == State.IDLE
+                        && !OutputConsole.isConsoleBusy();
     }
 }

@@ -3,7 +3,7 @@ package ru.daniilazarnov.console_IO;
 import java.io.*;
 
 import org.apache.log4j.Logger;
-import ru.daniilazarnov.*;
+import ru.daniilazarnov.enumeration.Command;
 
 import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
 

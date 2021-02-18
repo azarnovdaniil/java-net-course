@@ -3,6 +3,7 @@ package ru.daniilazarnov;
 //mvn -B package --file pom.xml
 
 import org.junit.jupiter.api.Test;
+import ru.daniilazarnov.enumeration.Command;
 
 import java.io.File;
 import java.nio.file.Path;

@@ -3,7 +3,7 @@ package ru.daniilazarnov.files_method;
 import io.netty.buffer.ByteBuf;
 import org.apache.log4j.Logger;
 import ru.daniilazarnov.ReceivingAndSendingStrings;
-import ru.daniilazarnov.UtilMethod;
+import ru.daniilazarnov.util.UtilMethod;
 
 import java.io.IOException;
 import java.nio.file.Files;

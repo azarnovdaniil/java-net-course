@@ -8,6 +8,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.log4j.Logger;
 import ru.daniilazarnov.FileSender;
 import ru.daniilazarnov.ReceivingAndSendingStrings;
+import ru.daniilazarnov.console_IO.OutputConsole;
 //import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class Client {
 
     public void sendFile(String file) {
         try {
-            FileSender.setLoadingStatus(true);
+            FileSender.setLoadingStatus(true); // удалить
             FileSender.sendFile(Path.of(file), channel, getChannelFutureListenerSendFile("Файл успешно передан\n"));
 
         } catch (IOException e) {
@@ -80,8 +81,9 @@ public class Client {
             }
             if (future.isSuccess()) {
                 LOG.debug(s);
-                FileSender.setLoadingStatus(false);
+                FileSender.setLoadingStatus(false); // удалить
             }
+            OutputConsole.setConsoleBusy(false);
         };
     }
 
@@ -91,9 +93,10 @@ public class Client {
                 LOG.info(s + "не был");
             }
             if (future.isSuccess()) {
+                FileSender.setLoadingStatus(false); // удалить
                 LOG.info(s);
-                FileSender.setLoadingStatus(false);
             }
+            OutputConsole.setConsoleBusy(false);
         };
     }
 

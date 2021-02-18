@@ -1,6 +1,6 @@
 package ru.daniilazarnov.network;
 
-import ru.daniilazarnov.Command;
+import ru.daniilazarnov.enumeration.Command;
 import ru.daniilazarnov.console_IO.OutputConsole;
 
 import java.io.File;
@@ -101,6 +101,7 @@ public class NetworkCommunicationMethods {
             String fileName = getSecondElement(inputLine);
 
             if (isFileExists(fileName)) { // проверяем, существует ли файл
+                OutputConsole.setConsoleBusy(true);
                 client.sendFile(DEFAULT_PATH_USER + File.separator + fileName); // Отправка файла
                 result += "Файл отправлен";
 
@@ -109,7 +110,7 @@ public class NetworkCommunicationMethods {
             }
         } else {
             System.out.println("local_storage: некорректный аргумент");
-                result += " некорректный аргумент";
+            result += " некорректный аргумент";
         }
         return result;
     }

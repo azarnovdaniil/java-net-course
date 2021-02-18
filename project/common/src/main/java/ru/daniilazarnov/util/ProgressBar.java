@@ -1,4 +1,4 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.util;
 
 import static ru.daniilazarnov.constants.Constants.*;
 
@@ -8,7 +8,6 @@ public class ProgressBar {
     private String pattern;
     private final boolean isProperlyInitialized;
     private static int done = 0;
-
 
     public ProgressBar(int length) {
         super();

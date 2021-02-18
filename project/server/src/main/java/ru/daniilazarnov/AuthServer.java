@@ -3,7 +3,9 @@ package ru.daniilazarnov;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.log4j.Logger;
+import ru.daniilazarnov.enumeration.Command;
 import ru.daniilazarnov.sql_client.SQLClient;
+import ru.daniilazarnov.util.UtilMethod;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,12 +24,10 @@ public class AuthServer {
                         ctx.channel(),
                         Command.AUTH.getCommandByte(),
                         UtilMethod
-                                .getChannelFutureListener("Авторизация "
-                                        + (accessRights == 1 ? "" : "не")
-                                        + " подтверждена"));
+                                .getChannelFutureListener(String
+                                        .format("Авторизация %s подтверждена", accessRights == 1 ? "" : "не")));
         if (accessRights == 1) {
-            LOG.info("Authorization confirmed\n"
-                    + "welcome");
+            LOG.info(String.format("Authorization confirmed, user: [%s]", authData.get(0)));
         } else {
             LOG.info("Authorization not verified, connection dropped");
             ctx.close();

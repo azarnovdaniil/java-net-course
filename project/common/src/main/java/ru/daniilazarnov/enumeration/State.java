@@ -1,4 +1,4 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.enumeration;
 
 /**
  * содержит список возможных состояний сервера

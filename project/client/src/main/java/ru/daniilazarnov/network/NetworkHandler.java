@@ -3,7 +3,7 @@ package ru.daniilazarnov.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.log4j.Logger;
-import ru.daniilazarnov.Command;
+import ru.daniilazarnov.enumeration.Command;
 import ru.daniilazarnov.ReceivingFiles;
 import ru.daniilazarnov.auth.AuthClient;
 import ru.daniilazarnov.console_IO.OutputConsole;
@@ -15,7 +15,8 @@ public class NetworkHandler {
     private static final Logger LOG = Logger.getLogger(NetworkHandler.class);
     private AuthClient authentication = new AuthClient();
 
-     void networkHandler(ChannelHandlerContext ctx, Object msg, ByteBuf buf, byte readed, Command command) throws IOException {
+    void networkHandler(ChannelHandlerContext ctx, Object msg, ByteBuf buf, byte readed, Command command)
+            throws IOException {
         switch (command) {
 
             case DOWNLOAD:
@@ -27,15 +28,11 @@ public class NetworkHandler {
                     authentication.authentication(buf, ctx);
                     LOG.debug("Authorization: the response came from the server");
                 }).start();
-
                 break;
             case LS:
-
                 System.out.println(FileList.getFilesListStringFromServer(buf));
                 OutputConsole.setConsoleBusy(false);
-//                    OutputConsole.printPrompt();
                 break;
-
             default:
                 System.err.println("(class ClientHandler) ERROR: Invalid first byte - " + readed);
         }

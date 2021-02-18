@@ -4,6 +4,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
+import ru.daniilazarnov.enumeration.Command;
+import ru.daniilazarnov.enumeration.State;
+import ru.daniilazarnov.util.UtilMethod;
 
 import java.io.IOException;
 
@@ -59,7 +62,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-
     private void fileListSend(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
         String folderName = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
         String fileList = UtilMethod.getFolderContents(folderName, "server");
@@ -75,7 +77,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         buf.resetReaderIndex();
         return "(class ServerHandler) ERROR: Invalid first byte - " + readed;
     }
-
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

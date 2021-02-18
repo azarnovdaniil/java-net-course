@@ -1,4 +1,4 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.enumeration;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

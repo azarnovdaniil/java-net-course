@@ -3,8 +3,8 @@ package ru.daniilazarnov.auth;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.log4j.Logger;
-import ru.daniilazarnov.Command;
-import ru.daniilazarnov.ProgressBar;
+import ru.daniilazarnov.enumeration.Command;
+import ru.daniilazarnov.util.ProgressBar;
 import ru.daniilazarnov.ReceivingAndSendingStrings;
 import ru.daniilazarnov.User;
 import ru.daniilazarnov.network.NetworkCommunicationMethods;
@@ -54,12 +54,10 @@ public class AuthClient {
 
 
     public String getStringStatusAuth() {
-        return "Регистрация " + (isAuthStatus() ? "" : "не") + " подтверждена";
+        return String.format("Регистрация %sподтверждена", isAuthStatus() ? "" : "не ");
     }
 
     public void auth() {
-
-
         while (isConnect()) {
             try {
                 Thread.sleep(TEN);
@@ -76,7 +74,6 @@ public class AuthClient {
         InputStream in = System.in;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
 
-//        String userName = "";
         char[] password = new char[0];
 
         Console console = System.console();

@@ -1,7 +1,7 @@
 package ru.daniilazarnov.console_IO;
 
 import org.apache.log4j.Logger;
-import ru.daniilazarnov.Command;
+import ru.daniilazarnov.enumeration.Command;
 import ru.daniilazarnov.auth.AuthClient;
 import ru.daniilazarnov.files_method.DeleteFile;
 import ru.daniilazarnov.files_method.FileList;
@@ -48,7 +48,6 @@ public class HandlerInputConsole {
                 System.out.println(Command.UNKNOWN);
                 break;
             case SERVER:
-
                 System.out.println(ncm.accessingTheServer(inputLine));
                 break;
             case DELETE:

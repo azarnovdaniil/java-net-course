@@ -1,4 +1,4 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.util;
 
 import io.netty.channel.ChannelFutureListener;
 
@@ -8,14 +8,11 @@ import java.nio.file.*;
 
 import static ru.daniilazarnov.constants.Constants.*;
 
-
 /**
  * Класс содержащий утилитные методы используемые как на стороне сервера, так и на стороне клиента
  */
 public class UtilMethod {
     private static final String USER = "user1";
-
-
     /**
      * Создание каталога по указанному пути
      */
@@ -29,7 +26,6 @@ public class UtilMethod {
         }
     }
 
-
     public static void deleteFile(String folder) {
         Path path = Paths.get(folder);
         try {
@@ -39,10 +35,8 @@ public class UtilMethod {
         }
     }
 
-
     public static void createFolder(String folder) throws IOException {
         Path path = Paths.get("cloud_storage", folder);
-//        Files.createDirectories(path.getParent());
         try {
             Files.createDirectories(path);
         } catch (FileAlreadyExistsException e) {
@@ -62,8 +56,9 @@ public class UtilMethod {
         if (user.equals("user")) {
             folder = getStringPath(DEFAULT_PATH_USER + File.separator, folderName);
         } else {
-            folder = getStringPath(DEFAULT_PATH_SERVER + File.separator + USER, "");
+            folder = getStringPath(DEFAULT_PATH_SERVER + File.separator + USER, "" + File.separator);
         }
+        System.out.println(folder);
         //папка выделяется квадратной скобкой
         Files.list(Path.of(folder + folderName))
                 .map(Path::getFileName)

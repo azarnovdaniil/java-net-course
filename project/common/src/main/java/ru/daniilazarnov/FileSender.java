@@ -17,9 +17,6 @@ import static ru.daniilazarnov.constants.Constants.*;
 public class FileSender {
     private static boolean loadingStatus = false;
 
-
-
-
     public static void setLoadingStatus(boolean loadingStatus) {
         FileSender.loadingStatus = loadingStatus;
     }
@@ -46,6 +43,7 @@ public class FileSender {
      * @throws IOException;
      */
     public static void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
+
         FileRegion region = new DefaultFileRegion(new FileInputStream(path.toFile()).getChannel(), 0, Files.size(path));
 
         ByteBuf buf;

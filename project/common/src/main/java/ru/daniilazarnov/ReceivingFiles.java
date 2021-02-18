@@ -1,6 +1,7 @@
 package ru.daniilazarnov;
 
 import io.netty.buffer.ByteBuf;
+import ru.daniilazarnov.enumeration.State;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

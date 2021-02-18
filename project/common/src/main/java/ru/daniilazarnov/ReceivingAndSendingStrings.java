@@ -23,7 +23,6 @@ public class ReceivingAndSendingStrings {
      */
     public static void sendString(String string,
                                   Channel channel, byte commandByte, ChannelFutureListener finishListener) {
-
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         buf.writeByte(commandByte); //управляющий байт
         channel.write(buf);
@@ -46,7 +45,6 @@ public class ReceivingAndSendingStrings {
         int msgLength = (byte) buf.readInt();
         byte[] messageContent = new byte[msgLength];
         buf.readBytes(messageContent);
-
         return new String(messageContent);
     }
 }
