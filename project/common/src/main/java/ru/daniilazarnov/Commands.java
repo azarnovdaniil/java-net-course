@@ -1,33 +1,38 @@
 package ru.daniilazarnov;
 
+import ru.daniilazarnov.commands.*;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
 
 public enum Commands {
 
-    UNKNOWN("unknown", Byte.MIN_VALUE, "неизвестная команда"),
-    EXIT("exit", (byte) 0, "разорвать соединение и выйти из приложения"),
-    ULF("ulf", (byte) 1, "загрузка файл на сервер"),
-    DLF("dlf", (byte) 2, "скачивание файл с сервера"),
-    FLS("fls", (byte) 3, "вывод списка файлов, расположенных в локальном хранилище"),
-    FLS_SERVER("", (byte) 4, "вывод списка файлов, расположенных на удаленном хранилище"),
-    RM_CLIENT("rmc", (byte) 5, "удаление файла из локальной папки"),
-    RM_SERVER("rms", (byte) 6, ""),
-    HELP("help", (byte) 7, "Список команд");
+    UPLOAD("upload", (byte) 1, new CommandUpload(), "upload - загрузка файл на сервер"),
+    DOWNLOAD("download", (byte) 3, new CommandDownload(), "download - скачивание файл с сервера"),
+    LS("ls", (byte) 2, new CommandLS(), "ls - вывод списка файлов, расположенных на удаленном хранилище"),
+    LLS("lls", (byte) 4, new CommandLocalLS(), "lls - вывод списка файлов, расположенных в локальном хранилище"),
+    RM("rm", (byte) 8, new CommandRM(), "rm - удаление файла из локальной папки"),
+    HELP("help", (byte) 9, new CommandHelp(), "help - вывод команд"),
+    RENAME("rename", (byte) 11, new CommandRename(), "rename - переименовать файл"),
+    EXIT("exit", (byte) 12, new CommandExit(), "exit - выход из приложения"),
+    UNKNOWN("unknown", Byte.MIN_VALUE, new CommandUnknown(), "");
 
+    private static final Map<Byte, Commands> COMMANDS_MAP = Arrays.stream(Commands.values())
+            .collect(Collectors.toMap(commands -> commands.signal, Function.identity()));
     private final byte signal;
-    private final String nameCommand;
+    private final String name;
+    private final Command commandApply;
     private final String helpInfo;
-    private static final String HOME_FOLDER_PATH = "project/client/local_storage/";
 
-
-    Commands(String nameCommand, byte signal, String helpInfo) {
+    Commands(String name, byte signal, Command command, String helpInfo) {
+        this.name = name;
         this.signal = signal;
-        this.nameCommand = nameCommand;
+        this.commandApply = command;
         this.helpInfo = helpInfo;
     }
 
@@ -37,37 +42,21 @@ public enum Commands {
                 .collect(Collectors.joining("\n"));
     }
 
-    private static Commands getCommandByte(byte b) {
-        return Arrays.stream(Commands.values())
-                .filter(command -> command.getCommandByte() == b).findFirst().orElse(Commands.UNKNOWN);
+    public void sendToServer(ChannelHandlerContext ctx, String readLine, FileWorker fileWorker) {
+        commandApply.send(ctx, readLine, fileWorker, signal);
     }
 
-    public static Commands valueOf(byte readed) {
-        return getCommandByte(readed);
+    public void receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles) {
+        commandApply.response(ctx, buf, fileWorker, uploadedFiles, signal);
     }
 
-    public byte getCommandByte() {
-        return signal;
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles) {
+        commandApply.receive(ctx, buf, fileWorker, uploadedFiles);
     }
 
-    private static boolean isThereaSecondElement(String inputLine) {
-        return inputLine.split(" ").length == 2;
-    }
-
-    public String getFilesListFromLocalDirectory(String inputLine) {
-        String result = "";
-        String fileName;
-        if (isThereaSecondElement(inputLine)) {
-            fileName = inputLine.split(" ")[1];
-            if (!Files.isDirectory(Path.of(HOME_FOLDER_PATH + fileName))) {
-                return "Файл не является каталогом";
-            }
-        } else fileName = "";
-        try {
-            result = UtilMethod.getFolderContents(fileName, "user"); // TODO: 09.02.2021
-        } catch (IOException e) {
-            ;
-        }
-        return result;
+    public static Commands getCommand(byte code) {
+        return COMMANDS_MAP.getOrDefault(code, UNKNOWN);
     }
 }

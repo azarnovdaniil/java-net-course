@@ -2,17 +2,27 @@ package ru.daniilazarnov;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.apache.log4j.Logger;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import ru.daniilazarnov.handler.InboundHandler;
+
+import java.nio.ByteOrder;
+import java.util.logging.Logger;
 
 public class Server {
 
-    private final int PORT = 8189;
+    private static final int PART_SIZE = 10 * 1024 * 1024;
+    private static java.util.logging.Logger logger = Logger.getLogger("");
+    private int port;
+    private String storageDir = "storage";
+
+    public Server(int port) {
+        this.port = port;
+    }
 
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -25,14 +35,16 @@ public class Server {
                         @Override
                         public void initChannel(SocketChannel ch) {
                             ch.pipeline()
-                                    .addLast(new ServerHandler());
+                                    .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE, 1, 4, -5, 0, true))
+                                    .addLast(new InboundHandler());
                         }
                     });
-            ChannelFuture f = b.bind(PORT).sync();
+            ChannelFuture f = b.bind(port).sync();
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
     }
+
 }
