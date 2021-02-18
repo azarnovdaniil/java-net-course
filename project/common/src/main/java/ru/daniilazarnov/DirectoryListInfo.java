@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+
 import java.util.List;
 
 public class DirectoryListInfo extends AbstractMsg {

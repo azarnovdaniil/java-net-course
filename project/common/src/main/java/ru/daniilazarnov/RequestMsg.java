@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+
 public class RequestMsg extends AbstractMsg {
 
     private String cmd;

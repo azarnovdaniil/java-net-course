@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+
 public class DBMsg extends AbstractMsg {
 
     private String cmd;
