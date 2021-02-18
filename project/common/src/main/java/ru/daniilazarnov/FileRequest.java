@@ -1,7 +1,7 @@
 package ru.daniilazarnov;
 
 public class FileRequest extends AbstractMessage {
-    private String filename;
+    private final String filename;
 
     public String getFilename() {
         return filename;
@@ -10,4 +10,5 @@ public class FileRequest extends AbstractMessage {
     public FileRequest(String filename) {
         this.filename = filename;
     }
+
 }

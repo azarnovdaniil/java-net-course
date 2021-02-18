@@ -1,30 +1,32 @@
 package ru.daniilazarnov;
 
+
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 
 import java.io.IOException;
+
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
 
-public class ClientHendler {
+public class ClientHandler {
 
-    private static Socket socket;
     private static ObjectEncoderOutputStream out;
     private static ObjectDecoderInputStream in;
     private static final int PORT = 8189;
     private static final int SIZE_1024 = 1024;
     private static final int SIZE_100 = 100;
+    private static final String WAY = ("project/client/src/main/java/file/");
 
     public static void start() {
         try {
-            socket = new Socket("localhost", PORT);
+            Socket socket = new Socket("localhost", PORT);
             out = new ObjectEncoderOutputStream(socket.getOutputStream());
             in = new ObjectDecoderInputStream(socket.getInputStream(), SIZE_100 * SIZE_1024 * SIZE_1024);
-            ClientHendler network = new ClientHendler();
+            ClientHandler network = new ClientHandler();
             network.initialize();
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,11 +56,14 @@ public class ClientHendler {
                         if (am instanceof FileMessage) {
 
                             FileMessage fm = (FileMessage) am;
-                            Files.write(Paths.get("project", "client", "src", "main", "java", "file/",
-                                    fm.getFileName()),
-                                    fm.getData(), StandardOpenOption.CREATE);
+                            Files.write(Paths.get(WAY, fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
                             System.out.println("скачал");
                         }
+                    }
+                    if (commandFile[0].equals("/отправить")) {
+                        FileMessage fm = new FileMessage(Paths.get(WAY + commandFile[1]));
+                        out.writeObject(fm);
+                        System.out.println("отправил " + commandFile[1]);
                     }
 
                 }

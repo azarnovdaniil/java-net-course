@@ -6,8 +6,21 @@ import java.nio.file.Path;
 
 public class FileMessage extends AbstractMessage {
 
-    private final String fileName;
+    private String fileName;
+
     private final byte[] data;
+    private int partNumber;
+    private int partsCount;
+
+
+    public FileMessage(String filename, int partNumber, int partsCount, byte[] data) {
+        this.fileName = filename;
+        this.partNumber = partNumber;
+        this.partsCount = partsCount;
+        this.data = data;
+    }
+
+
 
     public String getFileName() {
         return fileName;
