@@ -5,11 +5,13 @@ public class User {
     private final String login;
     private final String password;
     private final int ID;
+    private final int maxVolume;
 
-    public User(int id, String login, String password, String folder) {
+    public User(int id, String login, String password, String folder, int maxVolume) {
         this.folder = folder;
         this.login = login;
         this.password = password;
+        this.maxVolume = maxVolume;
         ID = id;
     }
 
@@ -27,5 +29,9 @@ public class User {
 
     public int getID() {
         return ID;
+    }
+
+    public int getMaxVolume() {
+        return maxVolume;
     }
 }

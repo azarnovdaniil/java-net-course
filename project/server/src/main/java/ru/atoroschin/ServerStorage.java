@@ -6,6 +6,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import ru.atoroschin.auth.BaseAuthService;
 
 import java.nio.ByteOrder;
 import java.util.logging.Logger;
@@ -15,13 +16,13 @@ public class ServerStorage {
     private static final int PART_SIZE = 10 * 1024 * 1024;
     private static Logger logger = Logger.getLogger("");
     private int port;
-    private String storageDir = "storage";
 
     public ServerStorage(int port) {
         this.port = port;
     }
 
     public void run() throws Exception {
+        AuthService authService = new BaseAuthService();
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         final int lengthFieldMes = 4;
@@ -37,8 +38,8 @@ public class ServerStorage {
                             ch.pipeline()
                                     .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE,
                                             1, lengthFieldMes, countAdjustment, 0, true))
-                                    .addLast(new AuthHandler())
-                                    .addLast(new InboundHandler());
+                                    .addLast(new AuthHandler(authService))
+                                    .addLast(new InboundHandler(authService));
                         }
                     });
             ChannelFuture f = b.bind(port).sync();

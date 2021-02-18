@@ -4,24 +4,26 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 public class InboundHandler extends ChannelInboundHandlerAdapter {
     private Map<Integer, FileLoaded> uploadedFiles;
     private FileWorker fileWorker;
+    private final String STORAGE_DIR = "storage";
+    private boolean auth = false;
+    private final AuthService authService;
+
+    public InboundHandler(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
-        String storageDir = "storage";
-        String userName = "user_1";
-        String baseDir = storageDir + File.separator + userName;
         System.out.println("Подключился клиент " + ctx.channel().remoteAddress().toString());
         int maxVolume = 1;
         uploadedFiles = new HashMap<>();
-        fileWorker = new FileWorker(baseDir, baseDir, maxVolume);
-
+        fileWorker = new FileWorker(STORAGE_DIR, STORAGE_DIR, maxVolume);
         ctx.fireChannelRegistered();
     }
 
@@ -31,8 +33,16 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
 
         if (buf.readableBytes() > 0) {
             byte b = buf.readByte();
-            Commands command = Commands.getCommand(b);
-            command.receiveAndSend(ctx, buf, fileWorker, uploadedFiles);
+            if (!auth) {
+                CommandsAuth command = CommandsAuth.getCommand(b);
+                if (command.equals(CommandsAuth.AUTHUSER)) {
+                    command.receiveAndSend(ctx, buf, authService, fileWorker);
+                    auth = true;
+                }
+            } else {
+                Commands command = Commands.getCommand(b);
+                command.receiveAndSend(ctx, buf, fileWorker, uploadedFiles);
+            }
         }
         buf.release();
     }

@@ -36,7 +36,7 @@ public class FileWorker {
             e.printStackTrace();
         }
         this.basePath = Path.of(baseDir);
-        this.serverPath = this.currentPath.relativize(this.basePath).toString();
+        this.serverPath = "";
         if (maxVolume == 0) {
             this.maxVolume = (long) MEGA_BYTE * MEGA_BYTE;
         } else {
@@ -247,5 +247,14 @@ public class FileWorker {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void appendBasePath(String userDir) {
+        basePath = basePath.resolve(userDir);
+        currentPath = currentPath.resolve(userDir);
+    }
+
+    public void setMaxVolume(int maxVolume) {
+        this.maxVolume = (long) MEGA_BYTE * maxVolume;
     }
 }

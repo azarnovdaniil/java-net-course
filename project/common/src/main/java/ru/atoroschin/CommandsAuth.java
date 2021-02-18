@@ -13,7 +13,8 @@ public enum CommandsAuth {
     AUTH("auth", (byte) 100, new CommandAuthLoginPass()),
     AUTHOK("authok", (byte) 101, new CommandAuthOk()),
     AUTHERR("autherr", (byte) 102, new CommandAuthErr()),
-    AUTHUNKNOWN("authunknown", Byte.MIN_VALUE, new CommandAuthUnknown());
+    AUTHUSER("authdir", (byte) 103, new CommandAuthUser()),
+    AUTHUNKNOWN("authunknown", (byte) -1, new CommandAuthUnknown());
 
     private static final Map<Byte, CommandsAuth> COMMANDS_MAP = Arrays.stream(CommandsAuth.values())
             .collect(Collectors.toMap(commands -> commands.signal, Function.identity()));
@@ -31,8 +32,8 @@ public enum CommandsAuth {
         commandApply.send(ctx, readLine, signal);
     }
 
-    public int receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService) {
-        return commandApply.response(ctx, buf, authService, signal);
+    public void receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService, FileWorker fileWorker) {
+        commandApply.response(ctx, buf, authService, fileWorker, signal);
     }
 
     public void receive(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService) {
@@ -43,4 +44,7 @@ public enum CommandsAuth {
         return COMMANDS_MAP.getOrDefault(code, AUTHUNKNOWN);
     }
 
+    public byte getSignal() {
+        return signal;
+    }
 }

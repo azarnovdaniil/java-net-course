@@ -14,10 +14,12 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
     private Map<Integer, FileLoaded> uploadedFiles;
     private FileWorker fileWorker;
     private boolean active;
+    private boolean auth;
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
         uploadedFiles = new HashMap<>();
+        auth = false;
         fileWorker = new FileWorker("client", "", -1);
         ctx.fireChannelRegistered();
     }
@@ -25,7 +27,7 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext channelHandlerContext) {
         active = true;
-        consoleRead(channelHandlerContext);
+        consoleReadAuth(channelHandlerContext);
     }
 
     @Override
@@ -33,8 +35,18 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
         ByteBuf buf = (ByteBuf) msg;
         if (buf.readableBytes() > 0) {
             byte firstByte = buf.readByte();
-            Commands command = Commands.getCommand(firstByte);
-            command.receive(channelHandlerContext, buf, fileWorker, uploadedFiles);
+            if (!auth) {
+                CommandsAuth command = CommandsAuth.getCommand(firstByte);
+                if (command.equals(CommandsAuth.AUTHOK)) {
+                    auth = true;
+                    consoleRead(channelHandlerContext);
+                } else {
+                    System.out.println("Неверный логин или пароль");
+                }
+            } else {
+                Commands command = Commands.getCommand(firstByte);
+                command.receive(channelHandlerContext, buf, fileWorker, uploadedFiles);
+            }
         }
     }
 
@@ -80,5 +92,27 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
         });
         threadConsole.setDaemon(true);
         threadConsole.start();
+    }
+
+    public void consoleReadAuth(ChannelHandlerContext ctx) {
+        Thread threadConsoleAuth = new Thread(() -> {
+            Scanner scanner = new Scanner(System.in);
+            while (!auth) {
+                String readLine;
+                System.out.print("Введите логин и пароль: ");
+                if (scanner.hasNext()) {
+                    readLine = scanner.nextLine();
+                    CommandsAuth command = CommandsAuth.AUTH;
+                    command.sendToServer(ctx, readLine);
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        threadConsoleAuth.setDaemon(true);
+        threadConsoleAuth.start();
     }
 }

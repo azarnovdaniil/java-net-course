@@ -3,6 +3,7 @@ package ru.atoroschin.commands;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import ru.atoroschin.AuthService;
+import ru.atoroschin.FileWorker;
 
 public class CommandAuthUnknown implements CommandAuth {
     @Override
@@ -11,8 +12,8 @@ public class CommandAuthUnknown implements CommandAuth {
     }
 
     @Override
-    public int response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService, byte signal) {
-
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService,
+                         FileWorker fileWorker, byte signal) {
     }
 
     @Override
