@@ -63,6 +63,7 @@ public class ClientHandler {
                     if (commandFile[0].equals("/отправить")) {
                         FileMessage fm = new FileMessage(Paths.get(WAY + commandFile[1]));
                         out.writeObject(fm);
+                        out.flush();
                         System.out.println("отправил " + commandFile[1]);
                     }
 
