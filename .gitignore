@@ -2,5 +2,11 @@
 *.iml
 **/target
 main.db
+/lesson-1
+/lesson-2
+/lesson-3
+/lesson-4
+/lesson-6
+/lesson-7
 /log
 /server/src/main/java/chat

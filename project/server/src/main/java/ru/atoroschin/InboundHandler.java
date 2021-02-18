@@ -10,7 +10,7 @@ import java.util.Map;
 public class InboundHandler extends ChannelInboundHandlerAdapter {
     private Map<Integer, FileLoaded> uploadedFiles;
     private FileWorker fileWorker;
-    private final String STORAGE_DIR = "storage";
+    private static final String STORAGE_DIR = "storage";
     private boolean auth = false;
     private final AuthService authService;
 

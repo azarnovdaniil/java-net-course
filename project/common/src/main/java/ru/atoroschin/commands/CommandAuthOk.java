@@ -13,7 +13,8 @@ public class CommandAuthOk implements CommandAuth {
     }
 
     @Override
-    public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService, FileWorker fileWorker, byte signal) {
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService,
+                         FileWorker fileWorker, byte signal) {
         final int minLength = 5;
         ByteBuf byBuf = ByteBufAllocator.DEFAULT.buffer();
         byBuf.writeByte(signal);

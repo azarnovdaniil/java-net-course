@@ -4,7 +4,7 @@ public class User {
     private final String folder;
     private final String login;
     private final String password;
-    private final int ID;
+    private final int id;
     private final int maxVolume;
 
     public User(int id, String login, String password, String folder, int maxVolume) {
@@ -12,7 +12,7 @@ public class User {
         this.login = login;
         this.password = password;
         this.maxVolume = maxVolume;
-        ID = id;
+        this.id = id;
     }
 
     public String getLogin() {
@@ -28,7 +28,7 @@ public class User {
     }
 
     public int getID() {
-        return ID;
+        return id;
     }
 
     public int getMaxVolume() {

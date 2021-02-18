@@ -9,7 +9,7 @@ public class BaseAuthService implements AuthService {
     private final List<User> users = List.of(new User(1, "user1", "1", "user_1", 1),
             new User(2, "user2", "1", "user_2", 1),
             new User(3, "user3", "1", "user_3", 1),
-            new User(-1, "unknown","", "unknown", 1));
+            new User(-1, "unknown", "", "unknown", 1));
 
     @Override
     public int getUserID(String login, String pass) {

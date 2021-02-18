@@ -15,12 +15,14 @@ public class CommandLocalMV implements Command {
     }
 
     @Override
-    public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles, byte signal) {
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker,
+                         Map<Integer, FileLoaded> uploadedFiles, byte signal) {
 
     }
 
     @Override
-    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles) {
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker,
+                        Map<Integer, FileLoaded> uploadedFiles) {
 
     }
 }

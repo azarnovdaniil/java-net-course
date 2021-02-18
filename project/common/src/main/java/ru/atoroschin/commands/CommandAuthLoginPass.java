@@ -10,7 +10,7 @@ import java.util.List;
 
 import static ru.atoroschin.CommandsAuth.*;
 
-public class CommandAuthLoginPass implements CommandAuth{
+public class CommandAuthLoginPass implements CommandAuth {
     @Override
     public void send(ChannelHandlerContext ctx, String content, byte signal) {
         String[] names = content.split("\\s");
@@ -24,7 +24,8 @@ public class CommandAuthLoginPass implements CommandAuth{
     }
 
     @Override
-    public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService, FileWorker fileWorker, byte signal) {
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService,
+                         FileWorker fileWorker, byte signal) {
         List<String> list = BufWorker.readFileListFromBuf(buf);
         String login = list.get(0);
         String pass = list.get(1);

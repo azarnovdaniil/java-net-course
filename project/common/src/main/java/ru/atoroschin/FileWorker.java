@@ -22,19 +22,12 @@ public class FileWorker {
     private Path currentPath;
     private Path basePath;
     private String serverPath;
-    private String currentDir;
     private long maxVolume;
 
     public FileWorker(String currentDir, String baseDir, long maxVolume) {
         this.currentPath = Path.of(currentDir);
-        this.currentDir = this.currentPath.toAbsolutePath().toString();
-        try {
-            if (!Files.exists(this.currentPath)) {
-                Files.createDirectory(this.currentPath);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        checkDir(currentPath);
+
         this.basePath = Path.of(baseDir);
         this.serverPath = "";
         if (maxVolume == 0) {
@@ -58,12 +51,12 @@ public class FileWorker {
     }
 
     public String getCurrentDir() {
-        return currentDir;
+        return currentPath.toAbsolutePath().toString();
     }
 
     public void sendFile(ChannelHandlerContext ctx, String content, byte signal, byte[] bytes) {
         try {
-            Path file = Path.of(currentDir, content);
+            Path file = currentPath.resolve(content);
             if (Files.exists(file)) {
                 long volume = Files.size(file);
                 long sendVolume = 0;
@@ -100,7 +93,7 @@ public class FileWorker {
     }
 
     public byte[] makePrefixForFileSend(String fileName) {
-        File file = Path.of(currentDir, fileName).toFile();
+        File file = currentPath.resolve(fileName).toFile();
         if (!file.exists()) {
             return new byte[]{(byte) 0};
         }
@@ -137,7 +130,7 @@ public class FileWorker {
         fileNameBuf.release();
         long fileSize = buf.readLong();
         FileLoaded fileLoaded;
-        Path path = Path.of(currentDir, fileName);
+        Path path = currentPath.resolve(fileName);
         long busyVolume = getVolumeDir(path);
         if (busyVolume + fileSize <= maxVolume) {
             if (uploadedFiles.containsKey(hash)) {
@@ -170,7 +163,7 @@ public class FileWorker {
             return Files.walk(path)
                     .map(Path::toFile)
                     .map(File::length)
-                    .reduce((i1, i2) -> i1 + i2).get();
+                    .reduce(Long::sum).get();
         } catch (IOException e) {
             e.printStackTrace();
             return -1;
@@ -197,7 +190,6 @@ public class FileWorker {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            currentDir = currentPath.toAbsolutePath().toString();
         }
     }
 
@@ -210,6 +202,16 @@ public class FileWorker {
         if (!Files.exists(currentPath.resolve(nameDir))) {
             try {
                 Files.createDirectory(currentPath.resolve(nameDir));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void checkDir(Path path) {
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectory(path);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -252,6 +254,7 @@ public class FileWorker {
     public void appendBasePath(String userDir) {
         basePath = basePath.resolve(userDir);
         currentPath = currentPath.resolve(userDir);
+        checkDir(basePath);
     }
 
     public void setMaxVolume(int maxVolume) {

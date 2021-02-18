@@ -21,10 +21,9 @@ public class CommandAuthUser implements CommandAuth {
         List<String> list = BufWorker.readFileListFromBuf(buf);
         String strID = list.get(0);
         try {
-            int ID = Integer.parseInt(strID);
-            String dir = authService.getUserFolder(ID);
-            fileWorker.appendBasePath(authService.getUserFolder(ID));
-            fileWorker.setMaxVolume(authService.getMaxVolume(ID));
+            int id = Integer.parseInt(strID);
+            fileWorker.appendBasePath(authService.getUserFolder(id));
+            fileWorker.setMaxVolume(authService.getMaxVolume(id));
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
