@@ -1,17 +1,11 @@
 package ru.daniilazarnov;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 
 import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -139,7 +133,7 @@ class FilesExamplesTest {
 
     @Test
     void testTruncate() throws IOException {
-        Path path = Path.of("channel_example_4.txt");
+        Path path = Path.of("dir/channel_example_5.txt");
 
         RandomAccessFile file = new RandomAccessFile(path.toFile(), "rw");
         FileChannel channel = file.getChannel();
