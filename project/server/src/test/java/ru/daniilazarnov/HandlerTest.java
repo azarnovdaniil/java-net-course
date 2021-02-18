@@ -46,13 +46,13 @@ class HandlerTest {
 
     }
 
-    @Test
-    public static int fourLetters(String names) {
-
-
-        return (int) Arrays.stream(names.split(" ")).filter(s -> s.length() == 4).count();
-        // Напишите ваш код здесь...
-    }
+//    @Test
+//    public static int fourLetters(String names) {
+//
+//
+//        return (int) Arrays.stream(names.split(" ")).filter(s -> s.length() == 4).count();
+//        // Напишите ваш код здесь...
+//    }
 
 }
 
