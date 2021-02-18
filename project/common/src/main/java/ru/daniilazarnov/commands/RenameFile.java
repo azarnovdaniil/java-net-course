@@ -4,12 +4,8 @@ import java.nio.file.Path;
 
 public final class RenameFile extends Commands{
 
-    public RenameFile(Path path) {
-    }
-
     @Override
-    public boolean runCommands() {
-        System.out.println("Реализовать переименование файла на сервере");
-        return true;
+    public boolean runCommands(Path userDir, String homeDir, String fileName, byte[] content, int segment, int allSegments) {
+        return  false;
     }
 }

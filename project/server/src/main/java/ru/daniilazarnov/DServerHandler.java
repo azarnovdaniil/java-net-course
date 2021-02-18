@@ -3,12 +3,14 @@ package ru.daniilazarnov;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ru.daniilazarnov.FileService.FileManager;
+import java.nio.file.Path;
 
 /**
  * cachedInComingMessage - кэыширование поступившего пакета для возможного использования (функционал пока не реализован)
- * */
+ * FileManager - общий класс для работы с файловой системой. Часть его полей  совпадают с полями класса  MessagePacket, но отличаются методы.
+ */
 
-public class DSHandler extends ChannelInboundHandlerAdapter {
+public class DServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -22,25 +24,16 @@ public class DSHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println(msg.getClass().getName());
+
         if (msg instanceof MessagePacket) {
+            MessagePacket mp = (MessagePacket) msg;
+            FileManager fileManager = new FileManager(mp.getCommand(), Path.of(mp.getPathCode()), mp.getHomeDirectory(), mp.getFileName(), mp.getContent(), mp.getSegment(), mp.getAllSegments());
 
-            MessagePacket inComingMessage = (MessagePacket) msg;
-            MessagePacket cachedInComingMessage = new MessagePacket();
-            cachedInComingMessage.setCommandToServer(inComingMessage.getCommandToServer());
-            cachedInComingMessage.setPathToFileName(inComingMessage.getPathToFileName());
-            cachedInComingMessage.setSegment(inComingMessage.getSegment());
-            cachedInComingMessage.setAllSegments(inComingMessage.getAllSegments());
-            cachedInComingMessage.setContent(inComingMessage.getContent());
-            FileManager fileManager=new FileManager(inComingMessage);
-fileManager.fileAction();
-            //ctx.writeAndFlush(inComingMessage);
+            if (!fileManager.runner()) {
+                ctx.close();
+            }
         }
-
     }
-
-
-
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

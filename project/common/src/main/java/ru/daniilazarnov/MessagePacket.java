@@ -1,8 +1,7 @@
 package ru.daniilazarnov;
-
-//import java.io.Serializable;
-
+import ru.daniilazarnov.commands.Commands;
 import java.io.Serializable;
+
 
 /**
  * Class MessagePacket определяет универасльный пакет - содержание (состав) сообщений, пересылаемых между клиентом и сервер.
@@ -15,23 +14,38 @@ import java.io.Serializable;
  *  - номер дробной части (int), передаваемое в данный момент
  */
 public class MessagePacket implements Serializable {
-    private final String PASSWORD="name";
-    final private int hash;
-    private Commands command;
-    private String pathToFileName;
+    private String pathCode;
+    private String fileName;
+
+    public String getHomeDirectory() {
+        return homeDirectory;
+    }
+
+    private String homeDirectory;
     private byte[] content;
     private int segment;
     private int allSegments;
-
-    public void setSegment(int segment) {
-        this.segment = segment;
+    public Commands getCommand() {
+        return command;
     }
 
-    public void setAllSegments(int allSegments) {
-        this.allSegments = allSegments;
+    public void setCommand(Commands command) {
+        this.command = command;
     }
 
+    private Commands command;
 
+    public String getPathCode() {
+        return pathCode;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
     public int getSegment() {
         return segment;
@@ -41,13 +55,6 @@ public class MessagePacket implements Serializable {
         return allSegments;
     }
 
-    public String getPathToFileName() {
-        return pathToFileName;
-    }
-
-    public void setPathToFileName(String pathToFileName) {
-        this.pathToFileName = pathToFileName;
-    }
 
     public byte[] getContent() {
         return content;
@@ -58,20 +65,15 @@ public class MessagePacket implements Serializable {
     }
 
     public MessagePacket() {
-        this.hash = (int) (Integer.parseInt(PASSWORD)+(PASSWORD.length()*Math.PI));
         this.command = null;
-        this.pathToFileName = "";
         this.content = new  byte[1024 * 1024 * 100];
-        this.segment = 0;
-        this.allSegments = 0;
+        this.segment = 1;
+        this.allSegments = 1;
     }
+ public MessagePacket(String name, String clientKey) {
+     this.homeDirectory = name.toLowerCase().trim();
+     new MessagePacket();
+     this.pathCode = (name+ clientKey.length() *Math.PI+clientKey).replace('.', '-');
+ }
 
-    public MessagePacket(String  PASSWORD, Commands command, String pathToFileName, byte[] content, int segment, int allSegments) {
-        this.hash =  (int) (Integer.parseInt(PASSWORD)+(PASSWORD.length()*Math.PI));
-        this.commandToServer = commandToServer;
-        this.pathToFileName = pathToFileName;
-        this.content = content;
-        this.segment = segment;
-        this.allSegments = allSegments;
-    }
 }

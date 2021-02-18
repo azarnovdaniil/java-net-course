@@ -11,8 +11,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 
 
 /**
@@ -32,29 +30,25 @@ public class Server {
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(clientGroup, dataManagementGroup)
-                    .channel(NioServerSocketChannel.class)  //создаем канал для подключения
+                    .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline().addLast(new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
-                                    new DSHandler());
-//                            socketChannel.pipeline().addLast(new StringDecoder());
-//                            socketChannel.pipeline().addLast(new StringEncoder());
-//                            socketChannel.pipeline().addLast(new ServerHandler());
+                                    new DServerHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-            ChannelFuture future = b.bind(8189).sync(); //  Указываем, что сервер должен стартовать на порту 8189. "sinc()" - "выполнить задачу"
-
+            ChannelFuture future = b.bind(8189).sync();
             System.out.println("Server started!");
-            future.channel().closeFuture().sync();  // блокирующая операция  - ожидания закрытия канала. Как только серевер будет остановлен, то попадаем в finaly.
+            future.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            clientGroup.shutdownGracefully(); // закрываем первый пулл потоков
-            dataManagementGroup.shutdownGracefully(); // закрываем второй пулл потоков
+            clientGroup.shutdownGracefully();
+            dataManagementGroup.shutdownGracefully();
         }
     }
 }
