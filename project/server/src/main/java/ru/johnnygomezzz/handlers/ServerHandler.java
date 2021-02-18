@@ -4,10 +4,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ru.johnnygomezzz.MyMessage;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private final String path = Path.of("project/server/storage/").toString();
@@ -36,6 +39,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             textMessage = new MyMessage("/quit");
             ctx.writeAndFlush(textMessage);
             System.exit(0);
+        }
+
+        if (message.startsWith("/ls") && messagePart.length > 1) {
+            File dir = new File(path, messagePart[1]);
+            File[] arrFiles = dir.listFiles();
+            List<File> list = Arrays.asList(arrFiles);
+            textMessage = new MyMessage(String.valueOf(list));
+            ctx.writeAndFlush(textMessage);
         }
 
         if (message.startsWith("/touch") && messagePart.length > 1) {
