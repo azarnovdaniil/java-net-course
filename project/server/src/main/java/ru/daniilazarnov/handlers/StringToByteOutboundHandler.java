@@ -13,4 +13,6 @@ public class StringToByteOutboundHandler extends ChannelOutboundHandlerAdapter {
         String str = (String) msg;
         ctx.writeAndFlush(msg + "StringToByteBufHandler ");
     }
+
+
 }

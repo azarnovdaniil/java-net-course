@@ -145,4 +145,9 @@ public class CreateFileHandler extends SimpleChannelInboundHandler<String> {
         return Files.list(Path.of(path)).map(path -> path.getFileName().toString())
                 .collect(Collectors.toList());
     }
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
+        ctx.close();
+    }
 }

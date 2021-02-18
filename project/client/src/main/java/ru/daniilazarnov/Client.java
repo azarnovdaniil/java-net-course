@@ -1,37 +1,34 @@
 package ru.daniilazarnov;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 
 public class Client {
+
+    private static boolean cycleOn = true;
+    private static final int U = 1;
+    private static final int D = 2;
+    private static final int DE = 3;
+    private static final int V = 4;
+    private static final int Q = 5;
+
     public static void main(String[] args) throws Exception {
-        String host = "localhost";
-        int port = 8189;
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        ClientCommands.printMessage("Добрый день! \nВведите логин и пароли ");
+        do {
+            ClientController.doAuthorization();
+        } while (ClientController.getName() == null);
+        do {
+            ClientCommands.printMessage("Введите команду:\n1.Загрузить на сервер\n2.Скачать с сервера\n3.Удалить\n4.Список файлов\n0.Выход");
+            int answer = ClientCommands.getMenuItems();
+            switch (answer) {
+                case (U) -> ClientController.upload();
+                case (D) -> ClientController.download();
+                case (DE) -> ClientController.delete();
+                case (V) -> ClientController.view();
+                case (Q) -> quit();
+            }
+        } while (cycleOn);
+    }
 
-        try {
-            Bootstrap b = new Bootstrap();
-            b.group(workerGroup)
-                    .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new StringEncoder(),
-                                    new StringDecoder(),
-                                    new ClientHandler(),
-                                    new ClientOutHandler());
-                        }
-                    });
-
-
-        } finally{
-            workerGroup.shutdownGracefully();
-        }
+    private static void quit() {
+        ClientCommands.printMessage("До встречи!");
+        cycleOn = false;
     }
 }
