@@ -140,6 +140,23 @@ public class FileWorker {
         return "";
     }
 
+    public void changeCurrentDir(String newDir) {
+        if (Files.exists(currentPath.resolve(newDir))) {
+            try {
+                if (basePath.toFile().exists()) {
+                    if (currentPath.resolve(newDir).toRealPath().startsWith(basePath.toRealPath())) {
+                        currentPath = currentPath.resolve(newDir).toRealPath();
+                    }
+                } else {
+                    currentPath = currentPath.resolve(newDir).toRealPath();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            currentDir = currentPath.toAbsolutePath().toString();
+        }
+    }
+
     public List<String> getFileListInDir() throws IOException {
         return Files.list(Path.of(getCurrentDir()))
                 .map(Path::toFile)

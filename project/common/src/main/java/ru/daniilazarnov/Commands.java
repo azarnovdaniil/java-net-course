@@ -3,6 +3,7 @@ package ru.daniilazarnov;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import ru.daniilazarnov.commands.Command;
+import ru.daniilazarnov.commands.CommandLocalCD;
 import ru.daniilazarnov.commands.CommandUnknown;
 import ru.daniilazarnov.commands.CommandUpload;
 
@@ -17,8 +18,9 @@ public enum Commands {
     UNKNOWN - default unknown command;
     */
 
-    UF ("UF", (byte) 1, new CommandUpload()),
-    UNKNOWN ("UNKNOWN", Byte.MIN_VALUE, new CommandUnknown());
+    UF("UF", (byte) 1, new CommandUpload()),
+    LCD("LCD", (byte) 2, new CommandLocalCD()),
+    UNKNOWN("UNKNOWN", Byte.MIN_VALUE, new CommandUnknown());
 
     byte signal;
     String nameCommand;
