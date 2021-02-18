@@ -1,119 +1,103 @@
 package ru.daniilazarnov;
 
+import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
+import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.JFileChooser;
-
+import java.io.*;
+import java.net.Socket;
+import java.nio.file.*;
 
 public class Client {
-    public String HOST;
-    public int PORT;
-    Channel CHANNEL;
+    private static final Logger LOGGER = Logger.getLogger(Client.class.getName());
+
+    private String host;
+    private int port;
+    private String login;
 
     public Client(String host, int port) {
-        this.HOST = host;
-        this.PORT = port;
+        this.host = host;
+        this.port = port;
     }
 
-    public void run() throws InterruptedException, IOException {
-        EventLoopGroup group = new NioEventLoopGroup();
-        try {
-            Bootstrap bootstrap = new Bootstrap()
-                    .group(group)
-                    .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ChannelPipeline pipeline = ch.pipeline().addLast(
-                                    new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()),
-                                    new StringDecoder(),
-                                    new StringEncoder(),
-                                    new ClientHandler());
-                        }
-                    });
-
-            CHANNEL = bootstrap.connect(HOST, PORT).sync().channel();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            while (true) {
-                String str = in.readLine();
-
-                if (!"file".equals(str)) {
-                    CHANNEL.writeAndFlush(str + "\n");
-                } else {
-                    JFileChooser chooser = new JFileChooser();
-                    chooser.setCurrentDirectory(new File("C:\\java_log\\out_file"));
-                    int send = chooser.showDialog(null, "Send");
-                    if (send == JFileChooser.APPROVE_OPTION) {
-                        sendFile(this.CHANNEL, chooser.getSelectedFile().getPath());
-                        CHANNEL.writeAndFlush(chooser.getSelectedFile().getPath() + "\n");
-                    }
-                }
-            }
-        } finally {
-            group.shutdownGracefully();
-        }
-    }
-
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) {
+        PropertyConfigurator.configure("./project/client/log4j.properties");
+        LOGGER.debug("Запуск клиента...");
         new Client("localhost", 8189).run();
     }
 
-    private void sendFile(Channel channel, String path) {
-        try {
-            //Чтение файла
-            File source = new File(path);
-            FileInputStream fileIS = new FileInputStream(source);
-            InputStreamReader inputSR = new InputStreamReader(fileIS, "windows-1251");
+    public void run() {
+        try (Socket socket = new Socket(host, port);
+             ObjectEncoderOutputStream objectOut = new ObjectEncoderOutputStream(socket.getOutputStream());
+             ObjectDecoderInputStream objectIn = new ObjectDecoderInputStream(socket.getInputStream(), 1024 * 1024 * 100)) {
+            LOGGER.debug("Клиент успешно подключился");
 
-            String namestr = source.getName();
-            String[] newfilename = namestr.split(".txt");
+            ClientHandler clientHandler = new ClientHandler(objectOut);
 
-            //Запись в файл
-            File dest = new File(source.getParent() + "\\" + newfilename[0] + " test.txt");
-            FileOutputStream fileOS = new FileOutputStream(dest);
-            OutputStreamWriter outSW = new OutputStreamWriter(fileOS, "windows-1251");
+            new Thread(() -> {
+                try {
+                    while (true) {
+                        AbstractMsg receivedFile = (AbstractMsg) objectIn.readObject();
+                        LOGGER.debug("Сообщение доставлено");
 
-            System.out.println(source.length() + " байт");
-            int c;
-            List<Integer> out = new ArrayList();
+                        if (receivedFile instanceof FileMsg) {
+                            FileMsg fm = (FileMsg) receivedFile;
+                            LOGGER.debug("Получен файл: " + fm.getPartNumber() + " / " + fm.getPartsCount());
 
-            //Передача файла
-            while ((c = inputSR.read()) != -1) {
-                int integer = c;
-                outSW.append((char) integer);
-                if (c != 10) {
-                    out.add(c);
-                } else {
-                    out.add(c);
-                    channel.writeAndFlush(out + "\n");
-                    out.clear();
+                            boolean append = true;
+                            if (fm.getPartNumber() == 1) {
+                                append = false;
+                            }
+
+                            File newFile = new File("./project/clients_dir/" + login + "/" + fm.getFilename());
+                            FileOutputStream fos = new FileOutputStream(newFile, append);
+
+                            fos.write(fm.getData());
+                            fos.close();
+                        } else if (receivedFile instanceof DirectoryListInfo) {
+                            DirectoryListInfo dim = (DirectoryListInfo) receivedFile;
+                            LOGGER.debug("Получена информация о расположении файла");
+                            LOGGER.info("Файлы в каталоге: ");
+                            System.out.println(dim.getFilesAtDirectory().toString());
+                        } else if (receivedFile instanceof DBMsg) {
+                            DBMsg dbm = (DBMsg) receivedFile;
+                            LOGGER.debug("Получена информация от базы данных");
+                            LOGGER.info("Авторизация прошла успешно");
+                            login = dbm.getLogin();
+                            clientHandler.setClientLogin(login);
+                            Path newClientDir = Paths.get("./project/clients_dir/" + dbm.getLogin());
+                            if (!newClientDir.toFile().exists()) {
+                                Files.createDirectories(newClientDir);
+                            }
+                        }
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    LOGGER.info("Соединение закрыто");
+                }
+            }).start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+            LOGGER.info("Теперь вы можете писать команды, соединение прошло успешно");
+            LOGGER.info("Не забудьте авторизоваться. Используйте /help, для просмотра доступных команд");
+            while (true) {
+                try {
+                    String msg = reader.readLine();
+                    if (msg.startsWith("/exit")) {
+                        socket.close();
+                        break;
+                    }
+                    clientHandler.chooseCommand(msg);
+                } catch (IOException e) {
+                    throw new RuntimeException("Что-то пошло не так...", e);
                 }
             }
-            out.clear();
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+
+        } catch (Exception e) {
+            LOGGER.error("Что-то пошло не так...", e);
+            throw new RuntimeException("Что-то пошло не так...", e);
         }
     }
+
 }

@@ -1,65 +1,61 @@
 package ru.daniilazarnov;
 
-
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import ru.daniilazarnov.handlers.AuthHandler;
+import ru.daniilazarnov.handlers.FilesHandler;
+import ru.daniilazarnov.handlers.RequestHandler;
 
 public class Server {
-    public String HOST;
-    public  int PORT;
-    ServerHandler SRVHAND = new ServerHandler();
+    private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
 
-    public Server(String host, int port) {
-        this.HOST = host;
-        this.PORT = port;
+    private static int port;
+
+    public Server(int port) {
+        this.port = port;
     }
 
-    public void run() throws InterruptedException, IOException {
+    public static void main(String[] args) throws Exception {
+        PropertyConfigurator.configure("./project/server/log4j.properties");
+        LOGGER.debug("Клиент подключившийся с localhost " + port);
+        new Server(8189).run();
+    }
+
+    public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-
         try {
-            ServerBootstrap bootstrap = new ServerBootstrap()
-                    .group(bossGroup, workerGroup)
+            ServerBootstrap b = new ServerBootstrap();
+            b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ChannelPipeline pipeline = ch.pipeline().addLast(
-                                    new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()),
-                                    new StringDecoder(),
-                                    new StringEncoder(),
-                                    new ServerHandler()
-                            );
+                        public void initChannel(SocketChannel ch) throws Exception {
+                            ch.pipeline()
+                                    .addLast(new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)))
+                                    .addLast(new ObjectEncoder())
+                                    .addLast(new AuthHandler())
+                                    .addLast(new RequestHandler())
+                                    .addLast(new FilesHandler());
                         }
-                    });
-            bootstrap.bind(HOST, PORT).sync().channel();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            while (true) {
-                SRVHAND.send(in.readLine());
-            }
-
+                    })
+                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+            ChannelFuture f = b.bind(port).sync();
+            f.channel().closeFuture().sync();
         } finally {
-            bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
         }
-    }
-
-    public static void main(String[] args) throws InterruptedException, IOException {
-        new Server("localhost", 8189).run();
     }
 }
