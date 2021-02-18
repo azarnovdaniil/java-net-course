@@ -2,10 +2,7 @@ package ru.daniilazarnov;
 
 import io.netty.channel.*;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -91,9 +88,50 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
                 }
                 c.writeAndFlush("\nMessage was written");
             }
+            // sendFile путь к файлу, который хотим передать - отправить файл на сервер
+            if (s.contains("sendFile")) {
+                try {
+                    s = s.replaceAll("sendFile ", "");
+                    Path path = Paths.get(s);
+                    if (path.toFile().isFile()) {
+                        File file = new File(String.valueOf(path));
+                        InputStream inputStream = new FileInputStream(file);
+                        FileMessage fileMessage = new FileMessage(file.getName(), inputStream.readAllBytes());
+                        c.writeAndFlush("\nThe file was saved on Server");
+                        c.writeAndFlush("\n" + new String(fileMessage.getContent()));
+                        inputStream.close();
+                    } else {
+                        c.writeAndFlush("\nThe file path is incorrect");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            // downloadFile имя папки/имя файла на сервере - скачать файл с сервера
+            if (s.contains("downloadFile")) {
+                s = s.replaceAll("downloadFile ", "");
+                String[] strArray = s.split("/");
+                String nameDirectory = strArray[0];
+                String nameFile = strArray[1];
+                c.writeAndFlush("\nDownloading is starting");
+                try {
+                    File file = new File(nameDirectory + File.separator + nameFile);
+                    c.writeAndFlush("\nFile was found");
+                    if (file.exists()) {
+                        c.writeAndFlush("\nFile exists");
+                        InputStream inputStream = new FileInputStream(file);
+                        FileMessage fileMessage = new FileMessage(file.getName(), inputStream.readAllBytes());
+                        c.writeAndFlush("\nText in file: " + new String(fileMessage.getContent()));
+                        inputStream.close();
+                    } else {
+                        c.writeAndFlush("\nThis file doesn't exist");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
-
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
