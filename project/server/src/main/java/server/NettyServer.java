@@ -1,4 +1,4 @@
-package ru;
+package server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -14,8 +14,9 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 public class NettyServer {
 
     private final int port;
+    private static final int MAX_OBJECT_SIZE = 50 * 1024 * 1024;
 
-    public NettyServer( int port) {
+    public NettyServer(int port) {
 
         this.port = port;
     }
@@ -30,7 +31,7 @@ public class NettyServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel)/* throws Exception*/ {
                             socketChannel.pipeline().addLast(
-                                    new ObjectDecoder(50 * 1024 * 1024, ClassResolvers.cacheDisabled(null)),
+                                    new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
                                     new HandlerCommand()
                             );
@@ -39,11 +40,9 @@ public class NettyServer {
             ChannelFuture future = b.bind(port).sync();
             onConnectionReady(future);
             future.channel().closeFuture().sync();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             mainGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }

@@ -1,5 +1,5 @@
 package service;
 
-public class Item  {
+public class Item {
 
 }

@@ -1,4 +1,4 @@
-package ru;
+package client;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -9,7 +9,7 @@ public class HandlerCommand extends ChannelInboundHandlerAdapter {
 
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx)  {
+    public void channelActive(ChannelHandlerContext ctx) {
         System.out.println("Готов принимать и отравлять команды");
     }
 
@@ -24,5 +24,4 @@ public class HandlerCommand extends ChannelInboundHandlerAdapter {
         cause.printStackTrace();
         ctx.close();
     }
-
 }

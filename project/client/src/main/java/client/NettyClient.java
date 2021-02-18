@@ -1,4 +1,4 @@
-package ru;
+package client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -16,17 +16,18 @@ public class NettyClient {
 
     private StorageClient storageClient;
 
-    private final String IP_ADDR;
+    private final String ip;
 
-    private final int PORT;
+    private final int port;
+    private static final int MAX_OBJECT_SIZE = 50 * 1024 * 1024;
 
-    public NettyClient(StorageClient storageClient, String IP_ADDR, int PORT) {
+    public NettyClient(StorageClient storageClient, String ip, int port) {
         this.storageClient = storageClient;
-        this.IP_ADDR = IP_ADDR;
-        this.PORT = PORT;
+        this.ip = ip;
+        this.port = port;
     }
 
-    public void run()  {
+    public void run() {
 
 
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -38,13 +39,13 @@ public class NettyClient {
             b.handler(new ChannelInitializer<SocketChannel>() {
                 protected void initChannel(SocketChannel socketChannel)/* throws Exception*/ {
                     socketChannel.pipeline().addLast(
-                            new ObjectDecoder(50 * 1024 * 1024, ClassResolvers.cacheDisabled(null)),
+                            new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
                             new ObjectEncoder(),
                             new HandlerCommand()
                     );
                 }
             });
-            ChannelFuture future = b.connect(IP_ADDR, PORT).sync();
+            ChannelFuture future = b.connect(ip, port).sync();
             onConnectionReady(future);
 
             future.channel().closeFuture().sync();
@@ -59,6 +60,5 @@ public class NettyClient {
     public void onConnectionReady(ChannelFuture future) {
         System.out.println("Соединение установлено");
     }
-
 
 }

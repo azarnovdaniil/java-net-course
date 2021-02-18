@@ -1,4 +1,4 @@
-package ru;
+package server;
 
 
 import io.netty.channel.ChannelHandlerContext;
@@ -9,10 +9,9 @@ public class HandlerCommand extends ChannelInboundHandlerAdapter {
     private ChannelHandlerContext ctx;
 
 
-
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        System.out.println("Клиент подключился: " + ctx );
+        System.out.println("Клиент подключился: " + ctx);
     }
 
 
@@ -27,5 +26,4 @@ public class HandlerCommand extends ChannelInboundHandlerAdapter {
         System.out.println("Клиент отключился");
         ctx.close();
     }
-
 }
