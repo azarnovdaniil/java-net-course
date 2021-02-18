@@ -1,88 +1,132 @@
 package ru.daniilazarnov;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.io.*;
 
-public class TestServer {
+public class TestServer extends Thread {
+    private ServerSocket serverSocket;
 
-    /**
-     *
-     * @param args
-     * @throws InterruptedException
-     */
-    public static void main(String[] args) throws InterruptedException {
-//  стартуем сервер на порту 3345
+    public TestServer(int port) throws IOException {
+        serverSocket = new ServerSocket(port);
+        serverSocket.setSoTimeout(1000000);
+    }
 
-        try (ServerSocket server= new ServerSocket(3345)){
-// становимся в ожидание подключения к сокету под именем - "client" на серверной стороне
-            Socket client = server.accept();
-
-// после хэндшейкинга сервер ассоциирует подключающегося клиента с этим сокетом-соединением
-            System.out.print("Connection accepted.");
-
-// инициируем каналы для  общения в сокете, для сервера
-
-// канал записи в сокет
-            DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            System.out.println("DataOutputStream  created");
-
-            // канал чтения из сокета
-            DataInputStream in = new DataInputStream(client.getInputStream());
-            System.out.println("DataInputStream created");
-
-// начинаем диалог с подключенным клиентом в цикле, пока сокет не закрыт
-            while(!client.isClosed()){
-
-                System.out.println("Server reading from channel");
-
-// сервер ждёт в канале чтения (inputstream) получения данных клиента
-                String entry = in.readUTF();
-
-// после получения данных считывает их
-                System.out.println("READ from client message - "+entry);
-
-// и выводит в консоль
-                System.out.println("Server try writing to channel");
-
-// инициализация проверки условия продолжения работы с клиентом по этому сокету по кодовому слову       - quit
-                if(entry.equalsIgnoreCase("quit")){
-                    System.out.println("Client initialize connections suicide ...");
-                    out.writeUTF("Server reply - "+entry + " - OK");
-                    out.flush();
-                    Thread.sleep(3000);
-                    break;
-                }
-
-// если условие окончания работы не верно - продолжаем работу - отправляем эхо-ответ  обратно клиенту
-                out.writeUTF("Server reply - "+entry + " - OK");
-                System.out.println("Server Wrote message to client.");
-
-// освобождаем буфер сетевых сообщений (по умолчанию сообщение не сразу отправляется в сеть, а сначала накапливается в специальном буфере сообщений, размер которого определяется конкретными настройками в системе, а метод  - flush() отправляет сообщение не дожидаясь наполнения буфера согласно настройкам системы
-                out.flush();
-
-            }
-
-// если условие выхода - верно выключаем соединения
-            System.out.println("Client disconnected");
-            System.out.println("Closing connections & channels.");
-
-            // закрываем сначала каналы сокета !
-            in.close();
-            out.close();
-
-            // потом закрываем сам сокет общения на стороне сервера!
-            client.close();
-
-            // потом закрываем сокет сервера который создаёт сокеты общения
-            // хотя при многопоточном применении его закрывать не нужно
-            // для возможности поставить этот серверный сокет обратно в ожидание нового подключения
-
-            System.out.println("Closing connections & channels - DONE.");
+    public static void main(String [] args) {
+        int port = Integer.parseInt(args[0]);
+        try {
+            // ? do this in a seperate process?
+            Thread t = new TestServer(port);
+            t.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void run() {
+
+        while(true) {
+
+            try {
+
+                System.out.println("Waiting for client on port " +
+                        serverSocket.getLocalPort());
+
+                Socket server = serverSocket.accept();
+
+                System.out.println("Just connected to " + server.getRemoteSocketAddress());
+
+                DataInputStream input = new DataInputStream(server.getInputStream());
+                DataOutputStream output = new DataOutputStream(server.getOutputStream());
+
+                // initial interaction ** send menu
+                output.writeUTF("\n\nSERVER>\n" + menu());
+
+                int service = input.readInt();
+                int input1 = input.readInt();
+                int input2 = input.readInt();
+
+            /*
+            System.out.println("service: " + service);
+            System.out.println("input1: " + input1);
+            System.out.println("input2: " + input2);
+            */
+
+                do {
+
+                    // ** evaluate request
+
+                    if (service == 0) {
+                        break; // from do while
+                    } else if (service == 1) {
+
+                        output.writeUTF("\n\nSERVER>\n" + menu());
+
+                    } else if (service == 2) {
+
+                        output.writeUTF("SERVER>\n\t " + add(input1, input2));
+
+                    } else if (service == 3) {
+
+                        output.writeUTF("SERVER>\n\t " + diff(input1, input2));
+
+                    } else if (service == 4) {
+
+                        output.writeUTF("SERVER>\n\t " + mult(input1, input2));
+
+                    } else if (service == 5) {
+
+                        output.writeUTF("SERVER>\n\t " + qout(input1, input2));
+
+                    } else {
+                        output.writeUTF("SERVER>\n\t " + "invalid choice");
+
+                    }
+
+
+                    service = input.readInt();
+                    input1 = input.readInt();
+                    input2 = input.readInt();
+
+                } while (service != 0);
+
+                output.writeUTF("SERVER>\n\t " + "Thank you for connecting to " + server.getLocalSocketAddress());
+
+                server.close();
+
+
+
+            } catch (SocketTimeoutException s) {
+
+                System.out.println("Socket timed out");
+                break;
+
+            } catch (IOException e) {
+
+                e.printStackTrace();
+                break;
+
+            }
+        }
+    }
+
+
+    private String menu() {
+        return "\tMath Server\n***************************\nchoose a number for the coresponding service\nthen send response in this format\n\n\tservice: (int)\n\tinput1: (int)\n\tinput2: (int)\n\n 0. Quit\n 1. Print this help message\n 2. Addition\n 3. Subtraction\n 4. Multiplication\n 5. Division";
+    }
+
+    private int add(int a, int b) {
+        return a + b;
+    }
+
+    private int diff(int a, int b) {
+        return a - b;
+    }
+
+    private int mult(int a, int b) {
+        return a*b;
+    }
+
+    private double qout(int a, int b) {
+        return (double)a/b;
     }
 }
