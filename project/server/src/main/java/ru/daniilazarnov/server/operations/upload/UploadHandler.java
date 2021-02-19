@@ -1,4 +1,4 @@
-package ru.daniilazarnov.server.handlers.upload;
+package ru.daniilazarnov.server.operations.upload;
 
 import io.netty.buffer.ByteBuf;
 import ru.daniilazarnov.common.files.FileReader;

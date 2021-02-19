@@ -7,17 +7,19 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import ru.daniilazarnov.server.configuration.ServerConfiguration;
-import ru.daniilazarnov.server.handlers.InputHandler;
+import ru.daniilazarnov.server.auth.AuthService;
+import ru.daniilazarnov.server.handlers.MessageHandler;
 
 public class Server {
 
     private static final int PORT = 8888;
 
-    private ServerConfiguration serverConfiguration;
+    private String root;
+    private AuthService authService;
 
-    public Server(ServerConfiguration serverConfiguration) {
-        this.serverConfiguration = serverConfiguration;
+    public Server(String root, AuthService authService) {
+        this.root = root;
+        this.authService = authService;
     }
 
     public void run() throws Exception {
@@ -30,7 +32,8 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) {
-                            ch.pipeline().addLast(new InputHandler(serverConfiguration.getRoot()));
+                            ch.pipeline().addLast(
+                                    new MessageHandler(root, authService));
                         }
                     });
             ChannelFuture f = b.bind(PORT).sync();

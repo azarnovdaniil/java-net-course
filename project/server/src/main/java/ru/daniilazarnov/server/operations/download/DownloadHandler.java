@@ -1,7 +1,7 @@
-package ru.daniilazarnov.server.handlers.download;
+package ru.daniilazarnov.server.operations.download;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.Channel;
 import ru.daniilazarnov.common.files.FileSender;
 import ru.daniilazarnov.common.handlers.Handler;
 import ru.daniilazarnov.common.FilePackageConstants;
@@ -14,15 +14,15 @@ public class DownloadHandler implements Handler {
 
     private DownloadHandlerState state = DownloadHandlerState.PATH_LENGTH;
 
-    private ChannelHandlerContext ctx;
+    private Channel channel;
     private ByteBuf buf;
     private String root;
 
     private int pathLength;
     private String pathString;
 
-    public DownloadHandler(ChannelHandlerContext ctx, String root) {
-        this.ctx = ctx;
+    public DownloadHandler(Channel channel, String root) {
+        this.channel = channel;
         this.root = root;
     }
 
@@ -46,8 +46,8 @@ public class DownloadHandler implements Handler {
         }
 
         if (state == DownloadHandlerState.SEND_FILE) {
-            ctx.channel().flush();
-            FileSender fileSender = new FileSender(ctx.channel());
+            channel.flush();
+            FileSender fileSender = new FileSender(channel);
             fileSender.sendFile(Paths.get(pathString),
                     future -> {
                         if (!future.isSuccess()) {

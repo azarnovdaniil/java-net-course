@@ -3,7 +3,8 @@ package ru.daniilazarnov.client.commands;
 public enum ClientCommand {
     UPLOAD("upload"),
     DOWNLOAD("download"),
-    SHOW("show");
+    SHOW("show"),
+    LOGIN("login");
 
     private String title;
 

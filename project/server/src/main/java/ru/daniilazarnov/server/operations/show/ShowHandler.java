@@ -1,8 +1,8 @@
-package ru.daniilazarnov.server.handlers.show;
+package ru.daniilazarnov.server.operations.show;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.Channel;
 import ru.daniilazarnov.common.handlers.Handler;
 import ru.daniilazarnov.common.OperationTypes;
 
@@ -20,12 +20,12 @@ public class ShowHandler implements Handler {
     private static final int PATHS_SIZE = 4;
     private static final int PATH_LENGTH_SIZE = 4;
 
-    private ChannelHandlerContext ctx;
+    private Channel channel;
     private ByteBuf buf;
     private String root;
 
-    public ShowHandler(ChannelHandlerContext ctx, String root) {
-        this.ctx = ctx;
+    public ShowHandler(Channel channel, String root) {
+        this.channel = channel;
         this.root = root;
     }
 
@@ -38,22 +38,22 @@ public class ShowHandler implements Handler {
 
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(OPERATION_CODE_BYTES);
         buf.writeByte(OperationTypes.SHOW.getCode());
-        ctx.channel().writeAndFlush(buf);
+        channel.writeAndFlush(buf);
 
         buf = ByteBufAllocator.DEFAULT.directBuffer(PATHS_SIZE);
         buf.writeInt(paths.size());
-        ctx.channel().writeAndFlush(buf);
+        channel.writeAndFlush(buf);
 
         for (String path : paths) {
             byte[] pathBytes = path.getBytes(StandardCharsets.UTF_8);
 
             buf = ByteBufAllocator.DEFAULT.directBuffer(PATH_LENGTH_SIZE);
             buf.writeInt(pathBytes.length);
-            ctx.channel().writeAndFlush(buf);
+            channel.writeAndFlush(buf);
 
             buf = ByteBufAllocator.DEFAULT.directBuffer(pathBytes.length);
             buf.writeBytes(pathBytes);
-            ctx.channel().writeAndFlush(buf);
+            channel.writeAndFlush(buf);
         }
     }
 

@@ -1,4 +1,4 @@
-package ru.daniilazarnov.server.handlers.download;
+package ru.daniilazarnov.server.operations.download;
 
 public enum DownloadHandlerState {
     PATH_LENGTH,
