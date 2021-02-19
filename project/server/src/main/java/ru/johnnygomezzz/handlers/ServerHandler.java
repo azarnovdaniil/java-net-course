@@ -33,7 +33,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
             String[] messagePart = message.split("\\s");
 
-        MyMessage textMessage;
+            MyMessage textMessage;
 
         if (message.startsWith("/quit")) {
             textMessage = new MyMessage("/quit");
