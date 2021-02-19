@@ -1,4 +1,4 @@
-package ru.daniilazarnov.database;
+package ru.daniilazarnov.authentication;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

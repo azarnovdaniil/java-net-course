@@ -2,7 +2,7 @@ package ru.daniilazarnov;
 
 public class DBMessage extends AbstractMessage {
 
-    private String cmd;
+    private Commands command;
     private String login;
     private String password;
 
@@ -10,14 +10,10 @@ public class DBMessage extends AbstractMessage {
         this.login = login;
     }
 
-    public DBMessage(String cmd, String login, String password) {
-        this.cmd = cmd;
+    public DBMessage(Commands command, String login, String password) {
+        this.command = command;
         this.login = login;
         this.password = password;
-    }
-
-    public String getCmd() {
-        return cmd;
     }
 
     public String getLogin() {
@@ -26,5 +22,9 @@ public class DBMessage extends AbstractMessage {
 
     public String getPassword() {
         return password;
+    }
+
+    public Commands getCommand() {
+        return command;
     }
 }

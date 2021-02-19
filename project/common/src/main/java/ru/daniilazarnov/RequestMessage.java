@@ -2,25 +2,25 @@ package ru.daniilazarnov;
 
 public class RequestMessage extends AbstractMessage {
 
-    private String cmd;
+    private Commands command;
     private String filename;
     private String newFileName;
     private String login;
 
-    public RequestMessage(String cmd, String login) {
-        this.cmd = cmd;
+    public RequestMessage(Commands command, String login) {
+        this.command = command;
         this.login = login;
     }
 
-    public RequestMessage(String cmd, String filename, String login) {
+    public RequestMessage(Commands command, String filename, String login) {
         this.filename = filename;
-        this.cmd = cmd;
+        this.command = command;
         this.login = login;
     }
 
-    public RequestMessage(String cmd, String filename, String newFileName, String login) {
+    public RequestMessage(Commands command, String filename, String newFileName, String login) {
         this.filename = filename;
-        this.cmd = cmd;
+        this.command = command;
         this.newFileName = newFileName;
         this.login = login;
     }
@@ -29,15 +29,15 @@ public class RequestMessage extends AbstractMessage {
         return filename;
     }
 
-    public String getCmd() {
-        return cmd;
-    }
-
     public String getNewFileName() {
         return newFileName;
     }
 
     public String getLogin() {
         return login;
+    }
+
+    public Commands getCommand() {
+        return command;
     }
 }

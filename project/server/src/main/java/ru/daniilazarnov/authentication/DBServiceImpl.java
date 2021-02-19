@@ -1,8 +1,8 @@
-package ru.daniilazarnov.database;
+package ru.daniilazarnov.authentication;
 
 import java.sql.*;
 
-public class DBService implements DBCommands {
+public class DBServiceImpl implements DBService {
 
     @Override
     public boolean findUser(String login, String password) {
@@ -10,7 +10,8 @@ public class DBService implements DBCommands {
 
         try {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM vault_users WHERE login = '" + login + " AND password = " + password + "';");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM vault_users WHERE login = '" + login
+                    + " AND password = " + password + "';");
 
             if (resultSet != null) {
                 return true;
@@ -25,7 +26,7 @@ public class DBService implements DBCommands {
     }
 
     @Override
-    public int addUser(String login, String password) {
+    public void addUser(String login, String password) {
         Connection connection = DBConnection.getConnection();
 
         try {
@@ -36,7 +37,7 @@ public class DBService implements DBCommands {
             statement.setString(1, login);
             statement.setString(2, password);
 
-            return statement.executeUpdate();
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             throw new RuntimeException("SWW", e);

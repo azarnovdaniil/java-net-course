@@ -21,10 +21,11 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof RequestMessage) {
             RequestMessage request = (RequestMessage) msg;
-            String clientCmd = request.getCmd();
+            Commands command = request.getCommand();
 
-            switch (clientCmd) {
-                case "download":
+            switch (command) {
+                case DOWNLOAD:
+                    LOGGER.debug("Command DOWNLOAD from client was received");
                     try {
                         if (Files.exists(Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename()))) {
                             File file = new File("./project/server_vault/" + request.getLogin() + "/" + request.getFilename());
@@ -56,7 +57,7 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
                         throw new RuntimeException("SWW", e);
                     }
                     break;
-                case "list":
+                case LIST:
                     LOGGER.debug("Command LIST from client was received");
                     List<String> files = new ArrayList<>();
                     Files.walkFileTree(Paths.get("./project/server_vault/" + request.getLogin()),
@@ -70,14 +71,14 @@ public class ServerRequestHandler extends ChannelInboundHandlerAdapter {
                     DirectoryInfoMessage dim = new DirectoryInfoMessage(files);
                     ctx.writeAndFlush(dim);
                     break;
-                case "remove":
+                case REMOVE:
                     LOGGER.debug("Command REMOVE from client was received");
                     Path removeDir = Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename());
                     if (Files.exists(removeDir)) {
                         removeDir.toFile().delete();
                     }
                     break;
-                case "rename":
+                case RENAME:
                     LOGGER.debug("Command RENAME from client was received");
                     Path renameDir = Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getFilename());
                     Path newDir = Paths.get("./project/server_vault/" + request.getLogin() + "/" + request.getNewFileName());

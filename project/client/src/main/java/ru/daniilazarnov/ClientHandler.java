@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class ClientHandler {
     private static final Logger LOGGER = Logger.getLogger(ClientHandler.class.getName());
@@ -23,7 +24,7 @@ public class ClientHandler {
     public void chooseCommand(String msg) throws IOException {
         String[] msgParts = msg.split("\\s");
 
-        if (msg.startsWith("upload")) {
+        if (msg.startsWith(Commands.UPLOAD.name().toLowerCase())) {
             LOGGER.info("Upload started...");
 
             try {
@@ -56,37 +57,37 @@ public class ClientHandler {
                 LOGGER.error("SWW while uploading file");
                 throw new RuntimeException("SWW", e);
             }
-        } else if (msg.startsWith("download")) {
+        } else if (msg.startsWith(Commands.DOWNLOAD.name().toLowerCase())) {
             LOGGER.info("Download started...");
-            RequestMessage rm = new RequestMessage(msgParts[0], msgParts[1], clientLogin);
+            RequestMessage rm = new RequestMessage(Commands.DOWNLOAD, msgParts[1], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
-        } else if (msg.startsWith("list")) {
+        } else if (msg.startsWith(Commands.LIST.name().toLowerCase())) {
             LOGGER.info("Waiting the list from server");
-            RequestMessage rm = new RequestMessage(msgParts[0], clientLogin);
+            RequestMessage rm = new RequestMessage(Commands.LIST, clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
-        } else if (msg.startsWith("remove")) {
+        } else if (msg.startsWith(Commands.REMOVE.name().toLowerCase())) {
             LOGGER.info("F, file was removed");
-            RequestMessage rm = new RequestMessage(msgParts[0], msgParts[1], clientLogin);
+            RequestMessage rm = new RequestMessage(Commands.REMOVE, msgParts[1], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
-        } else if (msg.startsWith("rename")) {
+        } else if (msg.startsWith(Commands.RENAME.name().toLowerCase())) {
             LOGGER.info("Name was changed");
-            RequestMessage rm = new RequestMessage(msgParts[0], msgParts[1], msgParts[2], clientLogin);
+            RequestMessage rm = new RequestMessage(Commands.RENAME, msgParts[1], msgParts[2], clientLogin);
             objectOut.writeObject(rm);
             objectOut.flush();
-        } else if (msg.startsWith("auth")) {
+        } else if (msg.startsWith(Commands.AUTH.name().toLowerCase())) {
             LOGGER.info("Waiting for auth server");
-            DBMessage dbm = new DBMessage(msgParts[0], msgParts[1], msgParts[2]);
+            DBMessage dbm = new DBMessage(Commands.AUTH, msgParts[1], msgParts[2]);
             objectOut.writeObject(dbm);
             objectOut.flush();
-        } else if (msg.startsWith("reg")) {
+        } else if (msg.startsWith(Commands.REG.name().toLowerCase())) {
             LOGGER.info("Stand by for registration");
-            DBMessage dbm = new DBMessage(msgParts[0], msgParts[1], msgParts[2]);
+            DBMessage dbm = new DBMessage(Commands.REG, msgParts[1], msgParts[2]);
             objectOut.writeObject(dbm);
             objectOut.flush();
-        } else if (msg.startsWith("help")) {
+        } else if (msg.startsWith(Commands.HELP.name().toLowerCase())) {
             helpInfo();
         } else LOGGER.info("Unknown command");
     }
