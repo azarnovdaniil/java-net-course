@@ -13,7 +13,7 @@ import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
 public class HandlerInputConsole {
     private static final Logger LOG = Logger.getLogger(HandlerInputConsole.class);
     private NetworkCommunicationMethods ncm = new NetworkCommunicationMethods();
-    private AuthClient auth = new AuthClient();
+//    private AuthClient auth = new AuthClient();
 
     void commandConsoleHandler(String inputLine, Command command) {
         switch (command) {

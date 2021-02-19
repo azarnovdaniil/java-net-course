@@ -3,23 +3,15 @@ package ru.daniilazarnov;
 import io.netty.channel.Channel;
 
 public class User {
-   private Channel channel;
    private String clientName;
    private String homeDirectory;
 
-    public User(Channel channel, String clientName, String homeDirectory) {
-        this.channel = channel;
+    public User(String clientName, String homeDirectory) {
         this.clientName = clientName;
         this.homeDirectory = homeDirectory;
     }
 
-    public Channel getChannel() {
-        return channel;
-    }
 
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
 
     public String getClientName() {
         return clientName;

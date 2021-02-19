@@ -1,13 +1,15 @@
-package ru.daniilazarnov.console_IO;
+package ru.daniilazarnov;
 
 import ru.daniilazarnov.auth.AuthClient;
+import ru.daniilazarnov.console_IO.InputConsole;
+import ru.daniilazarnov.console_IO.OutputConsole;
 
 import java.io.IOException;
 
 import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
 
-public class ConsoleClient {
-    private static AuthClient authClient = new AuthClient();
+public class ClientApp {
+//    private static AuthClient authClient = new AuthClient();
     private static InputConsole input = new InputConsole();
 
     public static void main(String[] args) throws IOException {

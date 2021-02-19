@@ -15,31 +15,38 @@ import static ru.daniilazarnov.network.NetworkCommunicationMethods.*;
 import static ru.daniilazarnov.constants.Constants.*;
 
 
-public class AuthClient {
+public class AuthClient implements AuthClientIntrf {
     private static final Logger LOG = Logger.getLogger(AuthClient.class);
-    private static boolean authStatus = false;
+    private boolean authStatus = false;
     private NetworkCommunicationMethods ncm = new NetworkCommunicationMethods();
-    private static String userName;
-    private static User user;
+    private String userName;
+    private User user;
 
-    public static String getUserFolder() {
+
+    public AuthClient(boolean authStatus, NetworkCommunicationMethods ncm, User user) {
+        this.authStatus = authStatus;
+        this.ncm = ncm;
+        this.user = user;
+    }
+
+    public String getUserFolder() {
         return user.getHomeDirectory();
     }
 
 
-    public static boolean isAuthStatus() {
+    public boolean isAuthStatus() {
         return authStatus;
     }
 
     public void setAuthStatus(boolean authStatus) {
-        AuthClient.authStatus = authStatus;
+        this.authStatus = authStatus;
     }
 
     public void authentication(ByteBuf buf, ChannelHandlerContext ctx) {
         String right = ReceivingAndSendingStrings.receiveAndEncodeString(buf);
         if (right.equals("1")) {
             setAuthStatus(true);
-            user = new User(ctx.channel(), userName, userName);
+            user = new User(userName, userName);
             LOG.debug("Access to the remote base received");
 
         } else {

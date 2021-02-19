@@ -47,7 +47,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>ru.daniilazarnov.Server</mainClass>
+                            <mainClass>ru.daniilazarnov.ServerApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

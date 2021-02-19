@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class NetworkHandler {
     private static final Logger LOG = Logger.getLogger(NetworkHandler.class);
-    private AuthClient authentication = new AuthClient();
+//    private AuthClient authentication = new AuthClient();
 
     void networkHandler(ChannelHandlerContext ctx, Object msg, ByteBuf buf, byte readed, Command command)
             throws IOException {

@@ -47,7 +47,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>ru.daniilazarnov.console_IO.ConsoleClient</mainClass>
+                            <mainClass>ru.daniilazarnov.ClientApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

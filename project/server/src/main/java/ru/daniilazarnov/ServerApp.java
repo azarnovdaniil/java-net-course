@@ -15,8 +15,8 @@ import static ru.daniilazarnov.constants.Constants.EIGHTS;
 /**
  * Класс содержит логику работы с сетью на стороне сервера
  */
-public class Server {
-    private static final Logger LOG = Logger.getLogger(Server.class);
+public class ServerApp {
+    private static final Logger LOG = Logger.getLogger(ServerApp.class);
     private static final int PORT = 8189;
 
     public void run() throws Exception {
@@ -44,6 +44,6 @@ public class Server {
     }
 
     public static void main(String[] args) throws Exception {
-        new Server().run();
+        new ServerApp().run();
     }
 }
