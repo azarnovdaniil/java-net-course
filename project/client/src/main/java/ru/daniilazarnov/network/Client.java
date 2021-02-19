@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import ru.daniilazarnov.FileSender;
 import ru.daniilazarnov.ReceivingAndSendingStrings;
 import ru.daniilazarnov.console_IO.OutputConsole;
-//import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -66,25 +65,12 @@ public class Client {
 
     public void sendFile(String file) {
         try {
-            FileSender.setLoadingStatus(true); // удалить
-            FileSender.sendFile(Path.of(file), channel, getChannelFutureListenerSendFile("Файл успешно передан\n"));
+            OutputConsole.setConsoleBusy(true);
+            FileSender.sendFile(Path.of(file), channel, getChannelFutureListener("Файл успешно передан\n"));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private ChannelFutureListener getChannelFutureListenerSendFile(String s) {
-        return (ChannelFuture future) -> {
-            if (!future.isSuccess()) {
-                LOG.info(s + "не был");
-            }
-            if (future.isSuccess()) {
-                LOG.debug(s);
-                FileSender.setLoadingStatus(false); // удалить
-            }
-            OutputConsole.setConsoleBusy(false);
-        };
     }
 
     private ChannelFutureListener getChannelFutureListener(String s) {
@@ -93,7 +79,6 @@ public class Client {
                 LOG.info(s + "не был");
             }
             if (future.isSuccess()) {
-                FileSender.setLoadingStatus(false); // удалить
                 LOG.info(s);
             }
             OutputConsole.setConsoleBusy(false);

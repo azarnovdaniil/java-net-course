@@ -4,28 +4,18 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
-import ru.daniilazarnov.auth.AuthClient;
+import ru.daniilazarnov.console_IO.OutputConsole;
 import ru.daniilazarnov.enumeration.Command;
 import ru.daniilazarnov.ReceivingFiles;
 import ru.daniilazarnov.enumeration.State;
+import ru.daniilazarnov.files_method.FileList;
 
 /**
  * Класс содержит логику обработки принятых сообщений на стороне клиента
  */
 public class ClientReadMessage extends ChannelInboundHandlerAdapter {
     private static final Logger LOG = Logger.getLogger(ClientReadMessage.class);
-    private static boolean auth = false;
-    private NetworkHandler nc = new NetworkHandler();
-
-    public static void setAuth(boolean auth) {
-        ClientReadMessage.auth = auth;
-    }
-
-    public static boolean isAuth() {
-        return auth;
-    }
-
-    private State currentState = State.IDLE;
+//    private State currentState = State.IDLE;
 
     public ClientReadMessage() {
     }
@@ -36,10 +26,25 @@ public class ClientReadMessage extends ChannelInboundHandlerAdapter {
             ByteBuf buf = ((ByteBuf) msg);
             byte readed = buf.readByte();
             Command command = Command.valueOf(readed);
-            nc.networkHandler(ctx, msg, buf, readed, command);
+            switch (command) {
+
+                case DOWNLOAD:
+                    ReceivingFiles.fileReceive(msg, "user1");
+                    OutputConsole.printPrompt(); // вывод строки приглашения к вводу
+                    break;
+                case AUTH:
+                        LOG.debug("Authorization: the response came from the server");
+                    break;
+                case LS:
+                    System.out.println(FileList.getFilesListStringFromServer(buf));
+                    OutputConsole.setConsoleBusy(false);
+                    break;
+                default:
+                    System.err.println("(class ClientHandler) ERROR: Invalid first byte - " + readed);
+            }
         }
         if (ReceivingFiles.getCurrentState() == State.FILE) {
-            ReceivingFiles.fileReceive(msg, AuthClient.getUserFolder());
+            ReceivingFiles.fileReceive(msg, "user1");
         }
     }
 

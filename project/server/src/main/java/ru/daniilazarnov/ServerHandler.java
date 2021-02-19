@@ -16,10 +16,8 @@ import java.io.IOException;
  */
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger LOG = Logger.getLogger(ServerHandler.class);
-
-    private State currentState = State.IDLE;
-    private FilesMethod filesMethod = new FilesMethod();
-    private AuthServer authServer = new AuthServer();
+    private final FilesMethod filesMethod = new FilesMethod();
+    private final AuthServer authServer = new AuthServer();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {

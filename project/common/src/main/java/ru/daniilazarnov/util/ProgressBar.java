@@ -3,6 +3,9 @@ package ru.daniilazarnov.util;
 import static ru.daniilazarnov.constants.Constants.*;
 
 public class ProgressBar {
+    private static final int HUNDRED = 100;
+    private static final int TWENTY = 20;
+    private static final int ONE_HUNDRED_AND_FIVE = 105;
     private final int length;
     private String line;
     private String pattern;
@@ -52,6 +55,9 @@ public class ProgressBar {
         ProgressBar pb;
         try {
             pb = new ProgressBar(TWENTY);
+
+
+
             for (int i = 0; i < ONE_HUNDRED_AND_FIVE; i++) {
                 Thread.sleep(delay);
                 pb.nextPercent();

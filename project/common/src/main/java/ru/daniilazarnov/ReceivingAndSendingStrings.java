@@ -5,12 +5,12 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 
-import static ru.daniilazarnov.constants.Constants.*;
-
 /**
  * Класс содержит логику отправления побайтово имени файла на сервер
  */
 public class ReceivingAndSendingStrings {
+
+    private static final byte FOUR_BYTES = 4;
 
     /**
      * Формирует для отправки на сервер строку по протоколу
@@ -26,7 +26,7 @@ public class ReceivingAndSendingStrings {
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         buf.writeByte(commandByte); //управляющий байт
         channel.write(buf);
-        buf = ByteBufAllocator.DEFAULT.directBuffer(FOUR);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(FOUR_BYTES);
         buf.writeInt(string.length()); // длинна имени файла
         channel.write(buf);
         byte[] stringSource = string.getBytes();

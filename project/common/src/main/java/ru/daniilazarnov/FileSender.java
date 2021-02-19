@@ -9,13 +9,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static ru.daniilazarnov.constants.Constants.*;
-
 /**
  * Утилитный класс, содержит метод отправки файла
  */
 public class FileSender {
+    private static final byte FOUR_BYTES = 4;
     private static boolean loadingStatus = false;
+    private static final byte EIGHTS_BYTES = 8;
 
     public static void setLoadingStatus(boolean loadingStatus) {
         FileSender.loadingStatus = loadingStatus;
@@ -51,7 +51,7 @@ public class FileSender {
         buf.writeByte((byte) 2);
         channel.write(buf);
 
-        buf = ByteBufAllocator.DEFAULT.directBuffer(FOUR);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(FOUR_BYTES);
         buf.writeInt(path.getFileName().toString().length());
         channel.write(buf);
 
@@ -60,7 +60,7 @@ public class FileSender {
         buf.writeBytes(filenameBytes);
         channel.write(buf);
 
-        buf = ByteBufAllocator.DEFAULT.directBuffer(EIGHTS);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(EIGHTS_BYTES);
         buf.writeLong(Files.size(path));
         channel.write(buf);
 

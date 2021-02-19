@@ -10,7 +10,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.log4j.Logger;
 import ru.daniilazarnov.util.ProgressBar;
 
-import static ru.daniilazarnov.constants.Constants.EIGHTS;
 
 /**
  * Класс содержит логику работы с сетью на стороне сервера
@@ -18,6 +17,11 @@ import static ru.daniilazarnov.constants.Constants.EIGHTS;
 public class ServerApp {
     private static final Logger LOG = Logger.getLogger(ServerApp.class);
     private static final int PORT = 8189;
+    private static final byte EIGHTS = 8;
+
+    public static void main(String[] args) throws Exception {
+        new ServerApp().run();
+    }
 
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -41,9 +45,5 @@ public class ServerApp {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        new ServerApp().run();
     }
 }
