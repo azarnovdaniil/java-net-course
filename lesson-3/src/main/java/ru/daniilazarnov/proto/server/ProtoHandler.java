@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 
 public class ProtoHandler extends ChannelInboundHandlerAdapter {
 
+    public static final byte MAGIC_BYTE = (byte) 25;
     private State currentState = State.IDLE;
     private int nextLength;
     private long fileLength;
@@ -21,7 +22,7 @@ public class ProtoHandler extends ChannelInboundHandlerAdapter {
         while (buf.readableBytes() > 0) {
             if (currentState == State.IDLE) {
                 byte readed = buf.readByte();
-                if (readed == (byte) 25) {
+                if (readed == MAGIC_BYTE) {
                     currentState = State.NAME_LENGTH;
                     receivedFileLength = 0L;
                     System.out.println("STATE: Start file receiving");
@@ -32,7 +33,7 @@ public class ProtoHandler extends ChannelInboundHandlerAdapter {
 
 
             if (currentState == State.NAME_LENGTH) {
-                if (buf.readableBytes() >= 4) {
+                if (buf.readableBytes() >= (Integer.SIZE / Byte.SIZE)) {
                     System.out.println("STATE: Get filename length");
                     nextLength = buf.readInt();
                     currentState = State.NAME;
@@ -50,7 +51,7 @@ public class ProtoHandler extends ChannelInboundHandlerAdapter {
             }
 
             if (currentState == State.FILE_LENGTH) {
-                if (buf.readableBytes() >= 8) {
+                if (buf.readableBytes() >= (Long.SIZE / Byte.SIZE)) {
                     fileLength = buf.readLong();
                     System.out.println("STATE: File length received - " + fileLength);
                     currentState = State.FILE;

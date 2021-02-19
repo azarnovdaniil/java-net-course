@@ -13,6 +13,9 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class CloudServer {
 
+    public static final int MAX_OBJECT_SIZE = 1024 * 1024 * 100;
+    public static final int INET_PORT = 8189;
+
     public void run() throws Exception {
         EventLoopGroup mainGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -23,13 +26,13 @@ public class CloudServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline().addLast(
-                                    new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
+                                    new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
                                     new CloudServerHandler()
                             );
                         }
                     });
-            ChannelFuture future = b.bind(8189).sync();
+            ChannelFuture future = b.bind(INET_PORT).sync();
             future.channel().closeFuture().sync();
         } finally {
             mainGroup.shutdownGracefully();
