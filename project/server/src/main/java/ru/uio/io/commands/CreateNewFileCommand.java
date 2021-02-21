@@ -24,11 +24,10 @@ public class CreateNewFileCommand implements Command {
     @Override
     public void execute() {
         try{
-            RandomAccessFile rw = null;
             long currentFilePointer = 0;
             boolean loopBreak = false;
             System.out.println(String.format("store/%s/%s", storePath, fileName));
-            rw = new RandomAccessFile(String.format("store/%s/%s", storePath, fileName), "rw");
+            RandomAccessFile rw = new RandomAccessFile(String.format("store/%s/%s", storePath, fileName), "rw");
             System.out.println("124");
             out.write(Common.createDataPacket("125".getBytes(StandardCharsets.UTF_8),
                     String.valueOf(currentFilePointer).getBytes(StandardCharsets.UTF_8)));
@@ -58,7 +57,6 @@ public class CreateNewFileCommand implements Command {
                     }
                 }
                 if (loopBreak) {
-                    assert rw != null;
                     rw.close();
                     break;
                 }

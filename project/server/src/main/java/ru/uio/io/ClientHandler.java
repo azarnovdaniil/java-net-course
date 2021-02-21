@@ -3,6 +3,7 @@ package ru.uio.io;
 import ru.uio.io.auth.Registration;
 import ru.uio.io.commands.Command;
 import ru.uio.io.commands.CreateNewFileCommand;
+import ru.uio.io.commands.DownLoadFileCommand;
 import ru.uio.io.entity.User;
 
 import java.io.*;
@@ -145,8 +146,8 @@ public class ClientHandler {
                     byte[] recvData = Common.readStream(in);
                     switch (Integer.parseInt(new String(cmdBuff))) {
                         case 124://create new upload file in store (upload)
-                            Command command = new CreateNewFileCommand(in, out, storePath, recvData);
-                            command.execute();
+                            System.out.println("124");
+                            new CreateNewFileCommand(in, out, storePath, recvData).execute();
                             break;
                         case 120://close client
                             if ("exit".equals(new String(recvData))) {
@@ -163,33 +164,10 @@ public class ClientHandler {
                             out.write(Common.createDataPacket("120".getBytes(StandardCharsets.UTF_8), "close".getBytes(StandardCharsets.UTF_8)));
                             out.flush();
                             break;
-                        case 125://send file data to client (download)
-                            currentFilePointer = Long.parseLong(new String(recvData));
-                            int buff_len = (int) (rw.length() - currentFilePointer < 20000 ? rw.length() - currentFilePointer : 20000);
-                            System.out.println("buff_len " + buff_len);
-                            byte[] temp_buff = new byte[buff_len];
-                            if (currentFilePointer != rw.length()) {
-                                rw.seek(currentFilePointer);
-                                rw.read(temp_buff, 0, temp_buff.length);
-                                out.write(Common.createDataPacket("126".getBytes(StandardCharsets.UTF_8), temp_buff));
-                                out.flush();
-                                System.out.println("Upload percentage: " + ((float) currentFilePointer / rw.length()) * 100 + "%");
-                            } else {
-                                fileDownClose = true;
-                            }
-                            break;
                         case 115://open file in store and send name file (download)
                         {
-                            List<String> list = Common.getFileList(String.format("store/%s/", storePath));
-                            if (Integer.parseInt(new String(recvData)) > list.size()) {
-                                out.write(Common.createDataPacket("119".getBytes(StandardCharsets.UTF_8), "File not found".getBytes(StandardCharsets.UTF_8)));
-                                out.flush();
-                                break;
-                            }
-                            System.out.println(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recvData)) - 1)));
-                            rw = new RandomAccessFile(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recvData)) - 1)), "rw");
-                            out.write(Common.createDataPacket("124".getBytes(StandardCharsets.UTF_8), list.get(Integer.parseInt(new String(recvData)) - 1).getBytes(StandardCharsets.UTF_8)));
-                            out.flush();
+                            System.out.println("115");
+                            new DownLoadFileCommand(in, out, storePath, recvData).execute();
                             break;
                         }
                         case 116://delete file
@@ -209,20 +187,6 @@ public class ClientHandler {
                             }
                             break;
                     }
-                }
-                if (fileClose == true) {
-                    rw.close();
-                    rw = null;
-                    fileClose = false;
-//                    socket.close();
-//                    return;
-                }
-                if (fileDownClose == true) {
-                    rw.close();
-                    rw = null;
-                    out.write(Common.createDataPacket("127".getBytes(StandardCharsets.UTF_8), "Close".getBytes(StandardCharsets.UTF_8)));
-                    out.flush();
-                    fileDownClose = false;
                 }
                 if (loopBreak == true) {
                     return;
