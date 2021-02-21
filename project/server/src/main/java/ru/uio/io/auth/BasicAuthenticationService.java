@@ -9,12 +9,8 @@ import java.util.Optional;
 public class BasicAuthenticationService implements AuthenticationService {
     private JdbcSQLiteConnection sqLiteConnection;
 
-    public BasicAuthenticationService() {
-        try {
-            sqLiteConnection = new JdbcSQLiteConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public BasicAuthenticationService(JdbcSQLiteConnection sqLiteConnection) {
+        this.sqLiteConnection = sqLiteConnection;
     }
 
     @Override
@@ -33,10 +29,6 @@ public class BasicAuthenticationService implements AuthenticationService {
 
     @Override
     public void close() {
-        try {
-            sqLiteConnection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        sqLiteConnection.close();
     }
 }

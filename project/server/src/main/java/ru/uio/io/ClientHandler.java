@@ -1,5 +1,6 @@
 package ru.uio.io;
 
+import ru.uio.io.auth.Registration;
 import ru.uio.io.commands.Command;
 import ru.uio.io.entity.User;
 
@@ -68,8 +69,12 @@ public class ClientHandler {
                      * After splitting sample
                      * array of ["-auth", "n1@mail.com", "1"]
                      */
-
                     String[] credentialValues = credentials.split("\\s");
+
+                    if(credentialValues.length < 3){
+                        sendMessage("wrong login or pass");
+                        continue;
+                    }
                     server.getAuthenticationService()
                             .doAuth(credentialValues[1], credentialValues[2])
                             .ifPresentOrElse(
@@ -96,6 +101,22 @@ public class ClientHandler {
                             );
                     if (isAuth.get()){
                         break;
+                    }
+                }
+                if(credentials.startsWith("-reg")){
+                    String[] credentialValues = credentials.split("\\s");
+
+                    if(credentialValues.length < 3){
+                        sendMessage("wrong login or pass");
+                        continue;
+                    }
+                    Registration reg = new Registration(server.getConnect());
+                    boolean res = reg.reg(credentialValues[1], credentialValues[2]);
+
+                    if(res){
+                        sendMessage("reg success");
+                    }else {
+                        sendMessage("reg failed");
                     }
                 }
             }

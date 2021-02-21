@@ -26,6 +26,7 @@ public class ClientApp {
             handlerMap.put(LIST, new ListHandler(in, out));
             handlerMap.put(DOWNLOAD, new DownloadHandler(in, out));
             handlerMap.put(HELP, new HelpHandler(in, out));
+            handlerMap.put(REG, new RegHandler(in, out));
             BaseHandler baseHandler;
             isClose.set(false);
 
@@ -47,6 +48,12 @@ public class ClientApp {
 
                     if (command.startsWith("-auth")){
                         baseHandler = handlerMap.get(AUTH);
+                        baseHandler.setCommand(command);
+                        execute(baseHandler);
+                        continue;
+                    }
+                    if (command.startsWith("-reg")){
+                        baseHandler = handlerMap.get(REG);
                         baseHandler.setCommand(command);
                         execute(baseHandler);
                         continue;

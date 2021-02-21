@@ -2,6 +2,7 @@ package ru.uio.io;
 
 import ru.uio.io.auth.AuthenticationService;
 import ru.uio.io.auth.BasicAuthenticationService;
+import ru.uio.io.sql.JdbcSQLiteConnection;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 public class FileServer implements Server {
     private Set<ClientHandler> clients;
+    private JdbcSQLiteConnection sqLiteConnection;
     private AuthenticationService authenticationService;
 
     public FileServer() {
@@ -18,7 +20,8 @@ public class FileServer implements Server {
             System.out.println("Server is starting up...");
             ServerSocket serverSocket = new ServerSocket(8888);
             clients = new HashSet<>();
-            authenticationService = new BasicAuthenticationService();
+            sqLiteConnection = new JdbcSQLiteConnection();
+            authenticationService = new BasicAuthenticationService(sqLiteConnection);
             System.out.println("Server is started up...");
 
             while (true) {
@@ -63,4 +66,8 @@ public class FileServer implements Server {
         return authenticationService;
     }
 
+    @Override
+    public JdbcSQLiteConnection getConnect(){
+        return this.sqLiteConnection;
+    }
 }
