@@ -16,6 +16,7 @@ public class Server {
   private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
   private final int port;
 
+
   public Server() throws IOException {
     try {
       Properties property = new Properties();
@@ -36,6 +37,7 @@ public class Server {
       b.group(bossGroup, workerGroup)
         .channel(NioServerSocketChannel.class)
         .childHandler(new TCPChannelInitializer())
+        .childHandler(new ServerStorageHandler())
         .childOption(ChannelOption.SO_KEEPALIVE, true);
 
       ChannelFuture f = b.bind(port).sync();
