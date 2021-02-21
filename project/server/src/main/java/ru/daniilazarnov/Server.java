@@ -7,10 +7,13 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
+
 
 public class Server {
+
     private static final int PORT = 8189;
 
     public static void main(String[] args) {
@@ -24,10 +27,9 @@ public class Server {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline()
-//                                    .addLast(new StringDecoder())
-                                    .addLast(new StringEncoder())
-                                    .addLast(new ServerInboundHandler())
-                                    .addLast(new CommandHandler());
+                                    .addLast(new ObjectDecoder(1024 * 1024 * 1024, ClassResolvers.cacheDisabled(null)))
+                                    .addLast(new ObjectEncoder())
+                                    .addLast(new ServerHandler());
                         }
                     });
             ChannelFuture future = b.bind(PORT).sync();
