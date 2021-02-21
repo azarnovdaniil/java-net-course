@@ -2,10 +2,12 @@ package ru.uio.io;
 
 import ru.uio.io.auth.Registration;
 import ru.uio.io.commands.Command;
+import ru.uio.io.commands.CreateNewFileCommand;
 import ru.uio.io.entity.User;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -130,118 +132,99 @@ public class ClientHandler {
     private void receiveMessage() {
         try {
             RandomAccessFile rw = null;
-            long current_file_pointer = 0;
-            boolean loop_break = false;
-            boolean file_close = false;
-            boolean file_down_close = false;
+            long currentFilePointer = 0;
+            boolean loopBreak = false;
+            boolean fileClose = false;
+            boolean fileDownClose = false;
             while (true) {
                 byte[] initilize = new byte[1];
                 in.read(initilize, 0, initilize.length);
                 if (initilize[0] == 2) {
-                    System.out.println("read = 2");
-                    byte[] cmd_buff = new byte[3];
-                    in.read(cmd_buff, 0, cmd_buff.length);
-                    byte[] recv_data = Common.readStream(in);
-                    switch (Integer.parseInt(new String(cmd_buff))) {
+                    byte[] cmdBuff = new byte[3];
+                    in.read(cmdBuff, 0, cmdBuff.length);
+                    byte[] recvData = Common.readStream(in);
+                    switch (Integer.parseInt(new String(cmdBuff))) {
                         case 124://create new upload file in store (upload)
-                            System.out.println(String.format("store/%s/%s", storePath, new String(recv_data)));
-                            rw = new RandomAccessFile(String.format("store/%s/%s", storePath, new String(recv_data)), "rw");
-                            System.out.println("124");
-                            System.out.println(Files.exists(Paths.get(String.format("store/%s/%s", storePath, new String(recv_data)))));
-                            out.write(Common.createDataPacket("125".getBytes("UTF8"), String.valueOf(current_file_pointer).getBytes("UTF8")));
-                            out.flush();
-                            break;
-                        case 126://write data in file (upload)
-                            System.out.println("126");
-                            rw.seek(current_file_pointer);
-                            rw.write(recv_data);
-                            current_file_pointer = rw.getFilePointer();
-                            System.out.println("Download percentage: " + ((float) current_file_pointer / rw.length()) * 100 + "%");
-                            out.write(Common.createDataPacket("125".getBytes("UTF8"), String.valueOf(current_file_pointer).getBytes("UTF8")));
-                            out.flush();
-                            break;
-                        case 127://close file (upload)
-                            if ("Close".equals(new String(recv_data))) {
-                                file_close = true;
-                            }
+                            Command command = new CreateNewFileCommand(in, out, storePath, recvData);
+                            command.execute();
                             break;
                         case 120://close client
-                            if ("exit".equals(new String(recv_data))) {
-                                loop_break = true;
+                            if ("exit".equals(new String(recvData))) {
+                                loopBreak = true;
                             }
                             break;
                         case 121://send list client file name
                             List<String> collect = Common.getFileList(String.format("store/%s/", storePath));
                             int i = 1;
                             for (String name : collect) {
-                                out.write(Common.createDataPacket("121".getBytes("UTF8"), String.format("%d. %s", i++, name).getBytes("UTF8")));
+                                out.write(Common.createDataPacket("121".getBytes(StandardCharsets.UTF_8), String.format("%d. %s", i++, name).getBytes(StandardCharsets.UTF_8)));
                                 out.flush();
                             }
-                            out.write(Common.createDataPacket("120".getBytes("UTF8"), "close".getBytes("UTF8")));
+                            out.write(Common.createDataPacket("120".getBytes(StandardCharsets.UTF_8), "close".getBytes(StandardCharsets.UTF_8)));
                             out.flush();
                             break;
                         case 125://send file data to client (download)
-                            current_file_pointer = Long.valueOf(new String(recv_data));
-                            int buff_len = (int) (rw.length() - current_file_pointer < 20000 ? rw.length() - current_file_pointer : 20000);
+                            currentFilePointer = Long.parseLong(new String(recvData));
+                            int buff_len = (int) (rw.length() - currentFilePointer < 20000 ? rw.length() - currentFilePointer : 20000);
                             System.out.println("buff_len " + buff_len);
                             byte[] temp_buff = new byte[buff_len];
-                            if (current_file_pointer != rw.length()) {
-                                rw.seek(current_file_pointer);
+                            if (currentFilePointer != rw.length()) {
+                                rw.seek(currentFilePointer);
                                 rw.read(temp_buff, 0, temp_buff.length);
-                                out.write(Common.createDataPacket("126".getBytes("UTF8"), temp_buff));
+                                out.write(Common.createDataPacket("126".getBytes(StandardCharsets.UTF_8), temp_buff));
                                 out.flush();
-                                System.out.println("Upload percentage: " + ((float) current_file_pointer / rw.length()) * 100 + "%");
+                                System.out.println("Upload percentage: " + ((float) currentFilePointer / rw.length()) * 100 + "%");
                             } else {
-                                file_down_close = true;
+                                fileDownClose = true;
                             }
                             break;
                         case 115://open file in store and send name file (download)
                         {
                             List<String> list = Common.getFileList(String.format("store/%s/", storePath));
-                            if (Integer.parseInt(new String(recv_data)) > list.size()) {
-                                out.write(Common.createDataPacket("119".getBytes("UTF8"), "File not found".getBytes("UTF8")));
+                            if (Integer.parseInt(new String(recvData)) > list.size()) {
+                                out.write(Common.createDataPacket("119".getBytes(StandardCharsets.UTF_8), "File not found".getBytes(StandardCharsets.UTF_8)));
                                 out.flush();
                                 break;
                             }
-                            System.out.println(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recv_data)) - 1)));
-                            rw = new RandomAccessFile(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recv_data)) - 1)), "rw");
-                            out.write(Common.createDataPacket("124".getBytes("UTF8"), list.get(Integer.parseInt(new String(recv_data)) - 1).getBytes("UTF8")));
+                            System.out.println(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recvData)) - 1)));
+                            rw = new RandomAccessFile(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recvData)) - 1)), "rw");
+                            out.write(Common.createDataPacket("124".getBytes(StandardCharsets.UTF_8), list.get(Integer.parseInt(new String(recvData)) - 1).getBytes(StandardCharsets.UTF_8)));
                             out.flush();
                             break;
                         }
                         case 116://delete file
                             List<String> list = Common.getFileList(String.format("store/%s/", storePath));
-                            if (Integer.parseInt(new String(recv_data)) > list.size()) {
-                                out.write(Common.createDataPacket("119".getBytes("UTF8"), "File not found".getBytes("UTF8")));
+                            if (Integer.parseInt(new String(recvData)) > list.size()) {
+                                out.write(Common.createDataPacket("119".getBytes(StandardCharsets.UTF_8), "File not found".getBytes(StandardCharsets.UTF_8)));
                                 out.flush();
                                 break;
                             }
-                            String fileName = String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recv_data)) - 1));
+                            String fileName = String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recvData)) - 1));
                             System.out.println(fileName);
                             boolean result = Files.deleteIfExists(Paths.get(fileName));
                             if (result){
-                                out.write(Common.createDataPacket("119".getBytes("UTF8"), "File delete".getBytes("UTF8")));
+                                out.write(Common.createDataPacket("119".getBytes(StandardCharsets.UTF_8), "File delete".getBytes(StandardCharsets.UTF_8)));
                                 out.flush();
                                 break;
                             }
                             break;
                     }
                 }
-                if (file_close == true) {
+                if (fileClose == true) {
                     rw.close();
                     rw = null;
-                    file_close = false;
+                    fileClose = false;
 //                    socket.close();
 //                    return;
                 }
-                if (file_down_close == true) {
+                if (fileDownClose == true) {
                     rw.close();
                     rw = null;
-                    out.write(Common.createDataPacket("127".getBytes("UTF8"), "Close".getBytes("UTF8")));
+                    out.write(Common.createDataPacket("127".getBytes(StandardCharsets.UTF_8), "Close".getBytes(StandardCharsets.UTF_8)));
                     out.flush();
-                    file_down_close = false;
+                    fileDownClose = false;
                 }
-                if (loop_break == true) {
+                if (loopBreak == true) {
                     return;
                 }
 
@@ -253,7 +236,7 @@ public class ClientHandler {
 
     public void sendMessage(String message) {
         try {
-            out.write(Common.createDataPacket("122".getBytes("UTF8"), message.getBytes("UTF8")));
+            out.write(Common.createDataPacket("122".getBytes(StandardCharsets.UTF_8), message.getBytes(StandardCharsets.UTF_8)));
         } catch (IOException e) {
             throw new RuntimeException("SWW4", e);
         }
