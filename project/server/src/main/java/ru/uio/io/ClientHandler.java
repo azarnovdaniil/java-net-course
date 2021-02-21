@@ -23,7 +23,6 @@ public class ClientHandler {
     private String storePath;
 
 
-
     public ClientHandler(Server server, Socket socket) {
         try {
             this.server = server;
@@ -71,7 +70,7 @@ public class ClientHandler {
                      */
                     String[] credentialValues = credentials.split("\\s");
 
-                    if(credentialValues.length < 3){
+                    if (credentialValues.length < 3) {
                         sendMessage("wrong login or pass");
                         continue;
                     }
@@ -83,9 +82,9 @@ public class ClientHandler {
                                             sendMessage("cmd auth: Status OK");
                                             user = authUser;
                                             storePath = user.getEmail().replace('@', '_');
-                                            Path dir = Paths.get("store"+ File.separator + storePath);
+                                            Path dir = Paths.get("store" + File.separator + storePath);
                                             try {
-                                                if(!Files.isDirectory(dir))
+                                                if (!Files.isDirectory(dir))
                                                     Files.createDirectory(dir);
                                             } catch (IOException e) {
                                                 e.printStackTrace();
@@ -99,23 +98,23 @@ public class ClientHandler {
                                     },
                                     () -> sendMessage("No a such user by email and password.")
                             );
-                    if (isAuth.get()){
+                    if (isAuth.get()) {
                         break;
                     }
                 }
-                if(credentials.startsWith("-reg")){
+                if (credentials.startsWith("-reg")) {
                     String[] credentialValues = credentials.split("\\s");
 
-                    if(credentialValues.length < 3){
+                    if (credentialValues.length < 3) {
                         sendMessage("wrong login or pass");
                         continue;
                     }
                     Registration reg = new Registration(server.getConnect());
                     boolean res = reg.reg(credentialValues[1], credentialValues[2]);
 
-                    if(res){
+                    if (res) {
                         sendMessage("reg success");
-                    }else {
+                    } else {
                         sendMessage("reg failed");
                     }
                 }
@@ -157,7 +156,7 @@ public class ClientHandler {
                             rw.seek(current_file_pointer);
                             rw.write(recv_data);
                             current_file_pointer = rw.getFilePointer();
-                            System.out.println("Download percentage: " + ((float)current_file_pointer/rw.length())*100+"%");
+                            System.out.println("Download percentage: " + ((float) current_file_pointer / rw.length()) * 100 + "%");
                             out.write(Common.createDataPacket("125".getBytes("UTF8"), String.valueOf(current_file_pointer).getBytes("UTF8")));
                             out.flush();
                             break;
@@ -167,15 +166,15 @@ public class ClientHandler {
                             }
                             break;
                         case 120://close client
-                            if ("exit".equals(new String(recv_data))){
+                            if ("exit".equals(new String(recv_data))) {
                                 loop_break = true;
                             }
                             break;
                         case 121://send list client file name
                             List<String> collect = Common.getFileList(String.format("store/%s/", storePath));
                             int i = 1;
-                            for (String name : collect){
-                                out.write(Common.createDataPacket("121".getBytes("UTF8"), String.format("%d. %s",i++,name).getBytes("UTF8")));
+                            for (String name : collect) {
+                                out.write(Common.createDataPacket("121".getBytes("UTF8"), String.format("%d. %s", i++, name).getBytes("UTF8")));
                                 out.flush();
                             }
                             out.write(Common.createDataPacket("120".getBytes("UTF8"), "close".getBytes("UTF8")));
@@ -191,22 +190,40 @@ public class ClientHandler {
                                 rw.read(temp_buff, 0, temp_buff.length);
                                 out.write(Common.createDataPacket("126".getBytes("UTF8"), temp_buff));
                                 out.flush();
-                                System.out.println("Upload percentage: " + ((float)current_file_pointer/rw.length())*100+"%");
+                                System.out.println("Upload percentage: " + ((float) current_file_pointer / rw.length()) * 100 + "%");
                             } else {
                                 file_down_close = true;
                             }
                             break;
                         case 115://open file in store and send name file (download)
+                        {
                             List<String> list = Common.getFileList(String.format("store/%s/", storePath));
-                            if(Integer.parseInt(new String(recv_data)) > list.size()){
+                            if (Integer.parseInt(new String(recv_data)) > list.size()) {
                                 out.write(Common.createDataPacket("119".getBytes("UTF8"), "File not found".getBytes("UTF8")));
                                 out.flush();
                                 break;
                             }
-                            System.out.println(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recv_data)) -1)));
-                            rw = new RandomAccessFile(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recv_data))-1)), "rw");
-                            out.write(Common.createDataPacket("124".getBytes("UTF8"), list.get(Integer.parseInt(new String(recv_data))-1).getBytes("UTF8")));
+                            System.out.println(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recv_data)) - 1)));
+                            rw = new RandomAccessFile(String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recv_data)) - 1)), "rw");
+                            out.write(Common.createDataPacket("124".getBytes("UTF8"), list.get(Integer.parseInt(new String(recv_data)) - 1).getBytes("UTF8")));
                             out.flush();
+                            break;
+                        }
+                        case 116://delete file
+                            List<String> list = Common.getFileList(String.format("store/%s/", storePath));
+                            if (Integer.parseInt(new String(recv_data)) > list.size()) {
+                                out.write(Common.createDataPacket("119".getBytes("UTF8"), "File not found".getBytes("UTF8")));
+                                out.flush();
+                                break;
+                            }
+                            String fileName = String.format("store/%s/%s", storePath, list.get(Integer.parseInt(new String(recv_data)) - 1));
+                            System.out.println(fileName);
+                            boolean result = Files.deleteIfExists(Paths.get(fileName));
+                            if (result){
+                                out.write(Common.createDataPacket("119".getBytes("UTF8"), "File delete".getBytes("UTF8")));
+                                out.flush();
+                                break;
+                            }
                             break;
                     }
                 }
@@ -270,7 +287,7 @@ public class ClientHandler {
         return result;
     }
 
-    private void executeCommand(Command command){
+    private void executeCommand(Command command) {
         command.execute();
     }
 

@@ -7,6 +7,9 @@ import ru.uio.io.sql.JdbcSQLiteConnection;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,6 +26,13 @@ public class FileServer implements Server {
             sqLiteConnection = new JdbcSQLiteConnection();
             authenticationService = new BasicAuthenticationService(sqLiteConnection);
             System.out.println("Server is started up...");
+            Path dir = Paths.get("store");
+            try {
+                if(!Files.isDirectory(dir))
+                    Files.createDirectory(dir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             while (true) {
                 System.out.println("Server is listening for clients...");

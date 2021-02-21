@@ -1,5 +1,5 @@
 package ru.uio.io;
 
 public enum ClientHandlerEnum {
-    AUTH, UPLOAD, DOWNLOAD, LIST, HELP, REG
+    AUTH, UPLOAD, DOWNLOAD, LIST, HELP, REG, DEL
 }

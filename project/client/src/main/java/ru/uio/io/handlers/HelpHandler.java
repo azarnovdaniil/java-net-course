@@ -12,10 +12,12 @@ public class HelpHandler extends BaseHandler{
     public void workWithMessage() {
         System.out.println("Команды :\n" +
                 "-help                                               Список команд\n" +
+                "-reg [логин] [пароль]                               Регистрация на сервере (Пример: -reg n1@mail.com 1)\n" +
                 "-auth [логин] [пароль]                              Авторизация на сервере (Пример: -auth n1@mail.com 1)\n" +
                 "-l | -list                                          Выводит список файлов\n" +
                 "-u | -upload                                        Загрузить файл на сервер\n" +
                 "-d | -download [номер файла из списка]              Скачать файл\n" +
+                "-del [номер файла из списка]                        Удалить файл\n" +
                 "-exit                                               Отключить клиента от сервера");
     }
 }
