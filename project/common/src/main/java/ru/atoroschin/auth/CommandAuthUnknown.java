@@ -1,13 +1,15 @@
-package ru.atoroschin.commands;
+package ru.atoroschin.auth;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import ru.atoroschin.AuthService;
+import ru.atoroschin.Credentials;
+import ru.atoroschin.auth.AuthService;
 import ru.atoroschin.FileWorker;
+import ru.atoroschin.auth.CommandAuth;
 
 public class CommandAuthUnknown implements CommandAuth {
     @Override
-    public void send(ChannelHandlerContext ctx, String content, byte signal) {
+    public void send(ChannelHandlerContext ctx, Credentials credentials, byte signal) {
 
     }
 

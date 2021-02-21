@@ -3,6 +3,7 @@ package ru.atoroschin;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import ru.atoroschin.auth.AuthService;
 
 import java.util.HashMap;
 import java.util.Map;

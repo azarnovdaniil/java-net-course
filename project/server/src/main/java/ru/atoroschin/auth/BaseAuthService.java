@@ -1,7 +1,5 @@
 package ru.atoroschin.auth;
 
-import ru.atoroschin.AuthService;
-
 import java.util.List;
 
 public class BaseAuthService implements AuthService {
@@ -12,19 +10,19 @@ public class BaseAuthService implements AuthService {
             new User(-1, "unknown", "", "unknown", 1));
 
     @Override
-    public int getUserID(String login, String pass) {
+    public boolean auth(String login, String pass) {
         for (User user : users) {
             if (user.getLogin().equals(login) && user.getPassword().equals(pass)) {
-                return user.getID();
+                return true;
             }
         }
-        return -1;
+        return false;
     }
 
     @Override
-    public String getUserFolder(int id) {
+    public String getUserFolder(String login) {
         for (User user : users) {
-            if (user.getID() == id) {
+            if (user.getLogin().equals(login)) {
                 return user.getFolder();
             }
         }
@@ -32,9 +30,9 @@ public class BaseAuthService implements AuthService {
     }
 
     @Override
-    public int getMaxVolume(int id) {
+    public int getMaxVolume(String login) {
         for (User user : users) {
-            if (user.getID() == id) {
+            if (user.getLogin().equals(login)) {
                 return user.getMaxVolume();
             }
         }

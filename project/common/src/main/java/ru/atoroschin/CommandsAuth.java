@@ -2,7 +2,7 @@ package ru.atoroschin;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import ru.atoroschin.commands.*;
+import ru.atoroschin.auth.*;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -28,8 +28,8 @@ public enum CommandsAuth {
         this.commandApply = commandApply;
     }
 
-    public void sendToServer(ChannelHandlerContext ctx, String readLine) {
-        commandApply.send(ctx, readLine, signal);
+    public void sendToServer(ChannelHandlerContext ctx, Credentials credentials) {
+        commandApply.send(ctx, credentials, signal);
     }
 
     public void receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService, FileWorker fileWorker) {

@@ -1,16 +1,18 @@
-package ru.atoroschin.commands;
+package ru.atoroschin.auth;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import ru.atoroschin.*;
+import ru.atoroschin.auth.AuthService;
+import ru.atoroschin.auth.CommandAuth;
 
 import java.util.List;
 
 public class CommandAuthUser implements CommandAuth {
 
     @Override
-    public void send(ChannelHandlerContext ctx, String content, byte signal) {
-        List<String> list = List.of(content);
+    public void send(ChannelHandlerContext ctx, Credentials credentials, byte signal) {
+        List<String> list = List.of(credentials.getLogin());
         ByteBuf bufOut = BufWorker.makeBufFromList(list, signal);
         ctx.fireChannelRead(bufOut);
     }
@@ -19,11 +21,10 @@ public class CommandAuthUser implements CommandAuth {
     public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService,
                          FileWorker fileWorker, byte signal) {
         List<String> list = BufWorker.readFileListFromBuf(buf);
-        String strID = list.get(0);
+        String userLogin = list.get(0);
         try {
-            int id = Integer.parseInt(strID);
-            fileWorker.appendBasePath(authService.getUserFolder(id));
-            fileWorker.setMaxVolume(authService.getMaxVolume(id));
+            fileWorker.appendBasePath(authService.getUserFolder(userLogin));
+            fileWorker.setMaxVolume(authService.getMaxVolume(userLogin));
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }

@@ -31,6 +31,7 @@ public class RealNettyClient {
                     socketChannel.pipeline()
                             .addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN, PART_SIZE, 1,
                                     countFour, countFive, 0, true))
+                            .addLast(new ClientAuthHandler())
                             .addLast(new ClientHandlerNetty());
                 }
             });
