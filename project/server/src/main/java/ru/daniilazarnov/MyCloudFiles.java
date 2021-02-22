@@ -2,17 +2,18 @@ package ru.daniilazarnov;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class MyCloudFiles {
     private File file;
 
     public boolean isNewClientDirCreated(String login) {
-       file = new File ("mycloud/_" + login);
+       file = new File ("C:\\Users\\Users\\IdeaProjects\\java-net-course\\project\\server\\myclaud\\" + login);
         return file.mkdir ();
     }
 
     public String ls(String login) {
-        file = new File ("mycloud/_" + login);
+        file = new File ("C:\\Users\\Users\\IdeaProjects\\java-net-course\\project\\server\\myclaud\\" + login);
         return Arrays.toString (file.list ());
     }
 
@@ -22,21 +23,20 @@ public class MyCloudFiles {
     }
 
     public boolean isFileDelited(String login, String fileName) {
-        file = new File ("mycloud/_" + login + "/" + fileName);
+        file = new File ("C:\\Users\\Users\\IdeaProjects\\java-net-course\\project\\server\\myclaud\\" + login + "\\" + fileName);
         return file.delete ();
     }
 
     public void sendFileToClient(DataOutputStream out, String login, String fileName) {
         try {
-            out = new DataOutputStream(new FileOutputStream ("desktop/_" + login + "/" + fileName));
+            out = new DataOutputStream(new FileOutputStream ("C:\\Users\\Users\\IdeaProjects\\java-net-course\\project\\client\\desktop\\" + login + "\\" + fileName));
 
-            FileInputStream fis = new FileInputStream ("mycloud/_" + login + "/" + fileName);
+            FileInputStream fis = new FileInputStream ("C:\\Users\\Users\\IdeaProjects\\java-net-course\\project\\server\\myclaud\\" + login + "\\" + fileName);
 
             byte[] byteArray = new byte[16*1024];
             int count;
             while ((count = fis.read(byteArray)) != -1){
                 out.write(byteArray,0,count);
-//                bos.write (bis.read ());
             }
             fis.close();
             out.close();
@@ -46,23 +46,10 @@ public class MyCloudFiles {
 
         }
     }
+    public boolean isFileExists (String login, String fileName) {
+        file = new File ("C:\\Users\\Users\\IdeaProjects\\java-net-course\\project\\server\\myclaud\\" + login + "\\" + fileName);
+        return file.exists ();
 
-    public void receiveFileFromClient(DataInputStream in, String login, String fileName) {
-        try {
-            FileOutputStream fot = new FileOutputStream ("mycloud/_" + login + "/" + fileName);
-
-            byte[] byteArray = new byte[16*1024];
-            int count;
-            while ((count = in.read(byteArray)) != -1){
-                fot.write(byteArray,0,count);
-            }
-            in.close();
-            fot.close();
-
-        } catch (IOException e) {
-            e.printStackTrace ();
-
-        }
     }
 
 }
