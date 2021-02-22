@@ -7,6 +7,7 @@ import ru.daniilazarnov.common.handlers.Handler;
 import ru.daniilazarnov.common.handlers.HandlerException;
 import ru.daniilazarnov.server.auth.AuthService;
 import ru.daniilazarnov.server.auth.AuthenticationException;
+
 import java.nio.charset.StandardCharsets;
 
 public class LoginHandler implements Handler {
@@ -61,8 +62,7 @@ public class LoginHandler implements Handler {
                 try {
                     if (authService.login(name, pass, channel.id().toString())) {
                         System.out.println("Authentication has benn completed");
-                    }
-                    else {
+                    } else {
                         System.out.println("Incorrect login or password. Authentication hasn't benn completed");
                     }
                 } catch (AuthenticationException e) {

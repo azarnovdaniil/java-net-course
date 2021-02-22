@@ -32,7 +32,9 @@ public class AuthService {
     }
 
     public String getUserBySessionId(String sessionId) {
-        if (checkSession(sessionId)) return authChannels.get(sessionId);
+        if (checkSession(sessionId)) {
+            return authChannels.get(sessionId);
+        }
         return null;
     }
 

@@ -4,7 +4,7 @@ public enum OperationTypes {
     UPLOAD((byte) 1),
     DOWNLOAD((byte) 2),
     SHOW((byte) 3),
-    LOGIN((byte)4);
+    LOGIN((byte) 4);
 
     private byte code;
 

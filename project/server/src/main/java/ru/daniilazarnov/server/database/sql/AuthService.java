@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class AuthService implements Authentication {
 
-    private static final String loginQuery =
+    private static final String LOGIN_QUERY =
             "Select * From Users where login = ? and password = ? Limit 1";
     private final ConnectionService connectionService;
 
@@ -25,12 +25,14 @@ public class AuthService implements Authentication {
 
             connection = connectionService.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                    loginQuery);
+                    LOGIN_QUERY);
             statement.setString(1, name);
             statement.setString(2, password);
             ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()) return true;
+            if (resultSet.next()) {
+                return true;
+            }
             return false;
 
         } catch (SQLException e) {
