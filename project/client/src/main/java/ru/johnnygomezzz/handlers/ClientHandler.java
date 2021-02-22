@@ -57,16 +57,26 @@ public class ClientHandler {
 
                 if (message.startsWith(Commands.HELP.getName())) {
                     new HelpCommand().printHelp();
+
                 } else if (message.startsWith(Commands.QUIT.getName())) {
                     MyMessage msg = new MyMessage(messagePart[0]);
                     out.writeObject(msg);
                     out.flush();
                     new QuitCommand().quit();
+
                 } else if (message.startsWith(Commands.LS.getName()) && messagePart.length > 1) {
                     File dir = new File(PATH_LOCAL, messagePart[1]);
                     File[] arrFiles = dir.listFiles();
-                    List<File> list = Arrays.asList(arrFiles);
+
+                    List<File> list = null;
+
+                    if (arrFiles != null) {
+                        list = Arrays.asList(arrFiles);
+                    } else {
+                        System.out.println("Папка пуста.");
+                    }
                     System.out.println(list);
+
                 } else if (message.startsWith(Commands.TOUCH.getName()) && messagePart.length > 1) {
                     if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
                         System.out.println("Файл с именем " + messagePart[1] + " уже существует.");
@@ -98,6 +108,7 @@ public class ClientHandler {
                     out.writeObject(fm);
                     out.flush();
                     System.out.println("Файл " + fm.getFileName() + " успешно отправлен.");
+
                 } else if (message.startsWith(Commands.DELETE.getName()) && messagePart.length > 1) {
                     if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
                         try {
@@ -117,7 +128,6 @@ public class ClientHandler {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-
     }
 
     public static AbstractMessage readObject() throws ClassNotFoundException, IOException {

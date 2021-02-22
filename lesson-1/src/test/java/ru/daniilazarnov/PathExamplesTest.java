@@ -149,21 +149,6 @@ class PathExamplesTest {
     }
 
     @Test
-    @DisabledOnOs(OS.WINDOWS)
-    void testExists() throws IOException {
-        Path path = Paths.get("dir/2.txt");
-
-        assertTrue(Files.exists(path));
-
-        assertTrue(Files.isRegularFile(path));
-        assertTrue(Files.isWritable(path));
-
-        assertFalse(Files.isSymbolicLink(path));
-        assertFalse(Files.isExecutable(path));
-        assertFalse(Files.isHidden(path));
-    }
-
-    @Test
     void testIs() throws IOException {
         Path path0 = Paths.get("dir");
         Path path1 = Paths.get("dir");

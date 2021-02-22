@@ -7,7 +7,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import ru.daniilazarnov.pipeline.handlers.in.FinalInboundHandler;
 import ru.daniilazarnov.pipeline.handlers.in.FirstInboundHandler;
 import ru.daniilazarnov.pipeline.handlers.in.GatewayInboundHandler;
 import ru.daniilazarnov.pipeline.handlers.in.SecondInboundHandler;
@@ -34,8 +33,7 @@ public class MyServer {
                                     .addLast(new FirstInboundHandler())
                                     .addLast(new StringToByteBufOutboundHandler())
                                     .addLast(new SecondInboundHandler())
-                                    .addLast(new GatewayInboundHandler())
-                                    .addLast(new FinalInboundHandler());
+                                    .addLast(new GatewayInboundHandler());
                         }
                     });
             ChannelFuture f = b.bind(INET_PORT).sync();

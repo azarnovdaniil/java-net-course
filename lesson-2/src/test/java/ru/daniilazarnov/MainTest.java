@@ -136,25 +136,4 @@ class MainTest {
         srcChannel.close();
     }
 
-    @Test
-    void testWrite() throws IOException {
-        Path destPath = Path.of("dir/channel_example_3.txt");
-
-        RandomAccessFile dest = new RandomAccessFile(destPath.toFile(), "rw");
-        FileChannel destChannel = dest.getChannel();
-
-        String newData = "New String to write to file..." + System.currentTimeMillis();
-
-        ByteBuffer buf = ByteBuffer.allocate(48);
-        buf.clear();
-        buf.put(newData.getBytes());
-
-        buf.flip();
-
-        while (buf.hasRemaining()) {
-            destChannel.write(buf);
-        }
-        destChannel.close();
-    }
-
 }
