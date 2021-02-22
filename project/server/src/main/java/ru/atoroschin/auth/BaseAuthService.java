@@ -1,6 +1,8 @@
 package ru.atoroschin.auth;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BaseAuthService implements AuthService {
 
@@ -9,8 +11,10 @@ public class BaseAuthService implements AuthService {
             new User(3, "user3", "1", "user_3", 1),
             new User(-1, "unknown", "", "unknown", 1));
 
+    private final Map<String, User> userMap = users.stream().collect(Collectors.toMap(User::getLogin, user -> user));
+
     @Override
-    public boolean auth(String login, String pass) {
+    public boolean isAuth(String login, String pass) {
         for (User user : users) {
             if (user.getLogin().equals(login) && user.getPassword().equals(pass)) {
                 return true;
@@ -21,12 +25,11 @@ public class BaseAuthService implements AuthService {
 
     @Override
     public String getUserFolder(String login) {
-        for (User user : users) {
-            if (user.getLogin().equals(login)) {
-                return user.getFolder();
-            }
+        User user = userMap.get(login);
+        if (user == null) {
+//            throw new IllegalAccessException();
         }
-        return null;
+        return userMap.get(login).getFolder();
     }
 
     @Override

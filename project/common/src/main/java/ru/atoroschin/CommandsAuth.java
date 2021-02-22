@@ -14,6 +14,7 @@ public enum CommandsAuth {
     AUTHOK("authok", (byte) 101, new CommandAuthOk()),
     AUTHERR("autherr", (byte) 102, new CommandAuthErr()),
     AUTHUSER("authdir", (byte) 103, new CommandAuthUser()),
+    AUTHEXIT("exit", (byte) 104, new CommandAuthExit()),
     AUTHUNKNOWN("authunknown", (byte) -1, new CommandAuthUnknown());
 
     private static final Map<Byte, CommandsAuth> COMMANDS_MAP = Arrays.stream(CommandsAuth.values())

@@ -16,15 +16,15 @@ public class ServerStorage {
     private static final int SERVER_PORT = 8189;
     private static final int PART_SIZE = 10 * 1024 * 1024;
     private static Logger logger = Logger.getLogger("");
-    private int port;
-    private AuthService authService;
+    private final int port;
+    private final AuthService authService;
 
-    public ServerStorage(int port) {
+    public ServerStorage(int port, AuthService authService) {
         this.port = port;
+        this.authService = authService;
     }
 
     public void run() throws Exception {
-        authService = new BaseAuthService();
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         final int lengthFieldMes = 4;
@@ -59,7 +59,7 @@ public class ServerStorage {
         } else {
             port = SERVER_PORT;
         }
-        new ServerStorage(port).run();
+        new ServerStorage(port, new BaseAuthService()).run();
     }
 
 }

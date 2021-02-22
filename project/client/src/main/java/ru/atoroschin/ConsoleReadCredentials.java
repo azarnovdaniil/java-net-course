@@ -7,11 +7,13 @@ public class ConsoleReadCredentials implements ReadCredentials {
     public Credentials read() {
         Scanner scanner = new Scanner(System.in);
         String readLine;
-        System.out.print("Введите логин и пароль: ");
+        System.out.print("Введите логин и пароль через пробел: ");
         if (scanner.hasNext()) {
             readLine = scanner.nextLine();
             String[] names = readLine.split("\\s", 2);
-            return new Credentials(names[0], names[1]);
+            if (names.length==2) {
+                return new Credentials(names[0], names[1]);
+            }
         }
         return new Credentials();
     }

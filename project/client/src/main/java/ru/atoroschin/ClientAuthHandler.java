@@ -4,21 +4,22 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class ClientAuthHandler extends ChannelInboundHandlerAdapter {
-    private boolean auth;
     private final String fileCredentials = "prop.crd";
+    private Credentials credentials;
 
     @Override
     public void channelActive(ChannelHandlerContext channelHandlerContext) {
-        auth = false;
-        readAuth(channelHandlerContext, new FileReadCredentials(fileCredentials));
+        if (Files.exists(Path.of(fileCredentials))) {
+            readAuth(channelHandlerContext, new FileReadCredentials(fileCredentials));
+        } else {
+            readAuth(channelHandlerContext, new ConsoleReadCredentials());
+        }
     }
 
     @Override
@@ -26,17 +27,18 @@ public class ClientAuthHandler extends ChannelInboundHandlerAdapter {
         ByteBuf buf = (ByteBuf) msg;
         if (buf.readableBytes() > 0) {
             byte firstByte = buf.readByte();
-//            if (!auth) {
-                CommandsAuth command = CommandsAuth.getCommand(firstByte);
-                command.receive(channelHandlerContext, buf, null);
-                if (command.equals(CommandsAuth.AUTHOK)) {
-                    auth = true;
-                    channelHandlerContext.channel().pipeline().remove(this);
-                    channelHandlerContext.fireChannelActive();
-                } else {
-                    System.out.println("Неверный логин или пароль");
-                }
-//            }
+            CommandsAuth command = CommandsAuth.getCommand(firstByte);
+            command.receive(channelHandlerContext, buf, null);
+            if (command.equals(CommandsAuth.AUTHOK)) {
+                System.out.println("Авторизация прошла успешно.");
+                System.out.println("Для справки используйте команду help");
+                new FileReadCredentials(fileCredentials).write(credentials);
+                channelHandlerContext.channel().pipeline().remove(this);
+                channelHandlerContext.fireChannelActive();
+            } else {
+                System.out.println("Неверный логин или пароль");
+                readAuth(channelHandlerContext, new ConsoleReadCredentials());
+            }
         }
     }
 
@@ -48,17 +50,17 @@ public class ClientAuthHandler extends ChannelInboundHandlerAdapter {
 
     public void readAuth(ChannelHandlerContext ctx, ReadCredentials readCredentials) {
 //        Thread threadConsoleAuth = new Thread(() -> {
-        
-//            while (!auth) {
-                try {
-                    Credentials credentials = readCredentials.read();
 
-                    CommandsAuth command = CommandsAuth.AUTH;
-                    command.sendToServer(ctx, credentials);
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException | IOException e) {
-                    e.printStackTrace();
-                }
+//            while (!auth) {
+        try {
+            credentials = readCredentials.read();
+
+            CommandsAuth command = CommandsAuth.AUTH;
+            command.sendToServer(ctx, credentials);
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
 //            }
 //        });
 //        threadConsoleAuth.setDaemon(true);

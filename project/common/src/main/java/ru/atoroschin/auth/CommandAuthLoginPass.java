@@ -30,7 +30,7 @@ public class CommandAuthLoginPass implements CommandAuth {
         String login = list.get(0);
         String pass = list.get(1);
 //        int authResult = authService.getUserID(login, pass);
-        if (authService.auth(login, pass)) {
+        if (authService.isAuth(login, pass)) {
 //            AUTHUSER.sendToServer(ctx, String.valueOf(authResult));
             AUTHUSER.sendToServer(ctx, new Credentials(login, pass));
             AUTHOK.receiveAndSend(ctx, null, null, null);
