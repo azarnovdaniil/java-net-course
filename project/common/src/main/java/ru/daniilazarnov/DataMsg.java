@@ -20,7 +20,7 @@ public class DataMsg implements Serializable {
         return bytes;
     }
 
-    protected static DataMsg createMsg(Command command, Object obj) {
+    public static DataMsg createMsg(Command command, Object obj) {
         try {
             return new DataMsg(command, ConvertToByte.serialize(obj));
         } catch (Exception e) {

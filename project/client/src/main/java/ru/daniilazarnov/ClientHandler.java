@@ -21,7 +21,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-        if (msg instanceof DataMsg){
+        if (msg instanceof DataMsg) {
             dataMsgRead = (DataMsg) msg;
         } else {
             System.out.println("Incorrect data from server");
@@ -29,19 +29,24 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        switch (dataMsgRead.getCommand()){
+        switch (dataMsgRead.getCommand()) {
             case LIST:
                 cfIn.list(dataMsgRead);
                 break;
             case DOWNLOAD:
-                cfIn.downloadFile(dataMsgRead, scanner);
+                cfIn.download(dataMsgRead, scanner);
                 break;
             case UPLOAD:
                 break;
+            case CHECK_FILE_EXIST:
+                cfIn.checkFileExistOnServer(ctx, msg);
             case REMOVE:
                 break;
             case EXIT:
                 //ctx.channel().close();
+                break;
+            case START:
+                cfIn.startClient(dataMsgRead);
                 break;
         }
         sendCommand(ctx, scanner);
@@ -53,43 +58,38 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void sendCommand(ChannelHandlerContext ctx, Scanner scanner) {
-        //new Thread(() -> {
 
-            //while (true) {
-                System.out.print("Enter command (enter /help for to get a list of commands): ");
-                switch (scanner.nextLine()) {
-                    case "/list":
-                        ctx.writeAndFlush(new DataMsg(Command.LIST, null));
-                        break;
-                    case "/help":
-                        cfOut.getInfo();
-                        sendCommand(ctx, scanner);
-                        break;
-                    case "/download":
-                        String[] list = cfOut.dialog(scanner,
-                                "Enter the path to the downloaded file: ");
-                        ctx.writeAndFlush(DataMsg.createMsg(Command.DOWNLOAD, list));
-                        //cf.downloadFile(ctx, scanner);
-                        break;
-                    case "/upload":
-                        cfOut.dialog(scanner, "");
-                        break;
-                    case "/remove":
-                        break;
-                    case "/move":
-                        break;
-                    case "/exit":
-                        ctx.writeAndFlush(Command.EXIT);
-                        break;
-                    default:
-                        System.out.println("Entered incorrect command, please, try again");
-                        sendCommand(ctx, scanner);
-                        break;
-                }
-            //}
-       // }).start();
-
+        System.out.print("Enter command (enter /help for to get a list of commands): ");
+        switch (scanner.nextLine()) {
+            case "/list":
+                ctx.writeAndFlush(new DataMsg(Command.LIST, null));
+                break;
+            case "/help":
+                cfOut.getInfo();
+                sendCommand(ctx, scanner);
+                break;
+            case "/download":
+                String[] list = cfOut.dialog(scanner,
+                        "Enter the path to the downloaded file: ");
+                ctx.writeAndFlush(DataMsg.createMsg(Command.DOWNLOAD, list));
+                //cf.downloadFile(ctx, scanner);
+                break;
+            case "/upload":
+                String[] filePath = cfOut.dialog(scanner,
+                        "Enter the path to file on client: ");
+                cfOut.checkExistOnServer(ctx, filePath);
+                break;
+            case "/remove":
+                break;
+            case "/move":
+                break;
+            case "/exit":
+                ctx.writeAndFlush(Command.EXIT);
+                break;
+            default:
+                System.out.println("Entered incorrect command, please, try again");
+                sendCommand(ctx, scanner);
+                break;
+        }
     }
-
-
 }

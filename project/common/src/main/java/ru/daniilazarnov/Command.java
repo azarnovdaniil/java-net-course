@@ -11,7 +11,8 @@ public enum Command implements Serializable {
     CREATE_DIR("/crdir", " - create directory on server", null),
     ERROR("", " - command from server was incorrect", null),
     START("", " - this command is needed at the start of client connection", null),
-    EXIT("/exit", " - disconnect from server", null);
+    EXIT("/exit", " - disconnect from server", null),
+    CHECK_FILE_EXIST("", " - check exist file on server", null);
 
     private final String command;
     private String description;

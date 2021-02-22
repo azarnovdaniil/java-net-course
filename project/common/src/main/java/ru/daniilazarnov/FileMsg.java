@@ -1,6 +1,12 @@
 package ru.daniilazarnov;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Scanner;
 
 public class FileMsg implements Serializable {
     private String nameFile;
@@ -21,6 +27,19 @@ public class FileMsg implements Serializable {
 
     public byte[] getBytes() {
         return bytes;
+    }
+
+    public static boolean checkExistsFile(String path, FileMsg fileMsg) {
+        return Files.exists(Path.of(path + fileMsg.getNameFile()));
+    }
+
+    public static boolean checkExistsFile(String path) {
+        return Files.exists(Path.of(path));
+    }
+
+    public static String getFileName(String path) {
+        File file = new File(path);
+        return file.getName();
     }
 
 

@@ -7,26 +7,26 @@ import ru.daniilazarnov.Command;
 import ru.daniilazarnov.DataMsg;
 import ru.daniilazarnov.FunctionalServer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Path;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private static List<Channel> channels = new ArrayList<>();
     private FunctionalServer functionalServer = new FunctionalServer();
     private String clientName;
     private static int clientIndex = 1;
+    private String generalPath;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("Client connected");
         clientName = "User" + clientIndex;
         clientIndex++;
-        ctx.writeAndFlush(new DataMsg(Command.START, null));
+        generalPath = Path.of("project/server/directories/" + clientName).toString();
+        ctx.writeAndFlush(DataMsg.createMsg(Command.START, clientName));
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        functionalServer.executeCommand(ctx, msg, clientName);
+        functionalServer.executeCommand(ctx, msg, generalPath);
     }
 
     @Override
