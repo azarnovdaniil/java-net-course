@@ -11,7 +11,7 @@
 <VBox fx:controller="ru.daniilazarnov.Controller" xmlns:fx="http://javafx.com/fxml" >
     <MenuBar>
         <Menu text="Program">
-            <MenuItem text="Exit" onAction="#exitAction">
+            <MenuItem text="Exit" onAction="#exitAction">//
             </MenuItem>
         </Menu>
     </MenuBar>
