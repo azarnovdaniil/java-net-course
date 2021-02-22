@@ -3,7 +3,6 @@ package ru.daniilazarnov;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import ru.daniilazarnov.newp.*;
 
 import java.io.IOException;
 import java.nio.file.Files;

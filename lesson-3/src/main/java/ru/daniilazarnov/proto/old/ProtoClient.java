@@ -9,7 +9,7 @@ public class ProtoClient {
         new Thread(() -> Network.getInstance().start(networkStarter)).start();
         networkStarter.await();
 
-        ProtoFileSender.sendFile(Paths.get("demo.txt"), Network.getInstance().getCurrentChannel(), future -> {
+        ProtoFileSender.sendFile(Paths.get("D:\\testDir\\DanMachiS2.avi"), Network.getInstance().getCurrentChannel(), future -> {
             if (!future.isSuccess()) {
                 future.cause().printStackTrace();
 //                Network.getInstance().stop();

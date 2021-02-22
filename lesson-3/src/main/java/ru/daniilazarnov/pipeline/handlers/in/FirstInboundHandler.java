@@ -6,19 +6,17 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.util.Arrays;
 
-public class FirstInboundHandler extends ChannelInboundHandlerAdapter {
-
-    public static final int MESSAGE_SIZE = 3;
+public class FirstHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         System.out.println("first");
         ByteBuf buf = (ByteBuf) msg;
-        if (buf.readableBytes() < MESSAGE_SIZE) {
+        if (buf.readableBytes() < 3) {
             buf.release();
             ctx.writeAndFlush("hahahah");
         }
-        byte[] data = new byte[MESSAGE_SIZE];
+        byte[] data = new byte[3];
         buf.readBytes(data);
         buf.release();
         System.out.println(Arrays.toString(data));

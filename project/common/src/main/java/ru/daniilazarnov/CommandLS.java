@@ -1,4 +1,4 @@
-package ru.daniilazarnov.newp;
+package ru.daniilazarnov;
 
 import java.io.File;
 import java.io.Serializable;

@@ -1,4 +1,4 @@
-package ru.daniilazarnov.newp;
+package ru.daniilazarnov;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

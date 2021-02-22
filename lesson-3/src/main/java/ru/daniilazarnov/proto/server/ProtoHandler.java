@@ -45,7 +45,7 @@ public class ProtoHandler extends ChannelInboundHandlerAdapter {
                     byte[] fileName = new byte[nextLength];
                     buf.readBytes(fileName);
                     System.out.println("STATE: Filename received - _" + new String(fileName, "UTF-8"));
-                    out = new BufferedOutputStream(new FileOutputStream("_" + new String(fileName)));
+                    out = new BufferedOutputStream(new FileOutputStream("D:\\testDir\\new\\" + new String(fileName)));
                     currentState = State.FILE_LENGTH;
                 }
             }

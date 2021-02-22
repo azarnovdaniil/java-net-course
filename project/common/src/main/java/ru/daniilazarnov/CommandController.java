@@ -1,4 +1,4 @@
-package ru.daniilazarnov.newp;
+package ru.daniilazarnov;
 
 import io.netty.channel.Channel;
 
