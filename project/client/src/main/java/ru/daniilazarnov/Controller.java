@@ -35,6 +35,7 @@ public class Controller implements Initializable {
     }
 
     public void exitAction(ActionEvent actionEvent) {
+
         network.close();
         Platform.exit();
     }
