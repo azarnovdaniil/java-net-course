@@ -4,16 +4,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MainTest {
+class PathExamplesTest {
 
     @Test
     void oldWay() {
@@ -187,16 +189,5 @@ class MainTest {
         System.out.println(Arrays.toString(Files.readAllBytes(path)));
         System.out.println(Files.readAllLines(path));
         System.out.println(Files.readString(path));
-    }
-
-    @Test
-    void testCopy() throws IOException {
-        Files.copy(Path.of("dir/from.txt"), Path.of("dir/to.txt"), StandardCopyOption.REPLACE_EXISTING);
-
-        OutputStream outputStream = new FileOutputStream("dir/out.txt");
-        Files.copy(Path.of("dir/from.txt"), outputStream);
-
-        InputStream inputStream = new FileInputStream("dir/from.txt");
-        Files.copy(inputStream, Path.of("dir/from_input.txt"), StandardCopyOption.REPLACE_EXISTING);
     }
 }
