@@ -4,7 +4,8 @@ package ru.daniilazarnov.handlers;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
-import ru.daniilazarnov.DB.DBService;
+import ru.daniilazarnov.CommandList;
+import ru.daniilazarnov.DBStorage.*;
 import ru.daniilazarnov.DBMsg;
 
 import java.nio.file.Files;
@@ -12,17 +13,23 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class AuthHandler extends ChannelInboundHandlerAdapter {
+
+    private final UserStorage dbService;
     private static final Logger LOGGER = Logger.getLogger(AuthHandler.class.getName());
+
+    public AuthHandler(UserStorage dbService) {
+        this.dbService = dbService;
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof DBMsg) {
-            DBService dbService = new DBService();
-            DBMsg dbm = (DBMsg) msg;
-            String dbCmd = dbm.getCmd();
 
-            switch (dbCmd) {
-                case "/auth":
+            DBMsg dbm = (DBMsg) msg;
+            CommandList command = dbm.getCommand();
+
+            switch (command) {
+                case AUTH:
                     LOGGER.info("Запрос на авторизацию от клиента");
                     if (dbService.findUser(dbm.getLogin(), dbm.getPassword())) {
                         DBMsg authOK = new DBMsg(dbm.getLogin());
@@ -35,7 +42,7 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
 
                     }
                     break;
-                case "/reg":
+                case REG:
                     LOGGER.info("Запрос на регистрацию новго клиента");
                     dbService.addUser(dbm.getLogin(), dbm.getPassword());
                     break;

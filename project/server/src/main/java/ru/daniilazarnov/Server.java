@@ -13,6 +13,7 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import ru.daniilazarnov.DBStorage.DBUserStorage;
 import ru.daniilazarnov.handlers.AuthHandler;
 import ru.daniilazarnov.handlers.FilesHandler;
 import ru.daniilazarnov.handlers.RequestHandler;
@@ -45,7 +46,7 @@ public class Server {
                             ch.pipeline()
                                     .addLast(new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)))
                                     .addLast(new ObjectEncoder())
-                                    .addLast(new AuthHandler())
+                                    .addLast(new AuthHandler(new DBUserStorage()))
                                     .addLast(new RequestHandler())
                                     .addLast(new FilesHandler());
                         }

@@ -1,8 +1,8 @@
-package ru.daniilazarnov.DB;
+package ru.daniilazarnov.DBStorage;
 
 import java.sql.*;
 
-public class DBService implements DBCommands {
+public class DBUserStorage implements UserStorage {
 
     @Override
     public boolean findUser(String login, String password) {
@@ -10,7 +10,8 @@ public class DBService implements DBCommands {
 
         try {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM users_db WHERE login = '" + login + " AND password = " + password + "';");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM users_db WHERE login = '" +
+                    login + " AND password = " + password + "';");
 
             if (resultSet != null) {
                 return true;
@@ -25,7 +26,7 @@ public class DBService implements DBCommands {
     }
 
     @Override
-    public int addUser(String login, String password) {
+    public void addUser(String login, String password) {
         Connection connection = DBConnection.getConnection();
 
         try {
@@ -35,8 +36,7 @@ public class DBService implements DBCommands {
 
             statement.setString(1, login);
             statement.setString(2, password);
-
-            return statement.executeUpdate();
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             throw new RuntimeException("Что-то пошло не так...", e);

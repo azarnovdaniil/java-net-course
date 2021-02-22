@@ -4,7 +4,6 @@ import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.*;
@@ -30,7 +29,8 @@ public class Client {
     public void run() {
         try (Socket socket = new Socket(host, port);
              ObjectEncoderOutputStream objectOut = new ObjectEncoderOutputStream(socket.getOutputStream());
-             ObjectDecoderInputStream objectIn = new ObjectDecoderInputStream(socket.getInputStream(), 1024 * 1024 * 100)) {
+             ObjectDecoderInputStream objectIn = new ObjectDecoderInputStream(socket.getInputStream(),
+                     1024 * 1024 * 100)) {
             LOGGER.debug("Клиент успешно подключился");
 
             ClientHandler clientHandler = new ClientHandler(objectOut);
@@ -55,8 +55,8 @@ public class Client {
 
                             fos.write(fm.getData());
                             fos.close();
-                        } else if (receivedFile instanceof DirectoryListInfo) {
-                            DirectoryListInfo dim = (DirectoryListInfo) receivedFile;
+                        } else if (receivedFile instanceof DirectoryInfo) {
+                            DirectoryInfo dim = (DirectoryInfo) receivedFile;
                             LOGGER.debug("Получена информация о расположении файла");
                             LOGGER.info("Файлы в каталоге: ");
                             System.out.println(dim.getFilesAtDirectory().toString());
@@ -79,12 +79,12 @@ public class Client {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-            LOGGER.info("Теперь вы можете писать команды, соединение прошло успешно");
-            LOGGER.info("Не забудьте авторизоваться. Используйте /help, для просмотра доступных команд");
+            LOGGER.info("Соединение прошло успешно.Теперь вы можете писать команды.");
+            LOGGER.info("Не забудьте авторизоваться. Используйте help, для просмотра доступных команд");
             while (true) {
                 try {
                     String msg = reader.readLine();
-                    if (msg.startsWith("/exit")) {
+                    if (msg.startsWith("exit")) {
                         socket.close();
                         break;
                     }

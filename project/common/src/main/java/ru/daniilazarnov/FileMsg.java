@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+
 public class FileMsg extends AbstractMsg {
 
     private String filename;

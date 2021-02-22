@@ -2,10 +2,10 @@ package ru.daniilazarnov;
 
 import java.util.List;
 
-public class DirectoryListInfo extends AbstractMsg {
+public class DirectoryInfo extends AbstractMsg {
     private List<String> filesAtDirectory;
 
-    public DirectoryListInfo(List<String> filesAtDirectory) {
+    public DirectoryInfo(List<String> filesAtDirectory) {
         this.filesAtDirectory = filesAtDirectory;
     }
 
