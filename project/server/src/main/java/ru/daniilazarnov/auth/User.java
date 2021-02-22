@@ -8,12 +8,12 @@ import java.util.Objects;
 public class User {
 
     private final String login;
-    private final String password;
+   // private final String password;
 
 
-    public User(String login, String password) {
+    public User(String login/*, String password*/) {
         this.login = login;
-        this.password = password;
+      //  this.password = password;
 
     }
 
@@ -22,16 +22,16 @@ public class User {
         return login;
     }
 
-    public String getPassword() {
-
-        return password;
-    }
-
-
-
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(login, password);
+//    public String getPassword() {
+//
+//        return password;
 //    }
+
+
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(login/*, password*/);
+    }
 }

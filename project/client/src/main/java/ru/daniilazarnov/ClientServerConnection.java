@@ -1,84 +1,34 @@
 package ru.daniilazarnov;
 
 import javafx.application.Platform;
+import ru.daniilazarnov.CommandsType.DeleteFilesCommandData;
 import ru.daniilazarnov.CommandsType.ErrorCommandData;
+import ru.daniilazarnov.CommandsType.FileMessage;
 
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedList;
 
 public class ClientServerConnection {
 
-    private Socket socket;
-    private ObjectInputStream dataInputStream;
-    private ObjectOutputStream dataOutputStream;
+    private static Socket socket;
+    private static ObjectInputStream dataInputStream;
+    private static ObjectOutputStream dataOutputStream;
 
 
-    public ObjectOutputStream getDataOutputStream() {
-
-        return dataOutputStream;
-    }
-
-    public ObjectInputStream getDataInputStream() {
-
-        return dataInputStream;
-    }
-
-
-
-    public boolean startConnect(){
+    public static void startConnect(){
         try{
             Socket socket = new Socket("localhost", 8189);
             dataInputStream = new ObjectInputStream(socket.getInputStream());
             dataOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            return true;
 
         } catch (IOException e) {
-            System.out.println("Connection lost...");
             e.printStackTrace();
-            return false;
         }
     }
-
-    public void OptionPanel(OptionsController optionsController){
-
-        Thread thread = new Thread( () -> {
-            try {
-                while (true) {
-
-                    Commands commands = executeCommands();
-                    if (commands == null) {
-                        optionsController.showError("Server Error", "Incorrect command");
-                        continue;
-                    }
-                    switch (commands.getType()) {
-                        case ERROR: {
-                            ErrorCommandData data = (ErrorCommandData) commands.getData();
-                            String errorMessage = data.getErrorMessage();
-                            Platform.runLater(() -> {
-                                optionsController.showError("Server error", errorMessage);
-
-                            });
-                            break;
-                        }
-                        case DELETE_FILES:
-
-                    default:
-                        Platform.runLater(() -> {
-                            optionsController.showError("Unknown command from server!", commands.getType().toString());
-                        });
-                }
-
-            }
-                }catch (IOException e) {
-                        e.printStackTrace();
-                        System.out.println("Connection lost!");
-                    }
-                });
-                thread.setDaemon(true);
-                thread.start();
-            }
-
 
 
     private Commands executeCommands() throws IOException{
@@ -99,16 +49,58 @@ public class ClientServerConnection {
         dataOutputStream.writeObject(commands);
     }
 
-    public void stopConnect(){
-        try{
-           socket.close();
+
+
+    public static void stopConnection() {
+        try {
+            dataOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            dataInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
+    public static boolean deletionFiles (String login, LinkedList<File> fileNameToDelete) {
+        try {
+            if (!fileNameToDelete.isEmpty()) {
+                dataOutputStream.writeObject(new DeleteFilesCommandData(login, fileNameToDelete));
+                dataOutputStream.flush();
+                return true;
+            } else {
+                return false;
+            }
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean uploadFiles(String login, LinkedList<File> filesToSendToCloud) {
+        try {
+            if (!filesToSendToCloud.isEmpty()) {
+                for (int i = 0; i < filesToSendToCloud.size(); i++) {
+                    Path path = Paths.get(filesToSendToCloud.get(i).getAbsolutePath());
+                    dataOutputStream.writeObject(new FileMessage(login, path));
+                    dataOutputStream.flush();
+                }
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 
 }

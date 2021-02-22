@@ -1,19 +1,28 @@
 package ru.daniilazarnov.CommandsType;
 
+import java.io.File;
 import java.io.Serializable;
+import java.util.LinkedList;
 
 public class DeleteFilesCommandData implements Serializable {
 
-       private final String fileName;
+
+       private String login;
+       private LinkedList<File> fileNameToDelete;
 
 
-       public DeleteFilesCommandData (String fileName) {
+       public DeleteFilesCommandData (String login, LinkedList<File> fileNameToDelete) {
 
-            this.fileName = fileName;
+            this.login = login;
+            this.fileNameToDelete = fileNameToDelete;
         }
 
-        public String getFileName() {
-            return fileName;
+        public String getLogin(){
+           return login;
+        }
+        public LinkedList<File> getFileNameToDelete() {
+
+           return fileNameToDelete;
        }
 }
 

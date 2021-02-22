@@ -1,7 +1,10 @@
 package ru.daniilazarnov;
 
 import ru.daniilazarnov.CommandsType.*;
+
+import java.io.File;
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Commands implements Serializable {
@@ -19,10 +22,10 @@ public class Commands implements Serializable {
         return data;
     }
 
-    public static Commands authCommand(String login, String password) {
+    public static Commands authCommand(String login /*, String password*/) {
         Commands command = new Commands();
         command.type = CommandsList.AUTH;
-        command.data = new AuthCommandData(login, password);
+        command.data = new AuthCommandData(login /*, password*/);
         return command;
     }
 
@@ -78,10 +81,10 @@ public class Commands implements Serializable {
         return command;
     }
 
-        public static Commands deleteFilesCommand(String fileName) {
+        public static Commands deleteFilesCommand(String login, LinkedList<File> fileNameToDelete) {
         Commands command = new Commands();
         command.type = CommandsList.DELETE_FILES;
-        command.data = new DeleteFilesCommandData(fileName);
+        command.data = new DeleteFilesCommandData(login, fileNameToDelete);
         return command;
     }
 
