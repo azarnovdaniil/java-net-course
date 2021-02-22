@@ -7,6 +7,9 @@ import ru.johnnygomezzz.AbstractMessage;
 import ru.johnnygomezzz.FileMessage;
 import ru.johnnygomezzz.FileRequest;
 import ru.johnnygomezzz.MyMessage;
+import ru.johnnygomezzz.commands.Commands;
+import ru.johnnygomezzz.commands.HelpCommand;
+import ru.johnnygomezzz.commands.QuitCommand;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,25 +55,28 @@ public class ClientHandler {
                 String message = scanner.nextLine();
                 String[] messagePart = message.split("\\s");
 
-                if (message.startsWith("/quit")) {
+                if (message.startsWith(Commands.HELP.getName())) {
+                    new HelpCommand().printHelp();
+                }
+
+                else if (message.startsWith(Commands.QUIT.getName())) {
                     MyMessage msg = new MyMessage(messagePart[0]);
                     out.writeObject(msg);
                     out.flush();
-                    System.exit(0);
+                    new QuitCommand().quit();
                 }
 
-                if (message.startsWith("/ls") && messagePart.length > 1) {
+                else if (message.startsWith(Commands.LS.getName()) && messagePart.length > 1) {
                     File dir = new File(PATH_LOCAL, messagePart[1]);
                     File[] arrFiles = dir.listFiles();
                     List<File> list = Arrays.asList(arrFiles);
                     System.out.println(list);
                 }
 
-                if (message.startsWith("/touch") && messagePart.length > 1) {
+                else if (message.startsWith(Commands.TOUCH.getName()) && messagePart.length > 1) {
                     if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
                         System.out.println("Файл с именем " + messagePart[1] + " уже существует.");
                     } else if (messagePart.length == 2) {
-                        Paths.get(PATH_LOCAL, messagePart[1]);
                         System.out.println("Вы пытаетесь создать пустой файл.");
                     } else {
                         Path path = Paths.get(PATH_LOCAL, messagePart[1]);
@@ -86,7 +92,7 @@ public class ClientHandler {
                     }
                 }
 
-                if (message.startsWith("/download") && messagePart.length > 1) {
+                else if (message.startsWith(Commands.DOWNLOAD.getName()) && messagePart.length > 1) {
                     sendMsg(new FileRequest(messagePart[1]));
 
                     AbstractMessage am = readObject();
@@ -97,14 +103,14 @@ public class ClientHandler {
                     }
                 }
 
-                if (message.startsWith("/upload") && messagePart.length > 1) {
+                else if (message.startsWith(Commands.UPLOAD.getName()) && messagePart.length > 1) {
                     FileMessage fm = new FileMessage(Paths.get(PATH_LOCAL + messagePart[1]));
                     out.writeObject(fm);
                     out.flush();
                     System.out.println("Файл " + fm.getFileName() + " успешно отправлен.");
                 }
 
-                if (message.startsWith("/delete") && messagePart.length > 1) {
+                else if (message.startsWith(Commands.DELETE.getName()) && messagePart.length > 1) {
                     if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
                         try {
                             Files.delete(Paths.get(PATH_LOCAL, messagePart[1]));
@@ -115,9 +121,7 @@ public class ClientHandler {
                     } else {
                         System.out.println("Файл с именем " + messagePart[1] + " отсутствует.");
                     }
-                }
-
-                else {
+                } else {
                     System.out.println("\"" + message + "\""
                             + " неполное значение или не является командой.\nВведите команду:");
                 }
