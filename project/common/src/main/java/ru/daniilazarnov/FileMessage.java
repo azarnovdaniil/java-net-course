@@ -8,18 +8,11 @@ public class FileMessage extends AbstractMessage {
 
     private String fileName;
 
-    private final byte[] data;
-    private int partNumber;
-    private int partsCount;
+    private  byte[] data;
 
+    public FileMessage() {
 
-    public FileMessage(String filename, int partNumber, int partsCount, byte[] data) {
-        this.fileName = filename;
-        this.partNumber = partNumber;
-        this.partsCount = partsCount;
-        this.data = data;
     }
-
 
 
     public String getFileName() {
