@@ -24,6 +24,7 @@
                 <Menu mnemonicParsing="false" text="Connect">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#onConnectToServer" text="connect to server"/>
+                        <MenuItem mnemonicParsing="false" onAction="#disconnectToServer" text="disconnect"/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
@@ -58,8 +59,10 @@
         <HBox spacing="5">
             <Button maxWidth="Infinity" focusTraversable="false" text="Копировать файл" HBox.hgrow="ALWAYS"
                     onAction="#copyBtnAction"/>
-            <Button maxWidth="Infinity" focusTraversable="false" text="Переместить файл" HBox.hgrow="ALWAYS"/>
-            <Button maxWidth="Infinity" focusTraversable="false" text="Удалить файл" HBox.hgrow="ALWAYS"/>
+            <Button maxWidth="Infinity" focusTraversable="false" text="Обновить" HBox.hgrow="ALWAYS"
+                    onAction="#updateList"/>
+            <Button maxWidth="Infinity" focusTraversable="false" text="click" HBox.hgrow="ALWAYS"
+                    onAction="#click"/>
             <Button maxWidth="Infinity" focusTraversable="false" text="Выход из программы" HBox.hgrow="ALWAYS"
                     onAction="#btnExitAction"/>
             <padding>

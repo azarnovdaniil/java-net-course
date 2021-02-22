@@ -3,6 +3,7 @@ package server;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -34,9 +35,10 @@ public class NettyServer {
                                     new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
                                     new HandlerCommand()
+
                             );
                         }
-                    });
+                    }) .childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture future = b.bind(port).sync();
             onConnectionReady(future);
             future.channel().closeFuture().sync();

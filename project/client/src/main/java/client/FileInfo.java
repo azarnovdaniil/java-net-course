@@ -63,6 +63,7 @@ public class FileInfo {
             this.filename = path.getFileName().toString();
             this.size = Files.size(path);
             this.type = Files.isDirectory(path) ? FileType.DIRECTORY : FileType.FILE;
+
             if (this.type == FileType.DIRECTORY) {
                 this.size = -1L;
             }

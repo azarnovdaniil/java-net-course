@@ -16,14 +16,14 @@ public class NettyClient {
 
     private StorageClient storageClient;
 
-    private final String ip;
+    private final String host;
 
     private final int port;
     private static final int MAX_OBJECT_SIZE = 50 * 1024 * 1024;
 
-    public NettyClient(StorageClient storageClient, String ip, int port) {
+    public NettyClient(StorageClient storageClient, String host, int port) {
         this.storageClient = storageClient;
-        this.ip = ip;
+        this.host = host;
         this.port = port;
     }
 
@@ -35,17 +35,18 @@ public class NettyClient {
             Bootstrap b = new Bootstrap();
             b.group(workerGroup)
                     .channel(NioSocketChannel.class);
-            b.option(ChannelOption.SO_KEEPALIVE, true);
+            b.option(ChannelOption.TCP_NODELAY, true);
             b.handler(new ChannelInitializer<SocketChannel>() {
                 protected void initChannel(SocketChannel socketChannel)/* throws Exception*/ {
                     socketChannel.pipeline().addLast(
-                            new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
+                            new ObjectDecoder(50 * 1024 * 1024, ClassResolvers
+                                    .weakCachingConcurrentResolver(null)),
                             new ObjectEncoder(),
-                            new HandlerCommand()
-                    );
+                            new HandlerCommand());
+
                 }
             });
-            ChannelFuture future = b.connect(ip, port).sync();
+            ChannelFuture future = b.connect(host, port).sync();
             onConnectionReady(future);
 
             future.channel().closeFuture().sync();
