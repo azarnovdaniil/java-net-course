@@ -16,7 +16,8 @@ public class ShowResponseHandler implements Handler {
     private long currentPathsNum = 0;
     private int currentPathLength;
 
-    public ShowResponseHandler() {
+    public ShowResponseHandler(ByteBuf buf) {
+        this.buf = buf;
     }
 
     @Override
@@ -61,8 +62,4 @@ public class ShowResponseHandler implements Handler {
         return state == ShowHandlerState.COMPLETE;
     }
 
-    @Override
-    public void setBuffer(ByteBuf buf) {
-        this.buf = buf;
-    }
 }

@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class AuthService implements Authentication {
 
     private static final String loginQuery =
-            "Select * From public.\"Users\" where \"login\" = ? and \"password\" = ? Limit 1";
+            "Select * From Users where login = ? and password = ? Limit 1";
     private final ConnectionService connectionService;
 
     public AuthService(ConnectionService connectionService) {

@@ -30,7 +30,6 @@ public class ResponseHandler extends ChannelInboundHandlerAdapter {
                 }
             }
             if (state == HandlerState.PROCESS) {
-                handler.setBuffer(buf);
                 handler.handle();
                 if (handler.isComplete()) {
                     state = HandlerState.IDLE;
@@ -51,9 +50,9 @@ public class ResponseHandler extends ChannelInboundHandlerAdapter {
     private Handler readOperationType(ChannelHandlerContext ctx, ByteBuf buf) {
         byte read = buf.readByte();
         if (read == OperationTypes.UPLOAD.getCode()) {
-            return new DownloadResponseHandler(downloadsPath);
+            return new DownloadResponseHandler(downloadsPath, buf);
         } else if (read == OperationTypes.SHOW.getCode()) {
-            return new ShowResponseHandler();
+            return new ShowResponseHandler(buf);
         } else {
             System.out.println("ERROR: Invalid first byte - " + read);
             return null;

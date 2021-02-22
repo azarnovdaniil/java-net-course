@@ -6,6 +6,7 @@ import ru.daniilazarnov.common.FilePackageConstants;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.EnumSet;
@@ -41,7 +42,10 @@ public class FileReader {
                     fileName = new String(fileNameBytes, StandardCharsets.UTF_8);
                     System.out.println("Filename to receive: " + fileName);
 
-                    fileChannel = FileChannel.open(Path.of(root + fileName),
+                    Path path = Path.of(root + fileName);
+                    Files.createDirectories(path.getParent());
+
+                    fileChannel = FileChannel.open(path,
                             EnumSet.of(StandardOpenOption.CREATE,
                                     StandardOpenOption.TRUNCATE_EXISTING,
                                     StandardOpenOption.WRITE));

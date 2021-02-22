@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import ru.daniilazarnov.common.handlers.Handler;
 import ru.daniilazarnov.common.OperationTypes;
+import ru.daniilazarnov.common.handlers.HandlerException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -24,17 +25,23 @@ public class ShowHandler implements Handler {
     private ByteBuf buf;
     private String root;
 
-    public ShowHandler(Channel channel, String root) {
+    public ShowHandler(Channel channel, String root, ByteBuf buf) {
         this.channel = channel;
         this.root = root;
+        this.buf = buf;
     }
 
     @Override
-    public void handle() throws IOException {
+    public void handle() throws HandlerException {
 
         Path rootPath = Paths.get(root);
-        List<String> paths = Files.walk(rootPath).filter(Files::isRegularFile).map(Path::toString).
-                collect(Collectors.toList());
+        List<String> paths = null;
+        try {
+            paths = Files.walk(rootPath).filter(Files::isRegularFile).map(Path::toString).
+                    collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new HandlerException("Exception has been occurred via reading files in the user's catalog", e);
+        }
 
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(OPERATION_CODE_BYTES);
         buf.writeByte(OperationTypes.SHOW.getCode());
@@ -63,8 +70,4 @@ public class ShowHandler implements Handler {
         return true;
     }
 
-    @Override
-    public void setBuffer(ByteBuf buf) {
-        this.buf = buf;
-    }
 }

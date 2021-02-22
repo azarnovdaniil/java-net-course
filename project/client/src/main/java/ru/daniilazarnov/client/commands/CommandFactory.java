@@ -1,6 +1,7 @@
 package ru.daniilazarnov.client.commands;
 
 import io.netty.channel.Channel;
+import ru.daniilazarnov.client.commands.login.LoginCommand;
 import ru.daniilazarnov.common.commands.Command;
 import ru.daniilazarnov.client.commands.download.DownloadCommand;
 import ru.daniilazarnov.client.commands.show.ShowCommand;
@@ -16,17 +17,27 @@ public class CommandFactory {
             System.out.println(command);
             if (command.equals(ClientCommand.DOWNLOAD.getTitle())) {
                 return new DownloadCommand(channel, pathString);
-            } else if (command.equals(ClientCommand.UPLOAD.getTitle())) {
-                return new UploadCommand(channel, pathString);
-            } else {
-                throw new IllegalArgumentException("Unknown command: " + command);
             }
+            if (command.equals(ClientCommand.UPLOAD.getTitle())) {
+                return new UploadCommand(channel, pathString);
+            }
+            if (command.equals(ClientCommand.LOGIN.getTitle())) {
+                whitespaceIndex = pathString.indexOf(" ");
+                if (whitespaceIndex != -1) {
+                    return new LoginCommand(channel,
+                            pathString.substring(0, whitespaceIndex),
+                            pathString.substring(whitespaceIndex + 1));
+                }
+                throw new IllegalArgumentException("Incorrect syntax of the command: " + command);
+            }
+            throw new IllegalArgumentException("Unknown command: " + command);
+
         } else {
             if (inputString.equals(ClientCommand.SHOW.getTitle())) {
                 return new ShowCommand(channel);
-            } else {
-                throw new IllegalArgumentException("Unknown command:" + inputString);
             }
+            throw new IllegalArgumentException("Unknown command:" + inputString);
+
         }
     }
 }

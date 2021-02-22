@@ -5,6 +5,7 @@ import io.netty.channel.Channel;
 import ru.daniilazarnov.common.files.FileSender;
 import ru.daniilazarnov.common.handlers.Handler;
 import ru.daniilazarnov.common.FilePackageConstants;
+import ru.daniilazarnov.common.handlers.HandlerException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,13 +22,14 @@ public class DownloadHandler implements Handler {
     private int pathLength;
     private String pathString;
 
-    public DownloadHandler(Channel channel, String root) {
+    public DownloadHandler(Channel channel, String root, ByteBuf buf) {
         this.channel = channel;
         this.root = root;
+        this.buf = buf;
     }
 
     @Override
-    public void handle() throws IOException {
+    public void handle() throws HandlerException {
 
         if (state == DownloadHandlerState.PATH_LENGTH) {
             if (buf.readableBytes() >= FilePackageConstants.NAME_LENGTH_BYTES.getCode()) {
@@ -48,16 +50,20 @@ public class DownloadHandler implements Handler {
         if (state == DownloadHandlerState.SEND_FILE) {
             channel.flush();
             FileSender fileSender = new FileSender(channel);
-            fileSender.sendFile(Paths.get(pathString),
-                    future -> {
-                        if (!future.isSuccess()) {
-                            future.cause().printStackTrace();
-                        }
-                        if (future.isSuccess()) {
-                            System.out.println("File has been sent to the client");
-                            state = DownloadHandlerState.COMPLETE;
-                        }
-                    });
+            try {
+                fileSender.sendFile(Paths.get(pathString),
+                        future -> {
+                            if (!future.isSuccess()) {
+                                future.cause().printStackTrace();
+                            }
+                            if (future.isSuccess()) {
+                                System.out.println("File has been sent to the client");
+                                state = DownloadHandlerState.COMPLETE;
+                            }
+                        });
+            } catch (IOException e) {
+                throw new HandlerException("Exception has been occurred via file sending to the client", e);
+            }
         }
     }
 
@@ -66,8 +72,4 @@ public class DownloadHandler implements Handler {
         return state == DownloadHandlerState.COMPLETE;
     }
 
-    @Override
-    public void setBuffer(ByteBuf buf) {
-        this.buf = buf;
-    }
 }

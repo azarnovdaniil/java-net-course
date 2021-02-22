@@ -27,22 +27,23 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
 
         while (buf.readableBytes() > 0) {
             if (state == HandlerState.IDLE) {
-                handler = new ServerOperationsFactory().createOperation(buf.readByte(), ctx.channel(), root);
-
+                handler = new ServerOperationsFactory(authService).
+                        createOperation(buf.readByte(), ctx.channel(), root, buf);
                 if (handler != null) {
                     state = HandlerState.PROCESS;
                 }
             }
             if (state == HandlerState.PROCESS) {
-                handler.setBuffer(buf);
                 handler.handle();
                 if (handler.isComplete()) {
                     state = HandlerState.IDLE;
+                    ctx.newFailedFuture(new Exception());
                 }
             }
             if (buf.readableBytes() == 0) {
                 buf.release();
             }
+
         }
     }
 

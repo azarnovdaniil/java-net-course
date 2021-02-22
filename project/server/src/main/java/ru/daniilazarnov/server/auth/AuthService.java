@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class AuthService {
 
-    private HashMap<String, String> authChannels;
+    private HashMap<String, String> authChannels = new HashMap<>();
 
     private final Authentication dbAuthentication;
 
@@ -15,10 +15,10 @@ public class AuthService {
         this.dbAuthentication = dbAuthentication;
     }
 
-    public boolean login(String user, String password, String channelId) throws AuthenticationException {
+    public boolean login(String user, String password, String sessionId) throws AuthenticationException {
         try {
             if (dbAuthentication.login(user, password)) {
-                authChannels.put(channelId, user);
+                authChannels.put(sessionId, user);
                 return true;
             }
             return false;
@@ -27,8 +27,13 @@ public class AuthService {
         }
     }
 
-    public String checkSession(String channelId) {
-        return authChannels.get(channelId);
+    public boolean checkSession(String sessionId) {
+        return authChannels.containsKey(sessionId);
+    }
+
+    public String getUserBySessionId(String sessionId) {
+        if (checkSession(sessionId)) return authChannels.get(sessionId);
+        return null;
     }
 
 }
