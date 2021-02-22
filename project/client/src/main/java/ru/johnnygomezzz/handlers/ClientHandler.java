@@ -73,7 +73,7 @@ public class ClientHandler {
                     if (arrFiles != null) {
                         list = Arrays.asList(arrFiles);
                     } else {
-                        System.out.println("Папка пуста.");
+                        System.out.println("Каталог пуст.");
                     }
                     System.out.println(list);
 
@@ -108,6 +108,14 @@ public class ClientHandler {
                     out.writeObject(fm);
                     out.flush();
                     System.out.println("Файл " + fm.getFileName() + " успешно отправлен.");
+
+                } else if (message.startsWith(Commands.MKDIR.getName()) && messagePart.length > 1) {
+                    if (!Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
+                        new File(PATH_LOCAL, messagePart[1]).mkdir();
+                        System.out.println("Каталог " + messagePart[1] + " успешно создан.");
+                    } else {
+                        System.out.println("Каталог " + messagePart[1] + " уже существует.");
+                    }
 
                 } else if (message.startsWith(Commands.DELETE.getName()) && messagePart.length > 1) {
                     if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {

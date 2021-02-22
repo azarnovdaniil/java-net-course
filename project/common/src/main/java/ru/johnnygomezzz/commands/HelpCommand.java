@@ -9,6 +9,7 @@ public class HelpCommand {
                 + Commands.DELETE.getName() + " - " + Commands.DELETE.getHelpValue() + "\n"
                 + Commands.DOWNLOAD.getName() + " - " + Commands.DOWNLOAD.getHelpValue() + "\n"
                 + Commands.UPLOAD.getName() + " - " + Commands.UPLOAD.getHelpValue() + "\n"
+                + Commands.MKDIR.getName() + " - " + Commands.MKDIR.getHelpValue() + "\n"
                 + Commands.QUIT.getName() + " - " + Commands.QUIT.getHelpValue() + "\n");
     }
 
