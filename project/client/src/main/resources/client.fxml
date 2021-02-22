@@ -5,7 +5,17 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
 <VBox fx:controller="ru.daniilazarnov.Controller" xmlns:fx="http://javafx.com/fxml" >
+    <MenuBar>
+        <Menu text="Program">
+            <MenuItem text="Exit" onAction="#exitAction">
+
+            </MenuItem>
+        </Menu>
+    </MenuBar>
     <TextArea fx:id = "mainArea" editable="false"  VBox.vgrow="ALWAYS"/>
     <HBox>
         <TextField fx:id="msgField" HBox.hgrow="ALWAYS" promptText="Enter your message..." onAction="#sendMsgAction"/>

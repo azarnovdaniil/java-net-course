@@ -52,4 +52,7 @@ public final class Network {
     public void stop() {
         currentChannel.close();
     }
+    public void close() {
+        currentChannel.close();
+    }
 }
