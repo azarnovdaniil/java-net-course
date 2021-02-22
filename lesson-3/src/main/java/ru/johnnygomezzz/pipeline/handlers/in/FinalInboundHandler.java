@@ -1,4 +1,4 @@
-package ru.daniilazarnov.pipeline.handlers.in;
+package ru.johnnygomezzz.pipeline.handlers.in;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

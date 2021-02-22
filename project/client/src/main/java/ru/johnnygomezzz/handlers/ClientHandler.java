@@ -1,76 +1,126 @@
 package ru.johnnygomezzz.handlers;
 
+
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 import ru.johnnygomezzz.AbstractMessage;
 import ru.johnnygomezzz.FileMessage;
 import ru.johnnygomezzz.FileRequest;
+import ru.johnnygomezzz.MyMessage;
 
+import java.io.File;
 import java.io.IOException;
-
 import java.net.Socket;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class ClientHandler {
 
     private static ObjectEncoderOutputStream out;
     private static ObjectDecoderInputStream in;
+    private static final String HOST = "localhost";
     private static final int PORT = 8189;
-    private static final int SIZE_1024 = 1024;
-    private static final int SIZE_100 = 100;
-    private static final String WAY = ("project/client/src/main/java/file/");
+    private static final int SIZE = 100 * 1024 * 1024;
+    private static final String PATH_LOCAL = ("project/client/local/");
 
     public static void start() {
         try {
-            Socket socket = new Socket("localhost", PORT);
+            Socket socket = new Socket(HOST, PORT);
             out = new ObjectEncoderOutputStream(socket.getOutputStream());
-            in = new ObjectDecoderInputStream(socket.getInputStream(), SIZE_100 * SIZE_1024 * SIZE_1024);
+            in = new ObjectDecoderInputStream(socket.getInputStream(), SIZE);
             ClientHandler network = new ClientHandler();
+
+            System.out.println("Добро пожаловать в Хранилище №13!\n/help для подсказки.\n\n"
+                    + "Введите команду:");
+
             network.initialize();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
     public void initialize() {
 
         try {
             while (true) {
                 Scanner scanner = new Scanner(System.in);
-                String msg = scanner.nextLine();
-                String[] commandFile = msg.split("\\s");
+                String message = scanner.nextLine();
+                String[] messagePart = message.split("\\s");
 
-                if (msg.startsWith("/")) {
-                    if (commandFile[0].equals("/поиск")) {
-                        boolean str = (Boolean) in.readObject();
-                        System.out.println(str);
-                    }
-                    if (commandFile[0].equals("/скачать")) {
-
-                        sendMsg(new FileRequest(commandFile[1]));
-
-                        AbstractMessage am = readObject();
-
-                        if (am instanceof FileMessage) {
-
-                            FileMessage fm = (FileMessage) am;
-                            Files.write(Paths.get(WAY, fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
-                            System.out.println("скачал");
-                        }
-                    }
-                    if (commandFile[0].equals("/отправить")) {
-                        FileMessage fm = new FileMessage(Paths.get(WAY + commandFile[1]));
-                        out.writeObject(fm);
-                        out.flush();
-                        System.out.println("отправил " + commandFile[1]);
-                    }
-
+                if (message.startsWith("/quit")) {
+                    MyMessage msg = new MyMessage(messagePart[0]);
+                    out.writeObject(msg);
+                    out.flush();
+                    System.exit(0);
                 }
 
+                if (message.startsWith("/ls") && messagePart.length > 1) {
+                    File dir = new File(PATH_LOCAL, messagePart[1]);
+                    File[] arrFiles = dir.listFiles();
+                    List<File> list = Arrays.asList(arrFiles);
+                    System.out.println(list);
+                }
+
+                if (message.startsWith("/touch") && messagePart.length > 1) {
+                    if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
+                        System.out.println("Файл с именем " + messagePart[1] + " уже существует.");
+                    } else if (messagePart.length == 2) {
+                        Paths.get(PATH_LOCAL, messagePart[1]);
+                        System.out.println("Вы пытаетесь создать пустой файл.");
+                    } else {
+                        Path path = Paths.get(PATH_LOCAL, messagePart[1]);
+                        try {
+                            String str = messagePart[2];
+                            byte[] bs = str.getBytes();
+                            Path writtenFilePath = Files.write(path, bs);
+                            System.out.println("Файл " + messagePart[1] + " успешно создан.\nЗаписано в файл:\n"
+                                    + new String(Files.readAllBytes(writtenFilePath)));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                if (message.startsWith("/download") && messagePart.length > 1) {
+                    sendMsg(new FileRequest(messagePart[1]));
+
+                    AbstractMessage am = readObject();
+                    if (am instanceof FileMessage) {
+                        FileMessage fm = (FileMessage) am;
+                        Files.write(Paths.get(PATH_LOCAL, fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
+                        System.out.println("Файл " + fm.getFileName() + " успешно получен.");
+                    }
+                }
+
+                if (message.startsWith("/upload") && messagePart.length > 1) {
+                    FileMessage fm = new FileMessage(Paths.get(PATH_LOCAL + messagePart[1]));
+                    out.writeObject(fm);
+                    out.flush();
+                    System.out.println("Файл " + fm.getFileName() + " успешно отправлен.");
+                }
+
+                if (message.startsWith("/delete") && messagePart.length > 1) {
+                    if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
+                        try {
+                            Files.delete(Paths.get(PATH_LOCAL, messagePart[1]));
+                            System.out.println("Файл с именем " + messagePart[1] + " успешно удалён.");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Файл с именем " + messagePart[1] + " отсутствует.");
+                    }
+                }
+
+                else {
+                    System.out.println("\"" + message + "\""
+                            + " неполное значение или не является командой.\nВведите команду:");
+                }
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -78,21 +128,18 @@ public class ClientHandler {
 
     }
 
-    // получение сообщения с сервака----------------------------------------------------------
     public static AbstractMessage readObject() throws ClassNotFoundException, IOException {
         Object obj = in.readObject();
         return (AbstractMessage) obj;
     }
 
-
-    //отправка сообщения на сервак------------------------------------------------------------
-    public static boolean sendMsg(AbstractMessage msg) {
+    public static void sendMsg(AbstractMessage msg) {
         try {
             out.writeObject(msg);
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
     }
 }
+
+
