@@ -57,23 +57,17 @@ public class ClientHandler {
 
                 if (message.startsWith(Commands.HELP.getName())) {
                     new HelpCommand().printHelp();
-                }
-
-                else if (message.startsWith(Commands.QUIT.getName())) {
+                } else if (message.startsWith(Commands.QUIT.getName())) {
                     MyMessage msg = new MyMessage(messagePart[0]);
                     out.writeObject(msg);
                     out.flush();
                     new QuitCommand().quit();
-                }
-
-                else if (message.startsWith(Commands.LS.getName()) && messagePart.length > 1) {
+                } else if (message.startsWith(Commands.LS.getName()) && messagePart.length > 1) {
                     File dir = new File(PATH_LOCAL, messagePart[1]);
                     File[] arrFiles = dir.listFiles();
                     List<File> list = Arrays.asList(arrFiles);
                     System.out.println(list);
-                }
-
-                else if (message.startsWith(Commands.TOUCH.getName()) && messagePart.length > 1) {
+                } else if (message.startsWith(Commands.TOUCH.getName()) && messagePart.length > 1) {
                     if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
                         System.out.println("Файл с именем " + messagePart[1] + " уже существует.");
                     } else if (messagePart.length == 2) {
@@ -90,9 +84,7 @@ public class ClientHandler {
                             e.printStackTrace();
                         }
                     }
-                }
-
-                else if (message.startsWith(Commands.DOWNLOAD.getName()) && messagePart.length > 1) {
+                } else if (message.startsWith(Commands.DOWNLOAD.getName()) && messagePart.length > 1) {
                     sendMsg(new FileRequest(messagePart[1]));
 
                     AbstractMessage am = readObject();
@@ -101,16 +93,12 @@ public class ClientHandler {
                         Files.write(Paths.get(PATH_LOCAL, fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
                         System.out.println("Файл " + fm.getFileName() + " успешно получен.");
                     }
-                }
-
-                else if (message.startsWith(Commands.UPLOAD.getName()) && messagePart.length > 1) {
+                } else if (message.startsWith(Commands.UPLOAD.getName()) && messagePart.length > 1) {
                     FileMessage fm = new FileMessage(Paths.get(PATH_LOCAL + messagePart[1]));
                     out.writeObject(fm);
                     out.flush();
                     System.out.println("Файл " + fm.getFileName() + " успешно отправлен.");
-                }
-
-                else if (message.startsWith(Commands.DELETE.getName()) && messagePart.length > 1) {
+                } else if (message.startsWith(Commands.DELETE.getName()) && messagePart.length > 1) {
                     if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
                         try {
                             Files.delete(Paths.get(PATH_LOCAL, messagePart[1]));
