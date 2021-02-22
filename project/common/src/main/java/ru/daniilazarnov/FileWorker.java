@@ -157,10 +157,11 @@ public class FileWorker {
         }
     }
 
-    public List<String> getFileListInDir() throws IOException {
-        return Files.list(Path.of(getCurrentDir()))
-                .map(Path::toFile)
-                .map(File::getName)
-                .collect(toList());
+    public void sendCommandWithStringList(ChannelHandlerContext ctx, List<String> list, byte signal) {
+        byte[] request = BufWorker.makeArrayFromList(list);
+        ByteBuf bufOut = ctx.alloc().buffer(request.length);
+        request[0] = signal;
+        bufOut.writeBytes(request);
+        ctx.writeAndFlush(bufOut);
     }
 }

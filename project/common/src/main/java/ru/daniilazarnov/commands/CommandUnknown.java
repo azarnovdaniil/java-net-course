@@ -18,4 +18,10 @@ public class CommandUnknown implements Command {
             FileLoaded> uploadedFiles, byte signal) {
     }
 
+    @Override
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles) {
+        System.out.println("Неизвестная команда");
+    }
+
 }

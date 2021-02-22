@@ -17,4 +17,9 @@ public class CommandLocalCD implements Command {
     public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
             FileLoaded> uploadedFiles, byte signal) {
     }
+
+    @Override
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles) {
+    }
 }

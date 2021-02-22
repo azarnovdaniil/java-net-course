@@ -2,10 +2,7 @@ package ru.daniilazarnov;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import ru.daniilazarnov.commands.Command;
-import ru.daniilazarnov.commands.CommandLocalCD;
-import ru.daniilazarnov.commands.CommandUnknown;
-import ru.daniilazarnov.commands.CommandUpload;
+import ru.daniilazarnov.commands.*;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -20,6 +17,7 @@ public enum Commands {
 
     UF("UF", (byte) 1, new CommandUpload()),
     LCD("LCD", (byte) 2, new CommandLocalCD()),
+    DOWNLOAD("DOWNLOAD", (byte) 3, new CommandDownload()),
     UNKNOWN("UNKNOWN", Byte.MIN_VALUE, new CommandUnknown());
 
     byte signal;
@@ -42,6 +40,11 @@ public enum Commands {
     public void receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
             FileLoaded> uploadedFiles) {
         commandApply.response(ctx, buf, fileWorker, uploadedFiles, signal);
+    }
+
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
+            FileLoaded> uploadedFiles) {
+        commandApply.receive(ctx, buf, fileWorker, uploadedFiles);
     }
 
     public static Commands getCommand(byte code) {

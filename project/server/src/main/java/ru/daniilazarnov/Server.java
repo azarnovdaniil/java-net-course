@@ -9,10 +9,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
-import javax.swing.filechooser.FileSystemView;
-import java.io.File;
 import java.nio.ByteOrder;
-import java.util.logging.Logger;
 
 public class Server {
 

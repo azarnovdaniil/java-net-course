@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -40,6 +41,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         active = false;
         super.channelInactive(ctx);
+    }
+
+    @Override
+    public void channelRead(ChannelHandlerContext channelHandlerContext, Object msg) {
+        ByteBuf buf = (ByteBuf) msg;
+        if (buf.readableBytes() > 0) {
+            byte firstByte = buf.readByte();
+            Commands command = Commands.getCommand(firstByte);
+            command.receive(channelHandlerContext, buf, fileWorker, uploadedFiles);
+        }
     }
 
     public void consoleRead(ChannelHandlerContext ctx) {
