@@ -120,7 +120,7 @@ public class FileWorker {
         return file.hashCode();
     }
 
-    public String receiveFile(ByteBuf buf, Map<Integer, FileLoaded> uploadedFiles) {
+    public String receiveFile(ByteBuf buf, Map<Integer, FileLoaded> uploadedFiles) throws IOException {
         buf.readInt(); // длина всего сообщения
         int partNum = buf.readInt();
         int hash = buf.readInt();
@@ -131,7 +131,7 @@ public class FileWorker {
         long fileSize = buf.readLong();
         FileLoaded fileLoaded;
         Path path = currentPath.resolve(fileName);
-        long busyVolume = getVolumeDir(path);
+        long busyVolume = getVolumeDir(basePath);
         if (busyVolume + fileSize <= maxVolume) {
             if (uploadedFiles.containsKey(hash)) {
                 fileLoaded = uploadedFiles.get(hash);
@@ -139,23 +139,18 @@ public class FileWorker {
                 fileLoaded = new FileLoaded(hash, fileName, fileSize, path);
                 uploadedFiles.put(hash, fileLoaded);
             }
-            try {
-                int writeSize = buf.readableBytes();
-                byte[] bufIn = new byte[writeSize];
+            int writeSize = buf.readableBytes();
+            byte[] bufIn = new byte[writeSize];
 
-                buf.readBytes(bufIn);
-                fileLoaded.addPart(partNum, writeSize, bufIn);
+            buf.readBytes(bufIn);
+            fileLoaded.addPart(partNum, writeSize, bufIn);
 
-                if (fileLoaded.getSizeCounter() == fileSize) {
-                    uploadedFiles.remove(hash);
-                    return fileName;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "error";
+            if (fileLoaded.getSizeCounter() == fileSize) {
+                uploadedFiles.remove(hash);
+                return fileName;
             }
         }
-        return "";
+        throw new IOException();
     }
 
     private long getVolumeDir(Path path) {
@@ -168,6 +163,10 @@ public class FileWorker {
             e.printStackTrace();
             return -1;
         }
+    }
+
+    public long getFreeSpace() {
+        return maxVolume - getVolumeDir(basePath);
     }
 
     public List<String> getFileListInDir() throws IOException {

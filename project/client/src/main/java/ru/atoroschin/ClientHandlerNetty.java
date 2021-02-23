@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -34,7 +35,11 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
         if (buf.readableBytes() > 0) {
             byte firstByte = buf.readByte();
             Commands command = Commands.getCommand(firstByte);
-            command.receive(channelHandlerContext, buf, fileWorker, uploadedFiles);
+            try {
+                command.receive(channelHandlerContext, buf, fileWorker, uploadedFiles);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

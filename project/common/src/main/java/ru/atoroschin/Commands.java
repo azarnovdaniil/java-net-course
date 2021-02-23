@@ -4,6 +4,7 @@ import ru.atoroschin.commands.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
@@ -26,6 +27,7 @@ public enum Commands {
     LMKDIR("lmkdir", (byte) 14, new CommandLocalMkDir()),
     LMV("lmv", (byte) 15, new CommandLocalMV()),
     LRENAME("lrename", (byte) 16, new CommandLocalRename()),
+    FREESPACE("freespace", (byte) 17, new CommandFreeSpace()),
     UNKNOWN("unknown", Byte.MIN_VALUE, new CommandUnknown());
 
     private static final Map<Byte, Commands> COMMANDS_MAP = Arrays.stream(Commands.values())
@@ -50,7 +52,7 @@ public enum Commands {
     }
 
     public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
-            FileLoaded> uploadedFiles) {
+            FileLoaded> uploadedFiles) throws IOException {
         commandApply.receive(ctx, buf, fileWorker, uploadedFiles);
     }
 

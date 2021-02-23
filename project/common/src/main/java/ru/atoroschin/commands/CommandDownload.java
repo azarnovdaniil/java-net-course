@@ -6,6 +6,7 @@ import ru.atoroschin.FileWorker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class CommandDownload implements Command {
 
     @Override
     public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
-            FileLoaded> uploadedFiles) {
+            FileLoaded> uploadedFiles) throws IOException {
         String name = fileWorker.receiveFile(buf, uploadedFiles);
         if (!name.equals("")) {
             System.out.println("Сохранен файл " + name);

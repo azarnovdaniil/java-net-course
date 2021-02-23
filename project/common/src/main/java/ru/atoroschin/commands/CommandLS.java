@@ -19,11 +19,7 @@ public class CommandLS implements Command {
 
     @Override
     public void send(ChannelHandlerContext ctx, String content, FileWorker fileWorker, byte signal) {
-        final int minLength = 5;
-        ByteBuf byBuf = ByteBufAllocator.DEFAULT.buffer();
-        byBuf.writeByte(signal);
-        byBuf.writeInt(minLength);
-        ctx.writeAndFlush(byBuf);
+        sendSimpleCommand(ctx, signal);
     }
 
     @Override

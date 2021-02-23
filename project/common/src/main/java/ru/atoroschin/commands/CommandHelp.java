@@ -1,12 +1,15 @@
 package ru.atoroschin.commands;
 
+import ru.atoroschin.Commands;
 import ru.atoroschin.FileLoaded;
 import ru.atoroschin.FileWorker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CommandHelp implements Command {
     private final List<String> list = List.of(
@@ -43,8 +46,10 @@ public class CommandHelp implements Command {
                     + "скачан в текущую директорию",
             "");
 
+
     @Override
     public void send(ChannelHandlerContext ctx, String content, FileWorker fileWorker, byte signal) {
+//        Map<String, String> mapCommands = Arrays.stream(Commands.values()).collect(Collectors.toMap(commands -> commands.name(), commands -> commands.toString())).forEach(System.out::println);
         list.forEach(System.out::println);
     }
 

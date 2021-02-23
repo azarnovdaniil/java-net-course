@@ -1,10 +1,12 @@
 package ru.atoroschin.commands;
 
+import io.netty.buffer.ByteBufAllocator;
 import ru.atoroschin.FileLoaded;
 import ru.atoroschin.FileWorker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.io.IOException;
 import java.util.Map;
 
 public interface Command {
@@ -14,5 +16,13 @@ public interface Command {
             FileLoaded> uploadedFiles, byte signal);
 
     void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer,
-            FileLoaded> uploadedFiles);
+            FileLoaded> uploadedFiles) throws IOException;
+
+    default void sendSimpleCommand(ChannelHandlerContext ctx, byte signal) {
+        final int minLength = 5;
+        ByteBuf byBuf = ByteBufAllocator.DEFAULT.buffer();
+        byBuf.writeByte(signal);
+        byBuf.writeInt(minLength);
+        ctx.writeAndFlush(byBuf);
+    }
 }

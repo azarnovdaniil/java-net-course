@@ -19,15 +19,11 @@ public class CommandAuthUser implements CommandAuth {
 
     @Override
     public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService,
-                         FileWorker fileWorker, byte signal) {
+                         FileWorker fileWorker, byte signal) throws IllegalAccessException {
         List<String> list = BufWorker.readFileListFromBuf(buf);
         String userLogin = list.get(0);
-        try {
-            fileWorker.appendBasePath(authService.getUserFolder(userLogin));
-            fileWorker.setMaxVolume(authService.getMaxVolume(userLogin));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
+        fileWorker.appendBasePath(authService.getUserFolder(userLogin));
+        fileWorker.setMaxVolume(authService.getMaxVolume(userLogin));
     }
 
     @Override

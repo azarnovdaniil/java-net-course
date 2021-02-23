@@ -49,22 +49,16 @@ public class ClientAuthHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void readAuth(ChannelHandlerContext ctx, ReadCredentials readCredentials) {
-//        Thread threadConsoleAuth = new Thread(() -> {
-
-//            while (!auth) {
         try {
             credentials = readCredentials.read();
 
-            CommandsAuth command = CommandsAuth.AUTH;
+            CommandsAuth command = CommandsAuth.AUTHLOGIN;
             command.sendToServer(ctx, credentials);
+
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
-//            }
-//        });
-//        threadConsoleAuth.setDaemon(true);
-//        threadConsoleAuth.start();
     }
 
 //    public void consoleReadAuth(ChannelHandlerContext ctx) {

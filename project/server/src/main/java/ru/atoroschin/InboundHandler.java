@@ -37,8 +37,12 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
             if (!auth) {
                 CommandsAuth command = CommandsAuth.getCommand(b);
                 if (command.equals(CommandsAuth.AUTHUSER)) {
-                    command.receiveAndSend(ctx, buf, authService, fileWorker);
-                    auth = true;
+                    try {
+                        command.receiveAndSend(ctx, buf, authService, fileWorker);
+                        auth = true;
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 Commands command = Commands.getCommand(b);

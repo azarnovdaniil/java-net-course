@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public enum CommandsAuth {
-    AUTH("auth", (byte) 100, new CommandAuthLoginPass()),
+    AUTHLOGIN("auth", (byte) 100, new CommandAuthLogin()),
     AUTHOK("authok", (byte) 101, new CommandAuthOk()),
     AUTHERR("autherr", (byte) 102, new CommandAuthErr()),
     AUTHUSER("authdir", (byte) 103, new CommandAuthUser()),
@@ -33,7 +33,7 @@ public enum CommandsAuth {
         commandApply.send(ctx, credentials, signal);
     }
 
-    public void receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService, FileWorker fileWorker) {
+    public void receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService, FileWorker fileWorker) throws IllegalAccessException {
         commandApply.response(ctx, buf, authService, fileWorker, signal);
     }
 

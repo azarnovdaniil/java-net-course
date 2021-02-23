@@ -36,6 +36,12 @@ public class BufWorker {
         return buf;
     }
 
+    /**
+     * метод распаковывает список строк из буфера байт
+     *
+     * @param buf - полученный буфер
+     * @return список строк List
+     */
     public static List<String> readFileListFromBuf(ByteBuf buf) {
         buf.readInt();
         buf.readInt();
