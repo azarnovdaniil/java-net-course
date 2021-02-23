@@ -7,19 +7,11 @@ import ru.johnnygomezzz.AbstractMessage;
 import ru.johnnygomezzz.FileMessage;
 import ru.johnnygomezzz.FileRequest;
 import ru.johnnygomezzz.MyMessage;
-import ru.johnnygomezzz.commands.Commands;
-import ru.johnnygomezzz.commands.HelpCommand;
-import ru.johnnygomezzz.commands.QuitCommand;
+import ru.johnnygomezzz.commands.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class ClientHandler {
@@ -65,69 +57,28 @@ public class ClientHandler {
                     new QuitCommand().quit();
 
                 } else if (message.startsWith(Commands.LS.getName()) && messagePart.length > 1) {
-                    File dir = new File(PATH_LOCAL, messagePart[1]);
-                    File[] arrFiles = dir.listFiles();
-
-                    List<File> list = null;
-
-                    if (arrFiles != null) {
-                        list = Arrays.asList(arrFiles);
-                    } else {
-                        System.out.println("Каталог пуст.");
-                    }
-                    System.out.println(list);
+                    new ListCommand().listCommand(messagePart[1]);
 
                 } else if (message.startsWith(Commands.TOUCH.getName()) && messagePart.length > 1) {
-                    if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
-                        System.out.println("Файл с именем " + messagePart[1] + " уже существует.");
-                    } else if (messagePart.length == 2) {
-                        System.out.println("Вы пытаетесь создать пустой файл.");
-                    } else {
-                        Path path = Paths.get(PATH_LOCAL, messagePart[1]);
-                        try {
-                            String str = messagePart[2];
-                            byte[] bs = str.getBytes();
-                            Path writtenFilePath = Files.write(path, bs);
-                            System.out.println("Файл " + messagePart[1] + " успешно создан.\nЗаписано в файл:\n"
-                                    + new String(Files.readAllBytes(writtenFilePath)));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    new TouchCommand().touchCommand(messagePart[1], messagePart[2], messagePart.length);
+
                 } else if (message.startsWith(Commands.DOWNLOAD.getName()) && messagePart.length > 1) {
                     sendMsg(new FileRequest(messagePart[1]));
-
                     AbstractMessage am = readObject();
-                    if (am instanceof FileMessage) {
-                        FileMessage fm = (FileMessage) am;
-                        Files.write(Paths.get(PATH_LOCAL, fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
-                        System.out.println("Файл " + fm.getFileName() + " успешно получен.");
-                    }
+                    new DownloadCommand().downloadCommand(am);
+
                 } else if (message.startsWith(Commands.UPLOAD.getName()) && messagePart.length > 1) {
                     FileMessage fm = new FileMessage(Paths.get(PATH_LOCAL + messagePart[1]));
                     out.writeObject(fm);
                     out.flush();
-                    System.out.println("Файл " + fm.getFileName() + " успешно отправлен.");
+                    new UploadCommand().uploadCommand(fm);
 
                 } else if (message.startsWith(Commands.MKDIR.getName()) && messagePart.length > 1) {
-                    if (!Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
-                        new File(PATH_LOCAL, messagePart[1]).mkdir();
-                        System.out.println("Каталог " + messagePart[1] + " успешно создан.");
-                    } else {
-                        System.out.println("Каталог " + messagePart[1] + " уже существует.");
-                    }
+                    new MkDirCommand().mkDirCommand(messagePart[1]);
 
                 } else if (message.startsWith(Commands.DELETE.getName()) && messagePart.length > 1) {
-                    if (Files.exists(Path.of(PATH_LOCAL, messagePart[1]))) {
-                        try {
-                            Files.delete(Paths.get(PATH_LOCAL, messagePart[1]));
-                            System.out.println("Файл с именем " + messagePart[1] + " успешно удалён.");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        System.out.println("Файл с именем " + messagePart[1] + " отсутствует.");
-                    }
+                    new DeleteCommand().deleteCommand(messagePart[1]);
+
                 } else {
                     System.out.println("\"" + message + "\""
                             + " неполное значение или не является командой.\nВведите команду:");
