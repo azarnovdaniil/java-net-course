@@ -3,6 +3,7 @@ package ru.johnnygomezzz.handlers;
 import ru.johnnygomezzz.FileMessage;
 import ru.johnnygomezzz.FileRequest;
 import ru.johnnygomezzz.MyMessage;
+import ru.johnnygomezzz.commands.ListCommand;
 import ru.johnnygomezzz.download.DownLoad;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -35,9 +36,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof MyMessage) {
             String message = ((MyMessage) msg).getText();
             System.out.println("Сообщение от клиента: " + message);
+            String[] messagePart = message.split("\\s");
 
-            if (message.equals("/quit")) {
+            if (message.startsWith("/quit")) {
                 System.exit(0);
+
+            } else if (message.startsWith("/sls")) {
+                String ls = new ListCommand().listCommandServer(messagePart[1]);
+                ctx.writeAndFlush(new MyMessage(ls));
             }
         }
     }

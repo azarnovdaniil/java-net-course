@@ -59,9 +59,26 @@ public class ClientHandler {
                 } else if (message.startsWith(Commands.LS.getName()) && messagePart.length > 1) {
                     new ListCommand().listCommand(messagePart[1]);
 
-                } else if (message.startsWith(Commands.TOUCH.getName()) && messagePart.length > 1) {
-                    new TouchCommand().touchCommand(messagePart[1], messagePart[2], messagePart.length);
+                } else if (message.startsWith(Commands.SLS.getName()) && messagePart.length > 1) {
+                    MyMessage msg = new MyMessage(messagePart[0] + " " + messagePart[1]);
+                    out.writeObject(msg);
+                    out.flush();
 
+                    MyMessage msgFromServer = (MyMessage) in.readObject();
+                    System.out.println(msgFromServer.getText());
+
+                } else if (message.startsWith(Commands.TOUCH.getName()) && messagePart.length > 1) {
+                    if (messagePart.length == 2) {
+                        new TouchCommand(messagePart[1], messagePart.length).touchCommand();
+                    } else {
+                        new TouchCommand(messagePart[1], messagePart[2], messagePart.length).touchCommand();
+                    }
+                } else if (message.startsWith(Commands.STOUCH.getName()) && messagePart.length > 1) {
+                    if (messagePart.length == 2) {
+                        new TouchCommand(messagePart[1], messagePart.length).touchCommandServer();
+                    } else {
+                        new TouchCommand(messagePart[1], messagePart[2], messagePart.length).touchCommandServer();
+                    }
                 } else if (message.startsWith(Commands.DOWNLOAD.getName()) && messagePart.length > 1) {
                     sendMsg(new FileRequest(messagePart[1]));
                     AbstractMessage am = readObject();
@@ -76,8 +93,20 @@ public class ClientHandler {
                 } else if (message.startsWith(Commands.MKDIR.getName()) && messagePart.length > 1) {
                     new MkDirCommand().mkDirCommand(messagePart[1]);
 
+                } else if (message.startsWith(Commands.SMKDIR.getName()) && messagePart.length > 1) {
+                    new MkDirCommand().mkDirCommandServer(messagePart[1]);
+
                 } else if (message.startsWith(Commands.DELETE.getName()) && messagePart.length > 1) {
                     new DeleteCommand().deleteCommand(messagePart[1]);
+
+                } else if (message.startsWith(Commands.SDELETE.getName()) && messagePart.length > 1) {
+                    new DeleteCommand().deleteCommandServer(messagePart[1]);
+
+                } else if (message.startsWith(Commands.RENAME.getName()) && messagePart.length > 2) {
+                    new RenameCommand().renameCommand(messagePart[1], messagePart[2]);
+
+                } else if (message.startsWith(Commands.SRENAME.getName()) && messagePart.length > 2) {
+                    new RenameCommand().renameCommandServer(messagePart[1], messagePart[2]);
 
                 } else {
                     System.out.println("\"" + message + "\""
