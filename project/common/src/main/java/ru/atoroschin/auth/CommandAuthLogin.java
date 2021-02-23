@@ -6,6 +6,7 @@ import ru.atoroschin.BufWorker;
 import ru.atoroschin.Credentials;
 import ru.atoroschin.FileWorker;
 
+import java.io.IOException;
 import java.util.List;
 
 import static ru.atoroschin.CommandsAuth.*;
@@ -20,7 +21,7 @@ public class CommandAuthLogin implements CommandAuth {
 
     @Override
     public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService,
-                         FileWorker fileWorker, byte signal) throws IllegalAccessException {
+                         FileWorker fileWorker, byte signal) throws IllegalAccessException, IOException {
         List<String> list = BufWorker.readFileListFromBuf(buf);
 
         Credentials credentials = new Credentials(list);
@@ -35,6 +36,5 @@ public class CommandAuthLogin implements CommandAuth {
 
     @Override
     public void receive(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService) {
-
     }
 }

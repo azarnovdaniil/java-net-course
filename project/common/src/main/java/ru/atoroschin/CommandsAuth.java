@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import ru.atoroschin.auth.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
@@ -33,7 +34,8 @@ public enum CommandsAuth {
         commandApply.send(ctx, credentials, signal);
     }
 
-    public void receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService, FileWorker fileWorker) throws IllegalAccessException {
+    public void receiveAndSend(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService,
+                               FileWorker fileWorker) throws IllegalAccessException, IOException {
         commandApply.response(ctx, buf, authService, fileWorker, signal);
     }
 

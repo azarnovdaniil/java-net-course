@@ -6,6 +6,7 @@ import ru.atoroschin.*;
 import ru.atoroschin.auth.AuthService;
 import ru.atoroschin.auth.CommandAuth;
 
+import java.io.IOException;
 import java.util.List;
 
 public class CommandAuthUser implements CommandAuth {
@@ -19,7 +20,7 @@ public class CommandAuthUser implements CommandAuth {
 
     @Override
     public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService,
-                         FileWorker fileWorker, byte signal) throws IllegalAccessException {
+                         FileWorker fileWorker, byte signal) throws IllegalAccessException, IOException {
         List<String> list = BufWorker.readFileListFromBuf(buf);
         String userLogin = list.get(0);
         fileWorker.appendBasePath(authService.getUserFolder(userLogin));

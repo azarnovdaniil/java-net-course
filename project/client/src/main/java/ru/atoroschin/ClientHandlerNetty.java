@@ -17,7 +17,7 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
     private boolean active;
 
     @Override
-    public void channelRegistered(ChannelHandlerContext ctx) {
+    public void channelRegistered(ChannelHandlerContext ctx) throws IOException {
         uploadedFiles = new HashMap<>();
         fileWorker = new FileWorker("client", "", -1);
         ctx.fireChannelRegistered();

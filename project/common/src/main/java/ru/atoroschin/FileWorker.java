@@ -24,9 +24,9 @@ public class FileWorker {
     private String serverPath;
     private long maxVolume;
 
-    public FileWorker(String currentDir, String baseDir, long maxVolume) {
-        this.currentPath = Path.of(currentDir);
-        checkDir(currentPath);
+    public FileWorker(String currentDir, String baseDir, long maxVolume) throws IOException {
+        checkDir(Path.of(currentDir));
+        currentPath = Path.of(currentDir).toRealPath();
 
         this.basePath = Path.of(baseDir);
         this.serverPath = "";
@@ -207,13 +207,9 @@ public class FileWorker {
         }
     }
 
-    public void checkDir(Path path) {
+    public void checkDir(Path path) throws IOException {
         if (!Files.exists(path)) {
-            try {
-                Files.createDirectory(path);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Files.createDirectory(path);
         }
     }
 
@@ -250,7 +246,7 @@ public class FileWorker {
         }
     }
 
-    public void appendBasePath(String userDir) {
+    public void appendBasePath(String userDir) throws IOException {
         basePath = basePath.resolve(userDir);
         currentPath = currentPath.resolve(userDir);
         checkDir(basePath);

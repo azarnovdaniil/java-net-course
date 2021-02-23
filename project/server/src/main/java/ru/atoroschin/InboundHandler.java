@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ru.atoroschin.auth.AuthService;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRegistered(ChannelHandlerContext ctx) {
+    public void channelRegistered(ChannelHandlerContext ctx) throws IOException {
         System.out.println("Подключился клиент " + ctx.channel().remoteAddress().toString());
         int maxVolume = 1;
         uploadedFiles = new HashMap<>();
@@ -40,7 +41,7 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
                     try {
                         command.receiveAndSend(ctx, buf, authService, fileWorker);
                         auth = true;
-                    } catch (IllegalAccessException e) {
+                    } catch (IllegalAccessException | IOException e) {
                         e.printStackTrace();
                     }
                 }
