@@ -19,7 +19,8 @@ public class CommandAuthExit implements CommandAuth {
     }
 
     @Override
-    public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService, FileWorker fileWorker, byte signal) {
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, AuthService authService,
+                         FileWorker fileWorker, byte signal) {
         ctx.fireChannelUnregistered();
         ctx.channel().close();
     }

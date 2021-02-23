@@ -4,7 +4,6 @@ import ru.atoroschin.BufWorker;
 import ru.atoroschin.FileLoaded;
 import ru.atoroschin.FileWorker;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.io.IOException;

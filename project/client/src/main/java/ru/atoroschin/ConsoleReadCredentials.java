@@ -11,7 +11,7 @@ public class ConsoleReadCredentials implements ReadCredentials {
         if (scanner.hasNext()) {
             readLine = scanner.nextLine();
             String[] names = readLine.split("\\s", 2);
-            if (names.length==2) {
+            if (names.length == 2) {
                 return new Credentials(names[0], names[1]);
             }
         }

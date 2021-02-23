@@ -17,7 +17,7 @@ public class Credentials {
     }
 
     public Credentials(List<String> list) {
-        if (list.size()==2) {
+        if (list.size() == 2) {
             login = list.get(0);
             password = list.get(1);
             enable = true;
@@ -37,7 +37,7 @@ public class Credentials {
     }
 
     public String getLine() {
-        StringJoiner stringJoiner = new StringJoiner(" ","","");
+        StringJoiner stringJoiner = new StringJoiner(" ", "", "");
         stringJoiner.add(login).add(password);
         return stringJoiner.toString();
     }

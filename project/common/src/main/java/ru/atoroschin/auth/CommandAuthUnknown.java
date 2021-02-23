@@ -3,9 +3,7 @@ package ru.atoroschin.auth;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import ru.atoroschin.Credentials;
-import ru.atoroschin.auth.AuthService;
 import ru.atoroschin.FileWorker;
-import ru.atoroschin.auth.CommandAuth;
 
 public class CommandAuthUnknown implements CommandAuth {
     @Override

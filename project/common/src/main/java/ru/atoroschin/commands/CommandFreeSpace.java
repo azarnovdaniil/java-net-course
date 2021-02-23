@@ -17,13 +17,15 @@ public class CommandFreeSpace implements Command {
     }
 
     @Override
-    public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles, byte signal) {
+    public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker,
+                         Map<Integer, FileLoaded> uploadedFiles, byte signal) {
         long freeSpace = fileWorker.getFreeSpace();
         fileWorker.sendCommandWithStringList(ctx, List.of("Свободно на диске: " + freeSpace + " байт"), signal);
     }
 
     @Override
-    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker, Map<Integer, FileLoaded> uploadedFiles) throws IOException {
+    public void receive(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker,
+                        Map<Integer, FileLoaded> uploadedFiles) throws IOException {
         String answer = BufWorker.readFileListFromBuf(buf).get(0);
         System.out.println(answer);
     }

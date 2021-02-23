@@ -4,9 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import ru.atoroschin.Credentials;
-import ru.atoroschin.auth.AuthService;
 import ru.atoroschin.FileWorker;
-import ru.atoroschin.auth.CommandAuth;
 
 public class CommandAuthOk implements CommandAuth {
     @Override

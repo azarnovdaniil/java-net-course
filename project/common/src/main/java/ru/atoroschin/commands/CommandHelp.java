@@ -15,7 +15,7 @@ public class CommandHelp implements Command {
         System.out.println();
         System.out.println("Приложение предоставляет доступ к облачному хранилищу.");
         Arrays.stream(Commands.values())
-                .filter(commands -> commands.getSignal()!=Byte.MIN_VALUE)
+                .filter(commands -> commands.getSignal() != Byte.MIN_VALUE)
                 .map(command -> command.name() + command.getDescription())
                 .forEach(System.out::println);
         System.out.println("Написание команд не чувствительно к регистру.");

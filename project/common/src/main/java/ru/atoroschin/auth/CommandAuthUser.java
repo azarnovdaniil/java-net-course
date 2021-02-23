@@ -3,8 +3,6 @@ package ru.atoroschin.auth;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import ru.atoroschin.*;
-import ru.atoroschin.auth.AuthService;
-import ru.atoroschin.auth.CommandAuth;
 
 import java.io.IOException;
 import java.util.List;
