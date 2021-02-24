@@ -55,7 +55,4 @@ public class Network {
         channel.writeAndFlush(str);
     }
 
-    public void close() {
-        channel.close();
-    }
 }
