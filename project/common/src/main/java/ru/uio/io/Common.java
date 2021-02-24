@@ -2,7 +2,7 @@ package ru.uio.io;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -38,26 +38,21 @@ public final class Common {
 
     public static byte[] createDataPacket(byte[] cmd, byte[] data) {
         byte[] packet = null;
-        try {
-            byte[] initialize = new byte[1];
-            initialize[0] = 2;
-            byte[] separator = new byte[1];
-            separator[0] = 4;
-            byte[] dataLength = String.valueOf(data.length).getBytes("UTF8");
-            packet = new byte[initialize.length + cmd.length + separator.length + dataLength.length + data.length];
+        byte[] initialize = new byte[1];
+        initialize[0] = 2;
+        byte[] separator = new byte[1];
+        separator[0] = 4;
+        byte[] dataLength = String.valueOf(data.length).getBytes(StandardCharsets.UTF_8);
+        packet = new byte[initialize.length + cmd.length + separator.length + dataLength.length + data.length];
+        System.arraycopy(initialize, 0, packet, 0, initialize.length);
+        System.arraycopy(cmd, 0, packet, initialize.length, cmd.length);
+        System.arraycopy(dataLength, 0, packet, initialize.length + cmd.length, dataLength.length);
+        System.arraycopy(separator, 0, packet, initialize.length + cmd.length + dataLength.length,
+                separator.length);
+        System.arraycopy(data, 0, packet,
+                initialize.length + cmd.length + dataLength.length + separator.length,
+                data.length);
 
-            System.arraycopy(initialize, 0, packet, 0, initialize.length);
-            System.arraycopy(cmd, 0, packet, initialize.length, cmd.length);
-            System.arraycopy(dataLength, 0, packet, initialize.length + cmd.length, dataLength.length);
-            System.arraycopy(separator, 0, packet, initialize.length + cmd.length + dataLength.length,
-                    separator.length);
-            System.arraycopy(data, 0, packet,
-                    initialize.length + cmd.length + dataLength.length + separator.length,
-                    data.length);
-
-        } catch (UnsupportedEncodingException ex) {
-            ex.printStackTrace();
-        }
         return packet;
     }
 

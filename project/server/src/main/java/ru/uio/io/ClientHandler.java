@@ -1,12 +1,14 @@
 package ru.uio.io;
 
 import ru.uio.io.auth.Registration;
-import ru.uio.io.commands.Command;
 import ru.uio.io.commands.CreateNewFileCommand;
 import ru.uio.io.commands.DownLoadFileCommand;
 import ru.uio.io.entity.User;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -58,6 +60,9 @@ public class ClientHandler {
         }).start();
     }
 
+    /**
+     * Auth client
+     * */
     private void doAuth() {
         try {
             while (true) {
@@ -128,15 +133,11 @@ public class ClientHandler {
     }
 
     /**
-     * Receives input data from {@link ClientHandler#in} and then broadcast via {@link Server#broadcastMessage(String)}
-     */
+     * Receives input data from {@link ClientHandler#in}
+     * */
     private void receiveMessage() {
         try {
-            RandomAccessFile rw = null;
-            long currentFilePointer = 0;
             boolean loopBreak = false;
-            boolean fileClose = false;
-            boolean fileDownClose = false;
             while (true) {
                 byte[] initilize = new byte[1];
                 in.read(initilize, 0, initilize.length);
@@ -197,7 +198,9 @@ public class ClientHandler {
             throw new RuntimeException("SWW3", e);
         }
     }
-
+    /**
+     * Send message to {@link ClientHandler#out}
+     * */
     public void sendMessage(String message) {
         try {
             out.write(Common.createDataPacket("122".getBytes(StandardCharsets.UTF_8), message.getBytes(StandardCharsets.UTF_8)));
@@ -232,25 +235,5 @@ public class ClientHandler {
         result = 31 * result + (isAuth != null ? isAuth.hashCode() : 0);
         result = 31 * result + (storePath != null ? storePath.hashCode() : 0);
         return result;
-    }
-
-    private void executeCommand(Command command) {
-        command.execute();
-    }
-
-    public DataInputStream getIn() {
-        return in;
-    }
-
-    public DataOutputStream getOut() {
-        return out;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public String getStorePath() {
-        return storePath;
     }
 }
