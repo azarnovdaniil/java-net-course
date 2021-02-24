@@ -16,9 +16,10 @@ public Interaction(Channel channel) {
 }
 
 
-    public void startInteraction(HelloMessage helloMessage, String userName, WorkWithFileClient workWithFileClient) {
+    public void startInteraction(HelloMessage helloMessage, String userName,
+                                 WorkWithFileClient workWithFileClient, String whereClient) {
 
-        ChoseAction choseAction = new ChoseAction(channel, workWithFileClient);
+        ChoseAction choseAction = new ChoseAction(channel, workWithFileClient, whereClient);
 
         while (true) {
             helloMessage.helloMessage();

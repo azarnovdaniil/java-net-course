@@ -20,8 +20,7 @@ public class WorkWithFile {
     }
 
     public void createDefaultDirectory(String defaultAddress) {
-
-        if (Files.isDirectory(Path.of(defaultAddress))) {
+        if (Files.exists(Path.of(defaultAddress))) {
         return;
         } else {
             processCreate(defaultAddress, true, "");

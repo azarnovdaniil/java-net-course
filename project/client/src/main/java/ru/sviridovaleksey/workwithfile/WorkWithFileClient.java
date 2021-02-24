@@ -80,7 +80,7 @@ public class WorkWithFileClient     {
                 raf.read(bt);
                 Command command = Command.writeInToFile(userName, file.getName(), bt, cell, endWrite);
                 cell = cell + sendSize;
-                channel.write(command);
+                channel.writeAndFlush(command);
             }
             raf.close();
         } catch (IOException e) {
@@ -90,12 +90,11 @@ public class WorkWithFileClient     {
 
     public void deleteFile(String address) {
 
-        File file = new File(address);
-
-        if ((!Files.exists(Path.of(address))) | (!Files.isDirectory(Path.of(address)))) {
-            System.out.println("Такого файла не существует");
-        } else {
+        if ((Files.exists(Path.of(address))) | (Files.isDirectory(Path.of(address)))) {
+            File file = new File(address);
             recursiveDeleteDirectory(file);
+        } else {
+            System.out.println("Такого файла не существует" + address);
         }
     }
 
@@ -114,12 +113,16 @@ public class WorkWithFileClient     {
     }
 
     public void renameFile(String oldName, String newName) {
-        File oldFile = new File(oldName);
-        File newFile = new File(newName);
-        if (oldFile.renameTo(newFile)) {
-            System.out.println("Файл " + oldName + " переименован в " + newName);
+        if ((Files.exists(Path.of(oldName))) | (Files.isDirectory(Path.of(oldName)))) {
+            File oldFile = new File(oldName);
+            File newFile = new File(newName);
+            if (oldFile.renameTo(newFile)) {
+                System.out.println("Файл " + oldName + " переименован в " + newName);
+            } else {
+                System.out.println("Не удалось переименовать файл " + newFile.getPath());
+            }
         } else {
-            System.out.println("Не удалось переименовать файл");
+            System.out.println("Такого файла не существует " + oldName);
         }
     }
 

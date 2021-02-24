@@ -1,5 +1,6 @@
 package ru.sviridovaleksey.newclientconnection;
 
+
 import io.netty.handler.codec.serialization.ClassResolver;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 

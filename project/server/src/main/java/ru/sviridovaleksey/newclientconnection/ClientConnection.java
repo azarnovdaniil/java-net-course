@@ -9,16 +9,19 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
+
+import java.net.URISyntaxException;
+import java.util.Scanner;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 public class ClientConnection {
 
     private static final Logger LOGGER = Logger.getLogger(ClientConnection.class.getName());
     private final int usePort;
     private final Handler fileHandler;
+    private final Scanner scanner = new Scanner(System.in);
 
 
 
@@ -27,10 +30,26 @@ public class ClientConnection {
         this.fileHandler = fileHandler;
         LOGGER.addHandler(fileHandler);
         this.usePort = usePort;
-
+        Thread thread = new Thread(() -> {
+            try {
+                start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+      });
+        thread.start();
     }
+    public void start() {
+        System.out.println("введите команду exit для выхода");
+        while (true) {
+            String chose = scanner.next();
+            if (chose.equals("exit")) {
+                shutDownServer();
+            }
+        }
+   }
 
-    public void startConnection() throws Exception {
+    public void startConnection(String defAddress) throws Exception {
         final int channelOption = 128;
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -38,14 +57,14 @@ public class ClientConnection {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<io.netty.channel.socket.SocketChannel>() { // (4)
+                    .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
-                        public void initChannel(SocketChannel ch) {
+                        public void initChannel(SocketChannel ch) throws URISyntaxException {
                            ch.pipeline().addFirst(
                                    new Decoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())),
                                    new EncoderServer(),
                                    new ServerOutHandler(),
-                                   new ServerInHandler(fileHandler));
+                                   new ServerInHandler(fileHandler, defAddress));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, channelOption)
@@ -62,6 +81,7 @@ public class ClientConnection {
     public void shutDownServer() {
         System.exit(0);
     }
+
 }
 
 

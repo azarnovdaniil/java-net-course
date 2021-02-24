@@ -10,14 +10,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>common</artifactId>
-    <dependencies>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.42.Final</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

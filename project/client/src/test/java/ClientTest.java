@@ -1,3 +1,4 @@
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.sviridovaleksey.workwithfile.ShowAllDirectoryClient;
@@ -9,7 +10,7 @@ import java.nio.file.Path;
 public class ClientTest {
 
     private final String defaultDirectoryForDownload = "TestFOLDER";
-    private final String newDefaultDirectoryForDownload = "TestFOLDER2";
+    private static final String newDefaultDirectoryForDownload = "TestFOLDER2";
     private final String defAddress = "Download";
 
 
@@ -27,8 +28,8 @@ public class ClientTest {
         Assert.assertTrue(Files.exists(Path.of(newDefaultDirectoryForDownload)));
     }
 
-    @Test
-    public void testDeleteFileClient() {
+    @AfterClass
+    public static void testDeleteFileClient() {
         WorkWithFileClient workWithFileClient = new WorkWithFileClient();
         workWithFileClient.deleteFile(newDefaultDirectoryForDownload);
         Assert.assertFalse(Files.exists(Path.of(newDefaultDirectoryForDownload)));

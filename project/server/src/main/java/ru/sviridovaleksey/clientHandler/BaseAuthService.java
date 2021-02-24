@@ -2,17 +2,18 @@ package ru.sviridovaleksey.clientHandler;
 
 import ru.sviridovaleksey.Command;
 import ru.sviridovaleksey.commands.AuthCommandData;
-
 import java.sql.*;
 
 public class BaseAuthService {
 
-    private static Connection connection;
-    private static PreparedStatement psGetUser;
+    private Connection connection;
+    private PreparedStatement psGetUser;
+    private final String baseAddress;
 
 
 
-    public BaseAuthService() {
+    public BaseAuthService(String baseAddress) {
+        this.baseAddress = baseAddress;
         try {
             connect();
             prepareStatements();
@@ -53,14 +54,14 @@ public class BaseAuthService {
     }
 
 
-    public static void connect() throws ClassNotFoundException, SQLException {
+    public void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
-        connection = DriverManager.getConnection("jdbc:sqlite:project/main.db"); //путь и подключение к базе
+        connection = DriverManager.getConnection("jdbc:sqlite:" + baseAddress + "\\main.db");
         Statement statement = connection.createStatement(); // защищенный запрос
     }
 
 
-    private static void prepareStatements() throws SQLException {
+    private void prepareStatements() throws SQLException {
         psGetUser = connection.prepareStatement("SELECT id,nickName,password,login FROM users WHERE login=?;");
     }
 

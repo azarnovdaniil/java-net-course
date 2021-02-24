@@ -14,21 +14,21 @@ public class MessageForClient {
    }
 
    public void err(String message) {
-       ctx.write(Command.errActionMessage(name, message));
+       ctx.writeAndFlush(Command.errActionMessage(name, message));
    }
 
     public void message(String message) {
-        ctx.write(Command.message("server", message));
+        ctx.writeAndFlush(Command.message("server", message));
     }
 
    public void successfulAction(String message) {
-       ctx.write(Command.successAction(name, message));
+       ctx.writeAndFlush(Command.successAction(name, message));
    }
 
    public void responseShowDirectory(String message) {
-       ctx.write(Command.showAllInDirectory(name, message));
+       ctx.writeAndFlush(Command.showAllInDirectory(name, message));
    }
 
    public void sendCommandForClient(Command command) {
-       ctx.write(command); }
+       ctx.writeAndFlush(command); }
 }

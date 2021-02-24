@@ -6,16 +6,19 @@ import ru.sviridovaleksey.commands.*;
 import ru.sviridovaleksey.workwithfile.WorkWithFileClient;
 
 
+
 public class WhatDoClient {
 
-private  final String ansiReset = "\u001B[0m";
-private  final String ansiRed = "\u001B[31m";
-private  final String ansiBlue = "\u001B[34m";
-private final WorkWithFileClient workWithFileClient;
-private final String defaultDirectoryForDownload = "project/client/Download/";
+private final String separator = "\\";
+private final String ansiReset = "\u001B[0m";
+private final String ansiRed = "\u001B[31m";
+private final String ansiBlue = "\u001B[34m";
+private final WorkWithFileClient workWithFileClient = new WorkWithFileClient();
+private final String defaultDirectoryForDownload;
 
-public WhatDoClient() {
-    workWithFileClient = new WorkWithFileClient();
+public WhatDoClient(String defDirectory) {
+    defaultDirectoryForDownload = defDirectory + "\\Download";
+    System.out.println(defaultDirectoryForDownload);
     workWithFileClient.createDefaultDirectory(defaultDirectoryForDownload); }
 
 
@@ -57,7 +60,8 @@ public WhatDoClient() {
                 boolean endWrite = data.getEndWrite();
                 byte[] dataForFile = data.getData();
                 long cell = data.getCell();
-                workWithFileClient.writeByteToFile(defaultDirectoryForDownload + fileName, dataForFile, cell);
+                workWithFileClient.writeByteToFile(defaultDirectoryForDownload + separator + fileName,
+                        dataForFile, cell);
                 if (endWrite) {
                     System.out.println(ansiBlue + "Скачивание завершено, загляните в папку "
                             + defaultDirectoryForDownload + ansiReset);
