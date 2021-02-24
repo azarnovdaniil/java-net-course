@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -33,4 +34,8 @@ public class Controller implements Initializable {
         msgField.requestFocus();
     }
 
+    public void exitAction(ActionEvent actionEvent) {
+        network.close();
+        Platform.exit();
+    }
 }

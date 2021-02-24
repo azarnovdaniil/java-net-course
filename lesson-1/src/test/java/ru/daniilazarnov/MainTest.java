@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
 
-    @Test
+   /* @Test
     void oldWay() {
         File file = new File("/unrealpath/file.txt");
         assertFalse(file.exists());
@@ -198,5 +198,5 @@ class MainTest {
 
         InputStream inputStream = new FileInputStream("dir/from.txt");
         Files.copy(inputStream, Path.of("dir/from_input.txt"), StandardCopyOption.REPLACE_EXISTING);
-    }
+    }*/
 }

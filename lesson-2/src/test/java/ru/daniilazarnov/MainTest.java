@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
-
+/*
     @Test
     void testWalk() throws IOException {
         Stream<Path> stream = Files.walk(Path.of("../lesson-1/dir"));
@@ -280,5 +280,5 @@ class MainTest {
         channel.truncate(channel.size() - 20);
         System.out.println(channel.size());
         channel.close();
-    }
+    }*/
 }

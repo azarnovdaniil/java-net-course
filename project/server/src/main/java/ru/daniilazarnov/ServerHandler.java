@@ -17,10 +17,10 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Клиент подключился" + ctx);
-        CHANNELS.add(ctx.channel());
-        clientName = "Клиент №" + newClientIndex;
-        newClientIndex++;
+            System.out.println("Client connected" + ctx);
+            CHANNELS.add(ctx.channel());
+            clientName = "Client #" + newClientIndex;
+            newClientIndex++;
     }
 
     @Override
@@ -130,11 +130,16 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
                     e.printStackTrace();
                 }
             }
+            // writeClientName - узнать номер, под которым подкючился данный клиент к серверу
+            if (s.contains("writeClientName")) {
+                c.writeAndFlush(clientName);
+            }
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        System.out.println("Client logged out");
         cause.printStackTrace();
         ctx.close();
     }
