@@ -1,6 +1,7 @@
 package ru.daniilazarnov;
 
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class User {

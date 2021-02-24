@@ -1,17 +1,13 @@
 package ru.daniilazarnov;
-
 import ru.daniilazarnov.auth.AuthService;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
-import ru.daniilazarnov.*;
 import ru.daniilazarnov.auth.*;
-import ru.daniilazarnov.Command;
+
 public class Server {
 
     private final ServerSocket serverSocket;
@@ -25,14 +21,13 @@ public class Server {
     }
 
     public void start() throws IOException {
-        System.out.println("Сервер запущен!");
-
+        logger.info("Сервер запущен!");
         try {
             while (true) {
                 waitAndProcessNewClientConnection();
             }
         } catch (IOException e) {
-            System.out.println("Ошибка создания нового подключения");
+            logger.info("Ошибка создания нового подключения");
             e.printStackTrace();
         } finally {
             serverSocket.close();
@@ -40,9 +35,7 @@ public class Server {
     }
 
     private void waitAndProcessNewClientConnection() throws IOException {
-        //System.out.println("Ожидание пользователя...");
         Socket clientSocket = serverSocket.accept();
-        //System.out.println("Клиент подключился!");
         processClientConnection(clientSocket);
     }
 
@@ -64,13 +57,12 @@ public class Server {
         return false;
     }
 
-    public synchronized void broadcastMessage(ClientHandler sender, Command command) throws IOException {
-        for (ClientHandler client : clients) {
-            if (client == sender) {
-                continue;
-            }
-            client.sendMessage(command);
-        }
+    public synchronized void subscribe(ClientHandler clientHandler) throws IOException {
+        clients.add(clientHandler);
+    }
+
+    public synchronized void unSubscribe(ClientHandler clientHandler) throws IOException {
+        clients.remove(clientHandler);
     }
 
     private List<String> getAllUsernames() {
@@ -81,12 +73,4 @@ public class Server {
         return usernames;
     }
 
-    public synchronized void sendPrivateMessage(String recipient, Command command) throws IOException {
-        for (ClientHandler client : clients) {
-            if (client.getClientUsername().equals(recipient)) {
-                client.sendMessage(command);
-                break;
-            }
-        }
-    }
 }
