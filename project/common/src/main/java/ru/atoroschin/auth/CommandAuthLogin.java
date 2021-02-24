@@ -8,10 +8,13 @@ import ru.atoroschin.FileWorker;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static ru.atoroschin.CommandsAuth.*;
 
 public class CommandAuthLogin implements CommandAuth {
+    private final Logger logger = Logger.getLogger(CommandAuthLogin.class.getName());
+
     @Override
     public void send(ChannelHandlerContext ctx, Credentials credentials, byte signal) {
         List<String> list = List.of(credentials.getLogin(), credentials.getPassword());
@@ -28,9 +31,11 @@ public class CommandAuthLogin implements CommandAuth {
         if (authService.isAuth(credentials)) {
             AUTHUSER.sendToServer(ctx, credentials);
             AUTHOK.receiveAndSend(ctx, null, null, null);
+            logger.info("Авторизация прошла успешно. Пользователь " + credentials.getLogin());
             ctx.pipeline().remove(ctx.handler());
         } else {
             AUTHERR.receiveAndSend(ctx, null, null, null);
+            logger.info("Авторизация не удалась. Пользователь " + credentials.getLogin());
         }
     }
 

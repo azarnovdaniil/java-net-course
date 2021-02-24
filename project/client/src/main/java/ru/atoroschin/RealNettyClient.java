@@ -9,15 +9,29 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class RealNettyClient {
     private static final int PART_SIZE = 10 * 1024 * 1024;
     private static final int SERVER_PORT = 8189;
     private static final String HOST = "localhost";
+    private static final Logger LOGGER = Logger.getLogger("");
+    private static final String LOG_PROP = "logclient" + File.separator + "logging.properties";
 
     public static void main(String[] args) throws InterruptedException {
+        try {
+            LogManager manager = LogManager.getLogManager();
+            manager.readConfiguration(new FileInputStream(LOG_PROP));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap clientBootstrap = new Bootstrap();
@@ -38,7 +52,7 @@ public class RealNettyClient {
             ChannelFuture channelFuture = clientBootstrap.connect().sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Не удается установить соединение", e);
         } finally {
             group.shutdownGracefully().sync();
         }

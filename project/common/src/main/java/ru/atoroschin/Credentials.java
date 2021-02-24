@@ -6,7 +6,6 @@ import java.util.StringJoiner;
 public class Credentials {
     private final String login;
     private final String password;
-    private final boolean enable;
 
     public Credentials() {
         this(List.of(""));
@@ -20,11 +19,9 @@ public class Credentials {
         if (list.size() == 2) {
             login = list.get(0);
             password = list.get(1);
-            enable = true;
         } else {
             login = "";
             password = "";
-            enable = false;
         }
     }
 
@@ -40,9 +37,5 @@ public class Credentials {
         StringJoiner stringJoiner = new StringJoiner(" ", "", "");
         stringJoiner.add(login).add(password);
         return stringJoiner.toString();
-    }
-
-    public boolean isEnable() {
-        return enable;
     }
 }

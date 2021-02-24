@@ -8,6 +8,8 @@ import ru.atoroschin.auth.AuthService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class InboundHandler extends ChannelInboundHandlerAdapter {
     private Map<Integer, FileLoaded> uploadedFiles;
@@ -15,6 +17,7 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
     private static final String STORAGE_DIR = "storage";
     private boolean auth = false;
     private final AuthService authService;
+    private final Logger logger = Logger.getLogger(InboundHandler.class.getName());
 
     public InboundHandler(AuthService authService) {
         this.authService = authService;
@@ -22,7 +25,7 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws IOException {
-        System.out.println("Подключился клиент " + ctx.channel().remoteAddress().toString());
+        logger.info("Подключился клиент " + ctx.channel().remoteAddress().toString());
         int maxVolume = 1;
         uploadedFiles = new HashMap<>();
         fileWorker = new FileWorker(STORAGE_DIR, STORAGE_DIR, maxVolume);
@@ -42,7 +45,7 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
                         command.receiveAndSend(ctx, buf, authService, fileWorker);
                         auth = true;
                     } catch (IllegalAccessException | IOException e) {
-                        e.printStackTrace();
+                        logger.log(Level.WARNING, "Ошибка определения параметров учетной записи", e);
                     }
                 }
             } else {
@@ -55,13 +58,13 @@ public class InboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Отключился клиент " + ctx.channel().remoteAddress().toString());
+        logger.info("Отключился клиент " + ctx.channel().remoteAddress().toString());
         super.channelUnregistered(ctx);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+        logger.log(Level.WARNING, "Разорвано соединение", cause);
         ctx.close();
     }
 }

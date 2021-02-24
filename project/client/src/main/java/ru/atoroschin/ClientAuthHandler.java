@@ -60,26 +60,4 @@ public class ClientAuthHandler extends ChannelInboundHandlerAdapter {
             e.printStackTrace();
         }
     }
-
-//    public void consoleReadAuth(ChannelHandlerContext ctx) {
-//        Thread threadConsoleAuth = new Thread(() -> {
-//            Scanner scanner = new Scanner(System.in);
-//            while (!auth) {
-//                String readLine;
-//                System.out.print("Введите логин и пароль: ");
-//                if (scanner.hasNext()) {
-//                    readLine = scanner.nextLine();
-//                    CommandsAuth command = CommandsAuth.AUTH;
-//                    command.sendToServer(ctx, readLine);
-//                    try {
-//                        TimeUnit.SECONDS.sleep(1);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
-//        threadConsoleAuth.setDaemon(true);
-//        threadConsoleAuth.start();
-//    }
 }

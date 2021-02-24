@@ -9,6 +9,8 @@ import io.netty.channel.ChannelHandlerContext;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * [команда 1б][длина сообщения 4б][номер части 4б] prefix{[хэш 4б][длина имени 4б][имя][размер файла 8б]} [содержимое]
@@ -17,6 +19,7 @@ import java.util.Map;
  */
 
 public class CommandUpload implements Command {
+    private final Logger logger = Logger.getLogger(CommandUpload.class.getName());
 
     @Override
     public void send(ChannelHandlerContext ctx, String content, FileWorker fileWorker, byte signal) {
@@ -34,10 +37,15 @@ public class CommandUpload implements Command {
             FileLoaded> uploadedFiles, byte signal) {
         try {
             String name = fileWorker.receiveFile(buf, uploadedFiles);
-            fileWorker.sendCommandWithStringList(ctx, List.of("Сохранен файл " + name), signal);
+            if (!name.equals("")) {
+                String message = "Сохранен файл " + name;
+                fileWorker.sendCommandWithStringList(ctx, List.of(message), signal);
+                logger.info(message);
+            }
         } catch (IOException e) {
-            fileWorker.sendCommandWithStringList(ctx, List.of("Ошибка загрузки файла"), signal);
-            e.printStackTrace();
+            String message = "Ошибка загрузки файла";
+            fileWorker.sendCommandWithStringList(ctx, List.of(message), signal);
+            logger.log(Level.WARNING, message, e);
         }
     }
 

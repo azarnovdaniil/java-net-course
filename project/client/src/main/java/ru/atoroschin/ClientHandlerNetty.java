@@ -4,17 +4,21 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
     private Map<Integer, FileLoaded> uploadedFiles;
     private FileWorker fileWorker;
     private boolean active;
+    private final Logger logger = Logger.getLogger(ClientHandlerNetty.class.getName());
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws IOException {
@@ -38,15 +42,15 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
             try {
                 command.receive(channelHandlerContext, buf, fileWorker, uploadedFiles);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Не удалось выполнить команду", e);
             }
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable cause) {
-        cause.printStackTrace();
         active = false;
+        logger.log(Level.WARNING, "Разорвано соединение", cause);
         channelHandlerContext.close();
     }
 
@@ -56,13 +60,19 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
         super.channelInactive(ctx);
     }
 
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) {
+        Commands command = Commands.EXIT;
+        command.sendToServer(ctx, "", fileWorker);
+    }
+
     public void consoleRead(ChannelHandlerContext ctx) {
         Thread threadConsole = new Thread(() -> {
             Scanner scanner = new Scanner(System.in);
             while (active) {
                 String readLine;
-                System.out.println("server: " + fileWorker.getServerPathOnClient() + ">");
-                System.out.print("local: " + fileWorker.getCurrentDir() + ">");
+                System.out.println("local: " + fileWorker.getCurrentDir() + ">");
+                System.out.print("server: home" + File.separator + fileWorker.getServerPathOnClient() + ">");
                 if (scanner.hasNext()) {
                     readLine = scanner.nextLine();
                     String[] commandPart = readLine.split("\\s", 2);

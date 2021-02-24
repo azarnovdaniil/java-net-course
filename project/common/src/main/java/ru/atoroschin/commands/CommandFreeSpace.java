@@ -9,8 +9,12 @@ import ru.atoroschin.FileWorker;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CommandFreeSpace implements Command {
+    private final Logger logger = Logger.getLogger(CommandFreeSpace.class.getName());
+
     @Override
     public void send(ChannelHandlerContext ctx, String content, FileWorker fileWorker, byte signal) {
         sendSimpleCommand(ctx, signal);
@@ -19,8 +23,14 @@ public class CommandFreeSpace implements Command {
     @Override
     public void response(ChannelHandlerContext ctx, ByteBuf buf, FileWorker fileWorker,
                          Map<Integer, FileLoaded> uploadedFiles, byte signal) {
-        long freeSpace = fileWorker.getFreeSpace();
-        fileWorker.sendCommandWithStringList(ctx, List.of("Свободно на диске: " + freeSpace + " байт"), signal);
+        try {
+            long freeSpace = fileWorker.getFreeSpace();
+            fileWorker.sendCommandWithStringList(ctx, List.of("Свободно на диске: " + freeSpace + " байт"), signal);
+        } catch (IOException e) {
+            String message = "Не удалось определить свободное место на диске";
+            fileWorker.sendCommandWithStringList(ctx, List.of(message), signal);
+            logger.log(Level.WARNING, message, e);
+        }
     }
 
     @Override

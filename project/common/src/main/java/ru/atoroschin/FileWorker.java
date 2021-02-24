@@ -13,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.toList;
 
@@ -23,6 +25,7 @@ public class FileWorker {
     private Path basePath;
     private String serverPath;
     private long maxVolume;
+    private final Logger logger = Logger.getLogger(FileWorker.class.getName());
 
     public FileWorker(String currentDir, String baseDir, long maxVolume) throws IOException {
         checkDir(Path.of(currentDir));
@@ -131,8 +134,7 @@ public class FileWorker {
         long fileSize = buf.readLong();
         FileLoaded fileLoaded;
         Path path = currentPath.resolve(fileName);
-        long busyVolume = getVolumeDir(basePath);
-        if (busyVolume + fileSize <= maxVolume) {
+        if (getFreeSpace() >= fileSize) {
             if (uploadedFiles.containsKey(hash)) {
                 fileLoaded = uploadedFiles.get(hash);
             } else {
@@ -150,22 +152,17 @@ public class FileWorker {
                 return fileName;
             }
         }
-        throw new IOException();
+        return "";
     }
 
-    private long getVolumeDir(Path path) {
-        try {
-            return Files.walk(path)
-                    .map(Path::toFile)
-                    .map(File::length)
-                    .reduce(Long::sum).get();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return -1;
-        }
+    private long getVolumeDir(Path path) throws IOException {
+        return Files.walk(path)
+                .map(Path::toFile)
+                .map(File::length)
+                .reduce(Long::sum).orElseThrow();
     }
 
-    public long getFreeSpace() {
+    public long getFreeSpace() throws IOException {
         return maxVolume - getVolumeDir(basePath);
     }
 
@@ -187,7 +184,7 @@ public class FileWorker {
                     currentPath = currentPath.resolve(newDir).toRealPath();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Не удалось перейти в директорию " + newDir, e);
             }
         }
     }
@@ -202,7 +199,7 @@ public class FileWorker {
             try {
                 Files.createDirectory(currentPath.resolve(nameDir));
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Не удалось создать директорию " + nameDir, e);
             }
         }
     }
@@ -210,6 +207,7 @@ public class FileWorker {
     public void checkDir(Path path) throws IOException {
         if (!Files.exists(path)) {
             Files.createDirectory(path);
+            logger.info("Создана директория " + path.toString());
         }
     }
 
@@ -217,7 +215,7 @@ public class FileWorker {
         try {
             Files.deleteIfExists(currentPath.resolve(nameDir));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Не удалось удалить директорию " + nameDir, e);
         }
     }
 
@@ -230,7 +228,7 @@ public class FileWorker {
                 Files.move(pathFile, pathDir.resolve(fileName));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Не удалось переместить файл " + fileName, e);
         }
     }
 
@@ -242,7 +240,7 @@ public class FileWorker {
                 Files.move(pathFile, pathNewFile);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Не удалось переименовать файл " + fileName, e);
         }
     }
 
