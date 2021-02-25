@@ -17,29 +17,43 @@ public class TestCC {
         this.channel = channel;
     }
 
-    public void command(String[] input) throws IOException {
-        String cmd = input[0].toUpperCase();
-        String part1 = input[1];
+    public void command(byte[] bytes){
+        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
+        buf.writeByte((byte) 1);
+        buf.writeBytes(Utils.convertToByteBuf(bytes));
+        channel.writeAndFlush(buf);
+    }
 
+    public void command(String str) throws IOException {
+        String[] input = str.split("\\s", 2);
+        String part1 = input[0];
+        String part2 = "";
 
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        switch (cmd) {
+        switch (part1.toUpperCase()) {
             case  "REG":
+                part2 = input[1];
                 buf.writeByte((byte) 15);
-                buf.writeBytes(Utils.convertToByteBuf(part1));
+                buf.writeBytes(Utils.convertToByteBuf(part2));
                 channel.writeAndFlush(buf);
                 break;
             case  "AUTH":
+                part2 = input[1];
                 buf.writeByte((byte) 10);
-                buf.writeBytes(Utils.convertToByteBuf(part1));
+                buf.writeBytes(Utils.convertToByteBuf(part2));
                 channel.writeAndFlush(buf);
                 break;
             case "LS":
                 buf.writeByte((byte) 45);
                 channel.writeAndFlush(buf);
                 break;
+            case "RM": {
+                buf.writeByte((byte) 50);
+                channel.writeAndFlush(buf);
+                break;
+            }
             case "UPL": {
-                sendFile(Paths.get(part1), channel, future -> {
+                sendFile(Paths.get(part2), channel, future -> {
                     if (!future.isSuccess()) {
                         System.out.println("Fail to upload file. Please try again.");
                         future.cause().printStackTrace();
@@ -52,6 +66,13 @@ public class TestCC {
             }
             case "DOWN": {
                 buf.writeByte((byte) 36);
+                channel.writeAndFlush(buf);
+                break;
+            }
+            default:{
+                buf = ByteBufAllocator.DEFAULT.buffer();
+                buf.writeByte((byte) 1);
+                buf.writeBytes(Utils.convertToByteBuf(str));
                 channel.writeAndFlush(buf);
                 break;
             }

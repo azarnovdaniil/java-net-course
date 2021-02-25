@@ -14,14 +14,27 @@ import java.util.Arrays;
 
 public class Tests {
     public static void main(String[] args) throws Exception {
-        File file = new File("d:\\testDir\\Client\\ClientNetwork.zip");
+//        File file = new File("d:\\testDir\\Client\\ClientNetwork.zip");
 //        Path path = Path.of(String.valueOf(file));
 //        byte [] prefix = {1, 2, 3};
 //        fileToBBWithPrefix(path, prefix);
         String f1 = "d:\\testDir\\Client\\ClientNetwork.zip";
         String f2 = "d:\\testDir\\Server\\ClientNetwork.zip";
 //        copyFile(f1, f2);
-        copyFileWithFileChannel(f1,f2);
+//        copyFileWithFileChannel(f1,f2);
+        ls();
+    }
+
+    static void ls(){
+        File dir = new File("d:\\testDir\\Server\\admin\\");
+        File[] files = dir.listFiles();
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                if (!file.isDirectory()) {
+                    System.out.println(String.format("[%s] size: [%s]", file.getName(), Utils.bytesConverter(file.length())));
+                }
+            }
+        }
     }
 
     static void fileToBBWithPrefix(Path path, byte[] prefix) throws IOException {

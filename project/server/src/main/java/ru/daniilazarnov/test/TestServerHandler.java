@@ -1,6 +1,7 @@
 package ru.daniilazarnov.test;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ru.daniilazarnov.test.db.DBConnect;
@@ -18,10 +19,13 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
     private static final byte CMD_START_UPLOAD = (byte) 35;
     private static final byte CMD_DOWNLOAD = (byte) 36;
     private static final byte CMD_LS = (byte) 45;
+    private static final byte CMD_RM = (byte) 50;
 
     private Set<User> users = new HashSet<>();
     private User user;
 
+    private TestCC controller;
+    private Commands command = new Commands();
 
     private final String ROOT = "D:\\testDir\\Server\\";
     private String clientDir;
@@ -43,6 +47,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("Client connected");
+        controller = new TestCC(ctx.channel());
     }
 
     @Override
@@ -94,6 +99,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
                     state = ServerState.TRANSFER;
                     receiveFile(buf);
                 } else if (signal == CMD_LS){
+                    command.listFiles(clientDir, controller);
                     System.out.println("ls");
                 } else if (signal == CMD_DOWNLOAD){
                     System.out.println("download");
