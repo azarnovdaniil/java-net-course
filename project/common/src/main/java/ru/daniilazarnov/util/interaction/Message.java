@@ -6,6 +6,7 @@ import java.io.Serializable;
 public class Message implements Serializable {
   private String command;
   private File file;
+  private String fileName;
 
   public Message() {
 
@@ -34,5 +35,20 @@ public class Message implements Serializable {
 
   public void setFile(File file) {
     this.file = file;
+  }
+
+  public String getFileName() {
+    return fileName;
+  }
+
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
+
+  @Override
+  public String toString() {
+    return "Message{" +
+      "command='" + command + '\'' +
+      '}';
   }
 }
