@@ -33,110 +33,119 @@ public class ClientHandler {
                 try {
                     //цикл аутентификации
                     while (true) {
-                        String str = in.readUTF();
-
-                        if (str.startsWith("/")) {
-                            if (str.startsWith("/reg")) {
-                                String[] token = str.split("\\s", 4);
-                                boolean reg = server.getAuthService()
-                                        .registration(token[1], token[2], token[3]);
-                                boolean dir = file.isNewClientDirCreated (token[1]);
+                        String str = in.readUTF ();
+                        if (str.startsWith ("/reg")) {
+                            String[] token = str.split ("\\s", 4);
+                            boolean reg = server.getAuthService ()
+                                    .registration (token[1], token[2], token[3]);
+                            boolean dir = file.isNewClientDirCreated (token[1]);
 //                                Создаем персональную папку под нового клиента в директории myclaud//
-                                if (reg && dir) {
-                                    sendCommand ("/regOK");
-                                    logger.info ("Directory for client " + token[1] + " in dir mycloud is created!");
+                            if (reg && dir) {
+                                sendInfo ("/regOK");
+                                logger.info ("Directory for client " + token[1] + " in dir mycloud is created!");
+                                login = token[1];
+                                break;
 
-                                } else {
-                                    sendCommand ("/regNO");
-                                    System.out.println ("Регистрация не получилась");
-                                    break;
-                                }
-                            }
-
-                            if (str.startsWith("/auth")) {
-                                String[] token = str.split("\\s", 3);
-                                String newNick = server.getAuthService()
-                                        .getNicknameByLoginAndPassword(token[1], token[2]);
-                                if (newNick != null) {
-                                    login = token[1];
-                                    password = token[2];
-                                    if (!server.isloginAuthenticated(login)) {
-                                        nickname = newNick;
-                                        sendCommand ("/authOK " + nickname);
-                                        server.subscribe(this);
-                                        logger.info ("Client " + token[1] + " auth OK");
-                                        break;
-                                    } else {
-                                        sendCommand ("/authNO ");
-                                        break;
-                                    }
-                                } else {
-                                    sendCommand ("/authNO ");
-                                    break;
-                                }
+                            } else {
+                                sendInfo ("/regNO");
+                                System.out.println ("Регистрация не получилась");
+                                break;
                             }
                         }
+
+                        if (str.startsWith ("/auth")) {
+                            String[] token = str.split ("\\s", 3);
+                            String newNick = server.getAuthService ()
+                                    .getNicknameByLoginAndPassword (token[1], token[2]);
+                            if (newNick != null) {
+                                login = token[1];
+                                password = token[2];
+                                if (!server.isloginAuthenticated (login)) {
+                                    nickname = newNick;
+                                    sendInfo ("/authOK " + nickname);
+                                    server.subscribe (this);
+                                    logger.info ("Client " + token[1] + " auth OK");
+                                    break;
+                                } else {
+                                    sendInfo ("/authNO ");
+                                    break;
+                                }
+                            } else {
+                                sendInfo ("/authNO ");
+                                break;
+                            }
+                        }
+
                     }
 
                     //Цикл работы
                     while (true) {
-                        String str = in.readUTF();
-                        if (str.startsWith("/ls")) {
+                        String str = in.readUTF ();
+                        if (str.startsWith ("/ls")) {
                             try {
                                 String clientFileslist = file.ls (this.login);
-                                sendCommand ("/lsOK " + clientFileslist);
-                                logger.info ("command -ls- OK");
+                                sendInfo (clientFileslist);
 
                             } catch (Exception e) {
                                 logger.info ("command -ls- failed");
-                                sendCommand ("/lsNO");
+                                sendInfo ("Не удалось загрузить список файлов.");
                             }
                         }
 
-                            if (str.startsWith("/delete")) {
-                                String[] token = str.split("\\s+", 2);
-                                if (token.length < 2) {
-                                    continue;
+                        if (str.startsWith ("/rename")) {
+                            String[] token = str.split ("\\s+", 3);
+                            if (token.length < 3) {
+                                continue;
+                            }
+                            if (file.isFileRenamed (this.login, token[1], token[2])) {
+                                sendInfo ("Файл успешно переименован.");
+                            } else {
+                                sendInfo ("Не удалось переименовать файл.");
+                            }
+                        }
+                        if (str.startsWith ("/delete")) {
+                            String[] token = str.split ("\\s+", 2);
+                            if (token.length < 2) {
+                                continue;
+                            }
+                            if (file.isFileDelited (this.login, token[1])) {
+                                sendInfo ("Файл успешно удален.");
+                            } else {
+                                sendInfo ("Ошибка удаления файла.");
+                            }
+                        }
+
+
+                        if (str.startsWith ("/upload")) {
+                            String[] token = str.split ("\\s+", 2);
+                            if (token.length < 2) {
+                                continue;
+                            }
+                            if (file.isFileExists (this.login, token[1])) {
+                                try {
+                                    file.sendFileToClient (this.out, this.login, token[1]);
+                                    sendInfo ("Файл успешно скачен.");
+                                    logger.info ("command -upload- OK");
+                                } catch (Exception e) {
+                                    logger.info ("command -upload- failed");
+                                    sendInfo ("Ошибка передачи файла.");
                                 }
-                                if (file.isFileDelited (this.login, token[1])){
-                                    sendCommand ("/deleteOK Файл успешно удален");
-                                } else {
-                                    sendCommand ("/deleteNO Ошибка удаления фвйла");
-                                }
+                            } else {
+                                sendInfo ("В Облаке нет файла с таким именем.");
                             }
 
+                        }
 
-                            if (str.startsWith("/upload")) {
-                                String[] token = str.split("\\s+", 2);
-                                if (token.length < 2) {
-                                    continue;
-                                }
-                                if (file.isFileExists(this.login, token[1])) {
-                                    try {
-                                        file.sendFileToClient (this.out, this.login, token[1]);
-                                        sendCommand ("/uploadOK Файл успешно скачен!");
-                                        logger.info ("command -upload- OK");
-                                    } catch (Exception e){
-                                        logger.info ("command -upload- failed");
-                                        sendCommand ("/uploadNO Ошибка передачи файла!");
-                                    }
-                                } else {
-                                    sendCommand ("/uploadNO В Облаке нет файла с таким именем!");
-                                }
-
-                            }
-
-                            if (str.equals("/end")) {
-                                break;
-                            }
-
+                        if (str.equals ("/end")) {
+                            break;
+                        }
 
                     }
                 } catch (IOException e) {
                     logger.log (Level.SEVERE,"", e);
                     e.printStackTrace();
                 } finally {
-                    logger.info ("Client " + login + " disconnected!");
+                    logger.info ("Client " + this.login + " disconnected!");
                     server.unsubscribe(this);
                     try {
                         socket.close();
@@ -152,7 +161,7 @@ public class ClientHandler {
         }
     }
 
-    public void sendCommand(String msg) {
+    public void sendInfo(String msg) {
         try {
             out.writeUTF(msg);
         } catch (IOException e) {

@@ -1,7 +1,5 @@
 package ru.daniilazarnov;
 
-import java.io.File;
-
 public class StartClient {
 
     public static void main(String[] args) {

@@ -2,7 +2,7 @@ package ru.daniilazarnov;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.Scanner;
+
 
 public class MyCloudFiles {
     private File file;
@@ -18,8 +18,8 @@ public class MyCloudFiles {
     }
 
     public boolean isFileRenamed(String login, String oldName, String newName) {
-        file = new File ("mycloud/_" + login + "/" + oldName);
-        return file.renameTo (new File ("mycloud/_" + login + "/" + newName));
+        file = new File ("C:\\Users\\Users\\IdeaProjects\\java-net-course\\project\\server\\myclaud\\" + login + "\\" + oldName);
+        return file.renameTo (new File ("C:\\Users\\Users\\IdeaProjects\\java-net-course\\project\\server\\myclaud\\" + login + "\\" + newName));
     }
 
     public boolean isFileDelited(String login, String fileName) {
@@ -49,7 +49,6 @@ public class MyCloudFiles {
     public boolean isFileExists (String login, String fileName) {
         file = new File ("C:\\Users\\Users\\IdeaProjects\\java-net-course\\project\\server\\myclaud\\" + login + "\\" + fileName);
         return file.exists ();
-
     }
 
 }
