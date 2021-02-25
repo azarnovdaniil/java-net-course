@@ -1,4 +1,4 @@
-package ru.daniilazarnov.client.commands.show;
+package ru.daniilazarnov.common.commands.show;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -6,7 +6,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import ru.daniilazarnov.common.commands.Command;
-import ru.daniilazarnov.common.OperationTypes;
+import ru.daniilazarnov.common.commands.Commands;
 
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ public class ShowCommand implements Command {
 
     private void sendShowCommand(ChannelFutureListener finishListener) throws IOException {
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte(OperationTypes.SHOW.getCode());
+        buf.writeByte(Commands.SHOW.getCode());
         ChannelFuture transferOperationFuture = channel.writeAndFlush(buf);
         if (finishListener != null) {
             transferOperationFuture.addListener(finishListener);
@@ -36,7 +36,7 @@ public class ShowCommand implements Command {
                             future.cause().printStackTrace();
                         }
                         if (future.isSuccess()) {
-                            System.out.println("Files list request has been sent");
+                            System.out.println("Show command has been sent");
                         }
                     });
         } catch (IOException e) {

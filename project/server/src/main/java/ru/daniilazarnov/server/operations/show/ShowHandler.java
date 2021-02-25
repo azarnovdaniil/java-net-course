@@ -3,8 +3,9 @@ package ru.daniilazarnov.server.operations.show;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
+import ru.daniilazarnov.common.CommonPackageConstants;
+import ru.daniilazarnov.common.commands.Commands;
 import ru.daniilazarnov.common.handlers.Handler;
-import ru.daniilazarnov.common.OperationTypes;
 import ru.daniilazarnov.common.handlers.HandlerException;
 
 import java.io.IOException;
@@ -17,18 +18,12 @@ import java.util.stream.Collectors;
 
 public class ShowHandler implements Handler {
 
-    private static final int OPERATION_CODE_BYTES = 1;
-    private static final int PATHS_SIZE = 4;
-    private static final int PATH_LENGTH_SIZE = 4;
-
     private Channel channel;
-    private ByteBuf buf;
     private String root;
 
-    public ShowHandler(Channel channel, String root, ByteBuf buf) {
+    public ShowHandler(Channel channel, String root) {
         this.channel = channel;
         this.root = root;
-        this.buf = buf;
     }
 
     @Override
@@ -37,24 +32,25 @@ public class ShowHandler implements Handler {
         Path rootPath = Paths.get(root);
         List<String> paths = null;
         try {
-            paths = Files.walk(rootPath).filter(Files::isRegularFile).map(Path::toString).
+            paths = Files.walk(rootPath).filter(Files::isRegularFile).map(rootPath::relativize).
+                    map(Path::toString).
                     collect(Collectors.toList());
         } catch (IOException e) {
             throw new HandlerException("Exception has been occurred via reading files in the user's catalog", e);
         }
 
-        ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(OPERATION_CODE_BYTES);
-        buf.writeByte(OperationTypes.SHOW.getCode());
+        ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
+        buf.writeByte(Commands.SHOW.getCode());
         channel.writeAndFlush(buf);
 
-        buf = ByteBufAllocator.DEFAULT.directBuffer(PATHS_SIZE);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(CommonPackageConstants.CONTENT_LENGTH_BYTES.getCode());
         buf.writeInt(paths.size());
         channel.writeAndFlush(buf);
 
         for (String path : paths) {
             byte[] pathBytes = path.getBytes(StandardCharsets.UTF_8);
 
-            buf = ByteBufAllocator.DEFAULT.directBuffer(PATH_LENGTH_SIZE);
+            buf = ByteBufAllocator.DEFAULT.directBuffer(CommonPackageConstants.CONTENT_LENGTH_BYTES.getCode());
             buf.writeInt(pathBytes.length);
             channel.writeAndFlush(buf);
 

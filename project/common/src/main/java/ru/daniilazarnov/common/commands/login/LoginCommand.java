@@ -1,13 +1,14 @@
-package ru.daniilazarnov.client.commands.login;
+package ru.daniilazarnov.common.commands.login;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import ru.daniilazarnov.common.FilePackageConstants;
-import ru.daniilazarnov.common.OperationTypes;
+import ru.daniilazarnov.common.CommonPackageConstants;
 import ru.daniilazarnov.common.commands.Command;
+import ru.daniilazarnov.common.commands.Commands;
+
 import java.nio.charset.StandardCharsets;
 
 public class LoginCommand implements Command {
@@ -30,7 +31,7 @@ public class LoginCommand implements Command {
                         future.cause().printStackTrace();
                     }
                     if (future.isSuccess()) {
-                        System.out.println("User has logged on");
+                        System.out.println("Login command has been sent");
                     }
                 });
 
@@ -38,11 +39,11 @@ public class LoginCommand implements Command {
 
     private void sendLoginCommand(ChannelFutureListener finishListener) {
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte(OperationTypes.LOGIN.getCode());
+        buf.writeByte(Commands.LOGIN.getCode());
         channel.writeAndFlush(buf);
 
         byte[] loginBytes = login.getBytes(StandardCharsets.UTF_8);
-        buf = ByteBufAllocator.DEFAULT.directBuffer(FilePackageConstants.NAME_LENGTH_BYTES.getCode());
+        buf = ByteBufAllocator.DEFAULT.directBuffer(CommonPackageConstants.CONTENT_LENGTH_BYTES.getCode());
         buf.writeInt(loginBytes.length);
         channel.writeAndFlush(buf);
 
@@ -51,7 +52,7 @@ public class LoginCommand implements Command {
         channel.writeAndFlush(buf);
 
         byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
-        buf = ByteBufAllocator.DEFAULT.directBuffer(FilePackageConstants.NAME_LENGTH_BYTES.getCode());
+        buf = ByteBufAllocator.DEFAULT.directBuffer(CommonPackageConstants.CONTENT_LENGTH_BYTES.getCode());
         buf.writeInt(passwordBytes.length);
         channel.writeAndFlush(buf);
 

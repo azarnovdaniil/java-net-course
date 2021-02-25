@@ -2,7 +2,7 @@ package ru.daniilazarnov.server.operations.upload;
 
 import io.netty.buffer.ByteBuf;
 import ru.daniilazarnov.common.files.FileReader;
-import ru.daniilazarnov.common.files.ReadState;
+import ru.daniilazarnov.common.files.FileReadState;
 import ru.daniilazarnov.common.handlers.Handler;
 import ru.daniilazarnov.common.handlers.HandlerException;
 
@@ -29,6 +29,6 @@ public class UploadHandler implements Handler {
 
     @Override
     public boolean isComplete() {
-        return fileReader.getState() == ReadState.COMPLETE;
+        return fileReader.getState() == FileReadState.COMPLETE;
     }
 }

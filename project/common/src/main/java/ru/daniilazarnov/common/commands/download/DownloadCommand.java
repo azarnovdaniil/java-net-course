@@ -1,11 +1,11 @@
-package ru.daniilazarnov.client.commands.download;
+package ru.daniilazarnov.common.commands.download;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.*;
 import ru.daniilazarnov.common.commands.Command;
-import ru.daniilazarnov.common.FilePackageConstants;
-import ru.daniilazarnov.common.OperationTypes;
+import ru.daniilazarnov.common.CommonPackageConstants;
+import ru.daniilazarnov.common.commands.Commands;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -22,11 +22,11 @@ public class DownloadCommand implements Command {
 
     private void sendDownloadCommand(ChannelFutureListener finishListener) throws IOException {
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte(OperationTypes.DOWNLOAD.getCode());
+        buf.writeByte(Commands.DOWNLOAD.getCode());
         channel.writeAndFlush(buf);
 
         byte[] filePath = stringPath.getBytes(StandardCharsets.UTF_8);
-        buf = ByteBufAllocator.DEFAULT.directBuffer(FilePackageConstants.NAME_LENGTH_BYTES.getCode());
+        buf = ByteBufAllocator.DEFAULT.directBuffer(CommonPackageConstants.CONTENT_LENGTH_BYTES.getCode());
         buf.writeInt(filePath.length);
         channel.writeAndFlush(buf);
 
@@ -49,7 +49,7 @@ public class DownloadCommand implements Command {
                             future.cause().printStackTrace();
                         }
                         if (future.isSuccess()) {
-                            System.out.println("Download request has been sent");
+                            System.out.println("Download command has been sent");
                         }
                     });
         } catch (IOException e) {

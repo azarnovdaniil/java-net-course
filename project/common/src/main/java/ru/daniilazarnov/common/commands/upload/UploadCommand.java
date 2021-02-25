@@ -1,4 +1,4 @@
-package ru.daniilazarnov.client.commands.upload;
+package ru.daniilazarnov.common.commands.upload;
 
 
 import io.netty.channel.*;
@@ -26,7 +26,7 @@ public class UploadCommand implements Command {
                             future.cause().printStackTrace();
                         }
                         if (future.isSuccess()) {
-                            System.out.println("File has been sent to the server");
+                            System.out.println("Upload command has been sent");
                         }
                     });
         } catch (IOException e) {

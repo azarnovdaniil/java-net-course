@@ -1,7 +1,7 @@
 package ru.daniilazarnov.common.files;
 
 import io.netty.buffer.ByteBuf;
-import ru.daniilazarnov.common.FilePackageConstants;
+import ru.daniilazarnov.common.CommonPackageConstants;
 
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -13,7 +13,7 @@ import java.util.EnumSet;
 
 public class FileReader {
 
-    private ReadState state = ReadState.NAME_LENGTH;
+    private FileReadState state = FileReadState.NAME_LENGTH;
     private String fileName;
 
     private int nextLength;
@@ -27,14 +27,14 @@ public class FileReader {
     }
 
     public void readFile(ByteBuf buf) throws IOException {
-        if (state == ReadState.NAME_LENGTH) {
-            if (buf.readableBytes() >= FilePackageConstants.NAME_LENGTH_BYTES.getCode()) {
+        if (state == FileReadState.NAME_LENGTH) {
+            if (buf.readableBytes() >= CommonPackageConstants.CONTENT_LENGTH_BYTES.getCode()) {
                 nextLength = buf.readInt();
-                state = ReadState.NAME;
+                state = FileReadState.NAME;
             }
         }
 
-        if (state == ReadState.NAME) {
+        if (state == FileReadState.NAME) {
             if (buf.readableBytes() >= nextLength) {
                 try {
                     byte[] fileNameBytes = new byte[nextLength];
@@ -50,26 +50,26 @@ public class FileReader {
                                     StandardOpenOption.TRUNCATE_EXISTING,
                                     StandardOpenOption.WRITE));
 
-                    state = ReadState.FILE_LENGTH;
+                    state = FileReadState.FILE_LENGTH;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        if (state == ReadState.FILE_LENGTH) {
-            if (buf.readableBytes() >= FilePackageConstants.FILE_LENGTH_BYTES.getCode()) {
+        if (state == FileReadState.FILE_LENGTH) {
+            if (buf.readableBytes() >= CommonPackageConstants.FILE_LENGTH_BYTES.getCode()) {
                 fileLength = buf.readLong();
                 System.out.println("File length to receive (bytes): " + fileLength);
-                state = ReadState.FILE;
+                state = FileReadState.FILE;
             }
         }
 
-        if (state == ReadState.FILE) {
+        if (state == FileReadState.FILE) {
             try {
                 receivedFileLength += buf.readBytes(fileChannel, receivedFileLength, buf.readableBytes());
                 if (fileLength == receivedFileLength) {
-                    state = ReadState.COMPLETE;
+                    state = FileReadState.COMPLETE;
                     System.out.println("File has been received");
                     fileChannel.close();
                 }
@@ -79,7 +79,7 @@ public class FileReader {
         }
     }
 
-    public ReadState getState() {
+    public FileReadState getState() {
         return state;
     }
 }

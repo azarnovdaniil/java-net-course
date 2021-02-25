@@ -29,10 +29,6 @@ public class ClientConnection {
         this.clientConfiguration = clientConfiguration;
     }
 
-    public Channel getCurrentChannel() {
-        return currentChannel;
-    }
-
     public void start(CountDownLatch countDownLatch) {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
@@ -49,11 +45,13 @@ public class ClientConnection {
                     });
             ChannelFuture channelFuture = clientBootstrap.connect().sync();
             countDownLatch.countDown();
+
             try {
                 new Client(currentChannel).run();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();

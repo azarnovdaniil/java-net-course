@@ -3,8 +3,8 @@ package ru.daniilazarnov.common.files;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.*;
-import ru.daniilazarnov.common.FilePackageConstants;
-import ru.daniilazarnov.common.OperationTypes;
+import ru.daniilazarnov.common.CommonPackageConstants;
+import ru.daniilazarnov.common.commands.Commands;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -24,11 +24,11 @@ public class FileSender {
         FileRegion region = new DefaultFileRegion(path.toFile(), 0, Files.size(path));
 
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte(OperationTypes.UPLOAD.getCode());
+        buf.writeByte(Commands.UPLOAD.getCode());
         channel.writeAndFlush(buf);
 
         byte[] filenameBytes = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);
-        buf = ByteBufAllocator.DEFAULT.directBuffer(FilePackageConstants.NAME_LENGTH_BYTES.getCode());
+        buf = ByteBufAllocator.DEFAULT.directBuffer(CommonPackageConstants.CONTENT_LENGTH_BYTES.getCode());
         buf.writeInt(filenameBytes.length);
         channel.writeAndFlush(buf);
 
@@ -36,7 +36,7 @@ public class FileSender {
         buf.writeBytes(filenameBytes);
         channel.writeAndFlush(buf);
 
-        buf = ByteBufAllocator.DEFAULT.directBuffer(FilePackageConstants.FILE_LENGTH_BYTES.getCode());
+        buf = ByteBufAllocator.DEFAULT.directBuffer(CommonPackageConstants.FILE_LENGTH_BYTES.getCode());
         buf.writeLong(Files.size(path));
         channel.writeAndFlush(buf);
 

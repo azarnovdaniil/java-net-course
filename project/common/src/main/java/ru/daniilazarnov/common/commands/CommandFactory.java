@@ -1,11 +1,11 @@
-package ru.daniilazarnov.client.commands;
+package ru.daniilazarnov.common.commands;
 
 import io.netty.channel.Channel;
-import ru.daniilazarnov.client.commands.login.LoginCommand;
-import ru.daniilazarnov.common.commands.Command;
-import ru.daniilazarnov.client.commands.download.DownloadCommand;
-import ru.daniilazarnov.client.commands.show.ShowCommand;
-import ru.daniilazarnov.client.commands.upload.UploadCommand;
+import ru.daniilazarnov.common.commands.exit.ExitCommand;
+import ru.daniilazarnov.common.commands.login.LoginCommand;
+import ru.daniilazarnov.common.commands.download.DownloadCommand;
+import ru.daniilazarnov.common.commands.show.ShowCommand;
+import ru.daniilazarnov.common.commands.upload.UploadCommand;
 
 public class CommandFactory {
 
@@ -15,13 +15,13 @@ public class CommandFactory {
             String command = inputString.substring(0, whitespaceIndex);
             String pathString = inputString.substring(whitespaceIndex + 1);
             System.out.println(command);
-            if (command.equals(ClientCommand.DOWNLOAD.getTitle())) {
+            if (command.equals(Commands.DOWNLOAD.getTitle())) {
                 return new DownloadCommand(channel, pathString);
             }
-            if (command.equals(ClientCommand.UPLOAD.getTitle())) {
+            if (command.equals(Commands.UPLOAD.getTitle())) {
                 return new UploadCommand(channel, pathString);
             }
-            if (command.equals(ClientCommand.LOGIN.getTitle())) {
+            if (command.equals(Commands.LOGIN.getTitle())) {
                 whitespaceIndex = pathString.indexOf(" ");
                 if (whitespaceIndex != -1) {
                     return new LoginCommand(channel,
@@ -33,8 +33,11 @@ public class CommandFactory {
             throw new IllegalArgumentException("Unknown command: " + command);
 
         } else {
-            if (inputString.equals(ClientCommand.SHOW.getTitle())) {
+            if (inputString.equals(Commands.SHOW.getTitle())) {
                 return new ShowCommand(channel);
+            }
+            if (inputString.equals(Commands.EXIT.getTitle())) {
+                return new ExitCommand(channel);
             }
             throw new IllegalArgumentException("Unknown command:" + inputString);
 

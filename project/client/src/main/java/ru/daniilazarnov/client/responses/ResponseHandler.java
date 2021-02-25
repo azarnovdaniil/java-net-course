@@ -4,8 +4,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ru.daniilazarnov.client.responses.download.DownloadResponseHandler;
+import ru.daniilazarnov.client.responses.message.MessageResponseHandler;
 import ru.daniilazarnov.client.responses.show.ShowResponseHandler;
-import ru.daniilazarnov.common.OperationTypes;
+import ru.daniilazarnov.common.commands.Commands;
 import ru.daniilazarnov.common.handlers.Handler;
 import ru.daniilazarnov.common.handlers.HandlerState;
 
@@ -49,13 +50,18 @@ public class ResponseHandler extends ChannelInboundHandlerAdapter {
 
     private Handler readOperationType(ChannelHandlerContext ctx, ByteBuf buf) {
         byte read = buf.readByte();
-        if (read == OperationTypes.UPLOAD.getCode()) {
+        if (read == Commands.UPLOAD.getCode()) {
             return new DownloadResponseHandler(downloadsPath, buf);
-        } else if (read == OperationTypes.SHOW.getCode()) {
-            return new ShowResponseHandler(buf);
-        } else {
-            System.out.println("ERROR: Invalid first byte - " + read);
-            return null;
         }
+        if (read == Commands.SHOW.getCode()) {
+            return new ShowResponseHandler(buf);
+        }
+        if (read == Commands.MESSAGE.getCode()) {
+            return new MessageResponseHandler(buf);
+        }
+
+        System.out.println("ERROR: Invalid first byte - " + read);
+        return null;
+
     }
 }

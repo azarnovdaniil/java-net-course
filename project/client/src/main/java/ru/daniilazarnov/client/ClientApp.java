@@ -14,7 +14,6 @@ public class ClientApp {
     public static void main(String[] args) {
         ClientConnection clientConnection = new ClientConnection(HOST, PORT, new ClientConfiguration());
         clientConnection.start(new CountDownLatch(1));
-        clientConnection.stop();
 
     }
 

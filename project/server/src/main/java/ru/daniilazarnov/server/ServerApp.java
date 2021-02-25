@@ -6,6 +6,7 @@ import ru.daniilazarnov.server.configuration.ServerConfiguration;
 import ru.daniilazarnov.server.database.Authentication;
 import ru.daniilazarnov.server.database.sql.ConnectionService;
 
+
 public class ServerApp {
 
 

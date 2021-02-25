@@ -37,7 +37,6 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
                 handler.handle();
                 if (handler.isComplete()) {
                     state = HandlerState.IDLE;
-                    ctx.newFailedFuture(new Exception());
                 }
             }
             if (buf.readableBytes() == 0) {

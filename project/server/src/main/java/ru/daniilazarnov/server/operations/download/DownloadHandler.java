@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import ru.daniilazarnov.common.files.FileSender;
 import ru.daniilazarnov.common.handlers.Handler;
-import ru.daniilazarnov.common.FilePackageConstants;
+import ru.daniilazarnov.common.CommonPackageConstants;
 import ru.daniilazarnov.common.handlers.HandlerException;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class DownloadHandler implements Handler {
     public void handle() throws HandlerException {
 
         if (state == DownloadHandlerState.PATH_LENGTH) {
-            if (buf.readableBytes() >= FilePackageConstants.NAME_LENGTH_BYTES.getCode()) {
+            if (buf.readableBytes() >= CommonPackageConstants.CONTENT_LENGTH_BYTES.getCode()) {
                 pathLength = buf.readInt();
                 state = DownloadHandlerState.PATH;
             }
@@ -49,9 +49,10 @@ public class DownloadHandler implements Handler {
 
         if (state == DownloadHandlerState.SEND_FILE) {
             channel.flush();
+            String filePath = root + "\\" + pathString;
             FileSender fileSender = new FileSender(channel);
             try {
-                fileSender.sendFile(Paths.get(pathString),
+                fileSender.sendFile(Paths.get(filePath),
                         future -> {
                             if (!future.isSuccess()) {
                                 future.cause().printStackTrace();

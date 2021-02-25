@@ -1,8 +1,8 @@
 package ru.daniilazarnov.client;
 
 import io.netty.channel.Channel;
-import ru.daniilazarnov.client.commands.CommandFactory;
 import ru.daniilazarnov.common.commands.Command;
+import ru.daniilazarnov.common.commands.CommandFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,6 +24,9 @@ public class Client {
         while ((inputString = br.readLine()) != null) {
             Command command = commandFactory.createCommand(inputString, channel);
             command.execute();
+            if (!channel.isOpen()) {
+                break;
+            }
         }
     }
 

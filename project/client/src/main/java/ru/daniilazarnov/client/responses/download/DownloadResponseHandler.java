@@ -2,7 +2,7 @@ package ru.daniilazarnov.client.responses.download;
 
 import io.netty.buffer.ByteBuf;
 import ru.daniilazarnov.common.files.FileReader;
-import ru.daniilazarnov.common.files.ReadState;
+import ru.daniilazarnov.common.files.FileReadState;
 import ru.daniilazarnov.common.handlers.Handler;
 import ru.daniilazarnov.common.handlers.HandlerException;
 
@@ -30,7 +30,7 @@ public class DownloadResponseHandler implements Handler {
 
     @Override
     public boolean isComplete() {
-        return fileReader.getState() == ReadState.COMPLETE;
+        return fileReader.getState() == FileReadState.COMPLETE;
     }
 
 }
