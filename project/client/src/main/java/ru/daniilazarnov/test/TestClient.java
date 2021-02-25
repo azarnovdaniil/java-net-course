@@ -1,28 +1,28 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.test;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
 
 import java.util.Scanner;
 
-public class Network {
+public class TestClient {
     private Channel channel;
     private Scanner scanner;
-    private CommandController controller;
+    private TestCC controller;
     private static final String HOST = "localhost";
     private static final int PORT = 8189;
 
     public static void main(String[] args) {
-        new Network();
+        new TestClient();
     }
 
-    public Network() {
+    public TestClient() {
         new Thread(() -> {
             EventLoopGroup workerGroup = new NioEventLoopGroup();
             try {
@@ -34,14 +34,12 @@ public class Network {
                             protected void initChannel(SocketChannel socketChannel) throws Exception {
                                 channel = socketChannel;
                                 socketChannel.pipeline()
-                                        .addLast(new ObjectDecoder(1024 * 1024 * 1024, ClassResolvers.cacheDisabled(null)))
-                                        .addLast(new ObjectEncoder())
-                                        .addLast(new ClientHandler());
+                                .addLast(new TestClientHandler());
                             }
                         });
                 ChannelFuture future = b.connect(HOST, PORT).sync();
 
-                controller = new CommandController(channel);
+                controller = new TestCC(channel);
 
                 scanner = new Scanner(System.in);
                 while (scanner.hasNext()) {

@@ -1,7 +1,10 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.old;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import ru.daniilazarnov.old.CommandLS;
+import ru.daniilazarnov.old.FileMessage;
+import ru.daniilazarnov.old.InfoMessage;
 
 import java.io.IOException;
 import java.nio.file.Files;
