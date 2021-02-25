@@ -1,25 +1,17 @@
 package server;
 
 import delete.Delete;
-import download.DownLoad;
+import ru.daniilazarnov.MyMessage;
+import upload.UpLoad;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 
-import org.checkerframework.checker.units.qual.A;
 import ru.daniilazarnov.FileMessage;
 import ru.daniilazarnov.FileRequest;
-import ru.daniilazarnov.MyMessage;
-import upload.UpLoad;
+import download.DownLoad;
 
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
@@ -44,15 +36,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         // Отправка пакета на клиент
 
         if (msg instanceof FileRequest) {
-            String message = String.valueOf(msg);
-            System.out.println("message");
-            DownLoad.upLoad(ctx, msg);
+
+            UpLoad.upLoad(ctx, msg);
         }
 
         // Прием пакета от клиента
 
         if (msg instanceof FileMessage) {
-            UpLoad.download(msg);
+            DownLoad.download(msg);
         }
 
         //вывод всех файлов
@@ -60,10 +51,22 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof String) {
             String message = (String) msg;
             String[] messageCommand = message.split("\\s");
+                String command = messageCommand[0];
+                String file = messageCommand[1];
 
-            if (messageCommand[0].equals("/удалить")) {
 
-                Delete.delete(message, messageCommand, ctx, msg);
+            if (command.equals("/удалить")) {
+
+                Delete.delete(message, file, ctx, msg);
+
+            }
+            if (command.equals("/переименовать")) {
+                String newNameFile = messageCommand[3];
+                String oldNameFile = messageCommand[2];
+
+
+                renameFileFromServer(ctx, oldNameFile, newNameFile);
+
 
             }
         }
@@ -71,17 +74,23 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     }
 
+    private void renameFileFromServer(ChannelHandlerContext ctx, String oldNameFile, String newNameFile) {
+        File file = new File(WAY_SERVER, oldNameFile);
+        File newFile = new File(WAY_SERVER, newNameFile);
+
+        if (file.renameTo(newFile)) {
+            ctx.writeAndFlush(new MyMessage("Файл " + file + " успешно переименован в " + newFile));
+        } else {
+            ctx.writeAndFlush(new MyMessage("Файл " + file + " НЕ переименован в " + newFile));
+        }
+    }
+
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)  {
         cause.printStackTrace();
         ctx.close();
     }
 
-
-    public void search(io.netty.channel.ChannelHandlerContext ctx, java.lang.String files) {
-        Path path = Paths.get("project", "server", "src", "main", "java", "file", files);
-        ctx.writeAndFlush(Files.exists(path));
-    }
 
 
 }

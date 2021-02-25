@@ -5,8 +5,6 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 
-import java.io.IOException;
-import java.net.Socket;
 
 
 public class Client extends ChannelInboundHandlerAdapter {
@@ -21,8 +19,8 @@ public class Client extends ChannelInboundHandlerAdapter {
 
     public static void main(String[] args) {
 
-            ClientHandler network = new ClientHandler();
-            network.start();
+//            ClientHandler network = new ClientHandler();
+            ClientHandler.start();
 
     }
 
