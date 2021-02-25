@@ -35,7 +35,7 @@ public class ClientHandler {
 
             System.out.println("Ведите логин");
             Scanner scannerAccount = new Scanner(System.in);
-            String bossAccount = scannerAccount.nextLine()+("/");
+            String bossAccount = scannerAccount.nextLine() + ("/");
             network.createAccount(bossAccount);
 
         } catch (IOException e) {
@@ -56,7 +56,7 @@ public class ClientHandler {
             try {
 
                 String[] commandFile = msg.split("\\s");
-                String ServerOrClient = commandFile[0];
+                String serverOrClient = commandFile[0];
 
 
 
@@ -65,7 +65,7 @@ public class ClientHandler {
                     help();
                 }
 
-                if (ServerOrClient.equals("/N")) {
+                if (serverOrClient.equals("/N")) {
 
                     String command = commandFile[1];
 
@@ -82,7 +82,7 @@ public class ClientHandler {
 
                     if (command.equals("удалить")) {
                         String file = commandFile[2];
-                        delete(file,account);
+                        delete(file, account);
                     }
                     if (command.equals("переименовать")) {
                         renameFile(commandFile, account);
@@ -90,7 +90,7 @@ public class ClientHandler {
                 }
 
 
-                if (ServerOrClient.equals("/S")) {
+                if (serverOrClient.equals("/S")) {
                     String command = commandFile[1];
 
                     if (command.equals("удалить")) {
@@ -104,7 +104,7 @@ public class ClientHandler {
                         String file = commandFile[2];
                         String newFile =  commandFile[3];
 
-                        renameFileFromServer(file, newFile );
+                        renameFileFromServer(file, newFile);
                     }
                 }
 
@@ -119,16 +119,16 @@ public class ClientHandler {
 
     public String createAccount(String account) {
         System.out.println("Введите логин");
-        if (!Files.exists(Path.of(WAY_CLIENT, account))){
+        if (!Files.exists(Path.of(WAY_CLIENT, account))) {
             new File(WAY_CLIENT, account).mkdir();
-            System.out.println("Каталог "+ account +" создан");
+            System.out.println("Каталог " + account + " создан");
         } else {
             System.out.println("Вы вошли как " + account);
         }
         initialize(account);
 
-        ;
-        return account ;
+
+        return account;
     }
 
 
@@ -171,7 +171,7 @@ public class ClientHandler {
     private static void delete(String file,  String bossAccount) {
 
         try {
-            Path deletePath = Paths.get(WAY_CLIENT+ bossAccount +file);
+            Path deletePath = Paths.get(WAY_CLIENT + bossAccount + file);
             Files.delete(deletePath);
             System.out.println("Файл " + file + " успешно удален у вас");
         } catch (IOException e) {
