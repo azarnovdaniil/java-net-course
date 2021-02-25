@@ -9,26 +9,23 @@ import java.util.Set;
 public class DBConnect {
     private User user;
 
-    public boolean doAuth(String login, String password, Set<User> users, User user) {
-        if (getUser(login, password) != null){
-            user = getUser(login, password);
-            if (users.stream().noneMatch(u -> u.getLogin().equals(login))){
-                users.add(user);
-                System.out.println(user.getLogin() + " is logged in");
-                return true;
-            } else {
-                System.out.println("This user already logged in");
-                return false;
-            }
-        } else {
-            System.out.println("wrong login or password");
-            return false;
+    public User doAuth(String login, String password) {
+        if (getUser(login, password)){
+            return user;
         }
+        else {
+            System.out.println("wrong login or password");
+            return null;
+        }
+    }
+
+    public boolean doReg(String login, String password){
+        return addUser(login, password);
     }
 
 
 
-    private User getUser(String login, String password){
+    private boolean getUser(String login, String password){
         Connection connection = getConnection();
         try {
             PreparedStatement statement = connection.prepareStatement("select * from users where login = ? and password = ?");
@@ -36,19 +33,45 @@ public class DBConnect {
             statement.setString(2, password);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()){
-                return new User(
+                user = new User(
                         resultSet.getInt("id"),
                         resultSet.getString("login"),
                         resultSet.getString("password")
                 );
+                return true;
             }
-            return null;
+            return false;
         } catch (SQLException e) {
             throw new RuntimeException("SWW during getUserByEmailAndPassword", e);
         } finally {
-            DBConnect.close(connection);
+            this.close(connection);
         }
     }
+
+    private boolean addUser(String login, String password) {
+        Connection connection = getConnection();
+        try {
+            connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO users (login, password) SELECT ?, ? FROM DUAL WHERE NOT EXISTS (SELECT * FROM users WHERE login = ?);"
+            );
+            statement.setString(1, login);
+            statement.setString(2, password);
+            statement.setString(3, login);
+            int val = statement.executeUpdate();
+            connection.commit();
+
+            return val == 1;
+
+        } catch (SQLException e) {
+            this.rollback(connection);
+            throw new RuntimeException("SWW during saveInDB", e);
+        } finally {
+            this.close(connection);
+        }
+    }
+
+    //==================================================================================================================
 
     private static Connection getConnection(){
         try {
@@ -57,7 +80,7 @@ public class DBConnect {
             throw new RuntimeException("SWW during DB connection", e);
         }
     }
-    private static void close(Connection connection){
+    private void close(Connection connection){
         try {
             connection.close();
         } catch (SQLException e) {
@@ -65,7 +88,7 @@ public class DBConnect {
         }
     }
 
-    public void rollback(Connection connection){
+    private void rollback(Connection connection){
         try {
             connection.rollback();
         } catch (SQLException e) {

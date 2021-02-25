@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class TestServerHandler extends ChannelInboundHandlerAdapter {
+    private static final byte CMD_AUTH = (byte) 10;
+    private static final byte CMD_REG = (byte) 15;
     private static final byte CMD_UPLOAD = (byte) 25;
     private static final byte CMD_START_UPLOAD = (byte) 35;
     private static final byte CMD_DOWNLOAD = (byte) 36;
@@ -50,20 +52,38 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
 
             if (state == ServerState.AUTH){
                 byte signal = buf.readByte();
-                if (signal == (byte) 10){
+                if (signal == CMD_AUTH){
                     String[] str = buf.toString(StandardCharsets.UTF_8).split("\\s");
                     String login = str[0];
                     String pass = str[1];
-                    if (service.doAuth(login, pass, users, user)){
-                        clientDir = ROOT + login + "\\";
-                        File file = new File(clientDir);
-                        if (!file.exists()){
-                            file.mkdirs();
+
+                    user = service.doAuth(login, pass);
+                    if (user != null){
+                        if (users.stream().noneMatch(u -> u.getLogin().equals(login))){
+                            users.add(user);
+                            System.out.println(user.getLogin() + " is logged in");
+
+                            clientDir = ROOT + login + "\\";
+                            File file = new File(clientDir);
+                            if (!file.exists()){
+                                file.mkdirs();
+                            }
+                            System.out.println(file.getAbsolutePath());
+
+                            state = ServerState.IDLE;
+                        } else {
+                            System.out.println("This user already logged in");
                         }
-                        System.out.println(file.getAbsolutePath());
-                        state = ServerState.IDLE;
+                    }
+
+                } else if (signal == CMD_REG){
+                    String[] str = buf.toString(StandardCharsets.UTF_8).split("\\s");
+                    String login = str[0];
+                    String pass = str[1];
+                    if (service.doReg(login, pass)){
+                        System.out.println(login + " registered");
                     } else {
-                        System.out.println("Please try again...");
+                        System.out.println(login + " user already exists");
                     }
                 }
             }
@@ -145,6 +165,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         System.out.println("Client disconnected");
+        users.remove(user);
         cause.printStackTrace();
         ctx.close();
     }

@@ -19,14 +19,19 @@ public class TestCC {
 
     public void command(String[] input) throws IOException {
         String cmd = input[0].toUpperCase();
+        String part1 = input[1];
+
+
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         switch (cmd) {
+            case  "REG":
+                buf.writeByte((byte) 15);
+                buf.writeBytes(Utils.convertToByteBuf(part1));
+                channel.writeAndFlush(buf);
+                break;
             case  "AUTH":
                 buf.writeByte((byte) 10);
-                String login = input[1];
-                String password = input[2];
-                String authMsg = login + " " + password;
-                buf.writeBytes(Utils.convertToByteBuf(authMsg));
+                buf.writeBytes(Utils.convertToByteBuf(part1));
                 channel.writeAndFlush(buf);
                 break;
             case "LS":
@@ -34,7 +39,7 @@ public class TestCC {
                 channel.writeAndFlush(buf);
                 break;
             case "UPL": {
-                sendFile(Paths.get(input[1]), channel, future -> {
+                sendFile(Paths.get(part1), channel, future -> {
                     if (!future.isSuccess()) {
                         System.out.println("Fail to upload file. Please try again.");
                         future.cause().printStackTrace();

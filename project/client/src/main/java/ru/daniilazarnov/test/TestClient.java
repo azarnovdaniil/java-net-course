@@ -44,7 +44,7 @@ public class TestClient {
                 scanner = new Scanner(System.in);
                 while (scanner.hasNext()) {
                     String str = scanner.nextLine();
-                    String[] request = str.split("\\s", 3);
+                    String[] request = str.split("\\s", 2);
                     controller.command(request);
                 }
 
