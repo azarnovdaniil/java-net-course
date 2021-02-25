@@ -19,7 +19,7 @@ public class TestCC {
 
     public void command(byte[] bytes){
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
-        buf.writeByte((byte) 1);
+        buf.writeByte((byte) 45);
         buf.writeBytes(Utils.convertToByteBuf(bytes));
         channel.writeAndFlush(buf);
     }

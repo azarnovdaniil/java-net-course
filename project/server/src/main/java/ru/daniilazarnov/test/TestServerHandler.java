@@ -20,6 +20,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
     private static final byte CMD_DOWNLOAD = (byte) 36;
     private static final byte CMD_LS = (byte) 45;
     private static final byte CMD_RM = (byte) 50;
+    private static final String ROOT = "D:\\testDir\\Server\\";
 
     private Set<User> users = new HashSet<>();
     private User user;
@@ -27,7 +28,6 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
     private TestCC controller;
     private Commands command = new Commands();
 
-    private final String ROOT = "D:\\testDir\\Server\\";
     private String clientDir;
 
     private TransferState transferState = TransferState.READY;
@@ -134,7 +134,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
                     if (buf.readableBytes() >= nextLength) {
                         byte[] fileName = new byte[nextLength];
                         buf.readBytes(fileName);
-                        System.out.println("STATE: Filename received - _" + new String(fileName, "UTF-8"));
+                        System.out.println("STATE: Filename received - _" + new String(fileName, StandardCharsets.UTF_8));
                         out = new BufferedOutputStream(new FileOutputStream(clientDir + new String(fileName)));
                         transferState = TransferState.FILE_LENGTH;
                     }

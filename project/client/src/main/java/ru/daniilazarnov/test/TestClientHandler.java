@@ -11,6 +11,7 @@ import java.util.List;
 public class TestClientHandler extends ChannelInboundHandlerAdapter {
 
     private static final byte TEXT = (byte) 1;
+    private static final byte CMD_LS = (byte) 45;
     private ClientState state = ClientState.IDLE;
 
     @Override
@@ -24,7 +25,7 @@ public class TestClientHandler extends ChannelInboundHandlerAdapter {
         while (buf.readableBytes() > 0){
             if (state == ClientState.IDLE){
                 byte signal = buf.readByte();
-                if (signal == TEXT){
+                if (signal == CMD_LS){
                     state = ClientState.LS;
 
                     byte[] bytes = new byte[buf.readableBytes()];
