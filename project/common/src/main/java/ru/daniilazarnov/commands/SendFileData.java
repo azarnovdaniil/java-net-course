@@ -1,6 +1,5 @@
 package ru.daniilazarnov.commands;
 
-import java.io.File;
 import java.io.Serializable;
 
 public class SendFileData implements Serializable {
