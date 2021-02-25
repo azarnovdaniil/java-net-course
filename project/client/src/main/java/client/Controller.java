@@ -1,12 +1,13 @@
 package client;
 
+import common.service.User;
 import common.service.FileLoad;
 import common.service.FileLoadService;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -26,21 +27,24 @@ public class Controller implements Initializable {
     @FXML
     VBox leftPanel, rightPanel;
 
+    @FXML
+    HBox authPanel, authError;
+
+
+    @FXML
+    TextField login, password, error;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         handlerCommand = new HandlerCommand();
-
         fileLoadService = new FileLoadService();
-
+        handlerCommand.init(Controller.this);
+        leftPanel.setVisible(false);
+        rightPanel.setVisible(false);
     }
 
-    public void btnExitAction(ActionEvent actionEvent) {
-        Platform.exit();
-    }
 
-
-    public void copyBtnAction(ActionEvent actionEvent) {
+    public void copyBtnAction() {
         PanelController leftPC = (PanelController) leftPanel.getProperties().get("ctrl");
         PanelController rightPC = (PanelController) rightPanel.getProperties().get("ctrl");
 
@@ -104,7 +108,7 @@ public class Controller implements Initializable {
 
     public void disconnectToServer(ActionEvent actionEvent) {
 
-        handlerCommand.Disconnect();
+        handlerCommand.disconnect();
 
 
         try {
@@ -117,6 +121,38 @@ public class Controller implements Initializable {
     }
 
     public void click(ActionEvent actionEvent) {
+
+    }
+
+    public void auth() {
+        error.clear();
+        User user = new User(login.getText(), password.getText());
+        handlerCommand.ctx.writeAndFlush(user);
+        System.out.println("public void auth() " + user.toString());
+
+    }
+
+    public void authOk(boolean auth) {
+        if (auth) {
+            error.setVisible(false);
+            error.setManaged(false);
+            authPanel.setVisible(false);
+            authPanel.setManaged(false);
+            leftPanel.setVisible(true);
+            rightPanel.setVisible(true);
+
+        } else {
+            error.setText("Неправильный логин или пароль, поробуйте снова");
+        }
+    }
+
+    public void btnExitAction() {
+        error.setVisible(true);
+        error.setManaged(true);
+        authPanel.setVisible(true);
+        authPanel.setManaged(true);
+        leftPanel.setVisible(false);
+        rightPanel.setVisible(false);
 
     }
 

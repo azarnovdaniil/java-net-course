@@ -4,11 +4,9 @@ import javafx.concurrent.Task;
 import javafx.stage.Stage;
 
 import javafx.concurrent.WorkerStateEvent;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
@@ -17,38 +15,37 @@ import javafx.scene.paint.Color;
 
 public class PrBar extends Stage {
 
-    public static Integer countProgress = 0;
-    public static Integer countParts = 1;
-  private   ProgressBar progressBar = new ProgressBar(0);
-    private ProgressIndicator progressIndicator = new ProgressIndicator(0);
-    private Label label;
-    private Label statusLabel;
-    private Task<Void> task = new Task<>() {
-        @Override
-        public Void call() {
-            do {
-                updateProgress(countProgress, countParts);
-            }
-            while (countProgress / countParts != 1);
-            updateProgress(countProgress, countParts);
-            countProgress = 0;
-            countParts = 1;
-            return null;
-        }
-    };
+    public static int countProgress = 0;
+    public static int countParts = 1;
+
 
     public PrBar() {
-        label = new Label("Copy files:");
+        Label label = new Label("Load file");
 
-        statusLabel = new Label();
+        Label statusLabel = new Label();
         statusLabel.setMinWidth(250);
         statusLabel.setTextFill(Color.BLUE);
 
+        ProgressBar progressBar = new ProgressBar(0);
         progressBar.setProgress(0);
         progressBar.setMinWidth(270);
         progressBar.progressProperty().unbind();
+        Task<Void> task = new Task<>() {
+            @Override
+            public Void call() {
+                do {
+                    updateProgress(countProgress, countParts);
+                }
+                while (countProgress / countParts != 1);
+                updateProgress(countProgress, countParts);
+                countProgress = 0;
+                countParts = 1;
+                return null;
+            }
+        };
         progressBar.progressProperty().bind(task.progressProperty());
 
+        ProgressIndicator progressIndicator = new ProgressIndicator(0);
         progressIndicator.setProgress(0);
         progressIndicator.progressProperty().unbind();
         progressIndicator.progressProperty().bind(task.progressProperty());
@@ -65,7 +62,7 @@ public class PrBar extends Stage {
                     }
                 });
 
-     new Thread(task).start();
+        new Thread(task).start();
 
         FlowPane root = new FlowPane();
         root.setPadding(new Insets(10));
