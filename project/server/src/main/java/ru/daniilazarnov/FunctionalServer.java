@@ -1,6 +1,8 @@
 package ru.daniilazarnov;
 
 import io.netty.channel.ChannelHandlerContext;
+import ru.daniilazarnov.operationWithFile.FileActions;
+import ru.daniilazarnov.operationWithFile.TypeOperation;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +10,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,9 +34,7 @@ public class FunctionalServer {
             ctx.writeAndFlush(msg);
         } catch (IOException e) {
             e.printStackTrace();
-            Command error = Command.ERROR;
-            error.setDescription("Error in generating user directory");
-            ctx.writeAndFlush(error);
+            errorMsg(ctx, "Error in generating user directory");
         }
     }
 
@@ -46,7 +47,7 @@ public class FunctionalServer {
             FileMsg fileMsg = new FileMsg(FileMsg.getFileName(paths[0]), bytes);
             ctx.writeAndFlush(DataMsg.createMsg(Command.DOWNLOAD, fileMsg));
         } catch (IOException e) {
-            e.printStackTrace();
+            errorMsg(ctx, "Failed to download file from server");
         }
     }
 
@@ -59,7 +60,13 @@ public class FunctionalServer {
     private void uploadFile(ChannelHandlerContext ctx, Object msg, String generalPath) {
         DataMsg data = (DataMsg) msg;
         FileMsg fileMsg = (FileMsg) ConvertToByte.deserialize(data.getBytes());
-
+        String path = generalPath + File.separator + fileMsg.getNameFile();
+        try {
+            FileActions.actionsWithFile(TypeOperation.CREATE_UPDATE, fileMsg, path);
+            ctx.writeAndFlush(DataMsg.createMsg(Command.UPLOAD, "File upload to server completed successfully"));
+        } catch (IOException e) {
+            errorMsg(ctx, "Error uploading file to server");
+        }
     }
 
     private void removeFile(ChannelHandlerContext ctx, Object msg) {
@@ -67,16 +74,13 @@ public class FunctionalServer {
         String path = (String) ConvertToByte.deserialize(data.getBytes());
         if (Files.exists(Path.of(path))) {
             try {
-                Files.delete(Path.of(path));
+                FileActions.actionsWithFile(TypeOperation.DELETE, null, path);
+                ctx.writeAndFlush(DataMsg.createMsg(Command.REMOVE, "File deleted successfully"));
             } catch (IOException e) {
-                Command error = Command.ERROR;
-                error.setDescription("Failed to give file");
-                ctx.writeAndFlush(new DataMsg(error, null));
+                errorMsg(ctx, "Failed to give file");
             }
         } else {
-            Command error = Command.ERROR;
-            error.setDescription("Incorrect path to file, try again");
-            ctx.writeAndFlush(new DataMsg(error, null));
+            errorMsg(ctx, "Incorrect path to file, try again");
         }
     }
 
@@ -96,8 +100,8 @@ public class FunctionalServer {
                 case REMOVE:
                     removeFile(ctx, msg);
                     break;
-                case CHECK_FILE_EXIST:
-                    checkFileExist(ctx, msg, generalPath);
+                case NEW_NAME:
+                    rename(ctx, msg, generalPath);
                     break;
                 case EXIT:
                     ctx.channel().close();
@@ -110,15 +114,45 @@ public class FunctionalServer {
         }
     }
 
-    private void checkFileExist(ChannelHandlerContext ctx, Object msg, String generalPath) {
+    private void rename(ChannelHandlerContext ctx, Object msg, String generalPath) {
+        DataMsg data = (DataMsg) msg;
+        String[] dataPaths = (String[]) ConvertToByte.deserialize(data.getBytes());
+        if (isCheckCorrectDataPath(dataPaths)) {
+            getCorrectPath(dataPaths, generalPath);
+            try {
+                FileActions.actionsWithFile(TypeOperation.RENAME, null, dataPaths);
+                ctx.writeAndFlush(DataMsg.createMsg(Command.NEW_NAME, "Rename file successful"));
+            } catch (IOException e) {
+                errorMsg(ctx, "Failed to rename file");
+            }
+        } else {
+            errorMsg(ctx, "One of the specified paths is empty");
+        }
+    }
+
+    private void getCorrectPath(String[] dataPaths, String generalPath) {
+        for (int i = 0; i < dataPaths.length; i++) {
+            dataPaths[i] = generalPath + File.separator + dataPaths[i];
+        }
+    }
+
+    private boolean isCheckCorrectDataPath(String[] paths) {
+        return Stream.of(paths).anyMatch(String::isBlank);
+    }
+
+    private boolean isCheckFileExist(ChannelHandlerContext ctx, Object msg, String generalPath) {
         DataMsg dataMsg = (DataMsg) msg;
         String path = generalPath + ConvertToByte.deserialize(dataMsg.getBytes());
-        boolean isFileExist = FileMsg.checkExistsFile(path);
-        ctx.writeAndFlush(DataMsg.createMsg(Command.CHECK_FILE_EXIST, isFileExist));
+        return FileMsg.checkExistsFile(path);
     }
 
     private String[] splitLine(String cmd) {
         return cmd.replaceAll("[\\s]+", " ").split(" ");
     }
 
+    private void errorMsg(ChannelHandlerContext ctx, String err) {
+        Command error = Command.ERROR;
+        error.setDescription(err);
+        ctx.writeAndFlush(new DataMsg(error, null));
+    }
 }

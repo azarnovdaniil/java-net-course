@@ -48,4 +48,8 @@ public enum OperationCommand {
     public static List<OperationCommand> getList(TypeOperation type) {
         return Stream.of(OperationCommand.values()).filter(x -> x.getType() == type).collect(Collectors.toList());
     }
+
+    public static void printList(TypeOperation type) {
+        getList(type).forEach(x -> System.out.println(x.getCommand()));
+    }
 }

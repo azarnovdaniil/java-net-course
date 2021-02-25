@@ -6,5 +6,5 @@ public enum TypeOperation {
     MOVE,
     COPY,
     CREATE_DIR,
-    NEW
+    RENAME
 }

@@ -12,7 +12,8 @@ public enum Command implements Serializable {
     ERROR("", " - command from server was incorrect", null),
     START("", " - this command is needed at the start of client connection", null),
     EXIT("/exit", " - disconnect from server", null),
-    CHECK_FILE_EXIST("", " - check exist file on server", null);
+    CHECK_FILE_EXIST("", " - check exist file on server", null),
+    NEW_NAME("/rename", "- rename file on server", null);
 
     private final String command;
     private String description;

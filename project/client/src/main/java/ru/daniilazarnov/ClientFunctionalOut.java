@@ -56,4 +56,9 @@ public class ClientFunctionalOut {
         String nameFile = FileMsg.getFileName(filePath[0]);
         ctx.writeAndFlush(DataMsg.createMsg(Command.CHECK_FILE_EXIST, nameFile));
     }
+
+    public void remove(ChannelHandlerContext ctx, String[] fileRemove) {
+        String path = fileRemove[0];
+        ctx.writeAndFlush(DataMsg.createMsg(Command.REMOVE, path));
+    }
 }

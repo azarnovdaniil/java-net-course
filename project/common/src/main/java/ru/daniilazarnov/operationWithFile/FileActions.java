@@ -2,6 +2,7 @@ package ru.daniilazarnov.operationWithFile;
 
 import ru.daniilazarnov.FileMsg;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,8 +26,11 @@ public class FileActions {
             case CREATE_DIR:
                 Files.createDirectory(Path.of(paths[0]));
                 break;
-            case NEW:
-
+            case RENAME:
+                File file = new File(paths[0]);
+                File newName = new File(paths[1]);
+                file.renameTo(newName);
+                break;
         }
     }
 }

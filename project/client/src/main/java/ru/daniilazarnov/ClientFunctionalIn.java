@@ -6,9 +6,7 @@ import ru.daniilazarnov.operationWithFile.OperationCommand;
 import ru.daniilazarnov.operationWithFile.TypeOperation;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
 
 /*
@@ -35,10 +33,15 @@ public class ClientFunctionalIn {
         boolean existsFile = FileMsg.checkExistsFile(path, fileMsg);
         if (existsFile) {
             System.out.println("File with this name exists, choose action:\n\t/wr - overwrite file\n\t/new - choose a new name (enter full path)");
-            FileActions.actionsWithFile(TypeOperation.valueOf(scanner.nextLine()), fileMsg, path);
+            TypeOperation type = TypeOperation.valueOf(scanner.nextLine());
+            if (type == TypeOperation.RENAME) {
+                System.out.print("Enter the path where to save with new file name: ");
+                fileDialog(scanner, scanner.nextLine(), fileMsg);
+            } else {
+                FileActions.actionsWithFile(TypeOperation.valueOf(scanner.nextLine()), fileMsg, path);
+            }
         } else {
             FileActions.actionsWithFile(TypeOperation.CREATE_UPDATE, fileMsg, path);
-            Files.write(Path.of(path + fileMsg.getNameFile()), fileMsg.getBytes(), StandardOpenOption.CREATE);
             System.out.println("File uploaded successfully on path: " + path + fileMsg.getNameFile());
         }
     }
@@ -62,10 +65,8 @@ public class ClientFunctionalIn {
 
     }
 
-    protected void remove(ChannelHandlerContext ctx, Scanner scanner) {
-        System.out.print("Enter the path where to save the file: ");
-        String path = scanner.nextLine();
-        ctx.writeAndFlush(new DataMsg(Command.REMOVE, ConvertToByte.serialize(path)));
+    protected void remove(ChannelHandlerContext ctx, DataMsg msg) {
+        System.out.println(ConvertToByte.deserialize(msg.getBytes()));
     }
 
     protected void move(ChannelHandlerContext ctx, Scanner scanner) {
@@ -77,16 +78,17 @@ public class ClientFunctionalIn {
         generalPath = Path.of("project/server/directories/" + clientName).toString();
     }
 
-    public void checkFileExistOnServer(ChannelHandlerContext ctx, Object msg) {
+    public boolean checkFileExistOnServer(ChannelHandlerContext ctx, Object msg) {
         DataMsg dataMsg = (DataMsg) msg;
         Scanner scanner = new Scanner(System.in);
-        boolean isFileExist = (boolean) ConvertToByte.deserialize(dataMsg.getBytes());
-        if (isFileExist) {
-            System.out.println("a file with the same name already exists at the specified path, select an action: ");
-            switch (scanner.nextLine()) {
-
-            }
-        }
+        return (Boolean) ConvertToByte.deserialize(dataMsg.getBytes());
+//        if (isFileExist) {
+//            System.out.println("a file with the same name already exists at the specified path, select an action: ");
+//            OperationCommand.printList(TypeOperation.CREATE_UPDATE);
+//            switch (scanner.nextLine()) {
+//
+//            }
+//        }
     }
 
     private void dialogFileExist(boolean isFileExist, Scanner scanner) {

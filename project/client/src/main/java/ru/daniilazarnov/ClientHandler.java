@@ -7,11 +7,10 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
-    private ClientFunctionalIn cfIn = new ClientFunctionalIn();
-    private ClientFunctionalOut cfOut = new ClientFunctionalOut();
+    private final ClientFunctionalIn cfIn = new ClientFunctionalIn();
+    private final ClientFunctionalOut cfOut = new ClientFunctionalOut();
     private DataMsg dataMsgRead;
-    private DataMsg dataMsgLoad;
-    private Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -41,13 +40,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             case CHECK_FILE_EXIST:
                 cfIn.checkFileExistOnServer(ctx, msg);
             case REMOVE:
+                cfIn.remove(ctx, dataMsgRead);
                 break;
             case EXIT:
-                //ctx.channel().close();
+                ctx.channel().close();
                 break;
             case START:
                 cfIn.startClient(dataMsgRead);
                 break;
+            case NEW_NAME:
+
         }
         sendCommand(ctx, scanner);
     }
@@ -80,12 +82,20 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 cfOut.checkExistOnServer(ctx, filePath);
                 break;
             case "/remove":
+                String[] fileRemove = cfOut.dialog(scanner,
+                        "Enter the path to file on client: ");
+                cfOut.remove(ctx, fileRemove);
                 break;
             case "/move":
                 break;
             case "/exit":
                 ctx.writeAndFlush(Command.EXIT);
                 break;
+            case "/rename":
+                String[] fileRename = cfOut.dialog(scanner,
+                        "Enter path to file on server which needs to be renamed: ",
+                        "Enter new file name: ");
+                ctx.writeAndFlush(DataMsg.createMsg(Command.NEW_NAME, fileRename));
             default:
                 System.out.println("Entered incorrect command, please, try again");
                 sendCommand(ctx, scanner);
