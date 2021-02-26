@@ -16,7 +16,6 @@ import java.util.Set;
 public class TestServer {
 
     private static final int PORT = 8189;
-    private static Set<User> users = new HashSet<>();
 
     public static void main(String[] args) {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
