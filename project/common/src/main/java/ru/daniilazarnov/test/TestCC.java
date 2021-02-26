@@ -18,20 +18,20 @@ public class TestCC {
     }
 
     public void command(String string) throws IOException {
-        String[] input = string.split("\\s", 2);
-        String part1 = input[0];
+        String[] cmd = string.split("\\s", 2);
+        String part1 = cmd[0];
         String part2;
 
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         switch (part1.toUpperCase()) {
-            case  "REG":
-                part2 = input[1];
+            case "REG":
+                part2 = cmd[1]; //login & password
                 buf.writeByte((byte) 15);
                 buf.writeBytes(Utils.convertToByteBuf(part2));
                 channel.writeAndFlush(buf);
                 break;
-            case  "AUTH":
-                part2 = input[1];
+            case "AUTH":
+                part2 = cmd[1]; //login & password
                 buf.writeByte((byte) 10);
                 buf.writeBytes(Utils.convertToByteBuf(part2));
                 channel.writeAndFlush(buf);
@@ -40,8 +40,14 @@ public class TestCC {
                 buf.writeByte((byte) 45);
                 channel.writeAndFlush(buf);
                 break;
+            case "RM":
+                part2 = cmd[1]; //file name
+                buf.writeByte((byte) 50);
+                buf.writeBytes(Utils.convertToByteBuf(part2));
+                channel.writeAndFlush(buf);
+                break;
             case "UPL": {
-                part2 = input[1];
+                part2 = cmd[1]; //full path to file
                 sendFile(Paths.get(part2), channel, future -> {
                     if (!future.isSuccess()) {
                         System.out.println("Fail to upload file. Please try again.");

@@ -41,7 +41,7 @@ public class TestClientHandler extends ChannelInboundHandlerAdapter {
                 }
             }
         }
-        buf.release();
+//        buf.release();
     }
 
     @Override

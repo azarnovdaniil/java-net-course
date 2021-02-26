@@ -18,6 +18,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
     private static final byte CMD_START_UPLOAD = (byte) 35;
     private static final byte CMD_DOWNLOAD = (byte) 36;
     private static final byte CMD_LS = (byte) 45;
+    private static final byte CMD_RM = (byte) 50;
     private static final String ROOT = "D:\\testDir\\Server\\";
 
     private Set<User> users = new HashSet<>();
@@ -54,6 +55,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
+
         while (buf.readableBytes() > 0){
 
             if (state == ServerState.AUTH){
@@ -100,8 +102,19 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
                     state = ServerState.TRANSFER;
                     receiveFile(buf);
                 } else if (signal == CMD_LS){
-                    command.listFiles(ctx, clientDir);
-                    System.out.println("ls");
+                    command.listFiles(clientDir, ctx, future -> {
+                        if (!future.isSuccess()) {
+                            System.out.println("SWW during sending LS");
+                            future.cause().printStackTrace();
+                        }
+                        if (future.isSuccess()) {
+                            System.out.println("List of files sent successfully");
+                        }
+                    });
+                } else if (signal == CMD_RM){
+                    String fileName = buf.toString(StandardCharsets.UTF_8);
+                    String path = clientDir + fileName;
+                    command.removeFile(path);
                 } else if (signal == CMD_DOWNLOAD){
                     System.out.println("download");
                 }
