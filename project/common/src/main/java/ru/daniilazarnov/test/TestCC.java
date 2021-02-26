@@ -17,7 +17,8 @@ public class TestCC {
         this.channel = channel;
     }
 
-    public void command(String[] input) throws IOException {
+    public void command(String string) throws IOException {
+        String[] input = string.split("\\s", 2);
         String part1 = input[0];
         String part2;
 
