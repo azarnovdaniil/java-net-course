@@ -4,10 +4,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public final class Utils {
 
@@ -67,5 +70,43 @@ public final class Utils {
         buf.writeBytes(prefix);
         buf.writeBytes(bytes);
         return buf;
+    }
+
+    /**
+     * Возвращает ByteBuf из переданного List
+     * @param list {@link List}
+     * @return {@link ByteBuf}
+     */
+
+    public static ByteBuf convertListToByteBuf(List list) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(list);
+        byte[] bytes = bos.toByteArray();
+        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
+        buf.writeBytes(Utils.convertToByteBuf(bytes));
+        return buf;
+    }
+
+    /**
+     * Возвращает List из переданного ByteBuf
+     * @param buf {@link ByteBuf}
+     * @return {@link List}
+     */
+
+    public static List convertByteBufToList (ByteBuf buf) throws IOException, ClassNotFoundException {
+        byte[] bytes = new byte[buf.readableBytes()];
+        buf.readBytes(bytes);
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        Object ob = ois.readObject();
+        List list = new ArrayList<>();
+        if (ob instanceof List){
+            list = (List) ob;
+        }
+        bis.close();
+        ois.close();
+        return list;
     }
 }

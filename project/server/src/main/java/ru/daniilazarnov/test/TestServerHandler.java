@@ -13,18 +13,20 @@ import java.util.Set;
 
 public class TestServerHandler extends ChannelInboundHandlerAdapter {
     private static final String ROOT = "D:\\testDir\\Server\\";
-    private Set<User> users = new HashSet<>();
+    private Set<User> users;
     private User user;
     private String clientDir = "";
     private ServerState state = ServerState.AUTH;
     private DBConnect service = new DBConnect();
     private Commands command;
 
-/*
+    public TestServerHandler(Set<User> users) {
+        this.users = users;
+    }
 
+/*
  auth admin admin
  upl d:\testDir\Client\mu.zip
-
 */
 
     @Override
@@ -36,9 +38,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
-
         while (buf.readableBytes() > 0){
-
             if (state == ServerState.AUTH){
                 byte signal = buf.readByte();
                 if (signal == Signals.AUTH.get()){
@@ -109,7 +109,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        System.out.println("Client disconnected");
+        System.out.printf("[%s] disconnected", user.getLogin());
         users.remove(user);
         cause.printStackTrace();
         ctx.close();

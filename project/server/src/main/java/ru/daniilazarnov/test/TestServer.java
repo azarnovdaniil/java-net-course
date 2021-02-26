@@ -16,6 +16,7 @@ import java.util.Set;
 public class TestServer {
 
     private static final int PORT = 8189;
+    private static Set<User> users = new HashSet<>();
 
     public static void main(String[] args) {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -28,7 +29,7 @@ public class TestServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline()
-                            .addLast(new TestServerHandler());
+                            .addLast(new TestServerHandler(users));
                         }
                     });
             ChannelFuture future = b.bind(PORT).sync();

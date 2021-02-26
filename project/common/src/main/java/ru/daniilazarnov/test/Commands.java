@@ -35,13 +35,9 @@ public class Commands {
         if (list.size() == 0){
             list.add("Files not found");
         }
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(list);
-        byte[] bytes = bos.toByteArray();
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         buf.writeByte((byte) 45);
-        buf.writeBytes(Utils.convertToByteBuf(bytes));
+        buf.writeBytes(Utils.convertListToByteBuf(list));
         ChannelFuture transferOperationFuture = ctx.writeAndFlush(buf);
         if (finishListener != null) {
             transferOperationFuture.addListener(finishListener);
