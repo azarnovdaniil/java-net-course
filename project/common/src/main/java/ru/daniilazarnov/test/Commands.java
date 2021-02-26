@@ -1,5 +1,9 @@
 package ru.daniilazarnov.test;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.channel.ChannelHandlerContext;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -8,19 +12,7 @@ import java.util.ArrayList;
 
 public class Commands {
 
-//    public void listFiles(String directory, TestCC controller) throws IOException {
-//        File dir = new File(directory);
-//        File[] files = dir.listFiles();
-//        if (files != null && files.length > 0) {
-//            for (File file : files) {
-//                if (!file.isDirectory()) {
-//                    controller.command(String.format("[%s] size: [%s]", file.getName(), Utils.bytesConverter(file.length())));
-//                }
-//            }
-//        }
-//    }
-
-    public void listFiles(String directory, TestCC controller) throws IOException {
+    public void listFiles(ChannelHandlerContext ctx, String directory) throws IOException {
         File dir = new File(directory);
         File[] files = dir.listFiles();
         ArrayList<String> list = new ArrayList<>();
@@ -35,6 +27,9 @@ public class Commands {
         ObjectOutputStream oos = new ObjectOutputStream(bos);
         oos.writeObject(list);
         byte[] bytes = bos.toByteArray();
-        controller.command(bytes);
+        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
+        buf.writeByte((byte) 45);
+        buf.writeBytes(Utils.convertToByteBuf(bytes));
+        ctx.writeAndFlush(buf);
     }
 }

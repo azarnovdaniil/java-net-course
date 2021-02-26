@@ -17,17 +17,9 @@ public class TestCC {
         this.channel = channel;
     }
 
-    public void command(byte[] bytes){
-        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
-        buf.writeByte((byte) 45);
-        buf.writeBytes(Utils.convertToByteBuf(bytes));
-        channel.writeAndFlush(buf);
-    }
-
-    public void command(String str) throws IOException {
-        String[] input = str.split("\\s", 2);
+    public void command(String[] input) throws IOException {
         String part1 = input[0];
-        String part2 = "";
+        String part2;
 
         ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         switch (part1.toUpperCase()) {
@@ -47,12 +39,8 @@ public class TestCC {
                 buf.writeByte((byte) 45);
                 channel.writeAndFlush(buf);
                 break;
-            case "RM": {
-                buf.writeByte((byte) 50);
-                channel.writeAndFlush(buf);
-                break;
-            }
             case "UPL": {
+                part2 = input[1];
                 sendFile(Paths.get(part2), channel, future -> {
                     if (!future.isSuccess()) {
                         System.out.println("Fail to upload file. Please try again.");
@@ -66,13 +54,6 @@ public class TestCC {
             }
             case "DOWN": {
                 buf.writeByte((byte) 36);
-                channel.writeAndFlush(buf);
-                break;
-            }
-            default:{
-                buf = ByteBufAllocator.DEFAULT.buffer();
-                buf.writeByte((byte) 1);
-                buf.writeBytes(Utils.convertToByteBuf(str));
                 channel.writeAndFlush(buf);
                 break;
             }

@@ -1,7 +1,6 @@
 package ru.daniilazarnov.test;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ru.daniilazarnov.test.db.DBConnect;
@@ -19,16 +18,13 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
     private static final byte CMD_START_UPLOAD = (byte) 35;
     private static final byte CMD_DOWNLOAD = (byte) 36;
     private static final byte CMD_LS = (byte) 45;
-    private static final byte CMD_RM = (byte) 50;
     private static final String ROOT = "D:\\testDir\\Server\\";
 
     private Set<User> users = new HashSet<>();
     private User user;
 
-    private TestCC controller;
-    private Commands command = new Commands();
 
-    private String clientDir;
+    private String clientDir = "";
 
     private TransferState transferState = TransferState.READY;
     private ServerState state = ServerState.AUTH;
@@ -40,14 +36,19 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
 
     private DBConnect service = new DBConnect();
 
+    private Commands command;
 
-// auth admin admin
-// upl d:\testDir\Client\dm.zip
+/*
+
+ auth admin admin
+ upl d:\testDir\Client\mu.zip
+
+*/
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("Client connected");
-        controller = new TestCC(ctx.channel());
+        command = new Commands();
     }
 
     @Override
@@ -99,7 +100,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
                     state = ServerState.TRANSFER;
                     receiveFile(buf);
                 } else if (signal == CMD_LS){
-                    command.listFiles(clientDir, controller);
+                    command.listFiles(ctx, clientDir);
                     System.out.println("ls");
                 } else if (signal == CMD_DOWNLOAD){
                     System.out.println("download");
@@ -134,7 +135,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
                     if (buf.readableBytes() >= nextLength) {
                         byte[] fileName = new byte[nextLength];
                         buf.readBytes(fileName);
-                        System.out.println("STATE: Filename received - _" + new String(fileName, StandardCharsets.UTF_8));
+                        System.out.println("STATE: Filename received - _" + new String(fileName, "UTF-8"));
                         out = new BufferedOutputStream(new FileOutputStream(clientDir + new String(fileName)));
                         transferState = TransferState.FILE_LENGTH;
                     }
