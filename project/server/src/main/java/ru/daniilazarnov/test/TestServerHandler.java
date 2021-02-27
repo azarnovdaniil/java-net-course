@@ -12,7 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class TestServerHandler extends ChannelInboundHandlerAdapter {
-    private static final String ROOT = "D:\\testDir\\Server\\";
+    private static final String ROOT = "D:\\testDir\\Server\\"; //временный путь
+//    private static final String ROOT = new File("").getAbsolutePath() + "\\FileStorage\\";
     private Set<User> users;
     private User user;
     private String clientDir = "";
@@ -26,6 +27,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
 
 /*
  auth admin admin
+ auth nick1 pass1
  upl d:\testDir\Client\mu.zip
 */
 
