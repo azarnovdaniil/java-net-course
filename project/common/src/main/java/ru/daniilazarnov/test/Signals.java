@@ -1,6 +1,7 @@
 package ru.daniilazarnov.test;
 
 public enum  Signals {
+    TEXT ((byte) 5),
     AUTH ((byte) 10),
     REG ((byte) 15),
     UPLOAD ((byte) 25),

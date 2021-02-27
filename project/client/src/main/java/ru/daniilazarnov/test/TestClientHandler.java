@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class TestClientHandler extends ChannelInboundHandlerAdapter {
@@ -28,6 +29,9 @@ public class TestClientHandler extends ChannelInboundHandlerAdapter {
                         System.out.println(s);
                     }
                     state = ClientState.IDLE;
+                } else if (signal == Signals.TEXT.get()){
+                    String str = buf.toString(StandardCharsets.UTF_8);
+                    System.out.println(str);
                 }
             }
         }

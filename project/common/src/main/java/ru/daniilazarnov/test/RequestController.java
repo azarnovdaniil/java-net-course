@@ -55,19 +55,22 @@ public class RequestController {
                 part2 = cmd[1]; //full path to file
                 command.sendFile(Paths.get(part2), channel, future -> {
                     if (!future.isSuccess()) {
-                        System.out.println("Fail to upload file. Please try again.");
+                        System.out.println("Ошибка при отправке файла.");
                         future.cause().printStackTrace();
                     }
                     if (future.isSuccess()) {
-                        System.out.println("File uploaded successfully");
+                        System.out.println("Файл успешно отправлен.");
                     }
                 });
                 break;
             }
             case "DOWN": {
-                buf.writeByte((byte) 36);
+                buf.writeByte(Signals.DOWNLOAD.get());
                 channel.writeAndFlush(buf);
                 break;
+            }
+            default: {
+                System.out.println("Команда не распознана. Воспользуйтесь командой help для справки...");
             }
         }
     }

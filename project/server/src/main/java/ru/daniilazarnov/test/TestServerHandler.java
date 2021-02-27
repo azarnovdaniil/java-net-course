@@ -59,11 +59,10 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
                             if (!file.exists()){
                                 file.mkdirs();
                             }
-                            System.out.println(file.getAbsolutePath());
-
+                            command.sendMessage("Авторизация прошла упешно. Добро пожаловать " + login + "!", ctx);
                             state = ServerState.IDLE;
                         } else {
-                            System.out.println("This user already logged in");
+                            command.sendMessage("Данный пользователь уже авторизован, проверьте правильность логина и пароля...", ctx);
                         }
                     }
 
@@ -73,8 +72,10 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
                     String pass = str[1];
                     if (service.doReg(login, pass)){
                         System.out.println(login + " registered");
+                        command.sendMessage("Регистрация прошла успешно. Пожалуйста пройдите авторизацию", ctx);
                     } else {
                         System.out.println(login + " user already exists");
+                        command.sendMessage("Данный логин уже зарегистрирован в системе.", ctx);
                     }
                 }
             }
@@ -97,7 +98,11 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
                 } else if (signal == Signals.RM.get()){
                     String fileName = buf.toString(StandardCharsets.UTF_8);
                     String path = clientDir + fileName;
-                    command.removeFile(path);
+                    if (command.removeFile(path)) {
+                        command.sendMessage(String.format("Файл [%s] успешно удален", fileName), ctx);
+                    } else {
+                        command.sendMessage("При удалении файла возникла ошибка", ctx);
+                    }
                 } else if (signal == Signals.DOWNLOAD.get()){
                     System.out.println("download");
                 }

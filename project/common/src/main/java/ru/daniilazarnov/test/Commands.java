@@ -30,6 +30,13 @@ public class Commands {
         }
     }
 
+    public void sendMessage(String msg, ChannelHandlerContext ctx){
+        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
+        buf.writeByte(Signals.TEXT.get());
+        buf.writeBytes(Utils.convertToByteBuf(msg));
+        ctx.writeAndFlush(buf);
+    }
+
     public void listFiles(String directory, ChannelHandlerContext ctx, ChannelFutureListener finishListener) throws IOException {
         File dir = new File(directory);
         File[] files = dir.listFiles();
@@ -53,9 +60,12 @@ public class Commands {
         }
     }
 
-    public void removeFile(String path) {
+    public boolean removeFile(String path) {
         try {
-            Files.deleteIfExists(Paths.get(path));
+            if (Files.deleteIfExists(Paths.get(path))){
+                System.out.printf("File [%s] was deleted", path);
+                return true;
+            }
         } catch(NoSuchFileException e){
             System.out.println("No such file/directory exists");
         } catch(DirectoryNotEmptyException e){
@@ -63,7 +73,7 @@ public class Commands {
         } catch(IOException e){
             System.out.println("Invalid permissions.");
         }
-        System.out.println("Deletion successful.");
+        return false;
     }
 
     public boolean receiveFile(ByteBuf buf, String dir) throws IOException {
