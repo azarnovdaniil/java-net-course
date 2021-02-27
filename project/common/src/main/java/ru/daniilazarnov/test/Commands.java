@@ -2,15 +2,11 @@ package ru.daniilazarnov.test;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.*;
 
 import java.io.*;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.ArrayList;
 
 public class Commands {
@@ -20,6 +16,19 @@ public class Commands {
     private long receivedFileLength;
     private BufferedOutputStream out;
     private TransferState transferState = TransferState.READY;
+
+    public void help() {
+        String path = new File("").getAbsolutePath();
+        try(FileReader reader = new FileReader(path + "\\help.txt")){
+            int ch;
+            while((ch = reader.read()) != -1){
+                System.out.print((char)ch);
+            }
+        }
+        catch(IOException e){
+            System.out.println(e.getMessage());
+        }
+    }
 
     public void listFiles(String directory, ChannelHandlerContext ctx, ChannelFutureListener finishListener) throws IOException {
         File dir = new File(directory);
@@ -36,7 +45,7 @@ public class Commands {
             list.add("Files not found");
         }
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
-        buf.writeByte((byte) 45);
+        buf.writeByte(Signals.LS.get());
         buf.writeBytes(Utils.convertListToByteBuf(list));
         ChannelFuture transferOperationFuture = ctx.writeAndFlush(buf);
         if (finishListener != null) {
@@ -44,7 +53,7 @@ public class Commands {
         }
     }
 
-    public void removeFile(String path) throws IOException {
+    public void removeFile(String path) {
         try {
             Files.deleteIfExists(Paths.get(path));
         } catch(NoSuchFileException e){
@@ -54,7 +63,6 @@ public class Commands {
         } catch(IOException e){
             System.out.println("Invalid permissions.");
         }
-
         System.out.println("Deletion successful.");
     }
 
@@ -115,5 +123,38 @@ public class Commands {
             }
         }
         return false;
+    }
+
+    public void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
+
+        FileRegion region = new DefaultFileRegion(path.toFile(), 0, Files.size(path));
+
+        ByteBuf buf;
+
+        buf = ByteBufAllocator.DEFAULT.directBuffer(1);
+        buf.writeByte(Signals.START_UPLOAD.get());
+        channel.writeAndFlush(buf);
+
+        buf = ByteBufAllocator.DEFAULT.directBuffer(1);
+        buf.writeByte(Signals.UPLOAD.get());
+        channel.writeAndFlush(buf);
+
+        byte[] filenameBytes = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(Integer.SIZE / Byte.SIZE);
+        buf.writeInt(filenameBytes.length);
+        channel.writeAndFlush(buf);
+
+        buf = ByteBufAllocator.DEFAULT.directBuffer(filenameBytes.length);
+        buf.writeBytes(filenameBytes);
+        channel.writeAndFlush(buf);
+
+        buf = ByteBufAllocator.DEFAULT.directBuffer(Long.SIZE / Byte.SIZE);
+        buf.writeLong(Files.size(path));
+        channel.writeAndFlush(buf);
+
+        ChannelFuture transferOperationFuture = channel.writeAndFlush(region);
+        if (finishListener != null) {
+            transferOperationFuture.addListener(finishListener);
+        }
     }
 }

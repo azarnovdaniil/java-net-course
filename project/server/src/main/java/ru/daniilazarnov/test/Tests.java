@@ -10,7 +10,9 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Tests {
     public static void main(String[] args) throws Exception {
@@ -22,7 +24,8 @@ public class Tests {
         String f2 = "d:\\testDir\\Server\\ClientNetwork.zip";
 //        copyFile(f1, f2);
 //        copyFileWithFileChannel(f1,f2);
-        ls();
+//        ls();
+        listToBytesAndBytesToList();
     }
 
     static void ls(){
@@ -35,6 +38,31 @@ public class Tests {
                 }
             }
         }
+    }
+
+    static void listToBytesAndBytesToList() throws IOException, ClassNotFoundException {
+        List<String> listOut = new ArrayList<>();
+        listOut.add("one");
+        listOut.add("two");
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(listOut);
+        byte[] bytes = bos.toByteArray();
+        oos.close();
+        bos.close();
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        Object ob = ois.readObject();
+        List list = new ArrayList<>();
+        if (ob instanceof List){
+            list = (List) ob;
+        }
+        for (Object s : list){
+            System.out.println(s);
+        }
+        bis.close();
+        ois.close();
     }
 
     static void fileToBBWithPrefix(Path path, byte[] prefix) throws IOException {

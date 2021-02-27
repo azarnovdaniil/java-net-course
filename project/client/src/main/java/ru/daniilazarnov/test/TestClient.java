@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class TestClient {
     private Channel channel;
     private Scanner scanner;
-    private TestCC controller;
+    private RequestController controller;
     private static final String HOST = "localhost";
     private static final int PORT = 8189;
 
@@ -39,7 +39,7 @@ public class TestClient {
                         });
                 ChannelFuture future = b.connect(HOST, PORT).sync();
 
-                controller = new TestCC(channel);
+                controller = new RequestController(channel);
 
                 scanner = new Scanner(System.in);
                 while (scanner.hasNext()) {

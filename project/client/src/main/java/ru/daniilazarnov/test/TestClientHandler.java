@@ -12,7 +12,7 @@ public class TestClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Connected to the server");
+        System.out.println("Добро пожаловть на файловый сервер! Для получения справки отправьте help");
     }
 
     @Override

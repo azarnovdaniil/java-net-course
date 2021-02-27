@@ -85,6 +85,8 @@ public final class Utils {
         byte[] bytes = bos.toByteArray();
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         buf.writeBytes(Utils.convertToByteBuf(bytes));
+        bos.close();
+        oos.close();
         return buf;
     }
 
