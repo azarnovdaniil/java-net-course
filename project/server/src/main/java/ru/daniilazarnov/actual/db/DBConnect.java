@@ -1,10 +1,9 @@
-package ru.daniilazarnov.test.db;
+package ru.daniilazarnov.actual.db;
 
 
-import ru.daniilazarnov.test.entity.User;
+import ru.daniilazarnov.actual.entity.User;
 
 import java.sql.*;
-import java.util.Set;
 
 public class DBConnect {
     private User user;

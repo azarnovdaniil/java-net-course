@@ -1,17 +1,16 @@
-package ru.daniilazarnov.test;
+package ru.daniilazarnov.actual;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import ru.daniilazarnov.test.db.DBConnect;
-import ru.daniilazarnov.test.entity.User;
+import ru.daniilazarnov.actual.db.DBConnect;
+import ru.daniilazarnov.actual.entity.User;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
 import java.util.Set;
 
-public class TestServerHandler extends ChannelInboundHandlerAdapter {
+public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final String ROOT = "D:\\testDir\\Server\\"; //временный путь
 //    private static final String ROOT = new File("").getAbsolutePath() + "\\FileStorage\\";
     private Set<User> users;
@@ -21,7 +20,7 @@ public class TestServerHandler extends ChannelInboundHandlerAdapter {
     private DBConnect service = new DBConnect();
     private Commands command;
 
-    public TestServerHandler(Set<User> users) {
+    public ServerHandler(Set<User> users) {
         this.users = users;
     }
 

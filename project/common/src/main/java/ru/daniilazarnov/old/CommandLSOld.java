@@ -1,15 +1,15 @@
 package ru.daniilazarnov.old;
 
-import ru.daniilazarnov.test.Utils;
+import ru.daniilazarnov.actual.Utils;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class CommandLS implements Serializable {
+public class CommandLSOld implements Serializable {
     private String path;
 
-    public CommandLS(String path) {
+    public CommandLSOld(String path) {
         this.path = path;
     }
 

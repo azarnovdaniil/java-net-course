@@ -2,10 +2,10 @@ package ru.daniilazarnov.old;
 
 import java.io.Serializable;
 
-public class CommandMessage implements Serializable {
+public class CommandMessageOld implements Serializable {
     String[] command;
 
-    public CommandMessage(String[] command) {
+    public CommandMessageOld(String[] command) {
         this.command = command;
     }
 

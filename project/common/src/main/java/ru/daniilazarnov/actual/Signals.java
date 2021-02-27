@@ -1,4 +1,4 @@
-package ru.daniilazarnov.test;
+package ru.daniilazarnov.actual;
 
 public enum  Signals {
     TEXT ((byte) 5),

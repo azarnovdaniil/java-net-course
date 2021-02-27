@@ -1,4 +1,4 @@
-package ru.daniilazarnov.test;
+package ru.daniilazarnov.old;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -7,16 +7,14 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import ru.daniilazarnov.test.entity.User;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 
-import java.util.HashSet;
-import java.util.Set;
 
-
-public class TestServer {
+public class ServerOld {
 
     private static final int PORT = 8189;
-    private static Set<User> users = new HashSet<>();
 
     public static void main(String[] args) {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -29,7 +27,9 @@ public class TestServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline()
-                            .addLast(new TestServerHandler(users));
+                                    .addLast(new ObjectDecoder(1024 * 1024 * 1024, ClassResolvers.cacheDisabled(null)))
+                                    .addLast(new ObjectEncoder())
+                                    .addLast(new ServerHandlerOld());
                         }
                     });
             ChannelFuture future = b.bind(PORT).sync();

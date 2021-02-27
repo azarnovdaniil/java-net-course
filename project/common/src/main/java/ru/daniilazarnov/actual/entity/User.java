@@ -1,4 +1,4 @@
-package ru.daniilazarnov.test.entity;
+package ru.daniilazarnov.actual.entity;
 
 public class User {
     private int id;

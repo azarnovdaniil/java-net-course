@@ -1,4 +1,4 @@
-package ru.daniilazarnov.test;
+package ru.daniilazarnov.actual;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -11,7 +11,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.util.Scanner;
 
-public class TestClient {
+public class Network {
     private Channel channel;
     private Scanner scanner;
     private RequestController controller;
@@ -19,10 +19,10 @@ public class TestClient {
     private static final int PORT = 8189;
 
     public static void main(String[] args) {
-        new TestClient();
+        new Network();
     }
 
-    public TestClient() {
+    public Network() {
         new Thread(() -> {
             EventLoopGroup workerGroup = new NioEventLoopGroup();
             try {
@@ -34,7 +34,7 @@ public class TestClient {
                             protected void initChannel(SocketChannel socketChannel) throws Exception {
                                 channel = socketChannel;
                                 socketChannel.pipeline()
-                                .addLast(new TestClientHandler());
+                                .addLast(new ClientHandler());
                             }
                         });
                 ChannelFuture future = b.connect(HOST, PORT).sync();

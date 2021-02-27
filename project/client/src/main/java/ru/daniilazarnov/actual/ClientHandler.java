@@ -1,4 +1,4 @@
-package ru.daniilazarnov.test;
+package ru.daniilazarnov.actual;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -7,7 +7,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class TestClientHandler extends ChannelInboundHandlerAdapter {
+public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     private ClientState state = ClientState.IDLE;
 

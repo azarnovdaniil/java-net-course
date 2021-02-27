@@ -3,15 +3,15 @@ package ru.daniilazarnov.old;
 import java.io.Serializable;
 import java.util.List;
 
-public class InfoMessage implements Serializable {
+public class InfoMessageOld implements Serializable {
     String message;
     List<String> listOfFiles;
 
-    public InfoMessage(String message) {
+    public InfoMessageOld(String message) {
         this.message = message;
     }
 
-    public InfoMessage(List<String> listOfFiles) {
+    public InfoMessageOld(List<String> listOfFiles) {
         this.listOfFiles = listOfFiles;
     }
 

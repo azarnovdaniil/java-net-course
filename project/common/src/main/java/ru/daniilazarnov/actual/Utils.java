@@ -1,4 +1,4 @@
-package ru.daniilazarnov.test;
+package ru.daniilazarnov.actual;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;

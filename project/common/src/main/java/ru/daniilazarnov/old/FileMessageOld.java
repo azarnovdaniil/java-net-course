@@ -2,11 +2,11 @@ package ru.daniilazarnov.old;
 
 import java.io.Serializable;
 
-public class FileMessage implements Serializable {
+public class FileMessageOld implements Serializable {
     private final String fileName;
     private final byte[] content;
 
-    public FileMessage(String fileName, byte[] content) {
+    public FileMessageOld(String fileName, byte[] content) {
         this.fileName = fileName;
         this.content = content;
     }

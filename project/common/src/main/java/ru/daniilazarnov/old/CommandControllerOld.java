@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class CommandController {
+public class CommandControllerOld {
     private Channel channel;
 
-    public CommandController(Channel channel) {
+    public CommandControllerOld(Channel channel) {
         this.channel = channel;
     }
 
@@ -17,17 +17,17 @@ public class CommandController {
         String cmd = input[0].toUpperCase();
         switch (cmd) {
             case "LS":
-                channel.writeAndFlush(new RequestLS());
+                channel.writeAndFlush(new RequestLSOld());
                 break;
             case "UPL": {
                 String path = input[1];
                 String fileName = input[2];
-                channel.writeAndFlush(new FileMessage(fileName, Files.readAllBytes(Path.of(path + "\\" + fileName))));
+                channel.writeAndFlush(new FileMessageOld(fileName, Files.readAllBytes(Path.of(path + "\\" + fileName))));
                 break;
             }
             case "DOWN": {
                 String fileName = input[1];
-                channel.writeAndFlush(new FileRequestMessage(fileName));
+                channel.writeAndFlush(new FileRequestMessageOld(fileName));
                 break;
             }
         }

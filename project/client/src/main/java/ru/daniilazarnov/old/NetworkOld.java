@@ -11,18 +11,18 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 import java.util.Scanner;
 
-public class Network {
+public class NetworkOld {
     private Channel channel;
     private Scanner scanner;
-    private CommandController controller;
+    private CommandControllerOld controller;
     private static final String HOST = "localhost";
     private static final int PORT = 8189;
 
     public static void main(String[] args) {
-        new Network();
+        new NetworkOld();
     }
 
-    public Network() {
+    public NetworkOld() {
         new Thread(() -> {
             EventLoopGroup workerGroup = new NioEventLoopGroup();
             try {
@@ -36,12 +36,12 @@ public class Network {
                                 socketChannel.pipeline()
                                         .addLast(new ObjectDecoder(1024 * 1024 * 1024, ClassResolvers.cacheDisabled(null)))
                                         .addLast(new ObjectEncoder())
-                                        .addLast(new ClientHandler());
+                                        .addLast(new ClientHandlerOld());
                             }
                         });
                 ChannelFuture future = b.connect(HOST, PORT).sync();
 
-                controller = new CommandController(channel);
+                controller = new CommandControllerOld(channel);
 
                 scanner = new Scanner(System.in);
                 while (scanner.hasNext()) {

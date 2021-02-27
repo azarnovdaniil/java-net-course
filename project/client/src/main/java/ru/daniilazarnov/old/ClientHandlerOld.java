@@ -2,16 +2,13 @@ package ru.daniilazarnov.old;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import ru.daniilazarnov.old.CommandLS;
-import ru.daniilazarnov.old.FileMessage;
-import ru.daniilazarnov.old.InfoMessage;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-public class ClientHandler extends ChannelInboundHandlerAdapter {
+public class ClientHandlerOld extends ChannelInboundHandlerAdapter {
 
     private String currentDir = "D:\\testDir\\Client\\";
 
@@ -22,29 +19,29 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof InfoMessage){
-            System.out.println(((InfoMessage) msg).getMessage());
+        if (msg instanceof InfoMessageOld){
+            System.out.println(((InfoMessageOld) msg).getMessage());
         }
-        else if (msg instanceof CommandLS){
-            for (String s : ((CommandLS) msg).listFiles()){
+        else if (msg instanceof CommandLSOld){
+            for (String s : ((CommandLSOld) msg).listFiles()){
                 System.out.println(s);
             }
         }
-        else if (msg instanceof FileMessage) {
+        else if (msg instanceof FileMessageOld) {
             System.out.println("Downloading the file..");
-            ctx.writeAndFlush(new InfoMessage("Uploading the file..."));
+            ctx.writeAndFlush(new InfoMessageOld("Uploading the file..."));
             try {
-                Files.write(Path.of(currentDir + ((FileMessage) msg).getFileName()), ((FileMessage) msg).getContent(), StandardOpenOption.CREATE_NEW);
+                Files.write(Path.of(currentDir + ((FileMessageOld) msg).getFileName()), ((FileMessageOld) msg).getContent(), StandardOpenOption.CREATE_NEW);
                 System.out.println("File saved successfully");
-                ctx.writeAndFlush(new InfoMessage("File uploaded successfully"));
+                ctx.writeAndFlush(new InfoMessageOld("File uploaded successfully"));
             } catch (IOException e) {
                 System.out.println("SWW during saving the file");
-                ctx.writeAndFlush(new InfoMessage("SWW during uploading the file"));
+                ctx.writeAndFlush(new InfoMessageOld("SWW during uploading the file"));
             }
         }
         else {
             System.out.print("Wrong object!");
-            ctx.writeAndFlush(new InfoMessage("Wrong object!"));
+            ctx.writeAndFlush(new InfoMessageOld("Wrong object!"));
         }
     }
 

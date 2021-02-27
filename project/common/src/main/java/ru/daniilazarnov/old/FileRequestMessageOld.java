@@ -2,10 +2,10 @@ package ru.daniilazarnov.old;
 
 import java.io.Serializable;
 
-public class FileRequestMessage implements Serializable {
+public class FileRequestMessageOld implements Serializable {
     String fileName;
 
-    public FileRequestMessage(String fileName) {
+    public FileRequestMessageOld(String fileName) {
         this.fileName = fileName;
     }
 
