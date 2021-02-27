@@ -61,10 +61,18 @@ public class RequestController {
                 });
                 break;
             }
-            case "DOWN": {
+            case "DOWN": {  // cmd filename path
+                part2 = cmd[1];
                 buf.writeByte(Signals.DOWNLOAD.get());
+                buf.writeBytes(Utils.convertToByteBuf(part2));
                 channel.writeAndFlush(buf);
                 break;
+            }
+            case "CD": {
+                part2 = cmd[1];
+                buf.writeByte(Signals.CD.get());
+                buf.writeBytes(Utils.convertToByteBuf(part2));
+                channel.writeAndFlush(buf);
             }
             default: {
                 System.out.println("Команда не распознана. Воспользуйтесь командой help для справки...");

@@ -8,6 +8,7 @@ public enum  Signals {
     START_UPLOAD ((byte) 35),
     DOWNLOAD ((byte) 36),
     LS ((byte) 45),
+    CD ((byte) 46),
     RM ((byte) 50);
 
     private final byte signal;

@@ -8,6 +8,7 @@ import ru.daniilazarnov.actual.entity.User;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.Set;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
@@ -19,6 +20,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private ServerState state = ServerState.AUTH;
     private DBConnect service = new DBConnect();
     private Commands command;
+    private RequestController controller;
 
     public ServerHandler(Set<User> users) {
         this.users = users;
@@ -28,12 +30,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
  auth admin admin
  auth nick1 pass1
  upl d:\testDir\Client\mu.zip
+ down mu.zip d:\testDir\Client\1
 */
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("Client connected");
         command = new Commands();
+        controller = new RequestController(ctx.channel());
     }
 
     @Override
@@ -103,7 +107,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                         command.sendMessage("При удалении файла возникла ошибка", ctx);
                     }
                 } else if (signal == Signals.DOWNLOAD.get()){
-                    System.out.println("download");
+                    String[] str = buf.toString(StandardCharsets.UTF_8).split("\\s");
+                    String filename = str[0];
+                    String path = str[1];
+                    File file = new File(clientDir + filename);
+                    if (file.exists() && !file.isDirectory()){
+                        command.sendMessage("Производится скачивание, пожалуйста подождите...", ctx);
+                        controller.command("cd " + path + "\\");
+                        controller.command("upl " + file.getAbsolutePath());
+                    } else {
+                        command.sendMessage("Ошибка скачивания, проверьте правильность имени файла", ctx);
+                    }
                 }
             } else if (state == ServerState.TRANSFER){
                 if (command.receiveFile(buf, clientDir)) {

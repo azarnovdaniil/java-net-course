@@ -1,6 +1,5 @@
 package ru.daniilazarnov.actual.db;
 
-
 import ru.daniilazarnov.actual.entity.User;
 
 import java.sql.*;
@@ -21,8 +20,6 @@ public class DBConnect {
     public boolean doReg(String login, String password){
         return addUser(login, password);
     }
-
-
 
     private boolean getUser(String login, String password){
         Connection connection = getConnection();
@@ -79,6 +76,7 @@ public class DBConnect {
             throw new RuntimeException("SWW during DB connection", e);
         }
     }
+
     private void close(Connection connection){
         try {
             connection.close();
