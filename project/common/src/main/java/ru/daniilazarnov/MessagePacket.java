@@ -2,7 +2,11 @@ package ru.daniilazarnov;
 
 import ru.daniilazarnov.commands.Commands;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 
@@ -17,7 +21,7 @@ import java.util.List;
  * - номер дробной части (int), передаваемое в данный момент
  */
 public class MessagePacket implements Serializable {
-    final int sizePacketContent=10485760; // Размер пакета 10 кБ.
+    final int sizePacketContent = 10485760; // Размер пакета 10 кБ.
     private String userDir;
     private String homeDirectory;
     private List<String> message;
@@ -72,8 +76,23 @@ public class MessagePacket implements Serializable {
     }
 
     public void setContent(byte[] content) {
+
         this.content = content;
+
     }
+
+    public void setContent(String fileName, byte[] content) {
+
+        Path path = Paths.get(fileName);
+        System.out.println(path);
+        try {
+            this.content = Files.readAllBytes(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     public int getSegment() {
         return segment;

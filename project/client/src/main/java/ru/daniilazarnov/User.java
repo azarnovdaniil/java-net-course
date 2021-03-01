@@ -3,6 +3,7 @@ package ru.daniilazarnov;
 import ru.daniilazarnov.commands.*;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class User {
@@ -36,13 +37,21 @@ public class User {
     }
 
     public MessagePacket invoke(Scanner scanner, MessagePacket messagePacket, boolean next) {
+        Commands userCommand;
+        String command;
         System.out.println("Пожалуйста, введите вашу команду: ");
-        String command = scanner.nextLine().toUpperCase().trim();
-        Commands userCommand = commandsMap.get(command);
+        command = scanner.nextLine().toUpperCase().trim();
+        while (!commandsMap.containsKey(command)) {
+            System.out.println("Ошибка: введеннная команда не распознана, попробуйте еще раз");
+            command = scanner.nextLine().toUpperCase().trim();
+        }
+        userCommand = commandsMap.get(command);
         messagePacket.setCommand(userCommand);
         if (userCommand.getMessageForInput() != null) {
             System.out.println(userCommand.getMessageForInput());
-            messagePacket.setFileName(scanner.nextLine().toUpperCase().trim());
+            String fileName = scanner.nextLine().trim();
+            messagePacket.setFileName(fileName);
+            messagePacket.setContent(fileName, null);
         }
 
         return messagePacket;
