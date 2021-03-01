@@ -2,8 +2,8 @@ package ru.daniilazarnov;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import ru.daniilazarnov.FileService.FileManager;
-import java.nio.file.Path;
+import ru.daniilazarnov.commands.Commands;
+import ru.daniilazarnov.commands.Exit;
 
 /**
  * cachedInComingMessage - кэыширование поступившего пакета для возможного использования (функционал пока не реализован)
@@ -26,11 +26,13 @@ public class DServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
 
         if (msg instanceof MessagePacket) {
-            MessagePacket mp = (MessagePacket) msg;
-            FileManager fileManager = new FileManager(mp.getCommand(), Path.of(mp.getPathCode()), mp.getHomeDirectory(), mp.getFileName(), mp.getContent(), mp.getSegment(), mp.getAllSegments());
-
-            if (!fileManager.runner()) {
+            MessagePacket mp = (MessagePacket) msg; //привели к нашему объекту
+            Commands commands = mp.getCommand(); //создали объект команды
+            if (commands instanceof Exit) { //закрываем соединение на случай команды *Exit
                 ctx.close();
+            } else {
+                MessagePacket answer = commands.runCommands(mp); //реализовали метод команды, возвращающей ответный пакет
+                ctx.writeAndFlush(answer); //вернули пакет пользователю
             }
         }
     }

@@ -1,5 +1,7 @@
 package ru.daniilazarnov.commands;
 
+import ru.daniilazarnov.MessagePacket;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
@@ -7,48 +9,63 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class ShowFile extends Commands {
-    Path homeDirectory;
 
     @Override
-    public boolean runCommands(Path userDir, String homeDir, String fileName, byte[] content, int segment, int allSegments) {
+    public MessagePacket runCommands(MessagePacket messagePacket) {
 
-        if (!Files.exists(userDir)) {
-            try {
-                Files.createDirectories(userDir);
-                System.out.println("Directory is created!");
-            } catch (IOException e) {
-                System.err.println("Failed to create directory!" + e.getMessage());
-            }
+        String userDir=messagePacket.getUserDir();
+        Path userPath = Paths.get(userDir);
+        String homeDirectory=messagePacket.getHomeDirectory();
+        Path homePath=Paths.get(homeDirectory);
+        Path homePath1=userPath.resolve(homePath);
+        if (!Files.exists(userPath)) try {
+            Files.createDirectories(userPath);
+            System.out.println("User directory is created!");
+        } catch (IOException e) {
+            System.err.println("Failed to create directory!" + e.getMessage());
         }
-        if (!Files.exists(userDir.resolve(homeDir))) {
-            try {
-                homeDirectory = Files.createDirectories(userDir.resolve(homeDir));
-                System.out.println("Directory is created!");
-            } catch (IOException e) {
-                System.err.println("Failed to create directory!" + e.getMessage());
-            }
+        if (!Files.exists(userPath.resolve(homePath))) try {
+            homePath = Files.createDirectories(userPath.resolve(homePath));
+            System.out.println("User home directory is created!" + homeDirectory);
+        } catch (IOException e) {
+            System.err.println("Failed to create user Home directory!" + e.getMessage());
         }
 
-        Path path = userDir;
-        List<Path> paths = null;
+        Path path = userPath;
+        List<String> paths = null;
         try {
-            paths = listFiles(path);
+            paths = listFiles(path, homePath1);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        paths.forEach(x -> System.out.println(x));
-        return true;
+        byte[] newContent = paths.toString().getBytes();
+        messagePacket.setContent(newContent);
+        messagePacket.setMessage(paths);
+
+        return messagePacket;
     }
 
-    public static List<Path> listFiles(Path path) throws IOException {
+    @Override
+    public MessagePacket runClientCommands(MessagePacket messagePacket) {
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("На сервер загружены следующие файлы:");
+        List<String> answer=messagePacket.getMessage();
+        answer.stream()
+                .map(s -> "- "+s)
+                .forEach(System.out::println);
+        System.out.println("-------------------------------------------------------------\n");
 
-        List<Path> result;
+        return null;
+    }
+
+    public static List<String> listFiles(Path path, Path homePath) throws IOException {
+        List<String> result;
         try (Stream<Path> walk = Files.walk(path)) {
             result = walk.filter(Files::isRegularFile)
+                    .map(path1 -> path1.getName(path1.getNameCount() - 1))
+                    .map(path1 -> path1.toString())
                     .collect(Collectors.toList());
-        }
-
-        return result;
+        }              return result;
     }
 
 }

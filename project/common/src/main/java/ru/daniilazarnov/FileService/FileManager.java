@@ -1,5 +1,6 @@
 package ru.daniilazarnov.FileService;
 
+import ru.daniilazarnov.MessagePacket;
 import ru.daniilazarnov.commands.Commands;
 
 import java.nio.file.*;
@@ -24,8 +25,6 @@ public class FileManager {
         this.homeDir = homeDir;
     }
 
-    public boolean runner() {
-        return command.runCommands(userDir, homeDir, fileName, content, segment, allSegments);
-    }
+
 
 }

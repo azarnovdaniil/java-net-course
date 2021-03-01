@@ -1,11 +1,22 @@
 package ru.daniilazarnov.commands;
 
+import ru.daniilazarnov.MessagePacket;
+
 import java.nio.file.Path;
 
-public final class RenameFile extends Commands{
+public final class RenameFile extends Commands {
+
+    public RenameFile(String s) {
+        this.messageForInput = s;
+    }
 
     @Override
-    public boolean runCommands(Path userDir, String homeDir, String fileName, byte[] content, int segment, int allSegments) {
-        return  false;
+    public MessagePacket runCommands(MessagePacket messagePacket) {
+        return new MessagePacket();
+    }
+
+    @Override
+    public MessagePacket runClientCommands(MessagePacket messagePacket) {
+        return null;
     }
 }

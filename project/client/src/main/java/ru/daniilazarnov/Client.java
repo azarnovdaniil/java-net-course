@@ -11,10 +11,9 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class Client {
 
-    static final String HOST = "127.0.0.1";
-    static final int PORT = 8189;
-    static String clientName;
-    static String clientKEY;
+    final static String HOST = "127.0.0.1";
+    final static int PORT = 8189;
+    final private static int maxObjectSize = 104857600;
 
     public static void main(String[] args) throws Exception {
 
@@ -27,19 +26,14 @@ public class Client {
                         @Override
                         public void initChannel(SocketChannel ch) {
                             ChannelPipeline p = ch.pipeline();
-                            p.addLast(new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
+                            p.addLast(new ObjectDecoder(maxObjectSize, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
                                     new DClientHandler());
                         }
                     })
                     .option(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture channelFuture = b.connect(HOST, PORT).sync();
-
-            AuthorisationLevel.invoke();
-            MessagePacket messagePacket = new MessagePacket(clientName, clientKEY);
-            Channel channel = channelFuture.sync().channel();
-            CommandInputLevel.invoke(messagePacket);
-            channel.writeAndFlush(messagePacket);
+            channelFuture.sync().channel();
             channelFuture.channel().closeFuture().sync();
 
         } finally {

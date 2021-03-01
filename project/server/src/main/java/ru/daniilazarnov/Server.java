@@ -15,11 +15,11 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 /**
  * Сервер для обмена файлами. Используется фреймворк Netty.
- * Сервер на вход принимает только сериализованные объекты MessagePacket, размер в байтах которых ограничен 1048576 байт.
- * Сервер
+ * Сервер на вход принимает только сериализованные объекты MessagePacket, размер в байтах которых ограничен 104857600 байт.
  *
- * */
+ */
 public class Server {
+    final private static int maxObjectSize = 104857600;
 
     public static void main(String[] args) {
 
@@ -33,8 +33,8 @@ public class Server {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            socketChannel.pipeline().addLast(new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
+                        protected void initChannel(SocketChannel socketChannel) {
+                            socketChannel.pipeline().addLast(new ObjectDecoder(maxObjectSize, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
                                     new DServerHandler());
                         }

@@ -2,6 +2,7 @@ package ru.daniilazarnov;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class PrintMessages {
     public static void invoke(String sourceText) {
@@ -11,7 +12,7 @@ public class PrintMessages {
         printInputStream(is);
     }
 
-    private InputStream getFileFromResourceAsStream(String fileName) {
+    InputStream getFileFromResourceAsStream(String fileName) {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(fileName);
         if (inputStream == null) {
@@ -21,7 +22,7 @@ public class PrintMessages {
         }
 
     }
-    private static void printInputStream(InputStream is) {
+    static void printInputStream(InputStream is) {
 
         try (InputStreamReader streamReader =
                      new InputStreamReader(is, StandardCharsets.UTF_8);
@@ -33,6 +34,22 @@ public class PrintMessages {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getUserName() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Please enter your name: ");
+        String clientName=scanner.nextLine();
+        System.out.println("Welcome " + clientName + "!");
+        return clientName;
+
+    }
+    public String getSecretKey() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please create (enter) your SECRET KEYWORD to identify your use of our cloud file service.");
+        System.out.print("Please enter your Secret Key: ");
+        String secretKey=scanner.nextLine();
+        return secretKey;
     }
 
 }

@@ -1,42 +1,62 @@
 package ru.daniilazarnov;
+
 import ru.daniilazarnov.commands.Commands;
+
 import java.io.Serializable;
+import java.util.List;
 
 
 /**
  * Class MessagePacket определяет универасльный пакет - содержание (состав) сообщений, пересылаемых между клиентом и сервер.
  * Каждое собщение состоит из:
- *  - хэш для унификации клиентов: (int) PASSWORD * PASSWORD.length*Pi
- *  - команды к серверу (Enum),
- *  - путь для сохранения файла, включая имя файла (String) (для простоты реалзиации - "имя клиента / имя файла")
- *  - содержимое для записи в файл (String) (для простоты реализации)
- *  - число дробных частей (int), на которые разбито "сообщение"
- *  - номер дробной части (int), передаваемое в данный момент
+ * - userDir - хэш для унификации клиентов: (int) PASSWORD * PASSWORD.length*Pi
+ * - команды к серверу (Enum),
+ * - путь для сохранения файла, включая имя файла (String) (для простоты реалзиации - "имя клиента / имя файла")
+ * - содержимое для записи в файл (String) (для простоты реализации)
+ * - число дробных частей (int), на которые разбито "сообщение"
+ * - номер дробной части (int), передаваемое в данный момент
  */
 public class MessagePacket implements Serializable {
-    private String pathCode;
+    final int sizePacketContent=10485760; // Размер пакета 10 кБ.
+    private String userDir;
+    private String homeDirectory;
+    private List<String> message;
+    private Commands command;
     private String fileName;
+    private byte[] content;
+    private int segment;
+    private int allSegments;
+
+    public String getUserDir() {
+        return userDir;
+    }
+
+    public void setUserDir(String userDir) {
+        this.userDir = userDir;
+    }
 
     public String getHomeDirectory() {
         return homeDirectory;
     }
 
-    private String homeDirectory;
-    private byte[] content;
-    private int segment;
-    private int allSegments;
+    public void setHomeDirectory(String homeDirectory) {
+        this.homeDirectory = homeDirectory;
+    }
+
+    public List<String> getMessage() {
+        return message;
+    }
+
+    public void setMessage(List<String> message) {
+        this.message = message;
+    }
+
     public Commands getCommand() {
         return command;
     }
 
     public void setCommand(Commands command) {
         this.command = command;
-    }
-
-    private Commands command;
-
-    public String getPathCode() {
-        return pathCode;
     }
 
     public String getFileName() {
@@ -47,15 +67,6 @@ public class MessagePacket implements Serializable {
         this.fileName = fileName;
     }
 
-    public int getSegment() {
-        return segment;
-    }
-
-    public int getAllSegments() {
-        return allSegments;
-    }
-
-
     public byte[] getContent() {
         return content;
     }
@@ -64,16 +75,44 @@ public class MessagePacket implements Serializable {
         this.content = content;
     }
 
+    public int getSegment() {
+        return segment;
+    }
+
+    public void setSegment(int segment) {
+        this.segment = segment;
+    }
+
+    public int getAllSegments() {
+        return allSegments;
+    }
+
+    public void setAllSegments(int allSegments) {
+        this.allSegments = allSegments;
+    }
+
+
     public MessagePacket() {
         this.command = null;
-        this.content = new  byte[1024 * 1024 * 100];
+        this.content = new byte[sizePacketContent];
         this.segment = 1;
         this.allSegments = 1;
     }
- public MessagePacket(String name, String clientKey) {
-     this.homeDirectory = name.toLowerCase().trim();
-     new MessagePacket();
-     this.pathCode = (name+ clientKey.length() *Math.PI+clientKey).replace('.', '-');
- }
 
+    public MessagePacket(String name, String clientKey) {
+        new MessagePacket();
+        this.homeDirectory = name.toLowerCase().trim();
+        this.userDir = (name + clientKey.length() * Math.PI + clientKey).replace('.', '-');
+    }
+
+    public MessagePacket(String userDir, String homeDirectory, List<String> message, Commands command, String fileName, byte[] content, int segment, int allSegments) {
+        this.userDir = userDir;
+        this.homeDirectory = homeDirectory;
+        this.message = message;
+        this.command = command;
+        this.fileName = fileName;
+        this.content = content;
+        this.segment = segment;
+        this.allSegments = allSegments;
+    }
 }
