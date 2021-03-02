@@ -1,6 +1,8 @@
 package ru.daniilazarnov;
 
 
+import commands.RenameFiles;
+import commands.UpLoad;
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 
@@ -10,16 +12,19 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 import java.util.Scanner;
 
+import static commands.DeleteFile.delete;
+import static commands.DeleteFile.deleteFileFromServer;
+import static commands.DownLoad.download;
+import static commands.RenameFiles.renameFile;
+
 public class ClientHandler {
 
-    private static ObjectEncoderOutputStream out;
-    private static ObjectDecoderInputStream in;
-    private static final String WAY_CLIENT = ("project/client/src/main/java/file/");
+    protected static ObjectEncoderOutputStream out;
+    protected static ObjectDecoderInputStream in;
+    protected static final String WAY_CLIENT = ("project/client/src/main/java/file/");
     private static final int PORT = 8189;
     private static final int SIZE_1024 = 1024;
     private static final int SIZE_100 = 100;
@@ -72,12 +77,12 @@ public class ClientHandler {
 
                     if (command.equals("скачать")) {
                         String file = commandFile[2];
-                        download(file);
+                        download(file, account);
                     }
 
                     if (command.equals("отправить")) {
                         String file = commandFile[2];
-                        upLoad(file);
+                        UpLoad.upLoad(file, account);
                     }
 
                     if (command.equals("удалить")) {
@@ -85,6 +90,7 @@ public class ClientHandler {
                         delete(file, account);
                     }
                     if (command.equals("переименовать")) {
+
                         renameFile(commandFile, account);
                     }
                 }
@@ -96,7 +102,7 @@ public class ClientHandler {
                     if (command.equals("удалить")) {
                         String file = commandFile[2];
 
-                        deleteFileFromServer(file);
+                        deleteFileFromServer(file, account);
 
                     }
                     if (command.equals("переименовать")) {
@@ -104,7 +110,7 @@ public class ClientHandler {
                         String file = commandFile[2];
                         String newFile =  commandFile[3];
 
-                        renameFileFromServer(file, newFile);
+                        RenameFiles.renameFileFromServer(file, newFile, account);
                     }
                 }
 
@@ -125,6 +131,8 @@ public class ClientHandler {
         } else {
             System.out.println("Вы вошли как " + account);
         }
+        ClientHandler.sendMessage("/создать " + account);
+
         initialize(account);
 
 
@@ -134,99 +142,12 @@ public class ClientHandler {
 
     private void help() {
         System.out.println("Список команд для клиента:\n/N скачать ИмяФайла.формат"
-                + " \n/N отправить ИмяФайла.формат\n/N удалить ИмяФайла.формат\n"
-                + "/N переименовать ИмяФайла.формат НовоеИмяФайла.формат");
+                + " \n/N отправить Имя Файла.формат\n/N удалить Имя Файла.формат\n"
+                + "/N переименовать Имя Файла.формат Новое Имя Файла.формат");
 
-        System.out.println("\nСписок команд для сервера:\n/S удалить ИмяФайла.формат\n"
-                + "/S переименовать ИмяФайла.формат НовоеИмяФайла.формат");
+        System.out.println("\nСписок команд для сервера:\n/S удалить Имя Файла.формат\n"
+                + "/S переименовать Имя Файла.формат Новое Имя Файла.формат");
     }
-
-    public void renameFile(String[] messageCommand, String bossAccount) {
-        String oldNameFile = messageCommand[2];
-        String newNameFile = messageCommand[3];
-
-        File file = new File(WAY_CLIENT + bossAccount, oldNameFile);
-        File newFile = new File(WAY_CLIENT + bossAccount, newNameFile);
-        if (file.renameTo(newFile)) {
-            System.out.println("Файл " + file + " успешно переименован в " + newFile);
-        } else {
-            System.out.println("Файл " + file + " НЕ переименован в " + newFile);
-        }
-    }
-
-    private void renameFileFromServer(String s, String s1) {
-
-        try {
-            sendMesg("/переименовать" + " " + s + " " + s1);
-            AbstractMessage am = readObject();
-            MyMessage fm = (MyMessage) am;
-            System.out.println(fm.getMyMessage());
-
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private static void delete(String file,  String bossAccount) {
-
-        try {
-            Path deletePath = Paths.get(WAY_CLIENT + bossAccount + file);
-            Files.delete(deletePath);
-            System.out.println("Файл " + file + " успешно удален у вас");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void deleteFileFromServer(String s) throws ClassNotFoundException, IOException {
-        sendMesg("/удалить " + s);
-        AbstractMessage am = readObject();
-        if (am instanceof MyMessage) {
-            MyMessage fm = (MyMessage) am;
-            System.out.println(fm.getMyMessage());
-        }
-    }
-
-    private boolean sendMesg(String msg) {
-        try {
-            out.writeObject(msg);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private static void upLoad(String file) {
-        try {
-            FileMessage fm = new FileMessage(Paths.get(WAY_CLIENT + file));
-            out.writeObject(fm);
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("upLoad " + file);
-
-    }
-
-
-    public static void download(String file) throws IOException, ClassNotFoundException {
-        sendMsg(new FileRequest(file));
-
-        AbstractMessage am = readObject();
-
-        if (am instanceof FileMessage) {
-
-            FileMessage fm = (FileMessage) am;
-            Files.write(Paths.get(WAY_CLIENT, fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
-            System.out.println("download " + file);
-        }
-
-    }
-
 
     // получение сообщения с сервака----------------------------------------------------------
     public static AbstractMessage readObject() throws ClassNotFoundException, IOException {
@@ -236,14 +157,23 @@ public class ClientHandler {
 
 
     //отправка сообщения на сервак------------------------------------------------------------
-    public static boolean sendMsg(AbstractMessage msg) {
+    public static boolean sendMsgFromDownload(AbstractMessage msg) {
         try {
             out.writeObject(msg);
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("не удалось скачать");
         }
         return false;
+    }
+
+    protected static void sendMessage(String msg) {
+        try {
+            out.writeObject(msg);
+            out.flush();
+        } catch (IOException e) {
+            System.err.println("Не удалось отправить запрос");
+        }
     }
 }
 
