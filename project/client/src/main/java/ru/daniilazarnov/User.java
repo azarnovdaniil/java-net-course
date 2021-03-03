@@ -50,8 +50,7 @@ public class User {
         if (userCommand.getMessageForInput() != null) {
             System.out.println(userCommand.getMessageForInput());
             String fileName = scanner.nextLine().trim();
-            messagePacket.setFileName(fileName);
-            messagePacket.setContent(fileName, null);
+            messagePacket.setContent(scanner, fileName, null);
         }
 
         return messagePacket;

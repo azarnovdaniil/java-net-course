@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Scanner;
 
 
 /**
@@ -81,10 +82,16 @@ public class MessagePacket implements Serializable {
 
     }
 
-    public void setContent(String fileName, byte[] content) {
+    public void setContent(Scanner scanner, String fileName, byte[] content) {
 
         Path path = Paths.get(fileName);
+        while (! Files.exists(path)) {
+            System.out.println("Ошибка: введенное имя файла не найдено на диске, пожалуйста, повторите ввод:");
+            fileName = scanner.nextLine().trim();
+            path= Path.of(fileName);
+        }
         System.out.println(path);
+        this.fileName=fileName;
         try {
             this.content = Files.readAllBytes(path);
         } catch (IOException e) {
@@ -134,4 +141,6 @@ public class MessagePacket implements Serializable {
         this.segment = segment;
         this.allSegments = allSegments;
     }
+
+
 }
