@@ -11,7 +11,7 @@ import ru.daniilazarnov.commands.Exit;
  */
 
 public class DServerHandler extends ChannelInboundHandlerAdapter {
-
+    private Commands commands;
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         System.out.println("Client connected...");
@@ -27,7 +27,7 @@ public class DServerHandler extends ChannelInboundHandlerAdapter {
 
         if (msg instanceof MessagePacket) {
             MessagePacket mp = (MessagePacket) msg; //привели к нашему объекту
-            Commands commands = mp.getCommand(); //создали объект команды
+             commands= mp.getCommand(); //создали объект команды
             if (commands instanceof Exit) { //закрываем соединение на случай команды *Exit
                 ctx.close();
             } else {

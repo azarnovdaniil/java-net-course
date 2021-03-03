@@ -39,7 +39,7 @@ public class PrintMessages {
     public String getUserName() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Please enter your name: ");
-        String clientName=scanner.nextLine();
+        String clientName=scanner.nextLine().trim();
         System.out.println("Welcome " + clientName + "!");
         return clientName;
 

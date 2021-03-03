@@ -5,9 +5,11 @@ import ru.daniilazarnov.MessagePacket;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
+import java.util.Scanner;
 
 public final class UploadFile extends Commands {
 
+    String fileName = "";
 
     @Override
     public String getMessageForInput() {
@@ -23,19 +25,19 @@ public final class UploadFile extends Commands {
     public MessagePacket runCommands(MessagePacket messagePacket) {
         String outMessages = ""; //сообщение, возвращаемое пользователю по итогам операции
         String outMessagesOver = ""; //сообщение, возвращаемое пользователю по итогам операции при перезаписи файла
-        Path newFilePath = null;
-        Path oldFilePath = null;
+        Path newFilePath;
+        Path oldFilePath;
         System.out.println("Поступила команда загрузить файл \"" + messagePacket.getFileName() + "\" в директорию: " + messagePacket.getHomeDirectory());
         String userDir = messagePacket.getUserDir();
-        Path userPath = Paths.get(userDir);
         String homeDirectory = messagePacket.getHomeDirectory();
         Path homePath = Paths.get(userDir, homeDirectory);
         String fileName = messagePacket.getFileName();
+        fileName = fileName.replaceAll("(?:[a-zA-Z]:)\\([\\w-]+\\)*\\w([\\w-.])+", "");
+        System.out.println(fileName);
         Path filePath = Paths.get(userDir, homeDirectory, fileName);
         System.out.println(filePath);
-
-
         oldFilePath = filePath;
+
         try {
 
             if (Files.exists(oldFilePath)) { //если путь уже существует, то ищем несуществующий путь для сохранения в него существующего файла
@@ -52,12 +54,9 @@ public final class UploadFile extends Commands {
                         homePath.relativize(oldFilePath) + ".\n";
             }
             newFilePath = Files.createFile(filePath);
-
             Files.write(newFilePath, messagePacket.getContent(), StandardOpenOption.WRITE);
             outMessages = "На сервер загружены следующие файлы: ";
-
-
-        } catch (IOException e) {
+        } catch (IOException | InvalidPathException e) {
             e.printStackTrace();
         }
 
@@ -70,10 +69,33 @@ public final class UploadFile extends Commands {
     public MessagePacket runClientCommands(MessagePacket messagePacket) {
         System.out.println("-------------------------------------------------------------");
         List<String> answer = messagePacket.getMessage();
-        answer.stream()
+        answer
                 .forEach(System.out::println);
         System.out.println("-------------------------------------------------------------\n");
 
         return null;
+    }
+
+    @Override
+    public MessagePacket runOutClientCommands(Scanner scanner, MessagePacket messagePacket) {
+        if (this.messageForInput != null) {
+            System.out.println(this.messageForInput);
+            fileName = scanner.nextLine().trim();
+
+            Path path = Paths.get(messagePacket.getHomeDirectory(), fileName);
+            while (!Files.exists(path)) {
+                System.out.println("Ошибка: введенное имя файла не найдено на диске, пожалуйста, повторите ввод:");
+                fileName = scanner.nextLine().trim();
+                path = Paths.get(messagePacket.getHomeDirectory(), fileName);
+            }
+            messagePacket.setFileName(fileName);
+            System.out.println("На сервер загружается файл: " + path);
+            try {
+                messagePacket.setContent(Files.readAllBytes(path));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return messagePacket;
     }
 }

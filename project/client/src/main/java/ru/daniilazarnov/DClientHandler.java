@@ -24,7 +24,8 @@ public class DClientHandler extends ChannelInboundHandlerAdapter {
         fileName = "MessageAboutCommands.txt";
         is = help.getFileFromResourceAsStream(fileName);
         help.printInputStream(is);
-        ctx.channel().writeAndFlush(user.invoke(scanner, mP, true));
+        user.setHomeFolder(user.getClientName().toLowerCase());
+        ctx.channel().writeAndFlush(user.invoke(scanner, mP));
     }
 
     @Override
@@ -40,7 +41,7 @@ public class DClientHandler extends ChannelInboundHandlerAdapter {
             Commands commands = mp.getCommand();
             MessagePacket answer = commands.runClientCommands(mp);
         }
-        ctx.channel().writeAndFlush(user.invoke(scanner, mP, true));
+        ctx.channel().writeAndFlush(user.invoke(scanner, mP));
 
     }
 

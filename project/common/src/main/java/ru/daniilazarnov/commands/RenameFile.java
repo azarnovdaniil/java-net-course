@@ -3,6 +3,7 @@ package ru.daniilazarnov.commands;
 import ru.daniilazarnov.MessagePacket;
 
 import java.nio.file.Path;
+import java.util.Scanner;
 
 public final class RenameFile extends Commands {
 
@@ -19,4 +20,10 @@ public final class RenameFile extends Commands {
     public MessagePacket runClientCommands(MessagePacket messagePacket) {
         return null;
     }
+
+    @Override
+    public MessagePacket runOutClientCommands(Scanner scanner, MessagePacket messagePacket) {
+        return null;
+    }
+
 }

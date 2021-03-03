@@ -3,13 +3,13 @@ package ru.daniilazarnov.commands;
 import ru.daniilazarnov.MessagePacket;
 
 import java.io.Serializable;
-import java.nio.file.Path;
+import java.util.Scanner;
 
 
 abstract public class Commands implements Serializable {
     String fileServerName;
     String newFileServerName;
-    String messageForInput;
+    String messageForInput=null;
 
     public String getMessageForInput() {
         return messageForInput;
@@ -30,5 +30,8 @@ abstract public class Commands implements Serializable {
     public abstract MessagePacket runCommands(MessagePacket messagePacket);
 
     public abstract MessagePacket runClientCommands(MessagePacket messagePacket);
+
+    public abstract MessagePacket runOutClientCommands(Scanner scanner, MessagePacket messagePacket);
+
 
 }

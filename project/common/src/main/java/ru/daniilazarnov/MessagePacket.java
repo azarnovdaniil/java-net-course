@@ -46,6 +46,7 @@ public class MessagePacket implements Serializable {
 
     public void setHomeDirectory(String homeDirectory) {
         this.homeDirectory = homeDirectory;
+
     }
 
     public List<String> getMessage() {
@@ -81,25 +82,6 @@ public class MessagePacket implements Serializable {
         this.content = content;
 
     }
-
-    public void setContent(Scanner scanner, String fileName, byte[] content) {
-
-        Path path = Paths.get(fileName);
-        while (!Files.exists(path)) {
-            System.out.println("Ошибка: введенное имя файла не найдено на диске, пожалуйста, повторите ввод:");
-            fileName = scanner.nextLine().trim();
-            path = Path.of(fileName);
-        }
-        System.out.println(path);
-        this.fileName = fileName;
-        try {
-            this.content = Files.readAllBytes(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
 
     public int getSegment() {
         return segment;

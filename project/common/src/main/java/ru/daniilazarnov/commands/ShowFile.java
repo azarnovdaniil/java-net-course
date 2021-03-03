@@ -5,6 +5,7 @@ import ru.daniilazarnov.MessagePacket;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,6 +67,10 @@ public final class ShowFile extends Commands {
                     .map(path1 -> path1.toString())
                     .collect(Collectors.toList());
         }              return result;
+    }
+    @Override
+    public MessagePacket runOutClientCommands(Scanner scanner, MessagePacket messagePacket) {
+        return messagePacket;
     }
 
 }
