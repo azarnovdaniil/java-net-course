@@ -1,14 +1,9 @@
 package ru.daniilazarnov;
 
 import ru.daniilazarnov.commands.Commands;
-
-import java.io.IOException;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
+
 
 
 /**
@@ -36,17 +31,8 @@ public class MessagePacket implements Serializable {
         return userDir;
     }
 
-    public void setUserDir(String userDir) {
-        this.userDir = userDir;
-    }
-
     public String getHomeDirectory() {
         return homeDirectory;
-    }
-
-    public void setHomeDirectory(String homeDirectory) {
-        this.homeDirectory = homeDirectory;
-
     }
 
     public List<String> getMessage() {

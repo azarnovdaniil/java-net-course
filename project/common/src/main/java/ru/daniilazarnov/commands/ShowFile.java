@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,6 +40,7 @@ public final class ShowFile extends Commands {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        assert paths != null;
         byte[] newContent = paths.toString().getBytes();
         messagePacket.setContent(newContent);
         messagePacket.setMessage(paths);
@@ -51,8 +53,7 @@ public final class ShowFile extends Commands {
         System.out.println("-------------------------------------------------------------");
         System.out.println("На сервер загружены следующие файлы:");
         List<String> answer=messagePacket.getMessage();
-        answer.stream()
-                .map(s -> "- "+s)
+        answer
                 .forEach(System.out::println);
         System.out.println("-------------------------------------------------------------\n");
 
@@ -61,11 +62,15 @@ public final class ShowFile extends Commands {
 
     public static List<String> listFiles(Path path, Path homePath) throws IOException {
         List<String> result;
+        AtomicInteger i = new AtomicInteger();
         try (Stream<Path> walk = Files.walk(path)) {
             result = walk.filter(Files::isRegularFile)
                     .map(path1 -> path1.getName(path1.getNameCount() - 1))
-                    .map(path1 -> path1.toString())
-                    .collect(Collectors.toList());
+                    .map(Path::toString)
+                    .map(s -> (i.getAndIncrement())+" - "+s).
+                            collect(Collectors.toList())
+
+            ;
         }              return result;
     }
     @Override

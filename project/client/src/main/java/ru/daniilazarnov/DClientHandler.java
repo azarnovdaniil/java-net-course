@@ -3,6 +3,7 @@ package ru.daniilazarnov;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ru.daniilazarnov.commands.Commands;
+
 import java.io.InputStream;
 import java.util.Scanner;
 
@@ -24,7 +25,7 @@ public class DClientHandler extends ChannelInboundHandlerAdapter {
         fileName = "MessageAboutCommands.txt";
         is = help.getFileFromResourceAsStream(fileName);
         help.printInputStream(is);
-        user.setHomeFolder(user.getClientName().toLowerCase());
+        user.setHomeFolder(user.getClientName().toLowerCase().replaceAll("(?:[a-zA-Z]:)\\([\\w-]+\\)*\\w([\\w-.])+", ""));
         ctx.channel().writeAndFlush(user.invoke(scanner, mP));
     }
 
@@ -39,7 +40,7 @@ public class DClientHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof MessagePacket) {
             MessagePacket mp = (MessagePacket) msg;
             Commands commands = mp.getCommand();
-            MessagePacket answer = commands.runClientCommands(mp);
+            MessagePacket answer = commands.runClientCommands(mp); //позднее переменная будет использована
         }
         ctx.channel().writeAndFlush(user.invoke(scanner, mP));
 

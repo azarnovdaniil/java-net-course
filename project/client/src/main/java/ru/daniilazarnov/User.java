@@ -23,7 +23,7 @@ public class User {
         commandsMap.put("*DOWNLOAD", new DownloadFile("Ведите имя файла для скачивания:"));
         commandsMap.put("*SHOW", new ShowFile());
         commandsMap.put("*DELETE", new DeleteFile("Ведите имя файла для его удаления на сервере:"));
-        commandsMap.put("*RENAME", new RenameFile("Ведите (через запятую) \"текущее имя файла\" и \"новое имя файла\"  для переименования:"));
+        commandsMap.put("*RENAME", new RenameFile("Для переименования ведите: /номер файла (или его имя) -> новое имя файла, например: /12 -> newText или text -> newtext"));
         commandsMap.put("*EXIT", new Exit());
         return commandsMap;
     }
@@ -54,14 +54,15 @@ public class User {
         }
         userCommand = commandsMap.get(command); // получаем объект команды
         messagePacket.setCommand(userCommand); //добавляем команду в пакет
-        messagePacket=userCommand.runOutClientCommands(scanner, messagePacket); //получаем дополнительную информацию для подготовки пакета
+        messagePacket = userCommand.runOutClientCommands(scanner, messagePacket); //получаем дополнительную информацию для подготовки пакета
         return messagePacket;
     }
+
     void setHomeFolder(String homeFolder) {
         try {
-            Path homePath= Path.of(homeFolder);
-        if (!Files.exists(homePath))
-            Files.createDirectories(homePath);
+            Path homePath = Path.of(homeFolder.replaceAll("(?:[a-zA-Z]:)\\([\\w-]+\\)*\\w([\\w-.])+", ""));
+            if (!Files.exists(homePath))
+                Files.createDirectories(homePath);
             System.out.println("Для загрузки /скачивания файлов используйте папку:");
             System.out.println(homePath.toAbsolutePath());
             System.out.println();
