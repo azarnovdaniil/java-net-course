@@ -21,7 +21,9 @@ public class User {
         commandsMap.put("*DOWNLOAD", new DownloadFile("Ведите имя файла для скачивания:"));
         commandsMap.put("*SHOW", new ShowFile());
         commandsMap.put("*DELETE", new DeleteFile("Для удаления файла введите его имя или /n - где n-номер файла"));
-        commandsMap.put("*RENAME", new RenameFile("Для переименования ведите: \"/номер файла\" или \"имя файла\" \"-> новое имя файла, например: /12 -> newText или text -> newtext"));
+        commandsMap.put("*RENAME", new RenameFile("Для переименования файла введите его имя или /n - где n - номер файла на сервере," +
+                " затем -> новое имя файла, например:" +
+                " /12 -> newText или text -> newText"));
         commandsMap.put("*EXIT", new Exit());
         return commandsMap;
     }

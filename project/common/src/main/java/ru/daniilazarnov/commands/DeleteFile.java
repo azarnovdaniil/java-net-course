@@ -6,8 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -29,24 +28,24 @@ public final class DeleteFile extends Commands {
         List<String> fileServerNames = messagePacket.getMessage();
         Path homePath = Path.of(messagePacket.getUserDir(), messagePacket.getHomeDirectory());
 
-        String oldFileName = fileServerNames.get(0);
+        String serverFileName = fileServerNames.get(0);
         try {
-            oldFileName = oldFileName.startsWith("/") ? getFileName(homePath, oldFileName.substring(1)) : oldFileName;
+            serverFileName = serverFileName.startsWith("/") ? getFileName(homePath, serverFileName.substring(1)) : serverFileName;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println("Поступила команда удалить файл " + oldFileName);
-        Path oldFilePath = Path.of(messagePacket.getUserDir(), messagePacket.getHomeDirectory(), oldFileName);
+        System.out.println("Поступила команда удалить файл " + serverFileName);
+        Path oldFilePath = Path.of(messagePacket.getUserDir(), messagePacket.getHomeDirectory(), serverFileName);
 
         String answerHeadLines = "-------------------------------------------------------------\n";
         String subjectLines = "";
         try {
             if (Files.exists(oldFilePath)) { //если путь уже существует, то ищем несуществующий путь для сохранения в него существующего файла
                 Files.delete(oldFilePath);
-                subjectLines = "На сервере удален файл:\n" + oldFileName;
+                subjectLines = "На сервере удален файл:\n" + serverFileName;
             } else {
-                subjectLines = "При удалении файла возникла ошибка, проверьте корректность имени файла: " + oldFileName;
+                subjectLines = "При удалении файла возникла ошибка, проверьте корректность имени файла: " + serverFileName;
 
             }
         } catch (IOException | InvalidPathException e) {
@@ -86,7 +85,7 @@ public final class DeleteFile extends Commands {
         if (this.messageForInput != null) {
             System.out.println(this.messageForInput);
             String fileNames = scanner.nextLine().trim().replaceAll(" ", "");
-            List<String> fileServerNames = Arrays.asList(fileNames.split("->", 0));
+            List<String> fileServerNames = Collections.singletonList(fileNames);
             messagePacket.setMessage(fileServerNames);
         }
         return messagePacket;

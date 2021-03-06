@@ -21,14 +21,10 @@ public final class RenameFile extends Commands {
     public MessagePacket runCommands(MessagePacket messagePacket) {
 
         List<String> fileServerNames = messagePacket.getMessage();
-        Path homePath = Path.of(messagePacket.getUserDir(), messagePacket.getHomeDirectory());
 
         String oldFileName = fileServerNames.get(0);
-        try {
-            oldFileName = oldFileName.startsWith("/") ? getFileName(homePath, oldFileName.substring(1)) : oldFileName;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        oldFileName = oldFileName.startsWith("/") ? oldFileName.substring(1) : oldFileName;
         String newFileName = fileServerNames.get(1);
 
         System.out.println("Поступила команда переименовать файл \"" + oldFileName + "\" на \"" + newFileName + "\"");
@@ -37,16 +33,18 @@ public final class RenameFile extends Commands {
         Path newFilePath = Path.of(messagePacket.getUserDir(), messagePacket.getHomeDirectory(), newFileName);
 
 
-        String answerHeadLines = "-------------------------------------------------------------\n";
-        String subjectLines = "";
+        String answerHeaderLines = "-------------------------------------------------------------\n";
+        String answerSubjectLines = "";
         try {
             if (Files.exists(oldFilePath)) { //если путь уже существует, то ищем несуществующий путь для сохранения в него существующего файла
 
                 Files.copy(oldFilePath, newFilePath, StandardCopyOption.REPLACE_EXISTING);
                 Files.delete(oldFilePath);
-                subjectLines = "На сервере переименованы следующие файлы:\n" + oldFileName + " -> " + newFileName;
+                answerSubjectLines = "На сервере переименованы следующие файлы:\n" + oldFileName + " -> " + newFileName;
             } else {
-                subjectLines = "При переименовании возникла ошибка, проверьте корректность имен файлов: " + oldFileName + " -> " + newFileName;
+                answerSubjectLines = "При переименовании возникла ошибка, " +
+                        "проверьте корректность имени файла повторите ввод команды." +
+                        "Вы ввели: \" " + oldFileName + " -> " + newFileName + "\"";
 
             }
         } catch (IOException | InvalidPathException e) {
@@ -54,23 +52,9 @@ public final class RenameFile extends Commands {
 
         }
         String answerFooterLines = "\n-------------------------------------------------------------\n";
-        List<String> answer = List.of(answerHeadLines, subjectLines, answerFooterLines);
+        List<String> answer = List.of(answerHeaderLines, answerSubjectLines, answerFooterLines);
         messagePacket.setMessage(answer);
         return messagePacket;
-    }
-
-    private String getFileName(Path homePath, String substring) throws IOException {
-
-        List<String> listFiles;
-        try (Stream<Path> walk = Files.walk(homePath)) {
-            listFiles = walk.filter(Files::isRegularFile)
-                    .map(path1 -> path1.getName(path1.getNameCount() - 1))
-                    .map(Path::toString)
-                    .collect(Collectors.toList());
-        }
-        return listFiles.get(Integer.parseInt(substring));
-
-
     }
 
     public MessagePacket runClientCommands(MessagePacket messagePacket) {
@@ -83,13 +67,26 @@ public final class RenameFile extends Commands {
 
     @Override
     public MessagePacket runOutClientCommands(Scanner scanner, MessagePacket messagePacket) {
+        List<String> fileServerNames;
         if (this.messageForInput != null) {
             System.out.println(this.messageForInput);
-            String fileNames = scanner.nextLine().trim().replaceAll(" ", "");
-            List<String> fileServerNames = Arrays.asList(fileNames.split("->", 0));
+            do {
+                fileServerNames = getNames(scanner);
+            }
+            while (fileServerNames.get(0).equals("") || fileServerNames.size() < 2);
             messagePacket.setMessage(fileServerNames);
         }
         return messagePacket;
+    }
+
+    private List<String> getNames(Scanner scanner) {
+        List<String> fileServerNames;
+        String fileNames;
+        fileNames = scanner.nextLine().trim().replaceAll(" ", "");
+        fileServerNames = Arrays.asList(fileNames.split("->", 0));
+        if (fileServerNames.get(0).equals("") || fileServerNames.size() == 1)
+            System.err.println("Ошибка, повторите ввод имени!");
+        return fileServerNames;
     }
 
 }
