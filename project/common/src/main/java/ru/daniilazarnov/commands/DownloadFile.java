@@ -42,7 +42,6 @@ public final class DownloadFile extends Commands {
                 messagePacket.setContent(Files.readAllBytes(filePath));
                 outMessages = "С сервера скачан следующий файл: ";
                 System.out.println(outMessages);
-                System.out.println(Arrays.toString(messagePacket.getContent()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -67,7 +66,6 @@ public final class DownloadFile extends Commands {
         homeDirectory = messagePacket.getHomeDirectory();
         homePath = Paths.get(homeDirectory);
         fileName = messagePacket.getFileName().replaceAll("(?:[a-zA-Z]:)\\([\\w-]+\\)*\\w([\\w-.])+", "");
-        ;
         filePath = Paths.get(homeDirectory, fileName);
         System.out.println(filePath);
         System.out.println(homePath);
