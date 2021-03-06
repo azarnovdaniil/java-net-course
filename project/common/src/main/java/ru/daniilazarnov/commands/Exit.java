@@ -16,6 +16,6 @@ public class Exit extends Commands {
     }
     @Override
     public MessagePacket runOutClientCommands(Scanner scanner, MessagePacket messagePacket) {
-        return null;
+        return messagePacket;
     }
 }

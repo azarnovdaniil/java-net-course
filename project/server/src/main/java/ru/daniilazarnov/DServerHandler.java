@@ -11,7 +11,7 @@ import ru.daniilazarnov.commands.Exit;
  */
 
 public class DServerHandler extends ChannelInboundHandlerAdapter {
-    private Commands commands;
+
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -25,7 +25,7 @@ public class DServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-
+        Commands commands;
         if (msg instanceof MessagePacket) {
             MessagePacket mp = (MessagePacket) msg; //привели к нашему объекту
             commands = mp.getCommand(); //создали объект команды
