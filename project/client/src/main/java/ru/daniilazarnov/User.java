@@ -25,6 +25,8 @@ public class User {
                 " затем -> новое имя файла, например:" +
                 " /12 -> newText или text -> newText"));
         commandsMap.put("*EXIT", new Exit());
+        commandsMap.put("*HELLO", new ShowHello());
+        commandsMap.put("*HELP", new ShowHelp());
         return commandsMap;
     }
 

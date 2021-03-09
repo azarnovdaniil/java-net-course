@@ -27,6 +27,18 @@ public class MessagePacket implements Serializable {
     private int segment;
     private int allSegments;
 
+    public boolean isSenDToServer() {
+        return !isSenDToServer;
+    }
+
+    public void setSenDToServer(boolean senDToServer) {
+        isSenDToServer = senDToServer;
+    }
+
+    private boolean isSenDToServer;
+
+
+
     public String getUserDir() {
         return userDir;
     }
@@ -93,7 +105,8 @@ public class MessagePacket implements Serializable {
         this.allSegments = 1;
     }
 
-    public MessagePacket(String name, String clientKey) {
+    public MessagePacket(String name, String clientKey, boolean isSenDToServer) {
+        this.isSenDToServer = isSenDToServer;
         new MessagePacket();
         this.homeDirectory = name.toLowerCase().trim();
         this.userDir = (name + clientKey.length() * Math.PI + clientKey).replace('.', '-');

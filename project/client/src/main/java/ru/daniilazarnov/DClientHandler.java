@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class DClientHandler extends ChannelInboundHandlerAdapter {
     User user;
-    MessagePacket mP;
+    MessagePacket messagePacket;
     Scanner scanner = new Scanner(System.in);
 
     @Override
@@ -20,13 +20,16 @@ public class DClientHandler extends ChannelInboundHandlerAdapter {
         InputStream is = hello.getFileFromResourceAsStream(fileName);
         hello.printInputStream(is);
         user = new User(hello.getUserName(), hello.getSecretKey());
-        mP = new MessagePacket(user.getClientName(), user.getClientKEY());
+        messagePacket = new MessagePacket(user.getClientName(), user.getClientKEY(), true);
         PrintMessages help = new PrintMessages();
         fileName = "MessageAboutCommands.txt";
         is = help.getFileFromResourceAsStream(fileName);
         help.printInputStream(is);
         user.setHomeFolder(user.getClientName().toLowerCase().replaceAll("(?:[a-zA-Z]:)\\([\\w-]+\\)*\\w([\\w-.])+", ""));
-        ctx.channel().writeAndFlush(user.invoke(scanner, mP));
+        do {
+            messagePacket = user.invoke(scanner, messagePacket);
+        } while (messagePacket.isSenDToServer());  // проверка, необходима ли отправка команды на сервер
+        ctx.channel().writeAndFlush(messagePacket);
     }
 
     @Override
@@ -42,8 +45,11 @@ public class DClientHandler extends ChannelInboundHandlerAdapter {
             Commands commands = mp.getCommand();
             MessagePacket answer = commands.runClientCommands(mp); //позднее переменная будет использована
         }
-        ctx.channel().writeAndFlush(user.invoke(scanner, mP));
-
+        MessagePacket messagePacket;
+        do {
+            messagePacket = user.invoke(scanner, this.messagePacket);
+        } while (messagePacket.isSenDToServer());  // проверка, необходима ли отправка команды на сервер
+        ctx.channel().writeAndFlush(messagePacket);
     }
 
     @Override

@@ -15,11 +15,11 @@ public final class ShowFile extends Commands {
     @Override
     public MessagePacket runCommands(MessagePacket messagePacket) {
 
-        String userDir=messagePacket.getUserDir();
+        String userDir = messagePacket.getUserDir();
         Path userPath = Paths.get(userDir);
-        String homeDirectory=messagePacket.getHomeDirectory();
-        Path homePath=Paths.get(homeDirectory);
-        Path homePath1=userPath.resolve(homePath);
+        String homeDirectory = messagePacket.getHomeDirectory();
+        Path homePath = Paths.get(homeDirectory);
+        Path homePath1 = userPath.resolve(homePath);
         if (!Files.exists(userPath)) try {
             Files.createDirectories(userPath);
             System.out.println("User directory is created!");
@@ -52,7 +52,7 @@ public final class ShowFile extends Commands {
     public MessagePacket runClientCommands(MessagePacket messagePacket) {
         System.out.println("-------------------------------------------------------------");
         System.out.println("На сервер загружены следующие файлы:");
-        List<String> answer=messagePacket.getMessage();
+        List<String> answer = messagePacket.getMessage();
         answer
                 .forEach(System.out::println);
         System.out.println("-------------------------------------------------------------\n");
@@ -67,12 +67,14 @@ public final class ShowFile extends Commands {
             result = walk.filter(Files::isRegularFile)
                     .map(path1 -> path1.getName(path1.getNameCount() - 1))
                     .map(Path::toString)
-                    .map(s -> (i.getAndIncrement())+" - "+s).
+                    .map(s -> (i.getAndIncrement()) + " - " + s).
                             collect(Collectors.toList())
 
             ;
-        }              return result;
+        }
+        return result;
     }
+
     @Override
     public MessagePacket runOutClientCommands(Scanner scanner, MessagePacket messagePacket) {
         return messagePacket;
