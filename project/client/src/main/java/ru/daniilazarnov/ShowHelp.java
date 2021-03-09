@@ -1,9 +1,6 @@
 package ru.daniilazarnov;
 
-import ru.daniilazarnov.MessagePacket;
 import ru.daniilazarnov.commands.Commands;
-
-import java.io.InputStream;
 import java.util.Scanner;
 
 public class ShowHelp extends Commands {
@@ -19,11 +16,10 @@ public class ShowHelp extends Commands {
 
     @Override
     public MessagePacket runOutClientCommands(Scanner scanner, MessagePacket messagePacket) {
-        PrintMessages hello = new PrintMessages();
-        String fileName = "Help.txt";
-        InputStream is = hello.getFileFromResourceAsStream(fileName);
-        hello.printInputStream(is);
+        PrintMessages print = new PrintMessages();
+        print.printFile("Help.txt");
         messagePacket.setSenDToServer(false);
         return messagePacket;
     }
+
 }

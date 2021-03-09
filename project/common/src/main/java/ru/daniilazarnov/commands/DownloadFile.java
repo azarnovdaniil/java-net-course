@@ -4,7 +4,6 @@ import ru.daniilazarnov.MessagePacket;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -54,14 +53,14 @@ public final class DownloadFile extends Commands {
 
     @Override
     public MessagePacket runClientCommands(MessagePacket messagePacket) {
-        Path newFilePath = null;
-        Path oldFilePath = null;
+        Path newFilePath;
+        Path oldFilePath;
         String homeDirectory;
         Path homePath;
         String fileName;
         Path filePath;
-        String outMessages = ""; //сообщение, возвращаемое пользователю по итогам операции скачивания
-        String outMessagesError = ""; //сообщение, возвращаемое пользователю при ошибке скачинвания
+        String outMessages; //сообщение, возвращаемое пользователю по итогам операции скачивания
+        String outMessagesError; //сообщение, возвращаемое пользователю при ошибке скачинвания
 
         homeDirectory = messagePacket.getHomeDirectory();
         homePath = Paths.get(homeDirectory);
@@ -118,6 +117,7 @@ public final class DownloadFile extends Commands {
             System.out.println(this.messageForInput);
             String fileName = scanner.nextLine().trim();
             messagePacket.setFileName(fileName);
+            messagePacket.setSenDToServer(true);
         }
         return messagePacket;
     }

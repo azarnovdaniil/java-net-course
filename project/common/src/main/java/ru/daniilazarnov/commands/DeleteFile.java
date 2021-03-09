@@ -87,6 +87,7 @@ public final class DeleteFile extends Commands {
             String fileNames = scanner.nextLine().trim().replaceAll(" ", "");
             List<String> fileServerNames = Collections.singletonList(fileNames);
             messagePacket.setMessage(fileServerNames);
+            messagePacket.setSenDToServer(true);
         }
         return messagePacket;
     }

@@ -77,6 +77,7 @@ public final class ShowFile extends Commands {
 
     @Override
     public MessagePacket runOutClientCommands(Scanner scanner, MessagePacket messagePacket) {
+        messagePacket.setSenDToServer(true);
         return messagePacket;
     }
 

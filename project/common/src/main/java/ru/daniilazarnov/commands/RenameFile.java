@@ -21,10 +21,14 @@ public final class RenameFile extends Commands {
     public MessagePacket runCommands(MessagePacket messagePacket) {
 
         List<String> fileServerNames = messagePacket.getMessage();
-
+        Path homePath = Path.of(messagePacket.getUserDir(), messagePacket.getHomeDirectory());
         String oldFileName = fileServerNames.get(0);
 
-        oldFileName = oldFileName.startsWith("/") ? oldFileName.substring(1) : oldFileName;
+        try {
+            oldFileName = oldFileName.startsWith("/") ? getFileName(homePath, oldFileName.substring(1)) : oldFileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String newFileName = fileServerNames.get(1);
 
         System.out.println("Поступила команда переименовать файл \"" + oldFileName + "\" на \"" + newFileName + "\"");
@@ -57,6 +61,21 @@ public final class RenameFile extends Commands {
         return messagePacket;
     }
 
+    private String getFileName(Path homePath, String substring) throws IOException {
+
+        List<String> listFiles;
+        try (Stream<Path> walk = Files.walk(homePath)) {
+            listFiles = walk.filter(Files::isRegularFile)
+                    .map(path1 -> path1.getName(path1.getNameCount() - 1))
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+        }
+        return listFiles.get(Integer.parseInt(substring));
+
+
+    }
+
+    @Override
     public MessagePacket runClientCommands(MessagePacket messagePacket) {
         List<String> answer = messagePacket.getMessage();
         answer
@@ -76,6 +95,7 @@ public final class RenameFile extends Commands {
             while (fileServerNames.get(0).equals("") || fileServerNames.size() < 2);
             messagePacket.setMessage(fileServerNames);
         }
+        messagePacket.setSenDToServer(true);
         return messagePacket;
     }
 

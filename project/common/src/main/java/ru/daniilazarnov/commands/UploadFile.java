@@ -96,6 +96,7 @@ public final class UploadFile extends Commands {
                 e.printStackTrace();
             }
         }
+        messagePacket.setSenDToServer(true);
         return messagePacket;
     }
 }
