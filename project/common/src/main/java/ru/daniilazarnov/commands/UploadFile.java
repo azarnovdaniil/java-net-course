@@ -4,6 +4,7 @@ import ru.daniilazarnov.MessagePacket;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Scanner;
 
@@ -91,7 +92,15 @@ public final class UploadFile extends Commands {
             messagePacket.setFileName(fileName);
             System.out.println("На сервер загружается файл: " + path);
             try {
-                messagePacket.setContent(Files.readAllBytes(path));
+                BasicFileAttributes basicFileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
+                long sizeFile = basicFileAttributes.size();
+                if (sizeFile > 1024) {
+                    System.out.println(sizeFile);
+                } else {
+                    System.out.println(sizeFile);
+                    byte[] tempArray = Files.readAllBytes(path);messagePacket.setContent(Files.readAllBytes(path));
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
