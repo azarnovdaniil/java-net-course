@@ -147,12 +147,7 @@ class MainTest {
     }
 
     @Test
-    void testWrite() throws IOException {
-        Path destPath = Path.of("dir/channel_example_3.txt");
-
-        RandomAccessFile dest = new RandomAccessFile(destPath.toFile(), "rw");
-        FileChannel destChannel = dest.getChannel();
-
+    void testWrite() {
         String newData = "New String to write to file..." + System.currentTimeMillis();
 
         ByteBuffer buf = ByteBuffer.allocate(12);
@@ -166,7 +161,6 @@ class MainTest {
             } else {
                 System.out.println("Before flip: position: " + buf.position() + " limit: " + buf.limit());
                 buf.flip();
-                //[12][12][312][42][34][34][55][44]
                 System.out.println("After flip: position: " + buf.position() + " limit: " + buf.limit());
 
                 System.out.println("Iteration:" + iter);
@@ -195,8 +189,6 @@ class MainTest {
         buf.clear();
         System.out.println("After clear: position: " + buf.position() + " limit: " + buf.limit());
         System.out.println();
-
-        destChannel.close();
     }
 
     @Test
