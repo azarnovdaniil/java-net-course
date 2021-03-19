@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.Buffer;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -54,6 +56,7 @@ class MainTest {
 
         System.out.println("get: " + buffer.get());
         System.out.println("get: " + buffer.get());
+        System.out.println("position: " + buffer.position());
         System.out.println();
 
         buffer.rewind();
@@ -61,6 +64,8 @@ class MainTest {
         System.out.println("limit: " + buffer.limit());
         System.out.println("position: " + buffer.position());
         System.out.println(buffer);
+        System.out.println("get: " + buffer.get());
+        System.out.println("get: " + buffer.get());
     }
 
     @Test
@@ -123,7 +128,11 @@ class MainTest {
         FileChannel srcChannel = src.getChannel();
 
         ByteBuffer buf = ByteBuffer.allocate(48);
+        System.out.println("position: " + buf.position());
         int bytesRead = srcChannel.read(buf);
+        System.out.println("position: " + buf.position());
+        System.out.println("capacity: " + buf.capacity());
+        System.out.println("limit: " + buf.limit());
         while (bytesRead != -1) {
             buf.flip();
 
@@ -132,6 +141,7 @@ class MainTest {
             }
             buf.clear();
             bytesRead = srcChannel.read(buf);
+            System.out.println("position: " + buf.position());
         }
         srcChannel.close();
     }
@@ -145,16 +155,95 @@ class MainTest {
 
         String newData = "New String to write to file..." + System.currentTimeMillis();
 
-        ByteBuffer buf = ByteBuffer.allocate(48);
-        buf.clear();
-        buf.put(newData.getBytes());
+        ByteBuffer buf = ByteBuffer.allocate(12);
+        int iter = 0;
 
-        buf.flip();
+        byte[] bytes = newData.getBytes();
+        for (int i = 0; i < bytes.length;) {
+            if (buf.position() < buf.capacity()) {
+                buf.put(bytes[i]);
+                i++;
+            } else {
+                System.out.println("Before flip: position: " + buf.position() + " limit: " + buf.limit());
+                buf.flip();
+                //[12][12][312][42][34][34][55][44]
+                System.out.println("After flip: position: " + buf.position() + " limit: " + buf.limit());
 
-        while (buf.hasRemaining()) {
-            destChannel.write(buf);
+                System.out.println("Iteration:" + iter);
+                iter++;
+                while (buf.hasRemaining()) {
+                    System.out.print((char) buf.get());
+                }
+                System.out.println();
+                System.out.println("After read: position: " + buf.position() + " limit: " + buf.limit());
+                buf.clear();
+                System.out.println("After clear: position: " + buf.position() + " limit: " + buf.limit());
+                System.out.println();
+            }
         }
+        System.out.println("Before flip: position: " + buf.position() + " limit: " + buf.limit());
+        buf.flip();
+        //[12][12][312][42][34][34][55][44]
+        System.out.println("After flip: position: " + buf.position() + " limit: " + buf.limit());
+
+        System.out.println("Iteration:" + iter);
+        while (buf.hasRemaining()) {
+            System.out.print((char) buf.get());
+        }
+        System.out.println();
+        System.out.println("After read: position: " + buf.position() + " limit: " + buf.limit());
+        buf.clear();
+        System.out.println("After clear: position: " + buf.position() + " limit: " + buf.limit());
+        System.out.println();
+
         destChannel.close();
+    }
+
+    @Test
+    void testBuffer7() {
+
+        //int - 32bit
+        //byte - 8bit
+        //long - 64bit
+
+        byte[] arr = {10, 20, 30, 40, 50};
+        ByteBuffer buffer = ByteBuffer.wrap(arr);
+
+        System.out.println(buffer.getInt());
+        System.out.println("capacity: " + buffer.capacity());
+        System.out.println("limit: " + buffer.limit());
+        System.out.println("position: " + buffer.position());
+    }
+
+    @Test
+    void testBuffer8() {
+        byte[] arr = {10, 20, 30, 40, 50};
+        ByteBuffer buffer = ByteBuffer.wrap(arr);
+
+        assertThrows(BufferUnderflowException.class, buffer::getLong);
+    }
+
+    @Test
+    void testBufferProtocol() {
+
+        // message length in bytes - int ; information - ???
+        byte[] arr = {0, 0, 0, 10, 65, 65, 65, 65, 65, 65, 65, 65, 65, 20, 30, 40, 50, 10, 10, 20, 30, 40, 50, 10};
+        //System.out.println(arr.length);
+        ByteBuffer buffer = ByteBuffer.wrap(arr);
+
+        System.out.println();
+
+        int messageLength = buffer.getInt();
+
+        for (int i = 0; i < messageLength; i++) {
+            System.out.print((char) buffer.get());
+        }
+
+        System.out.println();
+
+        System.out.println("capacity: " + buffer.capacity());
+        System.out.println("limit: " + buffer.limit());
+        System.out.println("position: " + buffer.position());
     }
 
 }
