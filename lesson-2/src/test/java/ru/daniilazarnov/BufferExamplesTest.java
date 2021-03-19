@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MainTest {
+class BufferExamplesTest {
 
     @Test
     void testBuffer0() {
