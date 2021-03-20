@@ -25,13 +25,13 @@
 
 ### Ответы:
 
-1.
-2.
-3.
-4.
-5.
-6.
-7.
+1. с помощью пакета java.io, java.nio или фреймворк Netty (не смотрел еще)
+2. FileInputStream и FileOutputStream (Netty, не смотрел еще)
+3. Через буфер. размер буфера передавать в самом начале (возможно в Netty как то еще)
+4. Если io: DataOutputStream,DataInputStream (или Netty что-то реализует, не смотрел еще)
+5. Структуру каталогов, файлов хранить в файле, определенного формата. Передавать его при подключении..ну там еще если получится
+   допилить авторизацию и передавать только строку из файла, например
+6. Netty
 
 ---
 
@@ -39,4 +39,4 @@
 
 1. [Howe make a fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo)
 2. [How make a pull request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request)
-3. [What is Docker?] todo: add link about docker
+3. [What is Docker?] todo: add link about doc
