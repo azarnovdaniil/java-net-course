@@ -7,52 +7,48 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringEncoder;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class Client {
     private SocketChannel channel;
-    String host = "localhost";
-    int port = 9999;
+    private static final String HOST = "localhost";
+    private static final int PORT = 9999;
     EventLoopGroup workerGroup = new NioEventLoopGroup();
 
     public Client() {
-        new Thread(()->
+        new Thread(() ->
         {
             try {
-                Bootstrap b = new Bootstrap(); // (1)
-                b.group(workerGroup); // (2)
-                b.channel(NioSocketChannel.class); // (3)
-//            b.option(ChannelOption.SO_KEEPALIVE, true); // (4)
+                Bootstrap b = new Bootstrap();
+                b.group(workerGroup);
+                b.channel(NioSocketChannel.class);
                 b.handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-//                        ch.pipeline().addLast(new ClientInputHandler());
                         channel = ch;
                         ch.pipeline().addLast(new ClientInputHandler(), new ClientOutputHandler());
                     }
                 });
 
-                ChannelFuture f = b.connect(host, port).sync(); // (5)
+                ChannelFuture f = b.connect(HOST, PORT).sync();
 
                 f.channel().closeFuture().sync();
-            }
-            catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
-            }finally
-            {
+            } finally {
                 workerGroup.shutdownGracefully();
             }
         }).start();
-
-    listenConsole();
+        listenConsole();
     }
-    public void sendMessage(String str){
+
+    public void sendMessage(String str) {
         channel.writeAndFlush(str);
     }
-    public void listenConsole(){
+
+    public void listenConsole() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
 
             while (true) {
@@ -63,7 +59,7 @@ public class Client {
                     System.out.println(line);
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

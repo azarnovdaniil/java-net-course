@@ -10,6 +10,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
 
 public class ServerApp {
+    private static final int PORT = 9999;
     public static void main(String[] args) {
         EventLoopGroup clients = new NioEventLoopGroup();
         try {
@@ -20,12 +21,10 @@ public class ServerApp {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline().addLast(new InputHandler()
-//                                new StringEncoder(),
-//                                new OutputHandler()
                         );
                         }
                     });
-            ChannelFuture cf = bootstrap.bind(9999).sync();
+            ChannelFuture cf = bootstrap.bind(PORT).sync();
             cf.channel().closeFuture().sync();//блокирующая операция - ожидание остановки сервера
         } catch (Exception e) {
             e.printStackTrace();
