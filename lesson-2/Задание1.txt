@@ -1,0 +1,5 @@
+1.Знакомился с тестами уроков 1 и 2
+2. Изменил код чата:
+- добавлен метод "saveFile" в файле "src/main/java/chat/helpers/FileHelper.java"
+- изменен метод "receiveMessage" в "src/main/java/chat/server/ClientHandler.java"
+- добавлен тест "src/test/java/chat/helpers/FileHelperTest.java"
