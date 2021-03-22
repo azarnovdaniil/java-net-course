@@ -9,6 +9,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.LineEncoder;
+import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
@@ -42,6 +43,8 @@ public class RepoClient {
                             protected void initChannel(SocketChannel socketChannel) throws Exception {
                                 curChannel = socketChannel;
                                 System.out.println("Connected to server...");
+                                //socketChannel.pipeline().addLast(new LineBasedFrameDecoder(1300));
+                                //socketChannel.pipeline().addLast(new StringDecoder());
                                 socketChannel.pipeline().addLast(new RepoDecoder());
                                 socketChannel.pipeline().addLast(new RepoEncoder(contextData));
                                 socketChannel.pipeline().addLast(new OutcomingFilehandler());

@@ -11,6 +11,6 @@ public class OutcomingFilehandler extends ChannelOutboundHandlerAdapter {
         System.out.println("hurra");
         System.out.println(msg.toString());
         ctx.writeAndFlush(msg);
-        Thread.sleep(200);
+        //Thread.sleep(200);
     }
 }

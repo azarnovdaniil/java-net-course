@@ -14,11 +14,13 @@ public class Client {
         RepoClient client = new RepoClient(host, port);
         client.start();
         Thread.sleep(500);
-        client.deleteFile("test.txt");
+        client.deleteFile("cat.jpg");
 
         Thread.sleep(500);
-        Path test = Paths.get("client\\src\\main\\java\\ru\\daniilazarnov\\test.txt");
+        Path test = Paths.get("client\\src\\main\\java\\ru\\daniilazarnov\\cat.jpg");
         client.sendFile(test);
+
+
 
     }
 }

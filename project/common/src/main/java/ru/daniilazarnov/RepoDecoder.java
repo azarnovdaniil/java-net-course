@@ -5,18 +5,25 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import static io.netty.buffer.Unpooled.wrappedBuffer;
+
 public class RepoDecoder extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("Message recieved");
+        //byte[] input = ((String)msg).getBytes();
+        //System.out.println(Arrays.toString(input));
+        //ByteBuf k = wrappedBuffer(input);
         ByteBuf k = (ByteBuf)msg;
         int command = k.readInt();
+        System.out.println("Клманда " +command);
         int length = k.readInt();
         byte[] nameBytes = new byte[length];
         for (int i = 0; i < length; i++) {

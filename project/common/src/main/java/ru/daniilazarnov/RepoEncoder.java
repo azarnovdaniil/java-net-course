@@ -5,6 +5,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+
 import static io.netty.buffer.Unpooled.wrappedBuffer;
 
 public class RepoEncoder extends ChannelOutboundHandlerAdapter {
@@ -32,7 +34,11 @@ public class RepoEncoder extends ChannelOutboundHandlerAdapter {
         if (data.getCommand()==2){
            mess = (byte[])msg;
         }
-        ByteBuf wrappedBuffer = wrappedBuffer(command,length,name,mess);
+        byte[] del= new byte[data.getDelimiter().readableBytes()];
+        System.out.println("sgsdgsg"+data.getDelimiter().readableBytes());
+        data.getDelimiter().readBytes(del);
+        data.getDelimiter().resetReaderIndex();
+        ByteBuf wrappedBuffer = wrappedBuffer(command,length,name,mess,del);
         System.out.println(wrappedBuffer.readableBytes());
         ctx.writeAndFlush(wrappedBuffer);
     }
