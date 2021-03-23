@@ -16,6 +16,12 @@ public class ProtoHandler extends ChannelInboundHandlerAdapter {
     private long receivedFileLength;
     private BufferedOutputStream out;
 
+
+    // byte - команда
+    // filename_size: int - длина имени файла
+    // byte[filename_size] - имя файла
+    // file_size: long - размер файла
+    // byte[file_size] - контент файла
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = ((ByteBuf) msg);
