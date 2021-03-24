@@ -35,11 +35,11 @@ public class RepoDecoder extends ChannelInboundHandlerAdapter {
         k.readBytes(bytes);
         k.release();
 
-        if (command==1) {
+        if (command==CommandList.upload.ordinal()) {
             System.out.println("Загрузка файла");
             FileContainer container = new FileContainer(bytes,name);
             ctx.fireChannelRead(container);
-        }else if(command==2){
+        }else if(command==CommandList.delete.ordinal()){
             System.out.println("Удаление файла");
             Path test = Paths.get("server\\src\\main\\java\\ru\\daniilazarnov\\" + name);
             if (Files.exists(test)){

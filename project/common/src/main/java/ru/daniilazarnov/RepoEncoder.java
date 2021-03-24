@@ -22,16 +22,16 @@ public class RepoEncoder extends ChannelOutboundHandlerAdapter {
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         byte[] command = ByteBuffer.allocate(4).putInt(data.getCommand()).array();
-        byte[] name = data.getFileName().getBytes();
+        byte[] name = data.getFilePath().getBytes();
         byte[] length = ByteBuffer.allocate(4).putInt(name.length).array();
         System.out.println("name length "+name.length);
         byte[] mess=null;
-        if (data.getCommand()==1) {
+        if (data.getCommand()==CommandList.upload.ordinal()) {
            mess = new byte[((ByteBuf) msg).readableBytes()];
             ((ByteBuf) msg).readBytes(mess);
         }
 
-        if (data.getCommand()==2){
+        if (data.getCommand()==CommandList.delete.ordinal()){
            mess = (byte[])msg;
         }
         byte[] del= new byte[data.getDelimiter().readableBytes()];

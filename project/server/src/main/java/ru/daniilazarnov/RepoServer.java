@@ -47,10 +47,10 @@ public class RepoServer {
                     userList.add(new UserProfile("UserUnknown",socketChannel));
                     System.out.println("New connection applied.");
 
-                    socketChannel.pipeline().addLast(new DelimiterBasedFrameDecoder(1300,contextData.getDelimiter()));
-                    //socketChannel.pipeline().addLast(new StringDecoder());
+                    socketChannel.pipeline().addLast(new DelimiterBasedFrameDecoder(2000,contextData.getDelimiter()));
                     socketChannel.pipeline().addLast(new RepoDecoder());
                     socketChannel.pipeline().addLast(new RepoEncoder(contextData));
+                    socketChannel.pipeline().addLast(new OutcomingFilehandler());
                     socketChannel.pipeline().addLast(new ChunkedWriteHandler());
                     socketChannel.pipeline().addLast(new IncomingFileHandler());
 
