@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 
-class Main{
+class Main {
     public static void main(String[] args) throws IOException {
         new Thread(new Server()).start();
     }
@@ -45,10 +45,10 @@ public class Server implements Runnable {
                 while (iterKey.hasNext()) {
                     key = iterKey.next();
                     iterKey.remove();
-                    if(key.isAcceptable()) {
+                    if (key.isAcceptable()) {
                         handleAccept(key);
                     }
-                    if(key.isReadable()) {
+                    if (key.isReadable()) {
                         handleRead(key);
                     }
                 }
@@ -59,9 +59,7 @@ public class Server implements Runnable {
     }
 
     private void handleAccept(SelectionKey key) throws IOException {
-        //Не совсем понятно на счёт метода attach(), если его использовать с ключом в этом методе,
-        //то он привяжется именно к этому ключу OP_ACCEPT?
-        SocketChannel sc = ((ServerSocketChannel)key.channel()).accept();
+        SocketChannel sc = ((ServerSocketChannel) key.channel()).accept();
         sc.configureBlocking(false);
         Path beginDir = Paths.get("project/server/src/main/resources");
         userInfo info = new userInfo("user1");
@@ -75,14 +73,12 @@ public class Server implements Runnable {
 
     private void handleRead(SelectionKey key) throws IOException {
         SocketChannel sc = (SocketChannel) key.channel();
-//        FileProtocol.sendToServer(key);
         FileProtocol.trueReceiver(key);
         StringBuilder sb = new StringBuilder();
 
         buffer.clear();
         while (sc.read(buffer) > 0) {
             buffer.flip();
-
         }
     }
 }

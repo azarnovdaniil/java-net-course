@@ -2,14 +2,11 @@ package ru.daniilazarnov;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,8 +52,6 @@ public class FileProtocol {
             serviceBuffer.compact();
         }
         String fileName = sb.toString();
-
-//        serviceBuffer.compact();
         socketChannel.read(serviceBuffer);
         serviceBuffer.flip();
 
@@ -76,12 +71,6 @@ public class FileProtocol {
         }
         Path pathFile = Paths.get(((userInfo) key.attachment()).getCurrentPath() + File.separator + fileName);
         Files.write(pathFile, byteBuffer.array());
-
-//        Path path = (Path) key.attachment();
-//        socketChannel.write(ByteBuffer.wrap(path.toString().getBytes(StandardCharsets.UTF_8)));
-
-
-
     }
 
 
