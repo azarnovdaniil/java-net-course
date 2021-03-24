@@ -62,7 +62,7 @@ public class Server implements Runnable {
         SocketChannel sc = ((ServerSocketChannel) key.channel()).accept();
         sc.configureBlocking(false);
         Path beginDir = Paths.get("project/server/src/main/resources");
-        userInfo info = new userInfo("user1");
+        UserInfo info = new UserInfo("user1");
         info.setCurrentPath(beginDir);//временное решение для тестирования
         sc.register(this.selector, SelectionKey.OP_READ, info);
 

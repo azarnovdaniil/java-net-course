@@ -3,7 +3,7 @@ package ru.daniilazarnov;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class userInfo {
+public class UserInfo {
     private String name;
     private Path currentPath;
 
@@ -21,7 +21,7 @@ public class userInfo {
         return Paths.get(name);
     }
 
-    public userInfo(String name) {
+    public UserInfo(String name) {
         this.name = name;
     }
 

@@ -69,7 +69,7 @@ public class FileProtocol {
             socketChannel.read(serviceBuffer);
             serviceBuffer.flip();
         }
-        Path pathFile = Paths.get(((userInfo) key.attachment()).getCurrentPath() + File.separator + fileName);
+        Path pathFile = Paths.get(((UserInfo) key.attachment()).getCurrentPath() + File.separator + fileName);
         Files.write(pathFile, byteBuffer.array());
     }
 
@@ -172,7 +172,7 @@ public class FileProtocol {
                 lengthDir--;
             }
         }
-        Path beginUserDir = rootDir.resolve(((userInfo) key.attachment()).getUserRoot());
+        Path beginUserDir = rootDir.resolve(((UserInfo) key.attachment()).getUserRoot());
         Path targetPath = Paths.get(sb.toString());
 
         if (!targetPath.getRoot().toString().equals(beginUserDir.getFileName().toString())) {
