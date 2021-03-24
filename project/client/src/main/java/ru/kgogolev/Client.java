@@ -10,9 +10,13 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.concurrent.Callable;
 
-public class Client {
+public class Client  {
     private SocketChannel channel;
+
+
+
     private static final String HOST = "localhost";
     private static final int PORT = 9999;
     EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -41,27 +45,14 @@ public class Client {
                 workerGroup.shutdownGracefully();
             }
         }).start();
-        listenConsole();
     }
 
-    public void sendMessage(String str) {
-        channel.writeAndFlush(str);
+    public void sendMessage(byte[] bytes) {
+        channel.writeAndFlush(bytes);
     }
 
-    public void listenConsole() {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
 
-            while (true) {
-                String line = br.readLine();
-                if (line.startsWith("download")) {
-                    sendMessage(line);
-                } else {
-                    System.out.println(line);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
+
 }
 
