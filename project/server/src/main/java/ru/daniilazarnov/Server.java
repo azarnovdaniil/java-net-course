@@ -64,7 +64,9 @@ public class Server implements Runnable {
         SocketChannel sc = ((ServerSocketChannel)key.channel()).accept();
         sc.configureBlocking(false);
         Path beginDir = Paths.get("project/server/src/main/resources");
-        sc.register(this.selector, SelectionKey.OP_READ, beginDir);
+        userInfo info = new userInfo("user1");
+        info.setCurrentPath(beginDir);//временное решение для тестирования
+        sc.register(this.selector, SelectionKey.OP_READ, info);
 
         sc.write(welcomeMessage);
         welcomeMessage.rewind();
@@ -73,7 +75,8 @@ public class Server implements Runnable {
 
     private void handleRead(SelectionKey key) throws IOException {
         SocketChannel sc = (SocketChannel) key.channel();
-        FileProtocol.receiver(key);
+//        FileProtocol.sendToServer(key);
+        FileProtocol.trueReceiver(key);
         StringBuilder sb = new StringBuilder();
 
         buffer.clear();
