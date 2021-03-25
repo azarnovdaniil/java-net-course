@@ -31,7 +31,7 @@ public class Server implements Runnable {
         this.serverSocketChannel.configureBlocking(false);
         this.selector = Selector.open();
         this.serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-        FileProtocol.setRootDir("project/client/src/main/resources");
+        FileProtocol.setRootDir("project/server/src/main/resources");
     }
 
     @Override

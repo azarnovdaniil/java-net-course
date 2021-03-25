@@ -158,6 +158,8 @@ public class FileProtocol {
         }
     }
 
+
+
     private static void makeDir(SelectionKey key, SocketChannel socketChannel) throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BYTE_BUFFER_SIZE);
         socketChannel.read(byteBuffer);
@@ -176,9 +178,10 @@ public class FileProtocol {
         Path beginUserDir = rootDir.resolve(((UserInfo) key.attachment()).getUserRoot());
         Path targetPath = Paths.get(sb.toString());
 
-        if (!targetPath.getRoot().toString().equals(beginUserDir.getFileName().toString())) {
-            return;
-        }
+//        if (!targetPath.getRoot().toString().equals(beginUserDir.getFileName().toString())) {
+//            return;
+//        }
+        targetPath = beginUserDir.resolve(targetPath);
         if (Files.exists(targetPath)) {
             return;
         }
