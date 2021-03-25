@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 public class FileProtocol {
     private static final int BYTE_ARRAY_SIZE = 1024;
     private static final ByteBuffer serviceBuffer = ByteBuffer.allocate(8192);
+    private static final int DEFAULT_BYTE_BUFFER_SIZE = 8192;
     private static Path rootDir;
     private static SocketChannel socketChannel;
     private static SelectionKey key;
@@ -26,7 +27,7 @@ public class FileProtocol {
         socketChannel = SocketChannel.open(inetSocketAddress);
     }
 
-    public void setRootDir(String dir) {
+    public static void setRootDir(String dir) {
         rootDir = Paths.get(dir);
     }
 
@@ -111,7 +112,7 @@ public class FileProtocol {
                     System.out.println("Wrong command");
                     return;
                 }
-                byteBuffer = ByteBuffer.allocate(8192);
+                byteBuffer = ByteBuffer.allocate(DEFAULT_BYTE_BUFFER_SIZE);
                 Path pathSrcFile = Paths.get(splitMessage[1]);
                 if (!Files.exists(pathSrcFile)) {
                     return;
@@ -158,7 +159,7 @@ public class FileProtocol {
     }
 
     private static void makeDir(SelectionKey key, SocketChannel socketChannel) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BYTE_BUFFER_SIZE);
         socketChannel.read(byteBuffer);
         byteBuffer.flip();
         int lengthDir = byteBuffer.getInt();

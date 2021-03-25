@@ -1,6 +1,7 @@
 package ru.daniilazarnov;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 
 import java.util.Scanner;
@@ -25,14 +26,14 @@ public class Client {
 
 
     public static void start() throws IOException {
-        String message = null;
+        String message = "";
         while(!message.equals("exit")) {
             Scanner scanner = new Scanner(System.in);
             message = scanner.nextLine();
+            FileProtocol.connect(new InetSocketAddress("localhost", 8199));
             FileProtocol.trueSender(message);
 //            Строки ниже требуются для упрощения отладки
 //            Path path = Paths.get("project/client/src/main/resources/exceptions.png");
-//            FileProtocol.connect(new InetSocketAddress(host, port));
         }
     }
 }
