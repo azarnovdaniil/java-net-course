@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 public class Client {
     public static final int PORT = 8189;
+    public static final String HOST = "localhost";
     private String newData;
     private SocketChannel socketClient;
     private ByteBuffer buf = ByteBuffer.allocate(256);
@@ -17,32 +18,29 @@ public class Client {
     public Client(){}
 
     public void connect() throws IOException {
-    socketClient = SocketChannel.open();
-    socketClient.connect(new InetSocketAddress("localhost", PORT));
-         }
-        private void readChannel() throws IOException {
-            StringBuilder sb = new StringBuilder();
+        socketClient = SocketChannel.open();
+        socketClient.connect(new InetSocketAddress(HOST, PORT));
+    }
+    private void readChannel() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        buf.clear();
+        int read = 0;
+        while (socketClient.read(buf) > 0) {
+            buf.flip();
+            byte[] bytes = new byte[buf.limit()];
+            buf.get(bytes);
+            System.out.println(new String(bytes));
             buf.clear();
-            int read = 0;
-            while (socketClient.read(buf) > 0) {
-                buf.flip();
-                byte[] bytes = new byte[buf.limit()];
-                buf.get(bytes);
-                System.out.println(new String(bytes));
-                buf.compact();
-
-            }
-            System.out.println("asdasdasd");
         }
-        private void writeChannel(String msg) throws IOException {
-            msgBuf = ByteBuffer.wrap(msg.getBytes());
-            socketClient.write(msgBuf);
-            msgBuf.rewind();
+    }
+    private void writeChannel(String msg) throws IOException {
+        msgBuf = ByteBuffer.wrap(msg.getBytes());
+        socketClient.write(msgBuf);
+        msgBuf.rewind();
     }
     private void disconnectClient(){
         try {
             socketClient.finishConnect();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,7 +59,7 @@ public class Client {
                     e.printStackTrace();
                 }
             }).start();
-            while (true){
+            while (scanner.hasNext()){
                 enterData = scanner.nextLine();
                 client.writeChannel(enterData);
             }
