@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -8,6 +9,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -24,6 +26,8 @@ public class Server implements Runnable {
     private final Selector selector;
     private final ByteBuffer buffer = ByteBuffer.allocate(512);
     private final ByteBuffer welcomeMessage = ByteBuffer.wrap("Соединение установлено".getBytes(StandardCharsets.UTF_8));
+    private final Path rootOfStorage = Paths.get("./netStorage");
+    private static int acceptClientIndex;
 
     public Server() throws IOException {
         this.serverSocketChannel = ServerSocketChannel.open();
@@ -32,6 +36,9 @@ public class Server implements Runnable {
         this.selector = Selector.open();
         this.serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
         FileProtocol.setRootDir("project/server/src/main/resources");
+        if (!Files.exists(rootOfStorage)) {
+            Files.createDirectory(rootOfStorage);
+        }
     }
 
     @Override
@@ -62,19 +69,23 @@ public class Server implements Runnable {
     private void handleAccept(SelectionKey key) throws IOException {
         SocketChannel sc = ((ServerSocketChannel) key.channel()).accept();
         sc.configureBlocking(false);
-        Path beginDir = Paths.get("project/server/src/main/resources");
-        UserInfo info = new UserInfo("user1");
+        String userName = "user" + acceptClientIndex++;
+        UserInfo info = new UserInfo(userName);
+        Path beginDir = Paths.get("project/server/src/main/resources" + File.separator + userName);
+        if(!Files.exists(beginDir)) {
+            Files.createDirectory(beginDir);
+        }
         info.setCurrentPath(beginDir);//временное решение для тестирования
         sc.register(this.selector, SelectionKey.OP_READ, info);
 
-        sc.write(welcomeMessage);
-        welcomeMessage.rewind();
+//        sc.write(welcomeMessage);
+//        welcomeMessage.rewind();
         System.out.println("Подключился новый клиент");
     }
 
     private void handleRead(SelectionKey key) throws IOException {
         SocketChannel sc = (SocketChannel) key.channel();
-        FileProtocol.trueReceiver(key);
+        FileProtocol.serverCommandInterpretation(key);
         StringBuilder sb = new StringBuilder();
 
         buffer.clear();
