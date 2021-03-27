@@ -4,4 +4,19 @@
    т. е. только относительно project: project/client/src/main/resources/testFile.txt;
 3. Не совсем понятно насчёт метода attach(), если его использовать с ключом в методе handleAccept(),
    то он привяжется именно к этому ключу и в методе handleRead это уже будет абсолютно другой ключ?
-4. Можно ли как-то указать на клиенте сокет сервера, чтобы ожидать с него сообщения?
+4. Чем отличается первый отрывок кода от второго?
+   
+   1 отрывок
+   clientSocketChannel = SocketChannel.open(inetSocketAddress);
+   clientSocketChannel.configureBlocking(false);
+   selector = Selector.open();
+   clientSocketChannel.register(selector, SelectionKey.OP_READ);
+   
+   2 отрывок
+   clientSocketChannel = SocketChannel.open();
+   clientSocketChannel.bind(new InetSocketAddress("localhost", 8111));
+   clientSocketChannel.connect(inetSocketAddress);
+   clientSocketChannel.configureBlocking(false);
+   selector = Selector.open();
+   clientSocketChannel.register(selector, SelectionKey.OP_READ);
+   handleReadFromServer();
