@@ -40,39 +40,6 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void getAuthorisationProcess(AuthenticationService as) {
-
-        //sorry it's my authorisation process before refactoring
-
-        /*{
-            String mayBeCredentials = in.readUTF();
-            if (mayBeCredentials.startsWith("-auth")) {
-                logger.info(String.format("[%s] sent -auth command", name));
-                String[] credentials = mayBeCredentials.split("\\s");
-                String mayBeNickname = chat.getAuthenticationService()
-                        .findNicknameByLoginAndPassword(credentials[1], credentials[2]);
-                if (mayBeNickname != null) {
-                    if (!chat.isNicknameOccupied(mayBeNickname)) {
-                        sendMessage("[INFO] Auth OK");
-                        logger.info("Auth OK");
-                        name = mayBeNickname;
-
-                        chat.broadcastMessage(String.format("[%s] logged in", name));
-                        logger.info(String.format("[%s] logged in", name));
-                        chat.subscribe(this);
-
-                        checkPeriod = true;
-
-                        return;
-                    } else {
-                        sendMessage("[INFO] Current user is already logged in.");
-                        logger.info("Current user is already logged in.");
-                    }
-                } else {
-                    sendMessage("[INFO] Wrong login or password.");
-                    logger.info("Wrong login or password.");
-                }
-            }
-        }*/
     }
 
 }
