@@ -12,6 +12,8 @@ import ru.daniilazarnov.handlers.out.ResponseDataEncoder;
 public class Server {
 
     private int port;
+    public static final int SIZE = 128;
+    public static final int PN = 8188;
 
     public Server(int port) {
         this.port = port;
@@ -21,6 +23,7 @@ public class Server {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
+
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
@@ -32,7 +35,7 @@ public class Server {
                                     .addLast(new ResponseDataEncoder())
                                     .addLast(new ProcessingHandler());
                         }
-                    }).option(ChannelOption.SO_BACKLOG, 128)
+                    }).option(ChannelOption.SO_BACKLOG, SIZE)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture f = b.bind(port).sync();
@@ -45,7 +48,7 @@ public class Server {
 
     public static void main(String[] args) throws Exception {
         int port = args.length > 0
-                ? Integer.parseInt(args[0]): 8188;
+                ? Integer.parseInt(args[0]) : PN;
 
         new Server(port).run();
     }

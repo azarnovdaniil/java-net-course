@@ -14,9 +14,10 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
             throws Exception {
 
         //test
-        ResponseData rd = new ResponseData();
-        rd.setIntValue(555);
-        ctx.write(rd);
+//        int t = 555;
+//        ResponseData rd = new ResponseData();
+//        rd.setIntValue(t);
+//        ctx.write(rd);
 
 
     }
@@ -33,7 +34,7 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
 
         RequestData requestData = (RequestData) msg;
         ResponseData responseData = new ResponseData();
-        responseData.setIntValue(requestData.getIntValue() * 2);// tested response
+        responseData.setIntValue(requestData.getIntValue() * 2); //tested response
         ChannelFuture future = ctx.writeAndFlush(responseData);
         future.addListener(ChannelFutureListener.CLOSE);
         System.out.println(requestData);

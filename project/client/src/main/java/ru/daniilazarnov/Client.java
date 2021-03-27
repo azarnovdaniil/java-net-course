@@ -10,11 +10,11 @@ import ru.daniilazarnov.handlers.in.ResponseDataDecoder;
 import ru.daniilazarnov.handlers.out.RequestDataEncoder;
 
 public class Client {
-
+    public static final int PORT = 8188;
     public static void main(String[] args) throws Exception {
 
         String host = "localhost";
-        int port = 8188;
+
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
@@ -32,7 +32,7 @@ public class Client {
                             .addLast(new ClientHandler());
                 }
             });
-            ChannelFuture f = b.connect(host, port).sync();
+            ChannelFuture f = b.connect(host, PORT).sync();
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();

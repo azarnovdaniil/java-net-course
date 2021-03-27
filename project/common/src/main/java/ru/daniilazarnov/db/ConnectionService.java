@@ -4,12 +4,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConnectionService {
-    private ConnectionService() {}
+public final class ConnectionService {
 
     public static Connection connect() {
         try {
-            return DriverManager.getConnection("jdbc:mysql://localhost:3306/chat?serverTimezone=Europe/Moscow", "root", "pass");
+            return DriverManager.getConnection("jdbc:mysql://localhost:3306/chat?serverTimezone=Europe/Moscow", "root",
+                    "pass");
         } catch (SQLException throwable) {
             throw new RuntimeException("SWW", throwable);
         }

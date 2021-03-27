@@ -13,7 +13,8 @@ public class UserRepository {
     public AuthenticationService.CredentialsEntry findUser(String login, String password) {
         Connection connection = ConnectionService.connect();
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM USER WHERE LOGIN = ? AND PASS = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM USER WHERE LOGIN = ? "
+                    + "AND PASS = ?");
             statement.setString(1, login);
             statement.setString(2, password);
 
@@ -85,8 +86,8 @@ public class UserRepository {
     public void updateUser(String newName, String oldName) {
         Connection connection = ConnectionService.connect();
         try {
-            PreparedStatement statement = connection.prepareStatement("UPDATE USER SET nickName=? " +
-                    "WHERE nickName=?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE USER SET nickName=? "
+                    + "WHERE nickName=?");
             statement.setString(1, newName);
             statement.setString(2, oldName);
             statement.executeUpdate();
