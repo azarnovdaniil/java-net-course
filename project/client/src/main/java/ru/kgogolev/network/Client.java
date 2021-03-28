@@ -1,4 +1,4 @@
-package ru.kgogolev;
+package ru.kgogolev.network;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -7,18 +7,15 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.concurrent.Callable;
+import ru.kgogolev.PortHost;
+import ru.kgogolev.network.in_handler.ClientInputHandler;
+import ru.kgogolev.network.out_handler.ClientOutputHandler;
 
 public class Client  {
     private SocketChannel channel;
 
 
 
-    private static final String HOST = "localhost";
-    private static final int PORT = 9999;
     EventLoopGroup workerGroup = new NioEventLoopGroup();
 
     public Client() {
@@ -36,7 +33,7 @@ public class Client  {
                     }
                 });
 
-                ChannelFuture f = b.connect(HOST, PORT).sync();
+                ChannelFuture f = b.connect(PortHost.HOST, PortHost.PORT).sync();
 
                 f.channel().closeFuture().sync();
             } catch (Exception e) {

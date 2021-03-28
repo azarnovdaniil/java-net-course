@@ -1,4 +1,4 @@
-package ru.kgogolev;
+package ru.kgogolev.network;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -7,10 +7,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.string.StringEncoder;
+import ru.kgogolev.PortHost;
+import ru.kgogolev.network.in_handler.InputHandler;
 
 public class ServerApp {
-    private static final int PORT = 9999;
     public static void main(String[] args) {
         EventLoopGroup clients = new NioEventLoopGroup();
         try {
@@ -20,15 +20,15 @@ public class ServerApp {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast(new InputHandler()
-                        );
+                            socketChannel.pipeline().addLast(new InputHandler()
+                            );
                         }
                     });
-            ChannelFuture cf = bootstrap.bind(PORT).sync();
-            cf.channel().closeFuture().sync();//блокирующая операция - ожидание остановки сервера
+            ChannelFuture cf = bootstrap.bind(PortHost.PORT).sync();
+            cf.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             clients.shutdownGracefully();
         }
 

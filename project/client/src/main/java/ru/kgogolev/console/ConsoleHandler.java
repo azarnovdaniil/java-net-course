@@ -1,4 +1,7 @@
-package ru.kgogolev;
+package ru.kgogolev.console;
+
+import ru.kgogolev.FileSystem;
+import ru.kgogolev.StringConstants;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -18,10 +21,13 @@ public class ConsoleHandler {
         try {
             while (true) {
                 line = br.readLine();
-                if (line.startsWith("ls")) {
+                if (line.startsWith(StringConstants.VIEW_FILES)) {
                     fileSystem.walkFileTree(line.split(" ")[1]);
 
-                } else if (line.startsWith("download")) {
+                } else if (line.startsWith(StringConstants.VIEW_FILES_DETAILED)) {
+                    fileSystem.walkAllFileTree(line.split(" ")[2]);
+
+                } else if (line.startsWith(StringConstants.UPLOAD)) {
                     message = line.split(" ")[1].getBytes(StandardCharsets.UTF_8);
                     break;
                 } else {

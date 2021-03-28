@@ -1,7 +1,7 @@
 package ru.kgogolev;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import ru.kgogolev.console.ConsoleHandler;
+import ru.kgogolev.network.Client;
 
 
 public class Application {
@@ -14,29 +14,11 @@ public class Application {
         run();
     }
 
-    private void run(){
-        while (true){
+    private void run() {
+        while (true) {
             client.sendMessage(consoleHandler.handleMessage());
         }
     }
-//    private void consoleMessageHandler(){
-//        String message=null;
-//        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-//            while (true) {
-//
-//                message = br.readLine();
-//                if (message.startsWith("111")){
-//                    client.sendMessage(message);
-//                }else {
-//                    System.out.println(message);
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 
-
-
-    }
+}
 

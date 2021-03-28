@@ -1,4 +1,4 @@
-package ru.kgogolev;
+package ru.kgogolev.network.out_handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
