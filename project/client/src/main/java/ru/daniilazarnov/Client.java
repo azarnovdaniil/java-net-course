@@ -14,10 +14,11 @@ public class Client {
     private static String host;
     private static String repoPath;
     private static final Path configPath = Paths.get("client\\src\\main\\resources\\config.cfg");
+    private static boolean isAuthorised = false;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         readConfig();
-        RepoClient client = new RepoClient(host, port);
+        RepoClient client = new RepoClient(host, port,repoPath);
         Console console = new Console(client, new Consumer<ContextData>() {
             @Override
             public void accept(ContextData contextData) {
@@ -77,6 +78,10 @@ public class Client {
         Client.repoPath = repoPath;
     }
 
+    public static void setIsAuthorised(boolean isAuthorised) {
+        Client.isAuthorised = isAuthorised;
+    }
+
     public static int getPort() {
         return port;
     }
@@ -87,5 +92,9 @@ public class Client {
 
     public static String getRepoPath() {
         return repoPath;
+    }
+
+    public static boolean isIsAuthorised() {
+        return isAuthorised;
     }
 }

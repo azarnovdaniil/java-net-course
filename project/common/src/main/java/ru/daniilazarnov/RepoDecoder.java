@@ -1,53 +1,86 @@
 package ru.daniilazarnov;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-import static io.netty.buffer.Unpooled.wrappedBuffer;
 
 public class RepoDecoder extends ChannelInboundHandlerAdapter {
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("Message recieved");
-        //byte[] input = ((String)msg).getBytes();
-        //System.out.println(Arrays.toString(input));
-        //ByteBuf k = wrappedBuffer(input);
-        ByteBuf k = (ByteBuf)msg;
-        int command = k.readInt();
-        System.out.println("Клманда " +command);
-        int length = k.readInt();
-        byte[] nameBytes = new byte[length];
-        for (int i = 0; i < length; i++) {
-            nameBytes[i]=k.readByte();
-        }
-        String name = new String(nameBytes, StandardCharsets.UTF_8);
-        System.out.println(name);
-        byte[] bytes= new byte[k.readableBytes()];
-        k.readBytes(bytes);
-        k.release();
 
-        if (command==CommandList.upload.ordinal()) {
-            System.out.println("Загрузка файла");
-            FileContainer container = new FileContainer(bytes,name);
-            ctx.fireChannelRead(container);
-        }else if(command==CommandList.delete.ordinal()){
-            System.out.println("Удаление файла");
-            Path test = Paths.get("server\\src\\main\\java\\ru\\daniilazarnov\\" + name);
-            if (Files.exists(test)){
-            Files.delete(test);
-            if (!Files.exists(test))System.out.println("Файл удален");
-            }else System.out.println("Файл не найден");
+    private boolean isServer;
+    private final UserProfile profile;
+    private BiConsumer<ContextData, UserProfile> commandReader;
+    private Consumer<UserProfile> closeConnection;
 
-        } else System.out.println("Неизвестная команда");
+    RepoDecoder(boolean isServer, BiConsumer<ContextData, UserProfile> commandReader, Consumer<UserProfile> closeConnection) {
+        this.isServer = isServer;
+        this.profile = null;
+        this.commandReader = commandReader;
 
     }
+
+    RepoDecoder(boolean isServer, BiConsumer<ContextData, UserProfile> commandReader, Consumer<UserProfile> closeConnection, UserProfile profile) {
+        this.isServer = isServer;
+        this.profile = profile;
+        this.commandReader = commandReader;
+        this.closeConnection = closeConnection;
+    }
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        ByteBuf message = (ByteBuf) msg;
+        ContextData messageContext = new ContextData();
+        messageContext.setCommand(message.readInt());
+        messageContext.setFilePath(decodeContext(message));
+        messageContext.setLogin(decodeContext(message));
+        messageContext.setPassword(decodeContext(message));
+        byte[] bytes = new byte[message.readableBytes()];
+        message.readBytes(bytes);
+        message.release();
+        messageContext.setContainer(bytes);
+
+        if (isServer) {
+            if (!isAuthorised()) {
+                if (!(messageContext.getCommand() == CommandList.login.ordinal()) &&
+                        !(messageContext.getCommand() == CommandList.register.ordinal())) {
+                    this.profile.sendMessage("false%%%You are not authorised. Please login before you can use this service.");
+                    return;
+                }
+            }
+        }
+        if (messageContext.getCommand() == CommandList.upload.ordinal()) {
+            FileContainer container = new FileContainer(bytes, messageContext.getFilePath());
+            ctx.fireChannelRead(container);
+        } else {
+            commandReader.accept(messageContext, profile);
+        }
+
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("Connection lost....");
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        closeConnection.accept(this.profile);
+    }
+
+    public String decodeContext(ByteBuf source) {
+        int length = source.readInt();
+        byte[] context = new byte[length];
+        for (int i = 0; i < length; i++) {
+            context[i] = source.readByte();
+        }
+        return new String(context, StandardCharsets.UTF_8);
+    }
+
+    private boolean isAuthorised() {
+        return (!this.profile.getLogin().equals("empty"));
+    }
+
 }

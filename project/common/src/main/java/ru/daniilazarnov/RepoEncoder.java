@@ -5,46 +5,42 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-
 import static io.netty.buffer.Unpooled.wrappedBuffer;
 
 public class RepoEncoder extends ChannelOutboundHandlerAdapter {
-    private ContextData data;
+
+    private final ContextData data;
     RepoEncoder(ContextData data){
         this.data=data;
-    }
-    @Override
-    public void read(ChannelHandlerContext ctx) throws Exception {
-        super.read(ctx);
     }
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         byte[] command = ByteBuffer.allocate(4).putInt(data.getCommand()).array();
-        byte[] name = data.getFilePath().getBytes();
-        byte[] length = ByteBuffer.allocate(4).putInt(name.length).array();
-        System.out.println("name length "+name.length);
-        byte[] mess=null;
+        byte[] chunk=null;
         if (data.getCommand()==CommandList.upload.ordinal()) {
-           mess = new byte[((ByteBuf) msg).readableBytes()];
-            ((ByteBuf) msg).readBytes(mess);
+            chunk = new byte[((ByteBuf) msg).readableBytes()];
+            ((ByteBuf) msg).readBytes(chunk);
+        }else {
+            chunk = (byte[])msg;
         }
-
-        if (data.getCommand()==CommandList.delete.ordinal()){
-           mess = (byte[])msg;
-        }
-        byte[] del= new byte[data.getDelimiter().readableBytes()];
-        System.out.println("sgsdgsg"+data.getDelimiter().readableBytes());
-        data.getDelimiter().readBytes(del);
-        data.getDelimiter().resetReaderIndex();
-        ByteBuf wrappedBuffer = wrappedBuffer(command,length,name,mess,del);
-        System.out.println(wrappedBuffer.readableBytes());
-        ctx.writeAndFlush(wrappedBuffer);
+        byte[] delimiter= this.data.getDelimArray();
+        ByteBuf encodedMessage = wrappedBuffer(
+                command,
+                encodeString(this.data.getFilePath()),
+                encodeString(this.data.getLogin()),
+                encodeString(this.data.getPassword()),
+                chunk,
+                delimiter
+        );
+        ctx.writeAndFlush(encodedMessage);
     }
 
-    @Override
-    public void flush(ChannelHandlerContext ctx) throws Exception {
-        super.flush(ctx);
+    private byte[] encodeString (String source) {
+        byte[] message = source.getBytes();
+        byte[] prefixMessage = ByteBuffer.allocate(4 + message.length).putInt(message.length).array();
+        System.arraycopy(message, 0, prefixMessage, 4, message.length);
+        return prefixMessage;
     }
+
 }

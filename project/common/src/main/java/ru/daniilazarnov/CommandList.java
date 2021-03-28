@@ -13,5 +13,6 @@ enum CommandList {
     exit,
     connect,
     setHost,
-    serverMessage
+    serverMessage,
+    fileUploadInfo
 }

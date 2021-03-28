@@ -1,7 +1,6 @@
 package ru.daniilazarnov;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
@@ -9,29 +8,55 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.LineBasedFrameDecoder;
-import io.netty.handler.codec.string.LineEncoder;
-import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.stream.ChunkedWriteHandler;
-
 import java.net.InetSocketAddress;
-import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-import static io.netty.buffer.Unpooled.wrappedBuffer;
 
 public class RepoServer {
     private final int port;
     private final String host;
-    private HashSet<UserProfile> userList;
-    private volatile ContextData contextData;
+    private final LinkedList<UserProfile> userList;
+    private BiConsumer<String, SocketChannel> sendServerMessage;
+    private BiConsumer <ContextData,UserProfile> reader;
+    private Consumer <UserProfile> closeConnection;
+    private ExecutorService executorService;
+    public static AuthorisationService authorisationService;
+
 
 
 
     RepoServer (String host, int port){
         this.port=port;
         this.host=host;
-        this.userList = new HashSet<UserProfile>();
-        this.contextData=new ContextData();
+        this.userList = new LinkedList<UserProfile>();
+        this.executorService = Executors.newCachedThreadPool();
+        authorisationService = new AuthorisationService(this.userList);
+
+        this.sendServerMessage= (mess, channel) -> {
+            UserProfile toSend=null;
+            for (UserProfile a:userList) {
+                if(a.getCurChannel().equals(channel)){
+                    toSend=a;
+                    break;
+                }
+                throw new RuntimeException("No channel found for sending message!");
+            }
+            toSend.getContextData().setCommand(CommandList.serverMessage.ordinal());
+            channel.writeAndFlush(mess.getBytes());
+        };
+
+        this.reader = (context, profile) -> this.executorService.submit(new ServerCommandReader(context,profile));
+
+        this.closeConnection = (profile -> {
+            this.userList.remove(profile);
+            profile.getCurChannel().close();
+            System.out.println("User left");
+        });
     }
 
     public void start(){
@@ -44,15 +69,16 @@ public class RepoServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
-                    userList.add(new UserProfile("UserUnknown",socketChannel));
+                    UserProfile connectedUser = new UserProfile("empty",socketChannel, sendServerMessage);
+                    userList.add(connectedUser);
                     System.out.println("New connection applied.");
 
-                    socketChannel.pipeline().addLast(new DelimiterBasedFrameDecoder(2000,contextData.getDelimiter()));
-                    socketChannel.pipeline().addLast(new RepoDecoder());
-                    socketChannel.pipeline().addLast(new RepoEncoder(contextData));
-                    socketChannel.pipeline().addLast(new OutcomingFilehandler());
+                    socketChannel.pipeline().addLast(
+                            new DelimiterBasedFrameDecoder(8000, connectedUser.getContextData().getDelimiter()));
+                    socketChannel.pipeline().addLast(new RepoDecoder(true, reader,closeConnection, connectedUser));
+                    socketChannel.pipeline().addLast(new RepoEncoder(connectedUser.getContextData()));
                     socketChannel.pipeline().addLast(new ChunkedWriteHandler());
-                    socketChannel.pipeline().addLast(new IncomingFileHandler());
+                    socketChannel.pipeline().addLast(new IncomingFileHandler(connectedUser));
 
                 }
             });
@@ -70,4 +96,6 @@ public class RepoServer {
             }
         }
     }
+
 }
+

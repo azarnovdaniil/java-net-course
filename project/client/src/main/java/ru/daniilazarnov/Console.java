@@ -3,6 +3,7 @@ package ru.daniilazarnov;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
@@ -53,30 +54,48 @@ public class Console {
                     context.accept(data);
                     break;
                 case getFileList:
+                    if(!Client.isIsAuthorised()){
+                        System.out.println("You are not authorised. Login first, please.");
+                        break;
+                    }
                     data = new ContextData();
                     data.setCommand(CommandList.getFileList.ordinal());
                     context.accept(data);
                     break;
                 case upload:
+                    if(!Client.isIsAuthorised()){
+                        System.out.println("You are not authorised. Login first, please.");
+                        break;
+                    }
                     String path;
                     if (comArray[1].startsWith("\\")){
                         path = Client.getRepoPath()+comArray[1];
                     }else path=comArray[1];
                     Path fileToSend = Paths.get(path);
                     if (fileToSend.toFile().exists()) {
+                        sendFileUploadInfo(fileToSend, fileToSend.toFile().length());
                         data = new ContextData();
                         data.setCommand(CommandList.upload.ordinal());
                         data.setFilePath(fileToSend.toString());
                         context.accept(data);
+
                     }else System.out.println("File not found. Check the path.");
                     break;
                 case download:
+                    if(!Client.isIsAuthorised()){
+                        System.out.println("You are not authorised. Login first, please.");
+                        break;
+                    }
                     data = new ContextData();
                     data.setCommand(CommandList.download.ordinal());
                     data.setFilePath(comArray[1]);
                     context.accept(data);
                     break;
                 case delete:
+                    if(!Client.isIsAuthorised()){
+                        System.out.println("You are not authorised. Login first, please.");
+                        break;
+                    }
                     data = new ContextData();
                     data.setCommand(CommandList.delete.ordinal());
                     data.setFilePath(comArray[1]);
@@ -90,6 +109,7 @@ public class Console {
                     if (repo.toFile().exists()) {
                         Client.setRepoPath(repo.toString());
                         Client.writeConfig();
+                        connection.setRepoPath(repo.toString());
                         System.out.println("Your new repository is: "+repo.toString());
                         break;
                     }
@@ -125,4 +145,18 @@ public class Console {
         System.out.println(command+" details...");
     }
 
+    private void sendFileUploadInfo (Path filePath, long fileLength){
+        data=new ContextData();
+        data.setCommand(CommandList.fileUploadInfo.ordinal());
+        data.setFilePath(filePath.toFile().getName());
+        data.setPassword(Objects.toString(fileLength));
+        System.out.println(data.getPassword());
+        context.accept(data);
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
