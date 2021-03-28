@@ -80,7 +80,8 @@ public class Server implements Runnable {
         if(!Files.exists(beginDir)) {
             Files.createDirectory(beginDir);
         }
-        info.setCurrentPath(beginDir);//временное решение для тестирования
+        info.setRootPath(beginDir);
+        info.setCurrentPath(beginDir);
         sc.register(this.selector, SelectionKey.OP_READ, info);
 
         sc.write(welcomeMessage);

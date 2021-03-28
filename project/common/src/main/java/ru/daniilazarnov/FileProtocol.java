@@ -11,18 +11,20 @@ import java.nio.file.Paths;
 import java.util.Iterator;
 
 public class FileProtocol {
-    private static final ByteBuffer serviceBuffer = ByteBuffer.allocate(8192);
+    private static final ByteBuffer serverByteBuffer = ByteBuffer.allocate(8192);
     private static final int DEFAULT_BYTE_BUFFER_SIZE = 8192;
     private static Path rootDir;
     private static SocketChannel clientSocketChannel;
     private static SelectionKey key;
     private static String serverHost;
     private static int serverPort;
-    private static ByteBuffer byteBuffer;
+    private static ByteBuffer clientByteBuffer;
     private static Selector selector;
 
 
 
+    ///////////////////////////////////////
+//    Клиентская часть
 
     public static void connect(InetSocketAddress inetSocketAddress) throws IOException {
         clientSocketChannel = SocketChannel.open(inetSocketAddress);
@@ -31,57 +33,6 @@ public class FileProtocol {
         clientSocketChannel.register(selector, SelectionKey.OP_READ);
         handleReadFromServer();
     }
-
-    public static void setRootDir(String dir) {
-        rootDir = Paths.get(dir);
-    }
-
-
-
-
-    public static void receiveFile(SelectionKey key, SocketChannel socketChannel, Path path) throws IOException {
-        String fileName = getStringFromBytes(socketChannel);
-        socketChannel.read(serviceBuffer);
-        serviceBuffer.flip();
-
-        int sizeFile = serviceBuffer.getInt();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(sizeFile);
-
-
-//                   Собираем файл из буфера
-        while (sizeFile > 0) {
-            while (serviceBuffer.hasRemaining() && byteBuffer.limit() != byteBuffer.position()) {
-                byteBuffer.put(serviceBuffer.get());
-                sizeFile--;
-            }
-            serviceBuffer.clear();
-            socketChannel.read(serviceBuffer);
-            serviceBuffer.flip();
-        }
-        /////////////////////////////////
-        Path pathFile = Paths.get(path + File.separator + fileName);
-        Files.write(pathFile, byteBuffer.array());
-    }
-
-    private static String getStringFromBytes(SocketChannel socketChannel) throws IOException {
-        socketChannel.read(serviceBuffer);
-        serviceBuffer.flip();
-        int fileNameLength = serviceBuffer.getInt();
-        serviceBuffer.compact();
-        StringBuilder sb = new StringBuilder();
-        while (fileNameLength > 0) {
-            socketChannel.read(serviceBuffer);
-            serviceBuffer.flip();
-            while (serviceBuffer.hasRemaining() && fileNameLength > 0) {
-                sb.append((char) serviceBuffer.get());
-                fileNameLength--;
-            }
-            serviceBuffer.compact();
-        }
-        String fileName = sb.toString();
-        return fileName;
-    }
-
 
     public static void commandInterpretationFromClient(String message) throws IOException {
         String[] splitMessage = message.split(" ");
@@ -105,10 +56,16 @@ public class FileProtocol {
                 break;
             case "user":
                 sendAuth(splitMessage);
+            case "cd":
+                changeDir(splitMessage);
         }
     }
 
-    private static void sendAuth(String[] splitMessage) throws IOException {
+    public static void setRootDir(String dir) {
+        rootDir = Paths.get(dir);
+    }
+
+    private static void makeDir(String[] splitMessage) throws IOException {
         if (clientSocketChannel == null) {
             return;
         }
@@ -116,64 +73,12 @@ public class FileProtocol {
             System.out.println("Wrong command");
             return;
         }
-        byteBuffer = ByteBuffer.allocate(5 + splitMessage[1].length());
-        byteBuffer.put((byte) 5);
-        byteBuffer.putInt(splitMessage[1].length());
-        byteBuffer.put(splitMessage[1].getBytes());
-        byteBuffer.flip();
-        clientSocketChannel.write(byteBuffer);
-    }
-
-    private static void receiveFileFromServer(String[] splitMessage) throws IOException {
-        int fileNameLength;
-        String filename;
-        if (clientSocketChannel == null) {
-            return;
-        }
-        if (splitMessage.length != 2) {
-            System.out.println("Wrong command");
-            return;
-        }
-        byteBuffer = ByteBuffer.allocate(DEFAULT_BYTE_BUFFER_SIZE);
-        filename = splitMessage[1];
-        fileNameLength = filename.length();
-        byteBuffer.put((byte) 4);
-        byteBuffer.putInt(fileNameLength);
-        byteBuffer.put(filename.getBytes());
-        byteBuffer.flip();
-        while (byteBuffer.hasRemaining()) {
-            clientSocketChannel.write(byteBuffer);
-        }
-    }
-
-    private static void sendFileToServer(String[] splitMessage) throws IOException {
-        int fileNameLength;
-        String filename;
-        if (clientSocketChannel == null) {
-            return;
-        }
-        if (splitMessage.length != 2) {
-            System.out.println("Wrong command");
-            return;
-        }
-        byteBuffer = ByteBuffer.allocate(DEFAULT_BYTE_BUFFER_SIZE);
-        Path pathSrcFile = Paths.get(splitMessage[1]);
-        if (!Files.exists(pathSrcFile)) {
-            return;
-        }
-        byteBuffer.put((byte) 1);
-        filename = pathSrcFile.getFileName().toString();
-        fileNameLength = filename.length();
-        byteBuffer.putInt(fileNameLength);
-        byteBuffer.put(filename.getBytes());
-        byteBuffer.putInt((int) Files.size(pathSrcFile));
-        FileChannel srcFileChannel = (FileChannel) Files.newByteChannel(pathSrcFile);
-        while (srcFileChannel.read(byteBuffer) != 0) {
-            byteBuffer.flip();
-            clientSocketChannel.write(byteBuffer);
-            byteBuffer.clear();
-        }
-        srcFileChannel.close();
+        clientByteBuffer = ByteBuffer.allocate(5 + splitMessage[1].length());
+        clientByteBuffer.put((byte) 2);
+        clientByteBuffer.putInt(splitMessage[1].length());
+        clientByteBuffer.put(splitMessage[1].getBytes());
+        clientByteBuffer.flip();
+        clientSocketChannel.write(clientByteBuffer);
     }
 
     private static void connectToServer(String[] splitMessage) throws IOException {
@@ -190,7 +95,9 @@ public class FileProtocol {
         handleReadFromServer();
     }
 
-    private static void makeDir(String[] splitMessage) throws IOException {
+    private static void sendFileToServer(String[] splitMessage) throws IOException {
+        int fileNameLength;
+        String filename;
         if (clientSocketChannel == null) {
             return;
         }
@@ -198,126 +105,86 @@ public class FileProtocol {
             System.out.println("Wrong command");
             return;
         }
-        byteBuffer = ByteBuffer.allocate(5 + splitMessage[1].length());
-        byteBuffer.put((byte) 2);
-        byteBuffer.putInt(splitMessage[1].length());
-        byteBuffer.put(splitMessage[1].getBytes());
-        byteBuffer.flip();
-        clientSocketChannel.write(byteBuffer);
-    }
-
-
-    public static void serverCommandInterpretation(SelectionKey key) throws IOException {
-        SocketChannel socketChannel = (SocketChannel) key.channel();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(1);
-        socketChannel.read(byteBuffer);
-        byteBuffer.flip();
-        byte command = byteBuffer.get();
-        byteBuffer.compact();
-        switch (command) {
-            case 1:
-                receiveFile(key, socketChannel, ((UserInfo) key.attachment()).getCurrentPath());
-                break;
-            case 2:
-                makeDir(key, socketChannel);
-                break;
-            case 3:
-//                changeDir();
-                break;
-            case 4:
-                sendToClient(key, socketChannel);
-                break;
-            case 5:
-                authorization(key, socketChannel);
-        }
-    }
-
-    private static void authorization(SelectionKey key, SocketChannel socketChannel) throws IOException {
-        String userName = getStringFromBytes(socketChannel);
-        ((UserInfo) key.attachment()).setName(userName);
-        Path path = ((UserInfo) key.attachment()).getCurrentPath().getParent().resolve(Paths.get(userName));
-        ((UserInfo) key.attachment()).setCurrentPath(path);
-        if(!Files.exists(path)) {
-            Files.createDirectory(path);
-        }
-    }
-
-    private static void sendToClient(SelectionKey key, SocketChannel socketChannel) throws IOException {
-        String fileName = getStringFromBytes(socketChannel);
-
-        UserInfo userInfo = (UserInfo) key.attachment();
-        Path currentDir = userInfo.getCurrentPath();
-        Path targetFilePath = currentDir.resolve(Paths.get(fileName));
-        if (!Files.exists(targetFilePath)) {
+        clientByteBuffer = ByteBuffer.allocate(DEFAULT_BYTE_BUFFER_SIZE);
+        Path pathSrcFile = Paths.get(splitMessage[1]);
+        if (!Files.exists(pathSrcFile)) {
             return;
         }
-
-        //Отправляем тклиенту текущее его положение в каталоге
-        serviceBuffer.clear();
-        //длина строки пути
-        serviceBuffer.put((byte) 1);
-        serviceBuffer.putInt(currentDir.toString().length());
-        serviceBuffer.put(currentDir.toString().getBytes());
-        serviceBuffer.flip();
-        socketChannel.write(serviceBuffer);
-
-
-        //отправляем сам файл
-        serviceBuffer.clear();
-        serviceBuffer.put((byte) 2);
-
-//        String filename = targetFilePath.getFileName().toString();
-        int fileNameLength = fileName.length();
-        serviceBuffer.putInt(fileNameLength);
-        serviceBuffer.put(fileName.getBytes());
-        serviceBuffer.putInt((int) Files.size(targetFilePath));
-        FileChannel srcFileChannel = (FileChannel) Files.newByteChannel(targetFilePath);
-        while (srcFileChannel.read(serviceBuffer) != 0) {
-            serviceBuffer.flip();
-            socketChannel.write(serviceBuffer);
-            serviceBuffer.clear();
+        clientByteBuffer.put((byte) 1);
+        filename = pathSrcFile.getFileName().toString();
+        fileNameLength = filename.length();
+        clientByteBuffer.putInt(fileNameLength);
+        clientByteBuffer.put(filename.getBytes());
+        clientByteBuffer.putInt((int) Files.size(pathSrcFile));
+        FileChannel srcFileChannel = (FileChannel) Files.newByteChannel(pathSrcFile);
+        while (srcFileChannel.read(clientByteBuffer) != 0) {
+            clientByteBuffer.flip();
+            clientSocketChannel.write(clientByteBuffer);
+            clientByteBuffer.clear();
         }
         srcFileChannel.close();
-
-
-
-        FileChannel fileChannel = (FileChannel) Files.newByteChannel(targetFilePath);
-        while (fileChannel.read(serviceBuffer) != 0) {
-            serviceBuffer.flip();
-            socketChannel.write(serviceBuffer);
-            serviceBuffer.clear();
-        }
     }
 
-
-    private static void makeDir(SelectionKey key, SocketChannel socketChannel) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BYTE_BUFFER_SIZE);
-        socketChannel.read(byteBuffer);
-        byteBuffer.flip();
-        int lengthDir = byteBuffer.getInt();
-        byteBuffer.compact();
-        StringBuilder sb = new StringBuilder();
-        while (lengthDir > 0) {
-            socketChannel.read(byteBuffer);
-            byteBuffer.flip();
-            while (byteBuffer.hasRemaining()) {
-                sb.append((char) byteBuffer.get());
-                lengthDir--;
-            }
-        }
-        Path beginUserDir = rootDir.resolve(((UserInfo) key.attachment()).getUserRoot());
-        Path targetPath = Paths.get(sb.toString());
-
-        targetPath = beginUserDir.resolve(targetPath);
-        if (Files.exists(targetPath)) {
+    private static void receiveFileFromServer(String[] splitMessage) throws IOException {
+        int fileNameLength;
+        String filename;
+        if (clientSocketChannel == null) {
             return;
         }
-        Files.createDirectories(targetPath);
+        if (splitMessage.length != 2) {
+            System.out.println("Wrong command");
+            return;
+        }
+        clientByteBuffer = ByteBuffer.allocate(DEFAULT_BYTE_BUFFER_SIZE);
+        filename = splitMessage[1];
+        fileNameLength = filename.length();
+        clientByteBuffer.put((byte) 4);
+        clientByteBuffer.putInt(fileNameLength);
+        clientByteBuffer.put(filename.getBytes());
+        clientByteBuffer.flip();
+        while (clientByteBuffer.hasRemaining()) {
+            clientSocketChannel.write(clientByteBuffer);
+        }
     }
 
+    private static void sendAuth(String[] splitMessage) throws IOException {
+        if (clientSocketChannel == null) {
+            return;
+        }
+        if (splitMessage.length != 2) {
+            System.out.println("Wrong command");
+            return;
+        }
+        clientByteBuffer = ByteBuffer.allocate(5 + splitMessage[1].length());
+        clientByteBuffer.put((byte) 5);
+        clientByteBuffer.putInt(splitMessage[1].length());
+        clientByteBuffer.put(splitMessage[1].getBytes());
+        clientByteBuffer.flip();
+        clientSocketChannel.write(clientByteBuffer);
+    }
+
+    private static void changeDir(String[] splitMessage) throws IOException {
+        if (clientSocketChannel == null) {
+            return;
+        }
+        if (splitMessage.length != 2) {
+            System.out.println("Wrong command");
+            return;
+        }
+        clientByteBuffer = ByteBuffer.allocate(DEFAULT_BYTE_BUFFER_SIZE);
+        String targetDir = splitMessage[1];
+        int targetDitLength = targetDir.length();
+        clientByteBuffer.put((byte) 3);
+        clientByteBuffer.putInt(targetDitLength);
+        clientByteBuffer.put(targetDir.getBytes());
+        clientByteBuffer.flip();
+        while (clientByteBuffer.hasRemaining()) {
+            clientSocketChannel.write(clientByteBuffer);
+        }
+    }
 
     public static void receiveBytesFromServer(SelectionKey key) throws IOException {
-        byteBuffer = ByteBuffer.allocate(1);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1);
         clientSocketChannel.read(byteBuffer);
         byteBuffer.flip();
         byte commandType = byteBuffer.get();
@@ -350,6 +217,7 @@ public class FileProtocol {
         System.out.print("> ");
     }
 
+
     private static void handleReadFromServer() {
         new Thread(() -> {
             try {
@@ -370,4 +238,186 @@ public class FileProtocol {
             }
         }).start();
     }
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+//    Серверная часть
+
+    public static void serverCommandInterpretation(SelectionKey key) throws IOException {
+        SocketChannel socketChannel = (SocketChannel) key.channel();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1);
+        socketChannel.read(byteBuffer);
+        byteBuffer.flip();
+        byte command = byteBuffer.get();
+        byteBuffer.compact();
+        switch (command) {
+            case 1:
+                receiveFile(key, socketChannel, ((UserInfo) key.attachment()).getCurrentPath());
+                break;
+            case 2:
+                makeDir(key, socketChannel);
+                break;
+            case 3:
+                changeClientDirOnServer(key, socketChannel);
+                break;
+            case 4:
+                sendToClient(key, socketChannel);
+                break;
+            case 5:
+                authorizationOnServer(key, socketChannel);
+        }
+    }
+
+    private static void changeClientDirOnServer(SelectionKey key, SocketChannel socketChannel) throws IOException {
+        String targetP = getStringFromBytes(socketChannel);
+        Path targetPath = Paths.get(targetP);
+        Path currDir = ((UserInfo) key.attachment()).getCurrentPath();
+        Path newPath = currDir.relativize(targetPath);
+        if(!Files.exists(newPath)) {
+            sendMessageToClient(key, socketChannel, "Wrong directory");
+            return;
+        }
+        ((UserInfo) key.attachment()).setCurrentPath(newPath);
+        sendMessageToClient(key, socketChannel,  "Current directory: " + newPath);
+    }
+
+    public static void receiveFile(SelectionKey key, SocketChannel socketChannel, Path path) throws IOException {
+        String fileName = getStringFromBytes(socketChannel);
+        socketChannel.read(serverByteBuffer);
+        serverByteBuffer.flip();
+        int sizeFile = serverByteBuffer.getInt();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(sizeFile);
+//                   Собираем файл из буфера
+        while (sizeFile > 0) {
+            while (serverByteBuffer.hasRemaining() && sizeFile > 0) {
+                byteBuffer.put(serverByteBuffer.get());
+                sizeFile--;
+            }
+            serverByteBuffer.clear();
+            socketChannel.read(serverByteBuffer);
+            serverByteBuffer.flip();
+        }
+        /////////////////////////////////
+        Path pathFile = Paths.get(path + File.separator + fileName);
+        try {
+            Files.write(pathFile, byteBuffer.array());
+        } catch (IOException e) {
+            sendMessageToClient(key, socketChannel, "File transfer error");
+        }
+        sendMessageToClient(key, socketChannel, "File uploaded");
+    }
+
+    private static void makeDir(SelectionKey key, SocketChannel socketChannel) throws IOException {
+        String dirName = getStringFromBytes(socketChannel);
+        Path userRootPath = ((UserInfo) key.attachment()).getUserRoot();
+        Path targetPath = Paths.get(dirName);
+
+        targetPath = userRootPath.resolve(targetPath);
+        if (Files.exists(targetPath)) {
+            sendMessageToClient(key, socketChannel, "The directory already exists");
+            return;
+        }
+        try {
+            Files.createDirectories(targetPath);
+            sendMessageToClient(key, socketChannel, "The directory was created successfully");
+        } catch (IOException e) {
+            sendMessageToClient(key, socketChannel, "Unable to create a directory");
+        }
+        System.out.println(Files.exists(targetPath));
+    }
+
+    private static void sendToClient(SelectionKey key, SocketChannel socketChannel) throws IOException {
+        String fileName = getStringFromBytes(socketChannel);
+
+
+        Path currentDir = sendToClientCurrentDir(key, socketChannel);
+        Path targetFilePath = currentDir.resolve(Paths.get(fileName));
+        if (!Files.exists(targetFilePath)) {
+            return;
+        }
+        //Отправляем клиенту текущее его положение в каталоге
+        //отправляем сам файл
+        serverByteBuffer.clear();
+        serverByteBuffer.put((byte) 2);
+//        String filename = targetFilePath.getFileName().toString();
+        int fileNameLength = fileName.length();
+        serverByteBuffer.putInt(fileNameLength);
+        serverByteBuffer.put(fileName.getBytes());
+        serverByteBuffer.putInt((int) Files.size(targetFilePath));
+        FileChannel srcFileChannel = (FileChannel) Files.newByteChannel(targetFilePath);
+        while (srcFileChannel.read(serverByteBuffer) != 0) {
+            serverByteBuffer.flip();
+            socketChannel.write(serverByteBuffer);
+            serverByteBuffer.clear();
+        }
+        srcFileChannel.close();
+        FileChannel fileChannel = (FileChannel) Files.newByteChannel(targetFilePath);
+        while (fileChannel.read(serverByteBuffer) != 0) {
+            serverByteBuffer.flip();
+            socketChannel.write(serverByteBuffer);
+            serverByteBuffer.clear();
+        }
+    }
+
+    private static Path sendToClientCurrentDir(SelectionKey key, SocketChannel socketChannel) throws IOException {
+        UserInfo userInfo = (UserInfo) key.attachment();
+        Path currentDir = userInfo.getCurrentPath();
+        serverByteBuffer.clear();
+        //длина строки пути
+        serverByteBuffer.put((byte) 1);
+        serverByteBuffer.putInt(currentDir.toString().length() + "Current directory: ".length());
+        serverByteBuffer.put("Current directory: ".getBytes());
+        serverByteBuffer.put(currentDir.toString().getBytes());
+        serverByteBuffer.put(File.separator.getBytes());
+        serverByteBuffer.flip();
+        socketChannel.write(serverByteBuffer);
+        return currentDir;
+    }
+
+    private static void sendMessageToClient(SelectionKey key, SocketChannel socketChannel, String message) throws IOException {
+        serverByteBuffer.clear();
+        serverByteBuffer.put((byte) 1);
+        serverByteBuffer.putInt(message.length());
+        serverByteBuffer.put(message.getBytes());
+        serverByteBuffer.flip();
+        socketChannel.write(serverByteBuffer);
+    }
+
+    private static void authorizationOnServer(SelectionKey key, SocketChannel socketChannel) throws IOException {
+        String userName = getStringFromBytes(socketChannel);
+        ((UserInfo) key.attachment()).setName(userName);
+        Path path = ((UserInfo) key.attachment()).getCurrentPath().getParent().resolve(Paths.get(userName));
+        ((UserInfo) key.attachment()).setRootPath(path);
+        ((UserInfo) key.attachment()).setCurrentPath(path);
+        if(!Files.exists(path)) {
+            Files.createDirectory(path);
+        }
+        sendMessageToClient(key,  socketChannel, "You are logged in as " + ((UserInfo) key.attachment()).getName());
+        sendMessageToClient(key,  socketChannel, "Current directory " + path.getFileName() + File.separator);
+    }
+
+    private static String getStringFromBytes(SocketChannel socketChannel) throws IOException {
+        serverByteBuffer.clear();
+        socketChannel.read(serverByteBuffer);
+        serverByteBuffer.flip();
+        int fileNameLength = serverByteBuffer.getInt();
+        serverByteBuffer.compact();
+        StringBuilder sb = new StringBuilder();
+        while (fileNameLength > 0) {
+            socketChannel.read(serverByteBuffer);
+            serverByteBuffer.flip();
+            while (serverByteBuffer.hasRemaining() && fileNameLength > 0) {
+                sb.append((char) serverByteBuffer.get());
+                fileNameLength--;
+            }
+            serverByteBuffer.compact();
+        }
+        String fileName = sb.toString();
+        return fileName;
+    }
+
+
+
+
 }
