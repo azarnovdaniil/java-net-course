@@ -17,7 +17,7 @@ public class RequestDecoder extends ReplayingDecoder<RequestData> {
                           ByteBuf in, List<Object> out) throws Exception {
 
         RequestData data = new RequestData();
-        data.setIntValue(in.readInt());
+        data.setId(in.readInt());
         int strLen = in.readInt();
         data.setStringValue(
                 in.readCharSequence(strLen, charset).toString());

@@ -1,16 +1,16 @@
 package ru.daniilazarnov.datamodel;
 
-public class RequestData {
+import ru.daniilazarnov.Pack;
+
+public class RequestData extends Pack {
     //сообщение от клиента с данными
-    private int intValue;
     private String stringValue;
 
-    public int getIntValue() {
-        return intValue;
+    public int getId() {
+        return super.getId();
     }
 
-    public void setIntValue(int intValue) {
-        this.intValue = intValue;
+    public void setId(int id) {
     }
 
     public String getStringValue() {

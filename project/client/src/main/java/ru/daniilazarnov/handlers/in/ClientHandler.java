@@ -12,9 +12,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx)
             throws Exception {
-
         RequestData msg = new RequestData();
-        msg.setIntValue(TEST_V);
+        msg.setId(TEST_V);
         msg.setStringValue(
                 "test msg from client");
         ChannelFuture future = ctx.writeAndFlush(msg);
