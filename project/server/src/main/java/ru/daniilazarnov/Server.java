@@ -10,7 +10,7 @@ public class Server {
     private static int port;
     private static String host;
     private static String repoPath;
-    private static final Path configPath = Paths.get("server\\src\\main\\java\\ru\\daniilazarnov\\resources\\config.cfg");
+    private static final Path configPath = Paths.get("project\\server\\src\\main\\java\\ru\\daniilazarnov\\resources\\config.cfg");
     private static String [] DBparam = new String[3];
 
     public static void main(String[] args) throws IOException, InterruptedException {

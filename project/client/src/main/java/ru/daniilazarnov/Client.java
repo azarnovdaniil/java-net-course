@@ -13,7 +13,7 @@ public class Client {
     private static int port;
     private static String host;
     private static String repoPath;
-    private static final Path configPath = Paths.get("client\\src\\main\\resources\\config.cfg");
+    private static final Path configPath = Paths.get("project\\client\\src\\main\\resources\\config.cfg");
     private static boolean isAuthorised = false;
 
     public static void main(String[] args) throws IOException, InterruptedException {
