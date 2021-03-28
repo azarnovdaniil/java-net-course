@@ -76,7 +76,7 @@ public class Server implements Runnable {
         sc.configureBlocking(false);
         String userName = "user" + acceptClientIndex++;
         UserInfo info = new UserInfo(userName);
-        Path beginDir = Paths.get("project/server/src/main/resources" + File.separator + userName);
+        Path beginDir = Paths.get("project/server/src/main/resources" + File.separator + "tempStorage");
         if(!Files.exists(beginDir)) {
             Files.createDirectory(beginDir);
         }

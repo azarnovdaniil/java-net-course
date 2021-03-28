@@ -103,7 +103,25 @@ public class FileProtocol {
                 //передача с сервера на клиент
                 receiveFileFromServer(splitMessage);
                 break;
+            case "user":
+                sendAuth(splitMessage);
         }
+    }
+
+    private static void sendAuth(String[] splitMessage) throws IOException {
+        if (clientSocketChannel == null) {
+            return;
+        }
+        if (splitMessage.length != 2) {
+            System.out.println("Wrong command");
+            return;
+        }
+        byteBuffer = ByteBuffer.allocate(5 + splitMessage[1].length());
+        byteBuffer.put((byte) 5);
+        byteBuffer.putInt(splitMessage[1].length());
+        byteBuffer.put(splitMessage[1].getBytes());
+        byteBuffer.flip();
+        clientSocketChannel.write(byteBuffer);
     }
 
     private static void receiveFileFromServer(String[] splitMessage) throws IOException {
@@ -209,6 +227,18 @@ public class FileProtocol {
             case 4:
                 sendToClient(key, socketChannel);
                 break;
+            case 5:
+                authorization(key, socketChannel);
+        }
+    }
+
+    private static void authorization(SelectionKey key, SocketChannel socketChannel) throws IOException {
+        String userName = getStringFromBytes(socketChannel);
+        ((UserInfo) key.attachment()).setName(userName);
+        Path path = ((UserInfo) key.attachment()).getCurrentPath().getParent().resolve(Paths.get(userName));
+        ((UserInfo) key.attachment()).setCurrentPath(path);
+        if(!Files.exists(path)) {
+            Files.createDirectory(path);
         }
     }
 
@@ -226,8 +256,8 @@ public class FileProtocol {
         serviceBuffer.clear();
         //длина строки пути
         serviceBuffer.put((byte) 1);
-        serviceBuffer.putInt(targetFilePath.toString().length());
-        serviceBuffer.put(targetFilePath.toString().getBytes());
+        serviceBuffer.putInt(currentDir.toString().length());
+        serviceBuffer.put(currentDir.toString().getBytes());
         serviceBuffer.flip();
         socketChannel.write(serviceBuffer);
 
