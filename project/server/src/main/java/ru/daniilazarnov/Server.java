@@ -25,7 +25,7 @@ public class Server implements Runnable {
     private final ServerSocketChannel serverSocketChannel;
     private final Selector selector;
     private final ByteBuffer buffer = ByteBuffer.allocate(512);
-    private final ByteBuffer welcomeMessage = ByteBuffer.wrap("Соединение установлено".getBytes(StandardCharsets.UTF_8));
+    private final ByteBuffer welcomeMessage = ByteBuffer.allocate(512);
     private final Path rootOfStorage = Paths.get("./netStorage");
     private static int acceptClientIndex;
 
@@ -39,6 +39,11 @@ public class Server implements Runnable {
         if (!Files.exists(rootOfStorage)) {
             Files.createDirectory(rootOfStorage);
         }
+        welcomeMessage.put((byte) 1);
+        welcomeMessage.putInt("Connection established".length());
+        welcomeMessage.put("Connection established".getBytes());
+        welcomeMessage.flip();
+
     }
 
     @Override
@@ -78,8 +83,8 @@ public class Server implements Runnable {
         info.setCurrentPath(beginDir);//временное решение для тестирования
         sc.register(this.selector, SelectionKey.OP_READ, info);
 
-//        sc.write(welcomeMessage);
-//        welcomeMessage.rewind();
+        sc.write(welcomeMessage);
+        welcomeMessage.flip();
         System.out.println("Подключился новый клиент");
     }
 

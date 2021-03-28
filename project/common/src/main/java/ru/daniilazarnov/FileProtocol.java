@@ -317,6 +317,7 @@ public class FileProtocol {
             }
         }
         System.out.println(sb.toString());
+        System.out.print("> ");
     }
 
     private static void handleReadFromServer() {
