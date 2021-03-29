@@ -10,35 +10,37 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class Server {
-    private final int port = 8888;
 
-    public void run() throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
+    public void run() {
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new ServerHandler());
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            socketChannel.pipeline()
+                                    .addLast(new ServerHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-
-            ChannelFuture f = b.bind(port).sync();
-
-
-            f.channel().closeFuture().sync();
+            ChannelFuture future = b.bind(new Common().getPORT()).sync();
+            System.out.println("Сервер запущен");
+            future.channel().closeFuture().sync();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
-            workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         new Server().run();
     }
+
 }

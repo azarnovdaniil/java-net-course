@@ -10,7 +10,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class ProtoServer {
 
-    public static final int INET_PORT = 8189;
+    public static final int INET_PORT = 8888;
 
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();

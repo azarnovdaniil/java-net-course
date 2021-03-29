@@ -38,8 +38,6 @@ public class CloudServerHandler extends ChannelInboundHandlerAdapter {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
-            System.out.printf("Server received wrong object!");
         }
     }
 

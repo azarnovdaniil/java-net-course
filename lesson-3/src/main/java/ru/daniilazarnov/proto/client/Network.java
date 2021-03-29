@@ -14,7 +14,7 @@ import java.util.concurrent.CountDownLatch;
 
 public final class Network {
 
-    public static final int PORT = 8189;
+    public static final int PORT = 8888;
     private Channel currentChannel;
 
     public Channel getCurrentChannel() {
