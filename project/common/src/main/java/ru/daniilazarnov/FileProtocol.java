@@ -56,9 +56,24 @@ public class FileProtocol {
                 break;
             case "user":
                 sendAuth(splitMessage);
+                break;
             case "cd":
                 changeDir(splitMessage);
+                break;
+            case "help":
+                showClientHelp();
+                break;
+            default:
+                System.out.print("Unknown command\n> ");
         }
+    }
+
+    public static void showClientHelp() {
+        System.out.print("user <name> - authorization\n" +
+                        "stor <file location> - uploading a file to the server\n" +
+                        "retr <file name> - downloading a file from the server\n" +
+                        "mkd <directory name/path to directory> - creating a directory\n" +
+                        "cd <path to directory> - change directory");
     }
 
     public static void setRootDir(String dir) {
@@ -194,7 +209,7 @@ public class FileProtocol {
                 break;
             case 2:
                 receiveFile(key, clientSocketChannel, Paths.get("project/client/src/main/resources"));
-
+                System.out.print("File uploaded successfully\n>");
         }
     }
 
@@ -208,7 +223,7 @@ public class FileProtocol {
         byteBuffer.flip();
         StringBuilder sb = new StringBuilder();
         while (lengthDir > 0) {
-            while (byteBuffer.hasRemaining()) {
+            while (byteBuffer.hasRemaining() && lengthDir > 0) {
                 sb.append((char) byteBuffer.get());
                 lengthDir--;
             }
@@ -254,6 +269,7 @@ public class FileProtocol {
         switch (command) {
             case 1:
                 receiveFile(key, socketChannel, ((UserInfo) key.attachment()).getCurrentPath());
+                sendMessageToClient(key, socketChannel,"File uploaded successfully");
                 break;
             case 2:
                 makeDir(key, socketChannel);
@@ -273,11 +289,19 @@ public class FileProtocol {
         String targetP = getStringFromBytes(socketChannel);
         Path targetPath = Paths.get(targetP);
         Path currDir = ((UserInfo) key.attachment()).getCurrentPath();
-        Path newPath = currDir.relativize(targetPath);
+
+
+        Path newPath = currDir.resolve(targetPath);
+
+
+
+
+//        Path newPath = currDir.relativize(targetPath);
         if(!Files.exists(newPath)) {
             sendMessageToClient(key, socketChannel, "Wrong directory");
             return;
         }
+        newPath = newPath.normalize();
         ((UserInfo) key.attachment()).setCurrentPath(newPath);
         sendMessageToClient(key, socketChannel,  "Current directory: " + newPath);
     }
@@ -298,22 +322,20 @@ public class FileProtocol {
             socketChannel.read(serverByteBuffer);
             serverByteBuffer.flip();
         }
-        /////////////////////////////////
         Path pathFile = Paths.get(path + File.separator + fileName);
         try {
             Files.write(pathFile, byteBuffer.array());
         } catch (IOException e) {
             sendMessageToClient(key, socketChannel, "File transfer error");
         }
-        sendMessageToClient(key, socketChannel, "File uploaded");
     }
 
     private static void makeDir(SelectionKey key, SocketChannel socketChannel) throws IOException {
         String dirName = getStringFromBytes(socketChannel);
-        Path userRootPath = ((UserInfo) key.attachment()).getUserRoot();
+        Path userCurrentPath = ((UserInfo) key.attachment()).getCurrentPath();
         Path targetPath = Paths.get(dirName);
 
-        targetPath = userRootPath.resolve(targetPath);
+        targetPath = userCurrentPath.resolve(targetPath);
         if (Files.exists(targetPath)) {
             sendMessageToClient(key, socketChannel, "The directory already exists");
             return;
@@ -329,18 +351,13 @@ public class FileProtocol {
 
     private static void sendToClient(SelectionKey key, SocketChannel socketChannel) throws IOException {
         String fileName = getStringFromBytes(socketChannel);
-
-
-        Path currentDir = sendToClientCurrentDir(key, socketChannel);
+        Path currentDir = getCurrentDir(key, socketChannel);
         Path targetFilePath = currentDir.resolve(Paths.get(fileName));
         if (!Files.exists(targetFilePath)) {
             return;
         }
-        //Отправляем клиенту текущее его положение в каталоге
-        //отправляем сам файл
         serverByteBuffer.clear();
         serverByteBuffer.put((byte) 2);
-//        String filename = targetFilePath.getFileName().toString();
         int fileNameLength = fileName.length();
         serverByteBuffer.putInt(fileNameLength);
         serverByteBuffer.put(fileName.getBytes());
@@ -352,27 +369,11 @@ public class FileProtocol {
             serverByteBuffer.clear();
         }
         srcFileChannel.close();
-        FileChannel fileChannel = (FileChannel) Files.newByteChannel(targetFilePath);
-        while (fileChannel.read(serverByteBuffer) != 0) {
-            serverByteBuffer.flip();
-            socketChannel.write(serverByteBuffer);
-            serverByteBuffer.clear();
-        }
     }
 
-    private static Path sendToClientCurrentDir(SelectionKey key, SocketChannel socketChannel) throws IOException {
+    private static Path getCurrentDir(SelectionKey key, SocketChannel socketChannel) {
         UserInfo userInfo = (UserInfo) key.attachment();
-        Path currentDir = userInfo.getCurrentPath();
-        serverByteBuffer.clear();
-        //длина строки пути
-        serverByteBuffer.put((byte) 1);
-        serverByteBuffer.putInt(currentDir.toString().length() + "Current directory: ".length());
-        serverByteBuffer.put("Current directory: ".getBytes());
-        serverByteBuffer.put(currentDir.toString().getBytes());
-        serverByteBuffer.put(File.separator.getBytes());
-        serverByteBuffer.flip();
-        socketChannel.write(serverByteBuffer);
-        return currentDir;
+        return userInfo.getCurrentPath();
     }
 
     private static void sendMessageToClient(SelectionKey key, SocketChannel socketChannel, String message) throws IOException {
@@ -393,8 +394,9 @@ public class FileProtocol {
         if(!Files.exists(path)) {
             Files.createDirectory(path);
         }
-        sendMessageToClient(key,  socketChannel, "You are logged in as " + ((UserInfo) key.attachment()).getName());
-        sendMessageToClient(key,  socketChannel, "Current directory " + path.getFileName() + File.separator);
+        String message = "You are logged in as " + ((UserInfo) key.attachment()).getName() +
+                "\nCurrent directory " + path.getFileName() + File.separator;
+        sendMessageToClient(key,  socketChannel, message);
     }
 
     private static String getStringFromBytes(SocketChannel socketChannel) throws IOException {
@@ -416,8 +418,4 @@ public class FileProtocol {
         String fileName = sb.toString();
         return fileName;
     }
-
-
-
-
 }
