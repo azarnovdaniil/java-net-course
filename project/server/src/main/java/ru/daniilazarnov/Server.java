@@ -11,6 +11,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class Server {
 
+    private int VALUE = 128;
+
     public static void main(String[] args) {
         new Server().run();
     }
@@ -30,7 +32,7 @@ public class Server {
                                     .addLast(new ServerHandler());
                         }
                     })
-                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .option(ChannelOption.SO_BACKLOG, VALUE)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture future = b.bind(new Common().getPORT()).sync();
             System.out.println("Сервер запущен");
