@@ -25,19 +25,13 @@ public class ClientApp {
         System.out.println("!- Enter command -help for help.");
         while (true) {
             System.out.print(":: ");
-            String message = scanner.next();
+            MessageHandler messageHandler = new MessageHandler(scanner.next());
 
-            if (message.startsWith("-exit")) {
-                client.sendMessage(message);
+            if (messageHandler.code == 0) {
+                client.sendMessage(messageHandler.message);
                 break;
-            } else if (message.startsWith("-help")) {
-                System.out.println("The following commands are supported:");
-                System.out.println("-exit       Disconnect and exit.");
-            } else if (message.startsWith("-")) {
-                System.out.printf("!- Command %s is not supported.\n", message);
-            }
-            else {
-                client.sendMessage(message);
+            } else if (messageHandler.code > 0) {
+                client.sendMessage(messageHandler.message);
             }
         }
 
