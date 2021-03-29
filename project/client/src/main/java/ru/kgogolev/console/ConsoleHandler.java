@@ -1,11 +1,13 @@
 package ru.kgogolev.console;
 
+import io.netty.buffer.ByteBuf;
 import ru.kgogolev.FileSystem;
 import ru.kgogolev.StringConstants;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 public class ConsoleHandler {
     private FileSystem fileSystem;
@@ -14,9 +16,9 @@ public class ConsoleHandler {
         this.fileSystem = fileSystem;
     }
 
-    public byte[] handleMessage() {
+    public ByteBuf handleMessage() {
         String line = null;
-        byte[] message = null ;
+        ByteBuf message = null ;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
             while (true) {
@@ -28,7 +30,7 @@ public class ConsoleHandler {
                     fileSystem.walkAllFileTree(line.split(" ")[2]);
 
                 } else if (line.startsWith(StringConstants.UPLOAD)) {
-                    message = line.split(" ")[1].getBytes(StandardCharsets.UTF_8);
+                    message = fileSystem.sendFile(Path.of("D:\\K.Gogolev\\Documents\\storage\\text1.txt"));
                     break;
                 } else {
                     System.out.println(line);

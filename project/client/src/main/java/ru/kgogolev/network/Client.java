@@ -1,6 +1,7 @@
 package ru.kgogolev.network;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
@@ -44,7 +45,7 @@ public class Client  {
         }).start();
     }
 
-    public void sendMessage(byte[] bytes) {
+    public void sendMessage(ByteBuf bytes) {
         channel.writeAndFlush(bytes);
     }
 

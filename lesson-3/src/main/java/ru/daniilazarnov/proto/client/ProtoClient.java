@@ -29,7 +29,7 @@ public class ProtoClient {
     }
 
     public void run(Path path) throws IOException {
-        sendFile(path, future -> {
+        sendFile(path, future ->  {
             if (!future.isSuccess()) {
                 future.cause().printStackTrace();
                 network.stop();
@@ -41,7 +41,7 @@ public class ProtoClient {
         });
     }
 
-    private void sendFile(Path path, ChannelFutureListener finishListener) throws IOException {
+    public void sendFile(Path path, ChannelFutureListener finishListener) throws IOException {
         Channel channel = network.getCurrentChannel();
 
         FileRegion region = new DefaultFileRegion(path.toFile(), 0, Files.size(path));
