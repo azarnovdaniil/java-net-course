@@ -289,14 +289,7 @@ public class FileProtocol {
         String targetP = getStringFromBytes(socketChannel);
         Path targetPath = Paths.get(targetP);
         Path currDir = ((UserInfo) key.attachment()).getCurrentPath();
-
-
         Path newPath = currDir.resolve(targetPath);
-
-
-
-
-//        Path newPath = currDir.relativize(targetPath);
         if(!Files.exists(newPath)) {
             sendMessageToClient(key, socketChannel, "Wrong directory");
             return;
