@@ -16,11 +16,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ByteBuf buf = (ByteBuf) msg;
-        while (buf.readableBytes()>0){
-            System.out.print((char) buf.readByte());
+        ByteBuf in = (ByteBuf) msg;
+        try {
+            while (in.isReadable()) {
+                System.out.print((char) in.readByte());
+            }
+        } finally {
+            in.release();
         }
-        buf.release();
     }
 
     @Override
