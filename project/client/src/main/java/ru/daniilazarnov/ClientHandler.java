@@ -12,7 +12,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        String str = (String)msg;
+        String str = (String) msg;
         byte[] arr = str.getBytes();
         ByteBuf buf = ctx.alloc().buffer(arr.length);
         buf.writeBytes(arr);

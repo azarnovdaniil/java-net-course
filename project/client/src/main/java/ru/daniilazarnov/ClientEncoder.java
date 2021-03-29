@@ -16,8 +16,8 @@ public class ClientEncoder extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = ((ByteBuf) msg);
-        while (buf.readableBytes() > 0){
-            buf.writeInt((int)msg);
+        while (buf.readableBytes() > 0) {
+            buf.writeInt((int) msg);
         }
         if (buf.readableBytes() == 0) {
             buf.release();
