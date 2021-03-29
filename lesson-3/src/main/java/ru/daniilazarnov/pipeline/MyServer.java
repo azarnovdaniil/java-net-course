@@ -11,8 +11,8 @@ import ru.daniilazarnov.pipeline.handlers.in.FinalInboundHandler;
 import ru.daniilazarnov.pipeline.handlers.in.FirstInboundHandler;
 import ru.daniilazarnov.pipeline.handlers.in.GatewayInboundHandler;
 import ru.daniilazarnov.pipeline.handlers.in.SecondInboundHandler;
-import ru.daniilazarnov.pipeline.handlers.out.StringToByteBufOutboundHandler;
 import ru.daniilazarnov.pipeline.handlers.out.StringToStringOutboundHandler;
+import ru.daniilazarnov.pipeline.handlers.out.StringToByteBufOutboundHandler;
 
 public class MyServer {
 
@@ -30,12 +30,12 @@ public class MyServer {
                         @Override
                         public void initChannel(SocketChannel ch) {
                             ch.pipeline()
-                                    .addLast(new StringToStringOutboundHandler())
-                                    .addLast(new FirstInboundHandler())
-                                    .addLast(new StringToByteBufOutboundHandler())
-                                    .addLast(new SecondInboundHandler())
-                                    .addLast(new GatewayInboundHandler())
-                                    .addLast(new FinalInboundHandler());
+                                    .addLast(new StringToByteBufOutboundHandler()) // 1 - outbound
+                                    .addLast(new FirstInboundHandler()) // 1 - inbound
+                                    .addLast(new StringToStringOutboundHandler()) // 2 - outbound
+                                    .addLast(new SecondInboundHandler()) // 2 - inbound
+                                    .addLast(new GatewayInboundHandler()) // 3 - inbound
+                                    .addLast(new FinalInboundHandler()); // 4 inbound
                         }
                     });
             ChannelFuture f = b.bind(INET_PORT).sync();
