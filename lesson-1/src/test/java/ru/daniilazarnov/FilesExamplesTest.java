@@ -139,7 +139,7 @@ class FilesExamplesTest {
 
     @Test
     void testTruncate() throws IOException {
-        Path path = Path.of("channel_example_4.txt");
+        Path path = Path.of("dir/channel_example_4.txt");
 
         RandomAccessFile file = new RandomAccessFile(path.toFile(), "rw");
         FileChannel channel = file.getChannel();
