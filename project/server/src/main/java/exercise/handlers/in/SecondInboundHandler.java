@@ -1,4 +1,4 @@
-package ru.daniilazarnov.handlers.in;
+package exercise.handlers.in;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

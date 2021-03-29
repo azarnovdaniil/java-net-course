@@ -1,4 +1,4 @@
-package ru.daniilazarnov.handlers;
+package exercise.handlers;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

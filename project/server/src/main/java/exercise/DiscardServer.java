@@ -1,4 +1,4 @@
-package ru.daniilazarnov;
+package exercise;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -6,17 +6,15 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ObjectDecoder;
-import ru.daniilazarnov.handlers.HelloServerHandler;
-import ru.daniilazarnov.handlers.in.FinalInboundHandler;
-import ru.daniilazarnov.handlers.in.FirstInboundHandler;
-import ru.daniilazarnov.handlers.in.GatewayInboundHandler;
-import ru.daniilazarnov.handlers.in.SecondInboundHandler;
-import ru.daniilazarnov.handlers.out.out.StringToByteBufOutboundHandler;
-import ru.daniilazarnov.handlers.out.out.StringToStringOutboundHandler;
+import exercise.handlers.HelloServerHandler;
+import exercise.handlers.in.FinalInboundHandler;
+import exercise.handlers.in.FirstInboundHandler;
+import exercise.handlers.in.GatewayInboundHandler;
+import exercise.handlers.in.SecondInboundHandler;
+import exercise.handlers.out.StringToByteBufOutboundHandler;
+import exercise.handlers.out.StringToStringOutboundHandler;
 
 import java.util.Set;
-
-import static ru.daniilazarnov.Common.PORT;
 
 public final class DiscardServer {
 
@@ -38,7 +36,7 @@ public final class DiscardServer {
             });
             /* говорим на каком порту работаем, можно указать хост(по умолчанию localhost)
              * метод sync() блокирующий метод, netty слушает... */
-            ChannelFuture channelFuture = serverBootstrap.bind(PORT).sync();
+            ChannelFuture channelFuture = serverBootstrap.bind(8848).sync();
             channelFuture.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully(); // когда канал будет закрыт, останавливаем worker и boss group
@@ -66,7 +64,7 @@ public final class DiscardServer {
                                     .addLast(new FinalInboundHandler()); // 4 - inbound
                         }
                     });
-            ChannelFuture channelFuture = serverBootstrap.bind(PORT).sync();
+            ChannelFuture channelFuture = serverBootstrap.bind(8848).sync();
             channelFuture.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
@@ -98,7 +96,7 @@ class AuthServer implements Runnable {
                         }
                     })
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-            ChannelFuture f = b.bind(PORT).sync();
+            ChannelFuture f = b.bind(8848).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

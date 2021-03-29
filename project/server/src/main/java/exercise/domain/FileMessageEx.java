@@ -1,13 +1,13 @@
-package ru.daniilazarnov.serialization.domain;
+package exercise.domain;
 
 import java.io.Serializable;
 
-public class FileMessage implements Serializable {
+public class FileMessageEx implements Serializable {
 
     private final String fileName;
     private final byte[] content;
 
-    public FileMessage(String fileName, byte[] content) {
+    public FileMessageEx(String fileName, byte[] content) {
         this.fileName = fileName;
         this.content = content;
     }

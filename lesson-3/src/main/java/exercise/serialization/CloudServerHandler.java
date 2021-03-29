@@ -1,9 +1,9 @@
-package ru.daniilazarnov;
+package exercise.serialization;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import ru.daniilazarnov.domain.domain.FileMessage;
-import ru.daniilazarnov.domain.domain.MyMessage;
+import exercise.serialization.domain.FileMessage;
+import exercise.serialization.domain.MyMessage;
 
 import java.io.IOException;
 import java.nio.file.Files;

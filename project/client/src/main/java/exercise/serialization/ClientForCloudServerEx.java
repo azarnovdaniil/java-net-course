@@ -1,26 +1,25 @@
-package ru.daniilazarnov.serialization;
+package exercise.serialization;
 
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
-import ru.daniilazarnov.serialization.domain.MyMessage;
+import exercise.domain.MyMessageEx;
 
 import java.net.Socket;
 
-public class Client {
+public class ClientForCloudServerEx {
 
-    public static final int PORT = 8189;
     public static final int MAX_OBJECT_SIZE = 100 * 1024 * 1024;
 
     public static void main(String[] args) {
 
-        try (Socket socket = new Socket("localhost", PORT);
+        try (Socket socket = new Socket("localhost", 8848);
              ObjectEncoderOutputStream oeos = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream odis = new ObjectDecoderInputStream(socket.getInputStream(), MAX_OBJECT_SIZE)) {
-            MyMessage textMessage = new MyMessage("Hello Server!!!");
+            MyMessageEx textMessage = new MyMessageEx("Hello Server!!!");
 
             oeos.writeObject(textMessage);
             oeos.flush();
-            MyMessage msgFromServer = (MyMessage) odis.readObject();
+            MyMessageEx msgFromServer = (MyMessageEx) odis.readObject();
             System.out.println("Answer from server: " + msgFromServer.getText());
         } catch (Exception e) {
             e.printStackTrace();

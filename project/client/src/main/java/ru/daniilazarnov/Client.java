@@ -1,55 +1,47 @@
 package ru.daniilazarnov;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+
 import java.util.Scanner;
 
-import static ru.daniilazarnov.Common.*;
+
+import static exercise.Common.PORT;
 
 public class Client {
-
-    public static final int MAGIC_NUMBER = 21;
+    Scanner scanner = new Scanner(System.in);
+    String input = scanner.next();
 
     public static void main(String[] args) {
-        System.out.println("Client!");
-
-//        IoClientOne();
-
-        IoClientTwo();
-    }
-
-    private static void IoClientTwo() {
-        try (Socket socket = new Socket(LOCALHOST, PORT);
-             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-             Scanner in = new Scanner(socket.getInputStream())) {
-
-            out.write(new byte[]{MAGIC_NUMBER, MAGIC_NUMBER, MAGIC_NUMBER});
-            String x = in.nextLine();
-            System.out.println("A: " + x);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void IoClientOne() {
-        Scanner scanner = new Scanner(System.in);
-
-        String input = scanner.next();
-
-        try (Socket socket = new Socket(LOCALHOST, PORT);
-             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-             Scanner in = new Scanner(socket.getInputStream())) {
-
-            out.write(input.getBytes(StandardCharsets.UTF_8));
-
-            while (in.hasNext()) {
-                String output = in.next();
-                System.out.println("Received message: " + output);
-            }
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try {
+            Bootstrap b = new Bootstrap();
+            b.group(workerGroup)
+                    .channel(NioSocketChannel.class)
+                    .remoteAddress("localhost", PORT)
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            socketChannel.pipeline().addLast(
+                                    new StringDecoder(),
+                                    new StringEncoder(),
+                                    new NetworkHandlerInbound()
+                            );
+                        }
+                    });
+            ChannelFuture f = b.connect().sync();
+            f.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            workerGroup.shutdownGracefully();
         }
     }
 }

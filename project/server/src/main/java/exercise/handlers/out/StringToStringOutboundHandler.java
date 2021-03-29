@@ -1,4 +1,4 @@
-package ru.daniilazarnov.handlers.out.out;
+package exercise.handlers.out;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;

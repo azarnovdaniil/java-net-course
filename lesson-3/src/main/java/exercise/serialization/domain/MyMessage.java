@@ -1,4 +1,4 @@
-package ru.daniilazarnov.serialization.domain;
+package exercise.serialization.domain;
 
 import java.io.Serializable;
 

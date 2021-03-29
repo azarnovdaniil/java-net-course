@@ -1,4 +1,4 @@
-package ru.daniilazarnov.serialization;
+package exercise.serialization;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

@@ -1,16 +1,16 @@
-package ru.daniilazarnov.serialization;
+package exercise;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import ru.daniilazarnov.serialization.domain.FileMessage;
-import ru.daniilazarnov.serialization.domain.MyMessage;
+import exercise.domain.FileMessageEx;
+import exercise.domain.MyMessageEx;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-public class CloudServerHandler extends ChannelInboundHandlerAdapter {
+public class CloudServerHandlerEx extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -25,16 +25,16 @@ public class CloudServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         System.out.println(msg.getClass().getName());
-        if (msg instanceof MyMessage) {
-            System.out.println("Client text message: " + ((MyMessage) msg).getText());
-            ctx.writeAndFlush(new MyMessage("Hello Client!"));
+        if (msg instanceof MyMessageEx) {
+            System.out.println("Client text message: " + ((MyMessageEx) msg).getText());
+            ctx.writeAndFlush(new MyMessageEx("Hello Client!"));
         }
-        if (msg instanceof FileMessage) {
+        if (msg instanceof FileMessageEx) {
             System.out.println("save file..");
-            ctx.writeAndFlush(new MyMessage("Your file was succsefuly save"));
+            ctx.writeAndFlush(new MyMessageEx("Your file was succsefuly save"));
             try {
-                Path path = Path.of(((FileMessage) msg).getFileName());
-                Files.write(path, ((FileMessage) msg).getContent(), StandardOpenOption.CREATE_NEW);
+                Path path = Path.of(((FileMessageEx) msg).getFileName());
+                Files.write(path, ((FileMessageEx) msg).getContent(), StandardOpenOption.CREATE_NEW);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -1,4 +1,4 @@
-package ru.daniilazarnov;
+package exercise;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -25,9 +25,10 @@ public class CloudServerEx {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline().addLast(
+                                    // два из netty, для объектов serializable
                                     new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
-                                    new CloudServerHandler()
+                                    new CloudServerHandlerEx() // само-писаный
                             );
                         }
                     });
