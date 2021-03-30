@@ -17,7 +17,7 @@ public class CommonDataAdapter {
             case DOWNLOAD_FILE_RES:
                 return new ResponseDataFile();
             default:
-                return null;
+                return new RequestDataFile();
         }
     }
 
@@ -28,7 +28,7 @@ public class CommonDataAdapter {
             case DOWNLOAD_FILE_RES:
                 return new ResponseDataFile();
             default:
-                return null;
+                return new RequestDataFile();
         }
     }
 }

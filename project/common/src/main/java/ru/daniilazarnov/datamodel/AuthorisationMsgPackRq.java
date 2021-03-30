@@ -7,9 +7,8 @@ public class AuthorisationMsgPackRq extends Pack {
     private String message;
 
     public AuthorisationMsgPackRq() {
-        this.packType = PackType.AUTH_REQ;
+        super.setPackType(PackType.TEST_RES);
     }
-
     public String getMessage() {
         return message;
     }

@@ -5,7 +5,7 @@ import ru.daniilazarnov.PackType;
 
 public class ResponseDataFile extends Pack {
     public ResponseDataFile() {
-        this.packType = PackType.TEST_RES;
+        super.setPackType(PackType.TEST_RES);
     }
 
     private int intValue;

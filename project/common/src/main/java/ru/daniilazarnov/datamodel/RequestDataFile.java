@@ -6,7 +6,7 @@ import ru.daniilazarnov.PackType;
 public class RequestDataFile extends Pack {
 
     public RequestDataFile() {
-        this.packType = PackType.TEST_REQ;
+        super.setPackType(PackType.TEST_REQ);
     }
 
     private int intValue;

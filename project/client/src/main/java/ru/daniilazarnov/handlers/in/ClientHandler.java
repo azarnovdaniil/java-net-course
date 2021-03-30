@@ -9,7 +9,7 @@ import ru.daniilazarnov.datamodel.ResponseDataFile;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
     public static final int TEST_VAL = 123;
-    CommonDataAdapter cap = new CommonDataAdapter();
+    private CommonDataAdapter cap = new CommonDataAdapter();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx)

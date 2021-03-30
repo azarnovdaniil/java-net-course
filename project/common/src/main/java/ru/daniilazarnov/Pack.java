@@ -1,7 +1,7 @@
 package ru.daniilazarnov;
 
 public class Pack {
-    protected PackType packType;
+    private PackType packType;
 
     public PackType getPackType() {
         return packType;

@@ -11,14 +11,14 @@ import ru.daniilazarnov.db.AuthenticationService;
 
 public class ProcessingHandler extends ChannelInboundHandlerAdapter {
     private AuthenticationService as;
-    CommonDataAdapter cap = new CommonDataAdapter();
+    private CommonDataAdapter cap = new CommonDataAdapter();
+    //test
+    private final int t = 555;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx)
             throws Exception {
         as = new AuthenticationService();
-        //test
-        int t = 555;
         ResponseDataFile rd = new ResponseDataFile();
         rd.setIntValue(t);
         ctx.write(rd);
@@ -35,7 +35,7 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
 
         getAuthorisationProcess(as);
 
-        cap.getPack();
+//        cap.getPack();
 
         RequestDataFile requestDataFile = (RequestDataFile) msg;
         ResponseDataFile responseDataFile = new ResponseDataFile();
