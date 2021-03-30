@@ -12,16 +12,14 @@ import ru.kgogolev.PortHost;
 import ru.kgogolev.network.in_handler.ClientInputHandler;
 import ru.kgogolev.network.out_handler.ClientOutputHandler;
 
-public class Client  {
+public class Client {
     private SocketChannel channel;
 
 
-
-    EventLoopGroup workerGroup = new NioEventLoopGroup();
+    private EventLoopGroup workerGroup = new NioEventLoopGroup();
 
     public Client() {
-        new Thread(() ->
-        {
+        new Thread(() -> {
             try {
                 Bootstrap b = new Bootstrap();
                 b.group(workerGroup);
@@ -48,8 +46,6 @@ public class Client  {
     public void sendMessage(ByteBuf bytes) {
         channel.writeAndFlush(bytes);
     }
-
-
 
 
 }

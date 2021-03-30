@@ -1,5 +1,7 @@
 package ru.kgogolev.network;
 
+import java.nio.file.Path;
+
 public class WorkingDirectory {
-    public static final String workingDirectory = "D:\\K.Gogolev\\Documents\\storage";
+    public static final Path WORKING_DIRECTORY = Path.of("D:", "K.Gogolev", "Documents", "disk");
 }

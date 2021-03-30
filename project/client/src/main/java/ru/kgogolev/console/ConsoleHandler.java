@@ -6,7 +6,6 @@ import ru.kgogolev.StringConstants;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 public class ConsoleHandler {
@@ -18,7 +17,7 @@ public class ConsoleHandler {
 
     public ByteBuf handleMessage() {
         String line = null;
-        ByteBuf message = null ;
+        ByteBuf message = null;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
             while (true) {
@@ -30,7 +29,7 @@ public class ConsoleHandler {
                     fileSystem.walkAllFileTree(line.split(" ")[2]);
 
                 } else if (line.startsWith(StringConstants.UPLOAD)) {
-                    message = fileSystem.sendFile(Path.of("D:\\K.Gogolev\\Documents\\storage\\text1.txt"));
+                    message = fileSystem.sendFile(Path.of("D:", "K.Gogolev", "Documents", "storage", "1.jpg"));
                     break;
                 } else {
                     System.out.println(line);

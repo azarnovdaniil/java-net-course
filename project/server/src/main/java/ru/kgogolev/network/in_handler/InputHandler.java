@@ -1,10 +1,8 @@
 package ru.kgogolev.network.in_handler;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.CharsetUtil;
 import ru.kgogolev.network.WorkingDirectory;
 
 import java.io.BufferedOutputStream;
@@ -54,7 +52,7 @@ public class InputHandler extends ChannelInboundHandlerAdapter {
                 if (buf.readableBytes() >= nextLength) {
                     byte[] fileName = new byte[nextLength];
                     buf.readBytes(fileName);
-                    File file = new File("D:\\K.Gogolev\\Documents\\disk"+"_" + new String(fileName));
+                    File file = new File(WorkingDirectory.WORKING_DIRECTORY.toFile(), "_" + new String(fileName));
                     file.createNewFile();
                     System.out.println("STATE: Filename received - _" + new String(fileName, "UTF-8"));
                     out = new BufferedOutputStream(new FileOutputStream(file));
@@ -88,7 +86,8 @@ public class InputHandler extends ChannelInboundHandlerAdapter {
             buf.release();
         }
     }
-//
+
+    //
 //    @Override
 //    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 //        cause.printStackTrace();
