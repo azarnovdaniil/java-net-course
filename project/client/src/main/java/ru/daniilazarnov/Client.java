@@ -8,6 +8,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import org.apache.log4j.Logger;
 
@@ -36,7 +37,7 @@ public class Client {
                 public void initChannel(SocketChannel ch) {
                     ch.pipeline()
                             .addLast(new StringEncoder(),
-                                    new StringEncoder(),
+                                    new StringDecoder(),
                                     new ClientHandler());
                 }
             });
