@@ -8,6 +8,5 @@ public enum PackType {
     LIST_FILES_REQ,
     LIST_FILES_RES,
     DOWNLOAD_FILE_REQ,
-    DOWNLOAD_FILE_RES,
-
+    DOWNLOAD_FILE_RES
 }

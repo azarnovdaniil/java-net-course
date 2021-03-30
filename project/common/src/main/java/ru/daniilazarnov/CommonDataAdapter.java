@@ -4,31 +4,31 @@ import ru.daniilazarnov.datamodel.RequestDataFile;
 import ru.daniilazarnov.datamodel.ResponseDataFile;
 
 public class CommonDataAdapter {
-    private int id;
+    private PackType pt;
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(PackType packType) {
+        this.pt = packType;
     }
 
-    public Pack getPack(int id) {
-        switch (id) {
-            case 1:
+    public Pack getPack(PackType packType) {
+        switch (packType) {
+            case DOWNLOAD_FILE_REQ:
                 return new RequestDataFile();
-            case 2:
+            case DOWNLOAD_FILE_RES:
                 return new ResponseDataFile();
             default:
-                return new RequestDataFile();
+                return null;
         }
     }
 
     public Pack getPack() {
-        switch (id) {
-            case 1:
+        switch (pt) {
+            case DOWNLOAD_FILE_REQ:
                 return new RequestDataFile();
-            case 2:
+            case DOWNLOAD_FILE_RES:
                 return new ResponseDataFile();
             default:
-                return new RequestDataFile();
+                return null;
         }
     }
 }
