@@ -11,17 +11,17 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
 import org.apache.log4j.Logger;
 
+import static ru.daniilazarnov.Constants.LOCALHOST;
+import static ru.daniilazarnov.Constants.PORT;
+
 public class Client {
     private static final Logger log = Logger.getLogger(Client.class);
-
-    public static final int PORT = 8189;
-    public static final String LOCALHOST = "localhost";
 
     public static void main(String[] args) throws Exception {
         log.info("Client starting!");
 
-        String host = LOCALHOST;
-        int port = PORT;
+        String host = System.getProperty("m_host", LOCALHOST);
+        int port = Integer.getInteger("m_port", PORT);
 
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
