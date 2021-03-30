@@ -4,12 +4,14 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import ru.daniilazarnov.datamodel.RequestData;
-import ru.daniilazarnov.datamodel.ResponseData;
+import ru.daniilazarnov.CommonDataAdapter;
+import ru.daniilazarnov.datamodel.RequestDataFile;
+import ru.daniilazarnov.datamodel.ResponseDataFile;
 import ru.daniilazarnov.db.AuthenticationService;
 
 public class ProcessingHandler extends ChannelInboundHandlerAdapter {
     private AuthenticationService as;
+    CommonDataAdapter cap = new CommonDataAdapter();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx)
@@ -17,7 +19,7 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
         as = new AuthenticationService();
         //test
         int t = 555;
-        ResponseData rd = new ResponseData();
+        ResponseDataFile rd = new ResponseDataFile();
         rd.setIntValue(t);
         ctx.write(rd);
 
@@ -33,13 +35,14 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
 
         getAuthorisationProcess(as);
 
+        cap.getPack();
 
-        RequestData requestData = (RequestData) msg;
-        ResponseData responseData = new ResponseData();
-        responseData.setIntValue(requestData.getId() * 2); //tested response
-        ChannelFuture future = ctx.writeAndFlush(responseData);
+        RequestDataFile requestDataFile = (RequestDataFile) msg;
+        ResponseDataFile responseDataFile = new ResponseDataFile();
+        responseDataFile.setIntValue(requestDataFile.getIntValue() * 2); //tested response
+        ChannelFuture future = ctx.writeAndFlush(responseDataFile);
         future.addListener(ChannelFutureListener.CLOSE);
-        System.out.println(requestData);
+        System.out.println(requestDataFile.getStringValue());
     }
 
     private void getAuthorisationProcess(AuthenticationService as) {

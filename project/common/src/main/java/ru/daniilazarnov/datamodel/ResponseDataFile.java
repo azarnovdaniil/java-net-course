@@ -1,6 +1,13 @@
 package ru.daniilazarnov.datamodel;
 
-public class ResponseData {
+import ru.daniilazarnov.Pack;
+import ru.daniilazarnov.PackType;
+
+public class ResponseDataFile extends Pack {
+    public ResponseDataFile() {
+        this.packType = PackType.TEST_RES;
+    }
+
     private int intValue;
 
     public int getIntValue() {
