@@ -1,7 +1,6 @@
 package ru.daniilazarnov;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class UserInfo {
     private String name;
@@ -14,17 +13,19 @@ public class UserInfo {
     public void setCurrentPath(Path currentPath) {
         this.currentPath = currentPath;
     }
-    public Path getCurrentPath(){
+    public Path getCurrentPath() {
         return currentPath;
     }
     public void setRootPath(Path rootPath) {
         this.rootPath = rootPath;
     }
-    public Path getUserRoot(){
+    public Path getUserRoot() {
         return rootPath;
     }
     public void setName(String name) {
         this.name = name;
     }
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 }
