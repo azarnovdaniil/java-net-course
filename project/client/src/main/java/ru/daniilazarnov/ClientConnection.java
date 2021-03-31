@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -16,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class ClientConnection {
@@ -81,58 +81,31 @@ public class ClientConnection {
         ByteBuffer byteBuffer = ByteBuffer.allocate(1);
         clientSocketChannel.read(byteBuffer);
         byteBuffer.flip();
-        byte commandType = byteBuffer.get();
-        switch (commandType) {
-            case 1:
+        Optional<Commands> command = Commands.getCommand(byteBuffer.get());
+        switch (command.get()) {
+            case pwd_or_string:
                 receiveCurrentDirFromServer(key);
                 break;
-            case 2:
-                receiveFile();
+            case stor:
+                receiveFile(key);
         }
     }
 
-    public void receiveFile() throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
+    public void receiveFile(SelectionKey key) throws IOException {
         String fileName = Protocol.getStringFromSocketChannel(clientSocketChannel);
         Path targetPath = resourcesPath.resolve(fileName);
-        clientSocketChannel.read(byteBuffer);
-        byteBuffer.flip();
-        int sizeFile = byteBuffer.getInt();
-        ByteBuffer byteBufferForFile = ByteBuffer.allocate(sizeFile);
-//                   Собираем файл из буфера
-        while (sizeFile > 0) {
-            while (byteBuffer.hasRemaining() && sizeFile > 0) {
-                byteBufferForFile.put(byteBuffer.get());
-                sizeFile--;
-            }
-            byteBuffer.clear();
-            clientSocketChannel.read(byteBuffer);
-            byteBuffer.flip();
-        }
+        ByteBuffer byteBufferForFile = Protocol.getFileInByteBufferFromSocketChannel(key);
         try {
             Files.write(targetPath, byteBufferForFile.array());
-            System.out.print("File uploaded successfully\n>");
+            System.out.print("File download successfully\n>");
         } catch (IOException e) {
             System.out.println("File transfer error: " + e.toString());
         }
     }
 
     private void receiveCurrentDirFromServer(SelectionKey key) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
-        clientSocketChannel.read(byteBuffer);
-        byteBuffer.flip();
-        int lengthDir = byteBuffer.getInt();
-        byteBuffer.compact();
-        clientSocketChannel.read(byteBuffer);
-        byteBuffer.flip();
-        StringBuilder sb = new StringBuilder();
-        while (lengthDir > 0) {
-            while (byteBuffer.hasRemaining() && lengthDir > 0) {
-                sb.append((char) byteBuffer.get());
-                lengthDir--;
-            }
-        }
-        System.out.println(sb.toString());
+        String currentDir = Protocol.getStringFromSocketChannel((SocketChannel) key.channel());
+        System.out.println(currentDir);
         System.out.print("> ");
     }
 

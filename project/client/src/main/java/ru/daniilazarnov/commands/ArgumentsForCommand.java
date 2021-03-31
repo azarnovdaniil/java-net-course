@@ -1,22 +1,22 @@
 package ru.daniilazarnov.commands;
 
-import ru.daniilazarnov.CommandsToServer;
+import ru.daniilazarnov.Commands;
 
 import java.util.Arrays;
 
 public class ArgumentsForCommand {
-    private byte numberOfCommand;
+    private final Commands command;
     private String[] args;
 
-    private static CommandsToServer[] commands = CommandsToServer.values();
+    private static Commands[] commands = Commands.values();
 
-    private ArgumentsForCommand(CommandsToServer command, String args[]) {
-        this.numberOfCommand = command.getNumberOfCommand();
+    private ArgumentsForCommand(Commands command, String args[]) {
+        this.command = command;
         this.args = args;
     }
 
     public static ArgumentsForCommand getArguments(String[] messageFromCLI) {
-        for (CommandsToServer command : commands) {
+        for (Commands command : commands) {
             if(String.valueOf(command).equals(messageFromCLI[0])) {
                 return new ArgumentsForCommand(command, Arrays.copyOfRange(messageFromCLI, 1, messageFromCLI.length));
             }
@@ -28,7 +28,7 @@ public class ArgumentsForCommand {
         return args;
     }
 
-    public byte getNumberOfCommand() {
-        return numberOfCommand;
+    public Commands getCommand() {
+        return this.command;
     }
 }

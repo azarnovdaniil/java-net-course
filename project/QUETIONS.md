@@ -20,3 +20,6 @@
    selector = Selector.open();
    clientSocketChannel.register(selector, SelectionKey.OP_READ);
    handleReadFromServer();
+   
+5. Constant expression required; такая ошибка возникает при попытке использования значения из Enum в блоке Switch.
+Даже после установки модификатора final на поле из Enum, ошибка сохраняется.

@@ -1,6 +1,7 @@
 package ru.daniilazarnov.commands;
 
 import ru.daniilazarnov.ClientConnection;
+import ru.daniilazarnov.Commands;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -8,7 +9,7 @@ import java.nio.channels.SocketChannel;
 
 public class ChangeDirCommand implements ICommands{
     private String[] args;
-    byte NUMBER_OF_COMMAND = 3;
+    Commands command = Commands.cd;
 
     public ChangeDirCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
@@ -29,7 +30,7 @@ public class ChangeDirCommand implements ICommands{
         ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
         String targetDir = args[0];
         int targetDitLength = targetDir.length();
-        byteBuffer.put(NUMBER_OF_COMMAND);
+        byteBuffer.put(command.getNumberOfCommand());
         byteBuffer.putInt(targetDitLength);
         byteBuffer.put(targetDir.getBytes());
         byteBuffer.flip();

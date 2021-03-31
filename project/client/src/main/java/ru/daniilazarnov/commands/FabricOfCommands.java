@@ -1,29 +1,26 @@
 package ru.daniilazarnov.commands;
 
-import ru.daniilazarnov.CommandsToServer;
-import ru.daniilazarnov.Protocol;
-
-import java.text.DateFormat;
+import ru.daniilazarnov.Commands;
 
 
 public class FabricOfCommands {
 
     public static ICommands getCommand(ArgumentsForCommand arguments) {
-        byte numberOfCommand = arguments.getNumberOfCommand();
-        switch (numberOfCommand) {
-            case Protocol.STOR:
+        Commands command = arguments.getCommand();
+        switch (command) {
+            case stor:
                 return new UploadFileCommand(arguments);
-            case Protocol.MKD:
+            case mkd:
                 return new MkDirCommand(arguments);
-            case Protocol.CD:
+            case cd:
                 return new ChangeDirCommand(arguments);
-            case Protocol.RETR:
+            case retr:
                 return new DownloadFileCommand(arguments);
-            case Protocol.USER:
+            case user:
                 return new AuthCommand(arguments);
-            case Protocol.HELP:
+            case help:
                 return new ShowHelpCommand(arguments);
-            case Protocol.CONNECT:
+            case connect:
                 return new ConnectToServerCommand(arguments);
             default:
                 return null;

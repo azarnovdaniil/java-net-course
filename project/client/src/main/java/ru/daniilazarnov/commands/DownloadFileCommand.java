@@ -1,6 +1,7 @@
 package ru.daniilazarnov.commands;
 
 import ru.daniilazarnov.ClientConnection;
+import ru.daniilazarnov.Commands;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -8,7 +9,7 @@ import java.nio.channels.SocketChannel;
 
 public class DownloadFileCommand implements ICommands{
     private String[] args;
-    byte NUMBER_OF_COMMAND = 4;
+    Commands command = Commands.retr;
 
     public DownloadFileCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
@@ -29,7 +30,7 @@ public class DownloadFileCommand implements ICommands{
         ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
         filename = args[0];
         fileNameLength = filename.length();
-        byteBuffer.put(NUMBER_OF_COMMAND);
+        byteBuffer.put(command.getNumberOfCommand());
         byteBuffer.putInt(fileNameLength);
         byteBuffer.put(filename.getBytes());
         byteBuffer.flip();

@@ -1,13 +1,13 @@
 package ru.daniilazarnov.commands;
 
 import ru.daniilazarnov.ClientConnection;
+import ru.daniilazarnov.Commands;
 
 import java.io.IOException;
-import java.nio.channels.SocketChannel;
 
 public class ShowHelpCommand implements ICommands{
     private String[] args;
-    byte NUMBER_OF_COMMAND = 7;
+    Commands command = Commands.help;
 
     public ShowHelpCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();

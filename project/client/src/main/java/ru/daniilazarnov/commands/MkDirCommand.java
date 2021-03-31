@@ -1,6 +1,7 @@
 package ru.daniilazarnov.commands;
 
 import ru.daniilazarnov.ClientConnection;
+import ru.daniilazarnov.Commands;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -8,7 +9,7 @@ import java.nio.channels.SocketChannel;
 
 public class MkDirCommand implements ICommands{
     private String[] args;
-    byte NUMBER_OF_COMMAND = 2;
+    Commands command = Commands.mkd;
 
     public MkDirCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
@@ -25,7 +26,7 @@ public class MkDirCommand implements ICommands{
             return false;
         }
         ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
-        byteBuffer.put(NUMBER_OF_COMMAND);
+        byteBuffer.put(command.getNumberOfCommand());
         byteBuffer.putInt(args[0].length());
         byteBuffer.put(args[0].getBytes());
         byteBuffer.flip();

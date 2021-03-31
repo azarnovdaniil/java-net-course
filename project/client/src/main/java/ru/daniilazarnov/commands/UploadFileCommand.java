@@ -1,6 +1,8 @@
 package ru.daniilazarnov.commands;
 
 import ru.daniilazarnov.ClientConnection;
+import ru.daniilazarnov.Commands;
+import ru.daniilazarnov.Protocol;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -12,7 +14,7 @@ import java.nio.file.Paths;
 
 public class UploadFileCommand implements ICommands {
     private String[] args;
-    byte NUMBER_OF_COMMAND = 1;
+    Commands command = Commands.stor;
 
     public UploadFileCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
@@ -32,22 +34,23 @@ public class UploadFileCommand implements ICommands {
         }
         ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
         Path pathSrcFile = Paths.get(args[0]);
-        if (!Files.exists(pathSrcFile)) {
-            return false;
-        }
-        byteBuffer.put(NUMBER_OF_COMMAND);
-        filename = pathSrcFile.getFileName().toString();
-        fileNameLength = filename.length();
-        byteBuffer.putInt(fileNameLength);
-        byteBuffer.put(filename.getBytes());
-        byteBuffer.putInt((int) Files.size(pathSrcFile));
-        FileChannel srcFileChannel = (FileChannel) Files.newByteChannel(pathSrcFile);
-        while (srcFileChannel.read(byteBuffer) != 0) {
-            byteBuffer.flip();
-            socketChannel.write(byteBuffer);
-            byteBuffer.clear();
-        }
-        srcFileChannel.close();
+        Protocol.sendFileToSocketChannel(pathSrcFile, socketChannel);
+//        if (!Files.exists(pathSrcFile)) {
+//            return false;
+//        }
+//        byteBuffer.put(command.getNumberOfCommand());
+//        filename = pathSrcFile.getFileName().toString();
+//        fileNameLength = filename.length();
+//        byteBuffer.putInt(fileNameLength);
+//        byteBuffer.put(filename.getBytes());
+//        byteBuffer.putInt((int) Files.size(pathSrcFile));
+//        FileChannel srcFileChannel = (FileChannel) Files.newByteChannel(pathSrcFile);
+//        while (srcFileChannel.read(byteBuffer) != 0) {
+//            byteBuffer.flip();
+//            socketChannel.write(byteBuffer);
+//            byteBuffer.clear();
+//        }
+//        srcFileChannel.close();
         return true;
     }
 }
