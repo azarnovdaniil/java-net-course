@@ -9,6 +9,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = Logger.getLogger(ServerHandler.class);
 
     @Override
+    public void channelRegistered(ChannelHandlerContext ctx) {
+        log.info("[Server]: Client connected " + ctx.channel().remoteAddress().toString());
+
+        ctx.fireChannelRegistered();
+    }
+
+    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
             log.info("[Server]: Message received..." + msg);
