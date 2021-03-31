@@ -2,6 +2,7 @@ package ru.daniilazarnov;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 import org.apache.log4j.Logger;
 
 import java.util.Scanner;
@@ -11,6 +12,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx){
+        log.info("[Client]: Channel Active!!!");
         Thread t1 = new Thread(() ->{
             while (true){
                 Scanner scanner = new Scanner(System.in);
@@ -33,6 +35,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        log.info("Server msg: " + msg);
+        try {
+            log.info("[Client]: Message received " + msg);
+        } finally {
+            ReferenceCountUtil.release(msg);
+            //ctx.close();
+        }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        log.error("[Client] : Error " + cause.getMessage(), cause);
+        ctx.close();
     }
 }

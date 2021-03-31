@@ -7,9 +7,13 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.apache.log4j.Logger;
+
+import java.nio.ByteOrder;
 
 import static ru.daniilazarnov.Constants.PORT;
 
@@ -33,10 +37,9 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) {
-                            ch.pipeline()
-                                    .addLast(new StringEncoder(),
-                                            new StringDecoder(),
-                                            new ServerHandler());
+                            ch.pipeline().addLast("Decoder", new EncoderDecoder.Decoder());
+                            ch.pipeline().addLast("Encoder", new EncoderDecoder.Encoder());
+                            ch.pipeline().addLast("Server Handler", new ServerHandler());
                         }
                     });
             ChannelFuture f = b.bind(port).sync();
