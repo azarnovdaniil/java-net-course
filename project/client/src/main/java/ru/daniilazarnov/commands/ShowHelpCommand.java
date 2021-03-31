@@ -5,9 +5,9 @@ import ru.daniilazarnov.Commands;
 
 import java.io.IOException;
 
-public class ShowHelpCommand implements ICommands{
+public class ShowHelpCommand implements ICommand {
     private String[] args;
-    Commands command = Commands.help;
+    private Commands command = Commands.help;
 
     public ShowHelpCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
@@ -15,11 +15,11 @@ public class ShowHelpCommand implements ICommands{
 
     @Override
     public boolean apply(ClientConnection connection) throws IOException {
-        System.out.print("user <name> - authorization\n" +
-                "stor <file location> - uploading a file to the server\n" +
-                "retr <file name> - downloading a file from the server\n" +
-                "mkd <directory name/path to directory> - creating a directory\n" +
-                "cd <path to directory> - change directory");
+        System.out.print("user <name> - authorization\n"
+                + "stor <file location> - uploading a file to the server\n"
+                + "retr <file name> - downloading a file from the server\n"
+                + "mkd <directory name/path to directory> - creating a directory\n"
+                + "cd <path to directory> - change directory");
         return true;
     }
 }

@@ -11,7 +11,9 @@ public enum Commands {
     user((byte) 5),
     connect((byte) 6),
     help((byte) 7),
-    pwd_or_string((byte) 8),;
+    message((byte) 8),
+    pwd((byte) 9),
+    unknown((byte) 0);
 
     private byte numberOfCommand;
 

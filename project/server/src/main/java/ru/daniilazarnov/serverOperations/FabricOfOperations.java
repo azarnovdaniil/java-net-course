@@ -17,6 +17,8 @@ public class FabricOfOperations {
                 return new UploadFileToClient(key);
             case user:
                 return new AuthenticationUser(key);
+            case pwd:
+                return new PresentWorkDirectory(key);
             default:
                 return null;
         }

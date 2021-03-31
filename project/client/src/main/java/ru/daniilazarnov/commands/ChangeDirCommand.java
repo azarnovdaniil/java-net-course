@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-public class ChangeDirCommand implements ICommands{
+public class ChangeDirCommand implements ICommand {
     private String[] args;
-    Commands command = Commands.cd;
+    private Commands command = Commands.cd;
+    private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     public ChangeDirCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
@@ -27,7 +28,7 @@ public class ChangeDirCommand implements ICommands{
             System.out.println("Wrong command");
             return false;
         }
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
         String targetDir = args[0];
         int targetDitLength = targetDir.length();
         byteBuffer.put(command.getNumberOfCommand());

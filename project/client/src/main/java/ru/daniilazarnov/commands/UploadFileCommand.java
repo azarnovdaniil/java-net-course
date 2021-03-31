@@ -6,15 +6,14 @@ import ru.daniilazarnov.Protocol;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class UploadFileCommand implements ICommands {
+public class UploadFileCommand implements ICommand {
     private String[] args;
-    Commands command = Commands.stor;
+    private Commands command = Commands.stor;
+    private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     public UploadFileCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
@@ -32,7 +31,7 @@ public class UploadFileCommand implements ICommands {
             System.out.println("Wrong command");
             return false;
         }
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
         Path pathSrcFile = Paths.get(args[0]);
         Protocol.sendFileToSocketChannel(pathSrcFile, socketChannel);
 //        if (!Files.exists(pathSrcFile)) {

@@ -2,8 +2,9 @@ package ru.daniilazarnov;
 
 import ru.daniilazarnov.commands.ArgumentsForCommand;
 import ru.daniilazarnov.commands.FabricOfCommands;
-import ru.daniilazarnov.commands.ICommands;
+import ru.daniilazarnov.commands.ICommand;
 
+import javax.annotation.processing.FilerException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
@@ -24,21 +25,16 @@ public class ClientConnection {
     private final String serverHost;
     private final int serverPort;
     private final Path resourcesPath = Paths.get("project/client/src/main/resources");
-
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8199;
-
-
 
     public ClientConnection(String host, int port) {
         this.serverHost = host;
         this.serverPort = port;
     }
-
     public ClientConnection() {
         this(DEFAULT_HOST, DEFAULT_PORT);
     }
-
 
     public SocketChannel getClientSocketChannel() {
         return clientSocketChannel;
@@ -47,6 +43,7 @@ public class ClientConnection {
     public Selector getSelector() {
         return selector;
     }
+
 
     public void connect() throws IOException {
         clientSocketChannel = SocketChannel.open(new InetSocketAddress(serverHost, serverPort));
@@ -70,8 +67,7 @@ public class ClientConnection {
                         }
                     }
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }).start();
@@ -83,15 +79,18 @@ public class ClientConnection {
         byteBuffer.flip();
         Optional<Commands> command = Commands.getCommand(byteBuffer.get());
         switch (command.get()) {
-            case pwd_or_string:
-                receiveCurrentDirFromServer(key);
+            case message:
+                receiveStringServer(key);
                 break;
             case stor:
-                receiveFile(key);
+                receiveFileFromServer(key);
+                break;
+            default:
+                throw new FilerException("Ошибка передачи данных");
         }
     }
 
-    public void receiveFile(SelectionKey key) throws IOException {
+    public void receiveFileFromServer(SelectionKey key) throws IOException {
         String fileName = Protocol.getStringFromSocketChannel(clientSocketChannel);
         Path targetPath = resourcesPath.resolve(fileName);
         ByteBuffer byteBufferForFile = Protocol.getFileInByteBufferFromSocketChannel(key);
@@ -103,7 +102,7 @@ public class ClientConnection {
         }
     }
 
-    private void receiveCurrentDirFromServer(SelectionKey key) throws IOException {
+    private void receiveStringServer(SelectionKey key) throws IOException {
         String currentDir = Protocol.getStringFromSocketChannel((SocketChannel) key.channel());
         System.out.println(currentDir);
         System.out.print("> ");
@@ -111,7 +110,7 @@ public class ClientConnection {
 
     public void commandInterpretationFromClient(String message) throws IOException {
         String[] splitMessage = message.split(" ");
-        ICommands command = FabricOfCommands.getCommand(ArgumentsForCommand.getArguments(splitMessage));
+        ICommand command = FabricOfCommands.getCommand(ArgumentsForCommand.getArguments(splitMessage));
         command.apply(this);
     }
 
@@ -119,10 +118,8 @@ public class ClientConnection {
     public static void main(String[] args) throws IOException, URISyntaxException {
         ClientConnection clientConnection = new ClientConnection();
         clientConnection.connect();
-
         String message = "";
-//        FileProtocol.connect(new InetSocketAddress("localhost", 8199));
-        while(!message.equals("exit")) {
+        while (!message.equals("exit")) {
             Scanner scanner = new Scanner(System.in);
             message = scanner.nextLine();
             clientConnection.commandInterpretationFromClient(message);

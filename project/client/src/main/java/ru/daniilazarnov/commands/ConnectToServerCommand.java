@@ -9,9 +9,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
-public class ConnectToServerCommand implements ICommands{
+public class ConnectToServerCommand implements ICommand {
     private String[] args;
-    Commands command = Commands.user;
+    private Commands command = Commands.user;
 
     public ConnectToServerCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();

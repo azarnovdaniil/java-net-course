@@ -21,24 +21,19 @@ public class ServerConnection {
     private int serverPort;
     private Path pathToStorage;
     private static int acceptClientIndex;
-
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8199;
     private final ByteBuffer welcomeMessage = ByteBuffer.allocate(512);
-//    private final ByteBuffer byteBuffer = java.nio.ByteBuffer.allocate(8192);
     private static final Path DEFAULT_PATH_TO_STORAGE = Paths.get("project/server/src/main/resources");
-
 
     public ServerConnection(String serverHost, int serverPort, Path pathToStorage) {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
         this.pathToStorage = pathToStorage;
     }
-
     public ServerConnection(String serverHost, int serverPort) {
         this(serverHost, serverPort, DEFAULT_PATH_TO_STORAGE);
     }
-
     public ServerConnection() {
         this(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_PATH_TO_STORAGE);
     }
@@ -53,7 +48,7 @@ public class ServerConnection {
         if (!Files.exists(pathToStorage)) {
             Files.createDirectory(pathToStorage);
         }
-        welcomeMessage.put(Commands.pwd_or_string.getNumberOfCommand());
+        welcomeMessage.put(Commands.message.getNumberOfCommand());
         welcomeMessage.putInt("Connection established".length());
         welcomeMessage.put("Connection established".getBytes());
         welcomeMessage.flip();
@@ -104,11 +99,8 @@ public class ServerConnection {
     }
 
     private void handleRead(SelectionKey key) throws IOException {
-//        SocketChannel sc = (SocketChannel) key.channel();
         serverCommandInterpretation(key);
-//        StringBuilder sb = new StringBuilder();
     }
-
 
     public void serverCommandInterpretation(SelectionKey key) throws IOException {
         SocketChannel socketChannel = (SocketChannel) key.channel();
@@ -120,20 +112,6 @@ public class ServerConnection {
         ServerOperation serverOperation = FabricOfOperations.getOperation(command.get(), key);
         serverOperation.apply();
         }
-
-
-
-//    private void sendMessageToClient(SelectionKey key, SocketChannel socketChannel, String message) throws IOException {
-//        byteBuffer.clear();
-//        byteBuffer.put((byte) 1);
-//        byteBuffer.putInt(message.length());
-//        byteBuffer.put(message.getBytes());
-//        byteBuffer.flip();
-//        socketChannel.write(byteBuffer);
-//    }
-
-
-
 
     public static void main(String[] args) throws IOException {
         ServerConnection serverConnection = new ServerConnection();

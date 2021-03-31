@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-public class AuthCommand implements ICommand {
+public class PresentWorkDirectory implements ICommand {
     private String[] args;
-    private Commands command = Commands.user;
+    private Commands command = Commands.pwd;
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
-    public AuthCommand(ArgumentsForCommand arguments) {
+    public PresentWorkDirectory(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
     }
 
@@ -22,14 +22,12 @@ public class AuthCommand implements ICommand {
         if (socketChannel == null) {
             return false;
         }
-        if (args.length != 1) {
+        if (args.length != 0) {
             System.out.println("Wrong command");
             return false;
         }
         ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
         byteBuffer.put(command.getNumberOfCommand());
-        byteBuffer.putInt(args[0].length());
-        byteBuffer.put(args[0].getBytes());
         byteBuffer.flip();
         socketChannel.write(byteBuffer);
         return true;

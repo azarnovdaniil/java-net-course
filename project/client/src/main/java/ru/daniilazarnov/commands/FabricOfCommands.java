@@ -5,7 +5,7 @@ import ru.daniilazarnov.Commands;
 
 public class FabricOfCommands {
 
-    public static ICommands getCommand(ArgumentsForCommand arguments) {
+    public static ICommand getCommand(ArgumentsForCommand arguments) {
         Commands command = arguments.getCommand();
         switch (command) {
             case stor:
@@ -22,8 +22,10 @@ public class FabricOfCommands {
                 return new ShowHelpCommand(arguments);
             case connect:
                 return new ConnectToServerCommand(arguments);
+            case pwd:
+                return new PresentWorkDirectory(arguments);
             default:
-                return null;
+                return new UnknownCommand();
         }
     }
 }

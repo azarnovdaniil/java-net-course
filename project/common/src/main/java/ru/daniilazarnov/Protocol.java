@@ -7,13 +7,14 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Protocol {
-    private static final int DEFAULT_BUFFER_SIZE = 4;
+    private static final int DEFAULT_BUFFER_SIZE_FOR_STRING_REICIVER = 4;
+    private static final int DEFAULT_BUFFER_SIZE_FOR_STRING_SENDER = 512;
+    private static final int DEFAULT_BUFFER_SIZE_FOR_FILE_SENDER = 8192;
 
     public static String getStringFromSocketChannel(SocketChannel socketChannel) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE_FOR_STRING_REICIVER);
         socketChannel.read(byteBuffer);
         byteBuffer.flip();
         int fileNameLength = byteBuffer.getInt();
@@ -33,7 +34,7 @@ public class Protocol {
     }
 
     public static ByteBuffer getFileInByteBufferFromSocketChannel(SelectionKey key) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE_FOR_FILE_SENDER);
         SocketChannel socketChannel = (SocketChannel) key.channel();
         socketChannel.read(byteBuffer);
         byteBuffer.flip();
@@ -53,8 +54,8 @@ public class Protocol {
     }
 
     public static boolean sendStringToSocketChannel(String message, SocketChannel socketChannel) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(512);
-        byteBuffer.put(Commands.pwd_or_string.getNumberOfCommand());
+        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE_FOR_STRING_SENDER);
+        byteBuffer.put(Commands.message.getNumberOfCommand());
         byteBuffer.putInt(message.length());
         byteBuffer.put(message.getBytes());
         byteBuffer.flip();
@@ -63,7 +64,7 @@ public class Protocol {
     }
 
     public static boolean sendFileToSocketChannel(Path srcPath, SocketChannel socketChannel) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE_FOR_FILE_SENDER);
         String fileName = srcPath.getFileName().toString();
         if (!Files.exists(srcPath)) {
             return false;

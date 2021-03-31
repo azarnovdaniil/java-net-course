@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-public class MkDirCommand implements ICommands{
+public class MkDirCommand implements ICommand {
     private String[] args;
-    Commands command = Commands.mkd;
+    private Commands command = Commands.mkd;
+    private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     public MkDirCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
@@ -25,7 +26,7 @@ public class MkDirCommand implements ICommands{
             System.out.println("Wrong command");
             return false;
         }
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
         byteBuffer.put(command.getNumberOfCommand());
         byteBuffer.putInt(args[0].length());
         byteBuffer.put(args[0].getBytes());

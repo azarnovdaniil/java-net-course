@@ -3,7 +3,6 @@ package ru.daniilazarnov.serverOperations;
 import ru.daniilazarnov.Protocol;
 import ru.daniilazarnov.UserInfo;
 
-import javax.annotation.processing.FilerException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -13,9 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class SaveFile implements ServerOperation{
-    SelectionKey key;
-    SocketChannel socketChannel;
+public class SaveFile implements ServerOperation {
+    private SelectionKey key;
+    private SocketChannel socketChannel;
     public SaveFile(SelectionKey key) {
         this.key = key;
         this.socketChannel = (SocketChannel) key.channel();

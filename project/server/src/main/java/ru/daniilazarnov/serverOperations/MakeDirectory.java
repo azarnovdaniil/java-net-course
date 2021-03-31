@@ -2,18 +2,16 @@ package ru.daniilazarnov.serverOperations;
 
 import ru.daniilazarnov.Protocol;
 import ru.daniilazarnov.UserInfo;
-
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class MakeDirectory implements ServerOperation{
-    SelectionKey key;
-    SocketChannel socketChannel;
+public class MakeDirectory implements ServerOperation {
+    private SelectionKey key;
+    private SocketChannel socketChannel;
     public MakeDirectory(SelectionKey key) {
         this.key = key;
         this.socketChannel = (SocketChannel) key.channel();
@@ -34,7 +32,7 @@ public class MakeDirectory implements ServerOperation{
         }
         try {
             Files.createDirectories(targetPath);
-            Protocol.sendStringToSocketChannel(userInfo.getUserRoot().relativize(userCurrentPath).normalize().toString(), socketChannel);
+            Protocol.sendStringToSocketChannel("Directory " + dirName + " created", socketChannel);
             return true;
         } catch (IOException e) {
             return false;

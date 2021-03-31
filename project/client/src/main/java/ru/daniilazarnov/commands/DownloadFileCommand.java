@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-public class DownloadFileCommand implements ICommands{
+public class DownloadFileCommand implements ICommand {
     private String[] args;
-    Commands command = Commands.retr;
+    private Commands command = Commands.retr;
+    private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     public DownloadFileCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
@@ -27,7 +28,7 @@ public class DownloadFileCommand implements ICommands{
             System.out.println("Wrong command");
             return false;
         }
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
         filename = args[0];
         fileNameLength = filename.length();
         byteBuffer.put(command.getNumberOfCommand());
