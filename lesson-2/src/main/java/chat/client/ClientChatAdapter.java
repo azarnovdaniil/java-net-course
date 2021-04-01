@@ -4,6 +4,7 @@ import chat.gui.ChatFrame;
 import chat.helpers.FileHelper;
 
 public class ClientChatAdapter {
+    public static final int COUNT = 100;
     private ChatFrame chatFrame;
     private Client client;
 
@@ -11,7 +12,7 @@ public class ClientChatAdapter {
         client = new Client(host, port);
         chatFrame = new ChatFrame(messageFromFormSubmitListener -> client.sendMessage(messageFromFormSubmitListener));
         //2
-        chatFrame.append(FileHelper.readHistory(100));
+        chatFrame.append(FileHelper.readHistory(COUNT));
         read();
     }
 

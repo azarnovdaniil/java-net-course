@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ServerChat implements Chat {
+    public static final int PORT = 8888;
     private ServerSocket serverSocket;
     private Set<ClientHandler> clients;
     private AuthenticationService authenticationService;
@@ -25,7 +26,7 @@ public class ServerChat implements Chat {
 
     private void start() {
         try {
-            serverSocket = new ServerSocket(8888);
+            serverSocket = new ServerSocket(PORT);
             clients = new HashSet<>();
             authenticationService = new AuthenticationService();
             logger.log(Level.INFO, "Server is starting");

@@ -15,7 +15,11 @@ public class ChatFrame extends JFrame {
 
         setTitle("Chat Frame v1.0.0");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setBounds(new Rectangle(150, 150, 400, 700));
+        final int x = 150;
+        final int y = 150;
+        final int width = 400;
+        final int height = 700;
+        setBounds(new Rectangle(x, y, width, height));
 
         setLayout(new BorderLayout());
 

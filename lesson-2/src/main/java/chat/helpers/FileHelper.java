@@ -53,12 +53,14 @@ public class FileHelper {
         return result.toString();
     }
 
-    public static void saveFile(InputStream from, Path path){
+    public static void saveFile(InputStream from, Path path) {
         Path out = Path.of(OUTPUT_DIRECTORY + File.separator + path.getFileName());
-        try(OutputStream to = Files.newOutputStream(out)){
+
+        try (OutputStream to = Files.newOutputStream(out)) {
             from.transferTo(to);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 }

@@ -1,7 +1,5 @@
 package chat.server;
 
-//import com.mysql.jdbc.Driver
-//import helpers.DataBaseHelper;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,7 +14,6 @@ public class AuthenticationService {
     }
 
     public void update() {
-        //entries = DataBaseHelper.getUsers();
         entries = Set.of(
                 new CredentialsEntry("l1", "p1", "nickname1"),
                 new CredentialsEntry("l2", "p2", "nickname2"),

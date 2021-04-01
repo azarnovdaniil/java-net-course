@@ -9,8 +9,8 @@ import java.util.Set;
 
 public class DataBaseHelper {
 
-    private final static String SELECT_ALL_USERS = "select login, password, nickname from chat.users";
-    private final static String UPDATE_USER_NICKNAME = "update chat.users set nickname = ? where nickname = ?";
+    private static final String SELECT_ALL_USERS = "select login, password, nickname from chat.users";
+    private static final String UPDATE_USER_NICKNAME = "update chat.users set nickname = ? where nickname = ?";
 
     public DataBaseHelper() {
     }

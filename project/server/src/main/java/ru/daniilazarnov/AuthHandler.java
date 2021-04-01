@@ -3,14 +3,10 @@ package ru.daniilazarnov;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-//import com.mysql.jdbc.Driver
-//import helpers.DataBaseHelper;
 import java.util.Set;
-import java.util.logging.Logger;
 
 public class AuthHandler extends ChannelInboundHandlerAdapter {
 
-    private Logger logger = Logger.getLogger(this.getClass().getName());
     //private final Set<CredentialsEntry> authorizedClients = DataBaseHelper.getUsers();
     private final Set<CredentialsEntry> authorizedClients = Set.of(
             new CredentialsEntry("l1", "p1", "nickname1"),
@@ -21,9 +17,9 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
 
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (authOk) {
-            ctx.fireChannelRead((String) msg);
+            ctx.fireChannelRead(msg);
             return;
         }
         String msgs = (String) msg;

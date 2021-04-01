@@ -44,20 +44,24 @@ public class ClientHandler {
     private void listen() {
         logger.log(Level.INFO, "ClientHandler is listening");
         new Thread(() -> {
-            if (!isLoggedIn) doAuth();
+
+            if (!isLoggedIn) {
+                doAuth();
+            }
             receiveMessage();
         }).start();
     }
 
     private void doAuth() {
-        sendMessage("Please enter credentials. Sample [-auth login password] \n " +
-                "or you will be disconnected after 120 seconds");
+        sendMessage("Please enter credentials. Sample [-auth login password] \n "
+                + "or you will be disconnected after 120 seconds");
         try {
             /* ", de
              * -auth login password
              * sample: -auth l1 p1
              */
-            socket.setSoTimeout(120_000);
+            final int timeout = 120_000;
+            socket.setSoTimeout(timeout);
 
             while (true) {
                 String mayBeCredentials = in.readUTF();
@@ -138,11 +142,13 @@ public class ClientHandler {
                         } else {
                             sendMessage("[INFO] This nickname is already ocupped");
                         }
+
                         break;
                     }
                     //
-                    if(message.startsWith("-file")){
+                    if (message.startsWith("-file")) {
                         String[] data = message.split("\\s");
+
                         try {
                             saveFile(socket.getInputStream(), Path.of(data[1]));
                             sendMessage("[INFO] file saved properly");

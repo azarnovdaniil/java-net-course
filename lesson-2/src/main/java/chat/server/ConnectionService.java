@@ -6,9 +6,14 @@ import java.sql.SQLException;
 
 public final class ConnectionService {
 
+    public static final String JDBC_MYSQL_S_D_S = "jdbc:mysql://%s:%d/%s";
+    public static final String HOST = "127.0.0.1";
+    public static final int PORT = 3306;
+    public static final String DATABASE = "chat";
+
     public static Connection connect() {
         try {
-            return DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s", "127.0.0.1", 3306, "chat"), "root", "root");
+            return DriverManager.getConnection(String.format(JDBC_MYSQL_S_D_S, HOST, PORT, DATABASE), "root", "root");
         } catch (SQLException throwables) {
             throw new RuntimeException("SWW", throwables);
         }

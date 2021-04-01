@@ -11,16 +11,16 @@ import java.util.Set;
 
 public class DataBaseHelper {
 
-    private final static String SELECT_ALL_USERS = "select login, password, nickname from chat.users";
-    private final static String UPDATE_USER_NICKNAME = "update chat.users set nickname = ? where nickname = ?";
-
-    public DataBaseHelper() {
-    }
+    private static final String SELECT_ALL_USERS = "select login, password, nickname from chat.users";
+    private static final String UPDATE_USER_NICKNAME = "update chat.users set nickname = ? where nickname = ?";
+    private static final int PORT = 3306;
+    private static final String DATABASE = "chat";
+    private static final String HOST = "127.0.0.1";
+    private static final String DRIVER_STRING = "jdbc:mysql://%s:%d/%s";
 
     public static Connection connect() {
         try {
-            //todo make without static vars!
-            return DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s", "127.0.0.1", 3306, "chat"), "root", "root");
+            return DriverManager.getConnection(String.format(DRIVER_STRING, HOST, PORT, DATABASE), "root", "root");
         } catch (SQLException throwables) {
             throw new RuntimeException("SWW", throwables);
         }
@@ -72,13 +72,14 @@ public class DataBaseHelper {
 
         try {
             con.setAutoCommit(false);
-            PreparedStatement ps = con.prepareStatement(UPDATE_USER_NICKNAME);
-            ps.setString(1, newNick);
-            ps.setString(2, oldNick);
+            try (PreparedStatement ps = con.prepareStatement(UPDATE_USER_NICKNAME)) {
+                ps.setString(1, newNick);
+                ps.setString(2, oldNick);
 
-            if (ps.executeUpdate() > 0) {
-                con.commit();
-                result = true;
+                if (ps.executeUpdate() > 0) {
+                    con.commit();
+                    result = true;
+                }
             }
         } catch (SQLException throwables) {
             rollback(con);
