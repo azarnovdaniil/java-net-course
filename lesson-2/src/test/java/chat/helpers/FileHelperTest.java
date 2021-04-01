@@ -16,7 +16,9 @@ class FileHelperTest {
     @Test
     void saveFile() throws IOException {
         Path file = Path.of("upload", "test.txt");
-        Files.createDirectory(Path.of("upload"));
+        if (!Files.exists(Path.of("upload"))) {
+            Files.createDirectory(Path.of("upload"));
+        }
         if(!Files.exists(file)) Files.createFile(file);
 
         String str = "тестовая строка\n" + new Date().getTime();
