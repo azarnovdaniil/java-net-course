@@ -30,11 +30,11 @@ class FileHelperTest {
 
     @org.junit.jupiter.api.Test
     void listFilesInDirectory() throws IOException {
-        ArrayList<Path> r = (ArrayList<Path>) FileHelper.listFilesInDirectory("test", "test2");
+        /*ArrayList<Path> r = (ArrayList<Path>) FileHelper.listFilesInDirectory("test", "test2");
 
         for (Path p: r) {
             System.out.println(p.getFileName());
-        }
+        }*/
     }
 
     @org.junit.jupiter.api.Test
