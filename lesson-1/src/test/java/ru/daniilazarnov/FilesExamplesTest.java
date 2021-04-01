@@ -148,7 +148,7 @@ class FilesExamplesTest {
         System.out.println();
         System.out.println(channel.size());
 
-        channel.truncate(channel.size() - 20);
+        channel.truncate(channel.size() - 1);
         System.out.println(channel.size());
         channel.close();
     }
