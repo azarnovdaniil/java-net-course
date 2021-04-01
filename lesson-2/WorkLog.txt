@@ -1,0 +1,9 @@
+1. Checked NioChatServerExample.java code - это очень похоже на то что мы делали в чате ServerChat только с
+использованием другой библиотеки.
+2. Checked BufferExamplesTest.java code - продемонстрированы различные примеры испольхования класса ByteBuffer.
+Наверное пригодится.
+3-4. Попробовала применить NioServerChat вместо старого ServerChat https://github.com/tatiananosova/chat/pull/3
+     Запуталась. Все компилируется но клиент на может подключиться. Падает с Connection refused.
+     Exception in thread "main" ru.geekbrains.chat.ClientConnectionException: SWW
+5. Есть подозрение что клиента тоже надо переписать с использованием NIO.
+6. Поняля что порт задается в Client а не в ClientApp. Обновила пулреквест.
