@@ -18,7 +18,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
-            log.info("[Server]: Message received..." + msg);
+            log.info("[Server]: Message received = " + msg);
+            ctx.writeAndFlush(msg);
         } finally {
             ReferenceCountUtil.release(msg);
             //ctx.close();
@@ -28,9 +29,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         log.info("[Server]: Read Complete...");
-
-
-        ctx.writeAndFlush("Complete");
     }
 
     @Override

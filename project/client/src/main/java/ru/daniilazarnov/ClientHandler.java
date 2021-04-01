@@ -17,16 +17,21 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             while (true) {
                 Scanner scanner = new Scanner(System.in);
                 String msg = scanner.nextLine();
-                switch (msg) {
+                String[] splitMsg = msg.split(" ", 2);
+                String cmd = splitMsg[0];
+                String data = splitMsg[1];
+                switch (cmd) {
                     case "-test":
-                        log.info(ctx.name());
+                        log.info("[Client]: sending signal");
+                        ClientCommands.sendString(ctx, data);
+                        break;
                     case "-exit":
-                        log.info("exit");
+                        log.info("[Client]: exit");
                         ctx.close();
                         System.exit(0);
                         break;
                     default:
-                        System.out.println("Неизвестная комманда");
+                        System.out.println("Unknown command");
                 }
             }
         });
@@ -36,7 +41,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
-            log.info("[Client]: Message received " + msg);
+            log.info("[Client]: Message received = " + msg);
         } finally {
             ReferenceCountUtil.release(msg);
             //ctx.close();

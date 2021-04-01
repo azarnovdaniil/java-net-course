@@ -34,12 +34,9 @@ public class EncoderDecoder {
 
         @Override
         protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-            if (in.readableBytes() < MIN_READABLE_BYTES) {
-                return;
-            }
             String msg = in.toString(CharsetUtil.UTF_8);
             in.readerIndex(in.readerIndex() + in.readableBytes());
-            log.info("Decode:" + msg);
+            log.info("Decode: " + msg);
             out.add(msg);
         }
 
