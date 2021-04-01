@@ -29,7 +29,8 @@ public class ConsoleHandler {
                     fileSystem.walkAllFileTree(line.split(" ")[2]);
 
                 } else if (line.startsWith(StringConstants.UPLOAD)) {
-                    message = fileSystem.sendFile(Path.of("D:", "K.Gogolev", "Documents", "storage", "1.jpg"));
+//                    message = fileSystem.sendFile(Path.of("D:", "K.Gogolev", "Documents", "storage", "1.jpg"));
+                    message = fileSystem.sendFile(Path.of(line.split(" ")[1]));
                     break;
                 } else {
                     System.out.println(line);
