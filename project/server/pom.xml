@@ -18,6 +18,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>ru.daniilazarnov</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
         </dependency>
