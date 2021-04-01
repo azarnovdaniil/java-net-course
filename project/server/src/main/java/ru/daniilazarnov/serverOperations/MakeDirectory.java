@@ -10,11 +10,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class MakeDirectory implements ServerOperation {
-    private SelectionKey key;
-    private SocketChannel socketChannel;
+    private final SelectionKey key;
     public MakeDirectory(SelectionKey key) {
         this.key = key;
-        this.socketChannel = (SocketChannel) key.channel();
     }
 
 

@@ -12,15 +12,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class AuthenticationUser implements ServerOperation {
-    private SelectionKey key;
-    private SocketChannel socketChannel;
+    private final SelectionKey key;
     public AuthenticationUser(SelectionKey key) {
         this.key = key;
-        this.socketChannel = (SocketChannel) key.channel();
     }
 
     @Override
     public boolean apply() throws IOException {
+        SocketChannel socketChannel = (SocketChannel) key.channel();
         String userName = Protocol.getStringFromSocketChannel(socketChannel);
         ((UserInfo) key.attachment()).setName(userName);
         Path path = ((UserInfo) key.attachment()).getCurrentPath().getParent().resolve(Paths.get(userName));

@@ -8,8 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 public class MkDirCommand implements ICommand {
-    private String[] args;
-    private Commands command = Commands.mkd;
+    private final String[] args;
+    private final Commands command = Commands.mkd;
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     public MkDirCommand(ArgumentsForCommand arguments) {

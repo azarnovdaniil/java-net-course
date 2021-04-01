@@ -10,8 +10,8 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
 public class ConnectToServerCommand implements ICommand {
-    private String[] args;
-    private Commands command = Commands.user;
+    private final String[] args;
+    private final Commands command = Commands.user;
 
     public ConnectToServerCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();

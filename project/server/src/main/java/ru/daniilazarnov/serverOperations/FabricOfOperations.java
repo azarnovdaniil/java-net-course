@@ -19,6 +19,8 @@ public class FabricOfOperations {
                 return new AuthenticationUser(key);
             case pwd:
                 return new PresentWorkDirectory(key);
+            case disconnect:
+                return new DisconnectClient(key);
             default:
                 return null;
         }

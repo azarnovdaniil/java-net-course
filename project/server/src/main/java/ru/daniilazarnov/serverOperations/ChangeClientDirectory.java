@@ -12,11 +12,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ChangeClientDirectory implements ServerOperation {
-    private SelectionKey key;
-    private SocketChannel socketChannel;
+    private final SelectionKey key;
     public ChangeClientDirectory(SelectionKey key) {
         this.key = key;
-        this.socketChannel = (SocketChannel) key.channel();
     }
 
 
@@ -29,6 +27,7 @@ public class ChangeClientDirectory implements ServerOperation {
         Path currDir = userInfo.getCurrentPath();
         Path newPath = currDir.resolve(targetPath);
         if (!Files.exists(newPath)) {
+            Protocol.sendStringToSocketChannel("Directory not found", socketChannel);
             return false;
         }
         newPath = newPath.normalize();

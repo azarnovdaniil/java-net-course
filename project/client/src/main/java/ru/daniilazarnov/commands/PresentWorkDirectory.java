@@ -8,8 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 public class PresentWorkDirectory implements ICommand {
-    private String[] args;
-    private Commands command = Commands.pwd;
+    private final String[] args;
+    private final Commands command = Commands.pwd;
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     public PresentWorkDirectory(ArgumentsForCommand arguments) {

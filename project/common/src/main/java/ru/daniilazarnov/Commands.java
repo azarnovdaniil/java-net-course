@@ -13,6 +13,7 @@ public enum Commands {
     help((byte) 7),
     message((byte) 8),
     pwd((byte) 9),
+    disconnect((byte) 10),
     unknown((byte) 0);
 
     private byte numberOfCommand;

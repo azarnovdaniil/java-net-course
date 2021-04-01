@@ -6,8 +6,8 @@ import ru.daniilazarnov.Commands;
 import java.io.IOException;
 
 public class ShowHelpCommand implements ICommand {
-    private String[] args;
-    private Commands command = Commands.help;
+    private final String[] args;
+    private final Commands command = Commands.help;
 
     public ShowHelpCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();

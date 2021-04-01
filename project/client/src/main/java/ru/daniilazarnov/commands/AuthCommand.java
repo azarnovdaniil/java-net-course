@@ -8,8 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 public class AuthCommand implements ICommand {
-    private String[] args;
-    private Commands command = Commands.user;
+    private final String[] args;
+    private final Commands command = Commands.user;
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     public AuthCommand(ArgumentsForCommand arguments) {

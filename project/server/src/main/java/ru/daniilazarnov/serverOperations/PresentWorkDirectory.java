@@ -10,16 +10,15 @@ import java.nio.channels.SocketChannel;
 import java.nio.file.Path;
 
 public class PresentWorkDirectory implements ServerOperation {
-    private SelectionKey key;
-    private SocketChannel socketChannel;
+    private final SelectionKey key;
     public PresentWorkDirectory(SelectionKey key) {
         this.key = key;
-        this.socketChannel = (SocketChannel) key.channel();
     }
 
 
     @Override
     public boolean apply() throws IOException {
+        SocketChannel socketChannel = (SocketChannel) key.channel();
         UserInfo userInfo = (UserInfo) key.attachment();
         Path currentPath = userInfo.getCurrentPath();
         Path rootPath = userInfo.getUserRoot().getParent();

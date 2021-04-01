@@ -1,4 +1,5 @@
 package ru.daniilazarnov.serverOperations;
+
 import ru.daniilazarnov.Protocol;
 import ru.daniilazarnov.UserInfo;
 
@@ -9,11 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class UploadFileToClient implements ServerOperation {
-    private SelectionKey key;
-    private SocketChannel socketChannel;
+    private final SelectionKey key;
+
     public UploadFileToClient(SelectionKey key) {
         this.key = key;
-        this.socketChannel = (SocketChannel) key.channel();
     }
 
 
@@ -23,7 +23,10 @@ public class UploadFileToClient implements ServerOperation {
         String fileName = Protocol.getStringFromSocketChannel(socketChannel);
         Path currentDir = ((UserInfo) key.attachment()).getCurrentPath();
         Path targetFilePath = currentDir.resolve(Paths.get(fileName));
-        Protocol.sendFileToSocketChannel(targetFilePath, socketChannel);
+        if (!Protocol.sendFileToSocketChannel(targetFilePath, socketChannel)) {
+            Protocol.sendStringToSocketChannel("File not found", socketChannel);
+            return false;
+        }
         return true;
     }
 }

@@ -119,10 +119,11 @@ public class ClientConnection {
         ClientConnection clientConnection = new ClientConnection();
         clientConnection.connect();
         String message = "";
-        while (!message.equals("exit")) {
+        do {
             Scanner scanner = new Scanner(System.in);
             message = scanner.nextLine();
             clientConnection.commandInterpretationFromClient(message);
-        }
+        } while (!message.equals("disconnect"));
+            clientConnection.getClientSocketChannel().close();
     }
 }

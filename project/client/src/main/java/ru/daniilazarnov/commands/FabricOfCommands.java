@@ -9,7 +9,7 @@ public class FabricOfCommands {
         Commands command = arguments.getCommand();
         switch (command) {
             case stor:
-                return new UploadFileCommand(arguments);
+                return new UploadFileToServer(arguments);
             case mkd:
                 return new MkDirCommand(arguments);
             case cd:
@@ -24,6 +24,8 @@ public class FabricOfCommands {
                 return new ConnectToServerCommand(arguments);
             case pwd:
                 return new PresentWorkDirectory(arguments);
+            case disconnect:
+                return new Disconnect(arguments);
             default:
                 return new UnknownCommand();
         }

@@ -8,8 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 public class DownloadFileCommand implements ICommand {
-    private String[] args;
-    private Commands command = Commands.retr;
+    private final String[] args;
+    private final Commands command = Commands.retr;
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     public DownloadFileCommand(ArgumentsForCommand arguments) {
