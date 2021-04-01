@@ -8,13 +8,13 @@ import org.apache.log4j.Logger;
 import java.util.Scanner;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger log = Logger.getLogger(ClientHandler.class);
+    private static Logger log = Logger.getLogger(ClientHandler.class);
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx){
+    public void channelActive(ChannelHandlerContext ctx) {
         log.info("[Client]: Channel Active!!!");
-        Thread t1 = new Thread(() ->{
-            while (true){
+        Thread t1 = new Thread(() -> {
+            while (true) {
                 Scanner scanner = new Scanner(System.in);
                 String msg = scanner.nextLine();
                 switch (msg) {

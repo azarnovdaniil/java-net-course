@@ -9,12 +9,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.log4j.Logger;
 
-import java.nio.ByteOrder;
-
 import static ru.daniilazarnov.Constants.PORT;
 
 public class Server {
-    private static final Logger log = Logger.getLogger(Server.class);
+    private static Logger log = Logger.getLogger(Server.class);
 
     public static void main(String[] args) throws Exception {
         int port = Integer.getInteger("m_port", PORT);

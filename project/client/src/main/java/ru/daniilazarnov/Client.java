@@ -8,15 +8,13 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import org.apache.log4j.Logger;
 
 import static ru.daniilazarnov.Constants.LOCALHOST;
 import static ru.daniilazarnov.Constants.PORT;
 
 public class Client {
-    private static final Logger log = Logger.getLogger(Client.class);
+    private static Logger log = Logger.getLogger(Client.class);
 
     public static void main(String[] args) throws Exception {
         log.info("Client starting!");

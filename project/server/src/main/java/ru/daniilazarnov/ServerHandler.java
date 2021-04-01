@@ -6,7 +6,7 @@ import io.netty.util.ReferenceCountUtil;
 import org.apache.log4j.Logger;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger log = Logger.getLogger(ServerHandler.class);
+    private static Logger log = Logger.getLogger(ServerHandler.class);
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
@@ -19,7 +19,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
             log.info("[Server]: Message received..." + msg);
-        }finally {
+        } finally {
             ReferenceCountUtil.release(msg);
             //ctx.close();
         }
@@ -44,5 +44,4 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         log.error("[Server]: Error..." + cause.toString(), cause);
         ctx.close();
     }
-
 }

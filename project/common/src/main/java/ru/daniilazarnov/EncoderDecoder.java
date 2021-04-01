@@ -2,26 +2,25 @@ package ru.daniilazarnov;
 
 import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.util.CharsetUtil;
+import org.apache.log4j.Logger;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.List;
 
 public class EncoderDecoder {
+    private static Logger log = Logger.getLogger(EncoderDecoder.class);
+    private static final int MIN_READABLE_BYTES = 4;
 
     public static class Encoder extends MessageToByteEncoder<String> {
 
         @Override
-        protected void encode(ChannelHandlerContext ctx, String msg, ByteBuf out)
-                throws Exception {
-            System.out.println("Encode: " + msg);
+        protected void encode(ChannelHandlerContext ctx, String msg, ByteBuf out) {
+            log.info("Encode: " + msg);
             if (msg.length() == 0) {
                 return;
             }
@@ -35,14 +34,12 @@ public class EncoderDecoder {
 
         @Override
         protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-            if(in.readableBytes() < 4) {
+            if (in.readableBytes() < MIN_READABLE_BYTES) {
                 return;
             }
-
             String msg = in.toString(CharsetUtil.UTF_8);
             in.readerIndex(in.readerIndex() + in.readableBytes());
-            System.out.println("Decode:"+msg);
-
+            log.info("Decode:" + msg);
             out.add(msg);
         }
 
