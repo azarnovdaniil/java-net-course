@@ -10,9 +10,9 @@ import java.util.function.Consumer;
 
 public class RepoDecoder extends ChannelInboundHandlerAdapter {
 
-    private boolean isServer;
+    private final boolean isServer;
     private final UserProfile profile;
-    private BiConsumer<ContextData, UserProfile> commandReader;
+    private final BiConsumer<ContextData, UserProfile> commandReader;
     private Consumer<UserProfile> closeConnection;
 
     RepoDecoder(boolean isServer, BiConsumer<ContextData, UserProfile> commandReader, Consumer<UserProfile> closeConnection) {
@@ -31,6 +31,7 @@ public class RepoDecoder extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("message came");
         ByteBuf message = (ByteBuf) msg;
         ContextData messageContext = new ContextData();
         messageContext.setCommand(message.readInt());
@@ -44,19 +45,20 @@ public class RepoDecoder extends ChannelInboundHandlerAdapter {
 
         if (isServer) {
             if (!isAuthorised()) {
-                if (!(messageContext.getCommand() == CommandList.login.ordinal()) &&
-                        !(messageContext.getCommand() == CommandList.register.ordinal())) {
+                if (!(messageContext.getCommand() == CommandList.login.getNum()) &&
+                        !(messageContext.getCommand() == CommandList.register.getNum())) {
                     this.profile.sendMessage("false%%%You are not authorised. Please login before you can use this service.");
                     return;
                 }
             }
         }
-        if (messageContext.getCommand() == CommandList.upload.ordinal()) {
+        if (messageContext.getCommand() == CommandList.upload.getNum()) {
             FileContainer container = new FileContainer(bytes, messageContext.getFilePath());
             ctx.fireChannelRead(container);
         } else {
             commandReader.accept(messageContext, profile);
         }
+
 
     }
 

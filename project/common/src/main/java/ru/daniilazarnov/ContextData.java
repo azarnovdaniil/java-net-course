@@ -11,16 +11,16 @@ public class ContextData {
     private String password;
     private byte[] container;
     private final ByteBuf delimiter;
-    private final byte [] delimArray;
+    private final byte[] delimArray;
 
-    ContextData(){
-        String del="%%%fucking_delimiter%%%";
+    ContextData() {
+        String del = "%%%fucking_delimiter%%%";
         this.delimArray = del.getBytes();
-        this.delimiter= wrappedBuffer(delimArray);
-        this.filePath="X:\\emptyPath\\";
-        this.login="empty";
-        this.password="empty";
-        this.container=new byte[1];
+        this.delimiter = wrappedBuffer(delimArray);
+        this.filePath = "X:\\emptyPath\\";
+        this.login = "empty";
+        this.password = "empty";
+        this.container = new byte[1];
     }
 
     public void setCommand(int command) {
@@ -43,12 +43,12 @@ public class ContextData {
         this.container = container;
     }
 
-    public void clone (ContextData renew){
-        this.command= renew.getCommand();
-        this.login=renew.getLogin();
-        this.password=renew.getPassword();
-        this.filePath= renew.getFilePath();
-        this.container=renew.getContainer();
+    public void clone(ContextData renew) {
+        this.command = renew.getCommand();
+        this.login = renew.getLogin();
+        this.password = renew.getPassword();
+        this.filePath = renew.getFilePath();
+        this.container = renew.getContainer();
     }
 
 

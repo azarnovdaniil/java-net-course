@@ -3,7 +3,7 @@ package ru.daniilazarnov;
 import java.sql.*;
 
 public class DataBaseProcessor {
-    private ConnectionService connector;
+    private final ConnectionService connector;
 
     DataBaseProcessor(){
         connector=new ConnectionService();

@@ -21,10 +21,10 @@ public class RepoServer {
     private final int port;
     private final String host;
     private final LinkedList<UserProfile> userList;
-    private BiConsumer<String, SocketChannel> sendServerMessage;
-    private BiConsumer <ContextData,UserProfile> reader;
-    private Consumer <UserProfile> closeConnection;
-    private ExecutorService executorService;
+    private final BiConsumer<String, SocketChannel> sendServerMessage;
+    private final BiConsumer <ContextData,UserProfile> reader;
+    private final Consumer <UserProfile> closeConnection;
+    private final ExecutorService executorService;
     public static AuthorisationService authorisationService;
 
 
@@ -46,7 +46,7 @@ public class RepoServer {
                 }
                 throw new RuntimeException("No channel found for sending message!");
             }
-            toSend.getContextData().setCommand(CommandList.serverMessage.ordinal());
+            toSend.getContextData().setCommand(CommandList.serverMessage.getNum());
             channel.writeAndFlush(mess.getBytes());
         };
 
