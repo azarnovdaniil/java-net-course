@@ -5,6 +5,7 @@ import ru.daniilazarnov.UserInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Files;
@@ -27,14 +28,16 @@ public class ChangeClientDirectory implements ServerOperation {
         Path currDir = userInfo.getCurrentPath();
         Path newPath = currDir.resolve(targetPath);
         if (!Files.exists(newPath)) {
-            Protocol.sendStringToSocketChannel("Directory not found", socketChannel);
+            ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer("Directory not found");
+            socketChannel.write(byteBuffer);
             return false;
         }
         newPath = newPath.normalize();
         ((UserInfo) key.attachment()).setCurrentPath(newPath);
 
         Path currentPathForClient = userInfo.getUserRoot().getParent().relativize(newPath).normalize();
-        Protocol.sendStringToSocketChannel(currentPathForClient.toString() + File.separator, socketChannel);
+        ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer(currentPathForClient.toString() + File.separator);
+        socketChannel.write(byteBuffer);
         return true;
     }
 }

@@ -38,7 +38,9 @@ public class ProtocolTest {
                             SocketChannel socketChannel = ((ServerSocketChannel) key.channel()).accept();
                             socketChannel.configureBlocking(false);
 
-                            Protocol.sendStringToSocketChannel("Test string", socketChannel);
+//                            Protocol.sendStringToSocketChannel("Test string", socketChannel);
+
+
 //                            ByteBuffer byteBuffer = ByteBuffer.allocate(128);
 //                            byteBuffer.putInt("Test string".length());
 //                            byteBuffer.put("Test string".getBytes());

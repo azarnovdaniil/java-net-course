@@ -3,6 +3,7 @@ package ru.daniilazarnov.serverOperations;
 import ru.daniilazarnov.Protocol;
 import ru.daniilazarnov.UserInfo;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Files;
@@ -30,7 +31,8 @@ public class MakeDirectory implements ServerOperation {
         }
         try {
             Files.createDirectories(targetPath);
-            Protocol.sendStringToSocketChannel("Directory " + dirName + " created", socketChannel);
+            ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer("Directory " + dirName + " created");
+            socketChannel.write(byteBuffer);
             return true;
         } catch (IOException e) {
             return false;

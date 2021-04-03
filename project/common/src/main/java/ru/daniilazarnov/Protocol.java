@@ -53,14 +53,13 @@ public class Protocol {
         return fileBuffer;
     }
 
-    public static boolean sendStringToSocketChannel(String message, SocketChannel socketChannel) throws IOException {
+    public static ByteBuffer wrapStringAndCommandInByteBuffer(String message) throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE_FOR_STRING_SENDER);
         byteBuffer.put(Commands.message.getNumberOfCommand());
         byteBuffer.putInt(message.length());
         byteBuffer.put(message.getBytes());
         byteBuffer.flip();
-        socketChannel.write(byteBuffer);
-        return true;
+        return byteBuffer;
     }
 
     public static boolean sendFileToSocketChannel(Path srcPath, SocketChannel socketChannel) throws IOException {

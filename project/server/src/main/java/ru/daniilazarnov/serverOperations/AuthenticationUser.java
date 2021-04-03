@@ -5,6 +5,7 @@ import ru.daniilazarnov.UserInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Files;
@@ -27,12 +28,14 @@ public class AuthenticationUser implements ServerOperation {
         ((UserInfo) key.attachment()).setCurrentPath(path);
         if (!Files.exists(path)) {
             Files.createDirectory(path);
-            Protocol.sendStringToSocketChannel("Created a section for a new user " + userName, socketChannel);
+            ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer("Created a section for a new user " + userName);
+            socketChannel.write(byteBuffer);
             return false;
         }
         String message = "You are logged in as " + ((UserInfo) key.attachment()).getName()
                 + "\nCurrent directory " + path.getFileName() + File.separator;
-        Protocol.sendStringToSocketChannel(message, socketChannel);
+        ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer(message);
+        socketChannel.write(byteBuffer);
         return true;
     }
 }

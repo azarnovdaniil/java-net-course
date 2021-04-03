@@ -4,6 +4,7 @@ import ru.daniilazarnov.Protocol;
 import ru.daniilazarnov.UserInfo;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Path;
@@ -24,7 +25,8 @@ public class UploadFileToClient implements ServerOperation {
         Path currentDir = ((UserInfo) key.attachment()).getCurrentPath();
         Path targetFilePath = currentDir.resolve(Paths.get(fileName));
         if (!Protocol.sendFileToSocketChannel(targetFilePath, socketChannel)) {
-            Protocol.sendStringToSocketChannel("File not found", socketChannel);
+            ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer("File not found");
+            socketChannel.write(byteBuffer);
             return false;
         }
         return true;

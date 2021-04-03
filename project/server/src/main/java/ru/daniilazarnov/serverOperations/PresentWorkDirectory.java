@@ -5,6 +5,7 @@ import ru.daniilazarnov.UserInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Path;
@@ -23,7 +24,8 @@ public class PresentWorkDirectory implements ServerOperation {
         Path currentPath = userInfo.getCurrentPath();
         Path rootPath = userInfo.getUserRoot().getParent();
         Path currentPathForUser = rootPath.relativize(currentPath).normalize();
-        Protocol.sendStringToSocketChannel(currentPathForUser.toString() + File.separator, socketChannel);
+        ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer(currentPathForUser.toString() + File.separator);
+        socketChannel.write(byteBuffer);
         return true;
     }
 }

@@ -29,7 +29,8 @@ public class SaveFile implements ServerOperation {
         Path pathFile = Paths.get(path + File.separator + fileName);
         try {
             Files.write(pathFile, fileBuffer.array());
-            Protocol.sendStringToSocketChannel("File uploaded successfully", socketChannel);
+            ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer("File uploaded successfully");
+            socketChannel.write(byteBuffer);
         } catch (IOException e) {
             return false;
         }
