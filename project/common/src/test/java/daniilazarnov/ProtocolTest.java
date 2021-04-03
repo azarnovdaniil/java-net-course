@@ -18,12 +18,12 @@ import java.util.Iterator;
 public class ProtocolTest {
     static Selector selector;
 
-    @BeforeEach
+    @BeforeAll
     public void prepareServer() {
         new Thread(() -> {
             try {
                 ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-                serverSocketChannel.bind(new InetSocketAddress("localhost", 8200));
+                serverSocketChannel.bind(new InetSocketAddress("localhost", 9999));
                 serverSocketChannel.configureBlocking(false);
                 selector = Selector.open();
                 serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
@@ -37,15 +37,11 @@ public class ProtocolTest {
                         if (key.isAcceptable()) {
                             SocketChannel socketChannel = ((ServerSocketChannel) key.channel()).accept();
                             socketChannel.configureBlocking(false);
+                            ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer("Test string");
 
-//                            Protocol.sendStringToSocketChannel("Test string", socketChannel);
-
-
-//                            ByteBuffer byteBuffer = ByteBuffer.allocate(128);
-//                            byteBuffer.putInt("Test string".length());
-//                            byteBuffer.put("Test string".getBytes());
-//                            byteBuffer.flip();
-//                            socketChannel.write(byteBuffer);
+                            //Убираем первый байт, в котором закодирована команда для клиента
+                            byteBuffer.get();
+                            socketChannel.write(byteBuffer);
                         }
                     }
                 }
@@ -59,13 +55,13 @@ public class ProtocolTest {
 
     @Test
     public void TestStringFromSocketChannel() throws IOException {
-        SocketChannel socketChannel = SocketChannel.open(new InetSocketAddress("localhost", 8200));
+        SocketChannel socketChannel = SocketChannel.open(new InetSocketAddress("localhost", 9999));
         Selector selector = Selector.open();
         socketChannel.configureBlocking(false);
         socketChannel.register(selector, SelectionKey.OP_READ);
         while (socketChannel.isOpen()) {
             selector.select();
-            Assertions.assertEquals("Test string", Protocol.getStringFromSocketChannel((SocketChannel) selector.selectedKeys().iterator().next().channel()));
+            Assertions.assertEquals("Test string", Protocol.getStringFromSocketChannel(socketChannel));
             socketChannel.close();
         }
     }
