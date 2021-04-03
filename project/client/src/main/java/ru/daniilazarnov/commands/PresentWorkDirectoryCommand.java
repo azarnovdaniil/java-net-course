@@ -7,13 +7,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-
-public class Disconnect implements ICommand {
+public class PresentWorkDirectoryCommand implements ICommand {
     private final String[] args;
-    private final Commands command = Commands.disconnect;
+    private final Commands command = Commands.pwd;
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
-    public Disconnect(ArgumentsForCommand arguments) {
+    public PresentWorkDirectoryCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
     }
 
