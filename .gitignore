@@ -2,3 +2,5 @@
 *.iml
 
 **/target
+/project/client/storage/*
+/project/server/storage/*
