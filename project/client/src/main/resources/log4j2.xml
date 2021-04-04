@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
-    <!-- Секция аппендеров -->
     <Appenders>
-        <!-- Файловый аппендер -->
-        <File name="file" fileName="log.log">
+        <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
-                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+                <Pattern>%d %p %c{1.} [%t] line %L -> %m %ex%n</Pattern>
             </PatternLayout>
-        </File>
-        <!-- Файловый аппендер -->
-        <File name="file2" fileName="log2.log">
-            <!-- Фильтр по маркеру -->
-            <MarkerFilter marker="fileonly" onMatch="DENY" onMismatch="ACCEPT"/>
+            <MarkerFilter marker="CONS" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+
+        <RollingFile name="file" fileName="ClientLog.log"
+                     filePattern="ClientLog.%i.log" ignoreExceptions="false">
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="20 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
             <PatternLayout>
-                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+                <Pattern>%d %p %c{1.} [%t] line %L -> %m %ex%n</Pattern>
             </PatternLayout>
-        </File>
+        </RollingFile>
+
     </Appenders>
-    <!-- Секция логгеров -->
+
     <Loggers>
-        <!-- Корневой логгер -->
-        <Root level="trace">
-            <AppenderRef ref="file" level="DEBUG"/>
+        <Root level="INFO">
+            <AppenderRef ref="file" level="INFO"/>
+            <AppenderRef ref="Console" level="INFO"/>
         </Root>
-        <!-- Логгер нашего класса -->
-        <Logger name="logging.log4j.LoggingLog4j" level="info" additivity="false">
-            <AppenderRef ref="file2" level="INFO"/>
-        </Logger>
+
     </Loggers>
 </Configuration>

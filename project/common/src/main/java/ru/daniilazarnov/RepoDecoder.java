@@ -3,35 +3,30 @@ package ru.daniilazarnov;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
-public class RepoDecoder extends ChannelInboundHandlerAdapter {
+public class RepoDecoder <T extends PathHolder> extends ChannelInboundHandlerAdapter {
 
-    private final boolean isServer;
-    private final UserProfile profile;
-    private final BiConsumer<ContextData, UserProfile> commandReader;
-    private Consumer<UserProfile> closeConnection;
+    private final T profile;
+    private final BiConsumer<ContextData, T> commandReader;
+    private final Consumer<T> closeConnection;
+    private static final Logger LOGGER = LogManager.getLogger(RepoDecoder.class);
 
-    RepoDecoder(boolean isServer, BiConsumer<ContextData, UserProfile> commandReader, Consumer<UserProfile> closeConnection) {
-        this.isServer = isServer;
-        this.profile = null;
-        this.commandReader = commandReader;
-
-    }
-
-    RepoDecoder(boolean isServer, BiConsumer<ContextData, UserProfile> commandReader, Consumer<UserProfile> closeConnection, UserProfile profile) {
-        this.isServer = isServer;
+    RepoDecoder(BiConsumer<ContextData, T> commandReader, Consumer<T> closeConnection, T profile) {
         this.profile = profile;
         this.commandReader = commandReader;
         this.closeConnection = closeConnection;
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("message came");
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        LOGGER.info("Byte package arrived.");
         ByteBuf message = (ByteBuf) msg;
         ContextData messageContext = new ContextData();
         messageContext.setCommand(message.readInt());
@@ -43,32 +38,32 @@ public class RepoDecoder extends ChannelInboundHandlerAdapter {
         message.release();
         messageContext.setContainer(bytes);
 
-        if (isServer) {
-            if (!isAuthorised()) {
-                if (!(messageContext.getCommand() == CommandList.login.getNum()) &&
-                        !(messageContext.getCommand() == CommandList.register.getNum())) {
-                    this.profile.sendMessage("false%%%You are not authorised. Please login before you can use this service.");
-                    return;
-                }
+
+        if (!isAuthorised()) {
+            if (!(messageContext.getCommand() == CommandList.login.getNum()) &&
+                    !(messageContext.getCommand() == CommandList.register.getNum())) {
+                LOGGER.info("User not authorised, package refused");
+                this.profile.sendMessage("false%%%You are not authorised. Please login before you can use this service.");
+                return;
             }
         }
+
         if (messageContext.getCommand() == CommandList.upload.getNum()) {
             FileContainer container = new FileContainer(bytes, messageContext.getFilePath());
             ctx.fireChannelRead(container);
         } else {
             commandReader.accept(messageContext, profile);
         }
-
-
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Connection lost....");
+    public void channelInactive(ChannelHandlerContext ctx) {
+        closeConnection.accept(profile);
+        LOGGER.info("Connection lost...");
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         closeConnection.accept(this.profile);
     }
 
@@ -84,5 +79,6 @@ public class RepoDecoder extends ChannelInboundHandlerAdapter {
     private boolean isAuthorised() {
         return (!this.profile.getLogin().equals("empty"));
     }
+
 
 }

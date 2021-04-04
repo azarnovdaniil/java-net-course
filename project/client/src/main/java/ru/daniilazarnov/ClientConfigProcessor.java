@@ -1,5 +1,10 @@
 package ru.daniilazarnov;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -12,6 +17,8 @@ public class ClientConfigProcessor {
     private int port;
     private String repoPath;
     private final Path configPath;
+    private static final Logger LOGGER = LogManager.getLogger(ClientConfigProcessor.class);
+    static final Marker toCon = MarkerManager.getMarker("CONS");
 
     ClientConfigProcessor(Path configPath) {
         this.configPath = configPath;
@@ -33,12 +40,13 @@ public class ClientConfigProcessor {
                     if (Files.notExists(repo)) {
                         repo.toFile().mkdir();
                     }
-                    repoPath = temp[i + 1];
+                    repoPath = repo.toString();
                 }
             }
+            LOGGER.info("Network settings initialized: " + host + " | " + port);
             System.out.println(String.format("Network settings initialized: host - %1$s, port - %2$d", host, port));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(toCon, "SWW reading config file.", LOGGER.throwing(e));
         }
 
     }
@@ -48,7 +56,7 @@ public class ClientConfigProcessor {
         try {
             Files.writeString(configPath, settings, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(toCon, "SWW writing to config file.", LOGGER.throwing(e));
         }
     }
 

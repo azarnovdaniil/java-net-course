@@ -3,13 +3,12 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
-                <Pattern>%d %p %c{1.} [%t] line %L -> %m %ex%n</Pattern>
+                <Pattern>%d %p [%t] -> %m %ex%n</Pattern>
             </PatternLayout>
-            <MarkerFilter marker="CONS" onMatch="ACCEPT" onMismatch="DENY"/>
         </Console>
 
-        <RollingFile name="file" fileName="ClientLog.log"
-                     filePattern="ClientLog.%i.log" ignoreExceptions="false">
+        <RollingFile name="file" fileName="ServerLog.log"
+                     filePattern="ServerLog.%i.log" ignoreExceptions="false">
             <Policies>
                 <OnStartupTriggeringPolicy />
                 <SizeBasedTriggeringPolicy size="20 MB" />

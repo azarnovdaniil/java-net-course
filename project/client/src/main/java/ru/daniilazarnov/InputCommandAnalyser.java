@@ -1,5 +1,10 @@
 package ru.daniilazarnov;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -10,6 +15,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class InputCommandAnalyser {
+    private static final Logger LOGGER = LogManager.getLogger(InputCommandAnalyser.class);
+    static final Marker toCon = MarkerManager.getMarker("CONS");
     private final ClientModuleManager hub;
     private Consumer<String> print;
     private Consumer<ContextData> execute;
@@ -27,6 +34,7 @@ public class InputCommandAnalyser {
     }
 
     public void commandDecoder(String command, boolean isAuthorised) {
+        LOGGER.info("New command input: " + command);
         String[] comArray = command.split(" ");
         int comNum = -1;
         try {
@@ -111,6 +119,7 @@ public class InputCommandAnalyser {
         data.setLogin(comArray[1]);
         data.setPassword(comArray[2]);
         execute.accept(data);
+        LOGGER.info("Trying to login");
     }
 
     private void register(String[] comArray) {
@@ -119,26 +128,30 @@ public class InputCommandAnalyser {
         data.setLogin(comArray[1]);
         data.setPassword(comArray[2]);
         execute.accept(data);
+        LOGGER.info("Trying to register");
     }
 
     private void getFileList() {
         ContextData data = new ContextData();
         data.setCommand(CommandList.getFileList.getNum());
         execute.accept(data);
+        LOGGER.info("Trying get file list");
     }
 
     private synchronized void download(String[] comArray) {
+        LOGGER.info("Trying download file "+comArray[1]);
         Path path = Paths.get(hub.getPathToRepo(), comArray[1]);
         if (path.toFile().exists()) {
+            LOGGER.info("File already exists");
             hub.addThread(() -> new YesNoConsole(
                     s -> yesNoAnswer(s), "The file already exists in your repo folder. Rewrite? (yes/no)").run());
             try {
                 wait();
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                throw new RuntimeException("SWW with download answer waiting.");
+                LOGGER.error(toCon,"SWW with download answer waiting.", LOGGER.throwing(e));
             }
             if (!isYes) {
+                LOGGER.info("Download canceled by user");
                 print.accept("Download canceled.");
                 return;
             }
@@ -147,6 +160,7 @@ public class InputCommandAnalyser {
         data.setCommand(CommandList.download.getNum());
         data.setFilePath(comArray[1]);
         execute.accept(data);
+        LOGGER.info("Download request sent.");
     }
 
     private void delete(String[] comArray) {
@@ -154,6 +168,7 @@ public class InputCommandAnalyser {
         data.setCommand(CommandList.delete.getNum());
         data.setFilePath(comArray[1]);
         execute.accept(data);
+        LOGGER.info("Delete request sent.");
     }
 
     private void setRepository(String[] comArray) {
@@ -163,6 +178,7 @@ public class InputCommandAnalyser {
         }
         if (repo.toFile().exists()) {
             setRepoPath.accept(repo.toString());
+            LOGGER.info("Local repository changed to: " + repo.toString());
             print.accept("Your new repository is: " + repo.toString());
             return;
         }
@@ -184,6 +200,7 @@ public class InputCommandAnalyser {
             String host = comArray[1];
             int port = Integer.parseInt(comArray[2]);
             setHost.accept(host, port);
+            LOGGER.info("New host and port are set: " + host + " | " + port);
             print.accept("New host and port are set");
         } catch (IllegalArgumentException e) {
             print.accept("Illegal arguments for host/port.");
@@ -200,31 +217,38 @@ public class InputCommandAnalyser {
 
     public synchronized void yesNoAnswer(String answer) {
         isYes = List.of("yes", "y", "YES", "Y").contains(answer);
-        System.out.println(isYes);
         this.notify();
     }
 
     private synchronized void uploadFile(String[] comArray) {
+        LOGGER.info("Trying to upload file.");
         Path fileToSend;
         if (comArray[1].startsWith("\\")) {
             fileToSend = Paths.get(hub.getPathToRepo(), comArray[1]);
         } else fileToSend = Paths.get(comArray[1]);
         if (fileToSend.toFile().exists()) {
             hub.addThread(() -> sendFileUploadInfo(fileToSend, fileToSend.toFile().length()));
+            LOGGER.info("File info sent.");
             try {
                 wait();
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                throw new RuntimeException("SWW waiting respond for upload");
+                LOGGER.error(toCon, "SWW waiting respond for upload.", LOGGER.throwing(e));
             }
             if (isYes) {
                 ContextData data = new ContextData();
                 data.setCommand(CommandList.upload.getNum());
                 data.setFilePath(fileToSend.toString());
                 execute.accept(data);
-            } else print.accept("File upload canceled.");
+                LOGGER.info("Starting file transmission.");
+            } else {
+                print.accept("File upload canceled.");
+                LOGGER.info("File upload canceled by user.");
+            }
 
-        } else print.accept("File not found. Check the path.");
+        } else {
+            print.accept("File not found. Check the path.");
+            LOGGER.info("File not found.");
+        }
     }
 
     private void sendFileUploadInfo(Path filePath, long fileLength) {
@@ -232,7 +256,6 @@ public class InputCommandAnalyser {
         data.setCommand(CommandList.fileUploadInfo.getNum());
         data.setFilePath(filePath.toFile().getName());
         data.setPassword(Objects.toString(fileLength));
-        System.out.println(data.getPassword());
         execute.accept(data);
 
     }

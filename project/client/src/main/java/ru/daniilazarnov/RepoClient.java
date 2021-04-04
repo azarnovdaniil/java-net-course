@@ -10,6 +10,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 import java.io.File;
 import java.net.InetSocketAddress;
@@ -24,6 +28,8 @@ public class RepoClient implements Runnable {
     private final ClientPathHolder pathHolder;
     private final Consumer<ContextData> reader;
     private final Consumer<Boolean> closeChannel;
+    private static final Logger LOGGER = LogManager.getLogger(RepoClient.class);
+    static final Marker toCon = MarkerManager.getMarker("CONS");
     ClientCommandReader comReader;
 
 
@@ -47,6 +53,7 @@ public class RepoClient implements Runnable {
 
     @Override
     public void run() {
+
         EventLoopGroup workGroup = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
@@ -61,27 +68,24 @@ public class RepoClient implements Runnable {
                             System.out.println("Connecting to server...");
 
                             socketChannel.pipeline().addLast(
-                                    new DelimiterBasedFrameDecoder(8000, contextData.getDelimiter()));
+                                    new DelimiterBasedFrameDecoder(2048, contextData.getDelimiter()));
                             socketChannel.pipeline().addLast(new RepoDecoderClient(reader, closeChannel));
                             socketChannel.pipeline().addLast(new RepoEncoder(contextData));
                             socketChannel.pipeline().addLast(new ChunkedWriteHandler());
                             socketChannel.pipeline().addLast(new IncomingFileHandler(pathHolder));
-
-
                         }
                     });
+            LOGGER.info("Trying to connect server...");
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new RuntimeException("SWW with connection.");
+            LOGGER.error(toCon, "SWW with connection.", LOGGER.throwing(e));
         } finally {
             try {
                 workGroup.shutdownGracefully().sync();
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                throw new RuntimeException("SWW with connection closing");
+                LOGGER.error(toCon, "SWW with connection closing.", LOGGER.throwing(e));
             }
         }
 
@@ -100,8 +104,7 @@ public class RepoClient implements Runnable {
                 chunk.close();
 
             } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("SWW with writing in channel");
+                LOGGER.error(toCon, "SWW with writing in channel.", LOGGER.throwing(e));
             }
         } else this.curChannel.writeAndFlush(new byte[1]);
     }
@@ -109,7 +112,7 @@ public class RepoClient implements Runnable {
     public void close() {
         System.out.println("Connection closed.");
         this.curChannel.close();
-
+        LOGGER.info("Connection closed.");
     }
 
     public synchronized void goOn() {

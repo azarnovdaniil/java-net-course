@@ -2,6 +2,8 @@ package ru.daniilazarnov;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -10,6 +12,7 @@ import java.nio.file.Paths;
 
 public class IncomingFileHandler<T extends PathHolder> extends ChannelInboundHandlerAdapter {
     private final T pathHolder;
+    private static final Logger LOGGER = LogManager.getLogger(IncomingFileHandler.class);
 
     IncomingFileHandler(T pathHolder) {
         this.pathHolder = pathHolder;
@@ -29,6 +32,7 @@ public class IncomingFileHandler<T extends PathHolder> extends ChannelInboundHan
         rnd.close();
         if (filePath.toFile().length() == pathHolder.getFileLength()) {
             pathHolder.transComplete();
+            LOGGER.info("Incoming file size equals to preset parameters.");
         }
 
     }

@@ -1,6 +1,8 @@
 package ru.daniilazarnov;
 
 import io.netty.channel.socket.SocketChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.function.BiConsumer;
 
@@ -12,18 +14,26 @@ public class UserProfile implements PathHolder {
     private final ContextData contextData;
     private final BiConsumer<String, SocketChannel> messageToUser;
     private long fileLength;
+    private final ServerCommandReader commandReader;
+    private static final Logger LOGGER = LogManager.getLogger(UserProfile.class);
 
     UserProfile(String login, SocketChannel channel, BiConsumer<String, SocketChannel> messageToUser) {
         this.login = login;
         this.curChannel = channel;
         this.contextData = new ContextData();
         this.messageToUser = messageToUser;
+        this.commandReader = new ServerCommandReader(this);
     }
 
     @Override
     public void transComplete() {
         sendMessage("true%%%File uploaded successfully!");
         sendMessage("SYSTEM");
+        LOGGER.info("File transfer complete.");
+    }
+
+    public void executeMessage(ContextData message) {
+        this.commandReader.readMessage(message);
     }
 
     public void setAuthority(String authority) {

@@ -3,6 +3,8 @@ package ru.daniilazarnov;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
@@ -12,6 +14,7 @@ public class RepoDecoderClient extends ChannelInboundHandlerAdapter {
 
     private final Consumer<ContextData> commandReader;
     private final Consumer<Boolean> closeConnection;
+    private static final Logger LOGGER = LogManager.getLogger(RepoDecoderClient.class);
 
     RepoDecoderClient(Consumer<ContextData> commandReader, Consumer<Boolean> closeConnection) {
         this.commandReader = commandReader;
@@ -21,7 +24,7 @@ public class RepoDecoderClient extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println("message came");
+        LOGGER.info("Byte package arrived.");
         ByteBuf message = (ByteBuf) msg;
         ContextData messageContext = new ContextData();
         messageContext.setCommand(message.readInt());

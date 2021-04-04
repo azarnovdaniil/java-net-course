@@ -1,0 +1,58 @@
+2021-04-04 01:26:42,484 INFO r.d.ServerConfigReader [main] line 48 -> Network settings initialized: host - 127.0.0.1, port - 7777 
+2021-04-04 01:26:42,773 INFO r.d.RepoServer [main] line 86 -> Server is up and ready for connections... 
+2021-04-04 01:26:58,761 INFO r.d.RepoServer [nioEventLoopGroup-3-1] line 75 -> New connection applied. 
+2021-04-04 01:27:13,628 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:27:13,631 INFO r.d.ServerCommandReader [pool-2-thread-1] line 28 -> Incoming message. 
+2021-04-04 01:27:13,631 INFO r.d.AuthorisationService [pool-2-thread-1] line 26 -> Login attempt. 
+2021-04-04 01:27:14,125 INFO r.d.AuthorisationService [pool-2-thread-1] line 44 -> Login attempt complete. 
+2021-04-04 01:27:14,129 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:28:06,272 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:28:06,273 INFO r.d.ServerCommandReader [pool-2-thread-1] line 28 -> Incoming message. 
+2021-04-04 01:28:06,273 INFO r.d.AuthorisationService [pool-2-thread-1] line 26 -> Login attempt. 
+2021-04-04 01:28:06,300 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:28:06,300 INFO r.d.AuthorisationService [pool-2-thread-1] line 44 -> Login attempt complete. 
+2021-04-04 01:28:13,201 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:28:13,202 INFO r.d.ServerCommandReader [pool-2-thread-1] line 28 -> Incoming message. 
+2021-04-04 01:28:13,202 INFO r.d.ServerCommandReader [pool-2-thread-1] line 69 -> File List request initiated. 
+2021-04-04 01:28:13,205 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:28:41,485 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:28:41,486 INFO r.d.ServerCommandReader [pool-2-thread-1] line 28 -> Incoming message. 
+2021-04-04 01:28:41,486 INFO r.d.ServerCommandReader [pool-2-thread-1] line 150 -> Rename request initiated. 
+2021-04-04 01:28:41,488 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:28:41,488 INFO r.d.ServerCommandReader [pool-2-thread-1] line 160 -> File renamed.txt renamed to newFile.txt 
+2021-04-04 01:29:01,514 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:29:01,515 INFO r.d.ServerCommandReader [pool-2-thread-1] line 28 -> Incoming message. 
+2021-04-04 01:29:01,515 INFO r.d.ServerCommandReader [pool-2-thread-1] line 82 -> File request initiated. 
+2021-04-04 01:29:01,516 INFO r.d.ServerCommandReader [pool-2-thread-1] line 89 -> File info sent. 
+2021-04-04 01:29:01,516 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:29:01,520 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:29:01,521 INFO r.d.ServerCommandReader [pool-2-thread-2] line 28 -> Incoming message. 
+2021-04-04 01:29:01,526 INFO r.d.ServerCommandReader [pool-2-thread-1] line 95 -> Sending file test.txt size 3839 
+2021-04-04 01:29:01,539 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:29:01,540 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:29:01,541 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:29:01,542 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:29:01,552 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:29:01,553 INFO r.d.ServerCommandReader [pool-2-thread-2] line 28 -> Incoming message. 
+2021-04-04 01:29:13,872 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:29:13,872 INFO r.d.ServerCommandReader [pool-2-thread-1] line 28 -> Incoming message. 
+2021-04-04 01:29:13,874 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:29:13,875 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:29:15,886 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:29:15,889 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:29:15,890 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:29:15,891 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 29 -> Byte package arrived. 
+2021-04-04 01:29:15,892 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:29:15,893 INFO r.d.RepoEncoder [nioEventLoopGroup-3-1] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:29:15,894 INFO r.d.UserProfile [nioEventLoopGroup-3-1] line 32 -> File transfer complete. 
+2021-04-04 01:29:15,894 INFO r.d.IncomingFileHandler [nioEventLoopGroup-3-1] line 35 -> Incoming file size equals to preset parameters. 
+2021-04-04 01:29:20,409 INFO r.d.RepoServer [nioEventLoopGroup-3-1] line 58 -> User left 
+2021-04-04 01:29:20,410 INFO r.d.RepoDecoder [nioEventLoopGroup-3-1] line 62 -> Connection lost... 
+2021-04-04 01:30:31,866 INFO r.d.RepoServer [nioEventLoopGroup-3-2] line 75 -> New connection applied. 
+2021-04-04 01:31:22,527 INFO r.d.RepoDecoder [nioEventLoopGroup-3-2] line 29 -> Byte package arrived. 
+2021-04-04 01:31:22,528 INFO r.d.ServerCommandReader [pool-2-thread-3] line 28 -> Incoming message. 
+2021-04-04 01:31:22,529 INFO r.d.AuthorisationService [pool-2-thread-3] line 26 -> Login attempt. 
+2021-04-04 01:31:22,555 INFO r.d.AuthorisationService [pool-2-thread-3] line 44 -> Login attempt complete. 
+2021-04-04 01:31:22,555 INFO r.d.RepoEncoder [nioEventLoopGroup-3-2] line 42 -> Byte package encoded and flushed. 
+2021-04-04 01:31:26,232 INFO r.d.RepoServer [nioEventLoopGroup-3-2] line 58 -> User left 
+2021-04-04 01:31:26,232 INFO r.d.RepoDecoder [nioEventLoopGroup-3-2] line 62 -> Connection lost... 

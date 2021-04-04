@@ -1,5 +1,10 @@
 package ru.daniilazarnov;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,17 +12,24 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+
+
 public class ClientCommandReader extends CommandReader {
     private final ClientModuleManager hub;
     private final ClientPathHolder pathHolder;
     private final Consumer<Boolean> goOn;
+    private final Consumer<String> systemMessage;
+    private static final Logger LOGGER = LogManager.getLogger(ClientCommandReader.class);
+    static final Marker toCon = MarkerManager.getMarker("CONS");
 
 
-    ClientCommandReader(ClientModuleManager hub, ContextData messageContext, ClientPathHolder pathHolder, Consumer<Boolean> goOn) {
+    ClientCommandReader(ClientModuleManager hub, ContextData messageContext, ClientPathHolder pathHolder, Consumer<Boolean> goOn,
+                        Consumer<String> systemMessage) {
         super(messageContext);
         this.hub = hub;
         this.pathHolder = pathHolder;
         this.goOn = goOn;
+        this.systemMessage=systemMessage;
     }
 
 
@@ -37,6 +49,7 @@ public class ClientCommandReader extends CommandReader {
             fileUpload();
         } else {
             hub.console.print("Command unknown");
+            LOGGER.info("Unknown command arrived: "+super.messageContext.getCommand());
         }
 
     }
@@ -44,6 +57,7 @@ public class ClientCommandReader extends CommandReader {
 
     private String readServerMessage() {
         String message = new String(super.messageContext.getContainer());
+        LOGGER.info("New message from server arrived: "+message);
         if (message.equals("SYSTEM")) {
             goOn.accept(true);
             return message;
@@ -70,6 +84,7 @@ public class ClientCommandReader extends CommandReader {
     }
 
     private void printFileList(String fileList) {
+        LOGGER.info("File list arrived.");
         if (fileList.isEmpty()) {
             hub.console.print("Your storage is empty.");
             return;
@@ -81,15 +96,17 @@ public class ClientCommandReader extends CommandReader {
     }
 
     private void fileUpload() {
+        LOGGER.info("Incoming file: "+super.messageContext.getFilePath()+" size "+super.messageContext.getPassword());
         pathHolder.setFileLength(Long.parseLong(super.messageContext.getPassword()));
         File incoming = Paths.get(hub.getPathToRepo(), super.messageContext.getFilePath()).toFile();
         if (incoming.exists()) {
             try {
                 Files.delete(incoming.toPath());
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(toCon,"SWW deleting a file.", LOGGER.throwing(e));
             }
         }
+        this.systemMessage.accept("RESPOND");
     }
 }
 

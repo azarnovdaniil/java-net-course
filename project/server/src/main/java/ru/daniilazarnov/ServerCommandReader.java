@@ -2,6 +2,8 @@ package ru.daniilazarnov;
 
 
 import io.netty.handler.stream.ChunkedFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,97 +11,156 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
 
-public class ServerCommandReader extends CommandReader {
+public class ServerCommandReader {
 
     private final UserProfile profile;
+    private static final Logger LOGGER = LogManager.getLogger(ServerCommandReader.class);
 
-    ServerCommandReader(ContextData messageContext, UserProfile profile) {
-        super(messageContext);
+    ServerCommandReader(UserProfile profile) {
+
         this.profile = profile;
     }
 
+    public void readMessage(ContextData messageContext) {
+        LOGGER.info("Incoming message.");
 
-    @Override
-    public void run() {
+        if (messageContext.getCommand() == CommandList.login.getNum()) {
+            authorise(messageContext);
 
-        if (super.messageContext.getCommand() == CommandList.login.getNum()) {
-            AuthorisationService.login(super.messageContext.getLogin(), super.messageContext.getPassword(), profile);
+        } else if (messageContext.getCommand() == CommandList.register.getNum()) {
+            register(messageContext);
 
-        } else if (super.messageContext.getCommand() == CommandList.register.getNum()) {
-            AuthorisationService.register(super.messageContext.getLogin(), super.messageContext.getPassword(), profile);
-        } else if (super.messageContext.getCommand() == CommandList.getFileList.getNum()) {
-            File storage = Paths.get(profile.getAuthority()).toFile();
-            File[] files = storage.listFiles();
-            String fileList = Arrays.stream(files)
-                    .map((file -> file.getName()))
-                    .sorted()
-                    .collect(Collectors.joining("###"));
+        } else if (messageContext.getCommand() == CommandList.getFileList.getNum()) {
+            sendFileList();
 
-            profile.getContextData().setCommand(CommandList.getFileList.getNum());
-            profile.getCurChannel().writeAndFlush(fileList.getBytes());
+        } else if (messageContext.getCommand() == CommandList.download.getNum()) {
+            sendFile(messageContext);
 
-        } else if (super.messageContext.getCommand() == CommandList.download.getNum()) {
-            File toSend = Paths.get(profile.getAuthority() + "\\" + super.messageContext.getFilePath()).toFile();
-            if (toSend.exists()) {
-                profile.getContextData().setCommand(CommandList.fileUploadInfo.getNum());
-                profile.getContextData().setPassword(Objects.toString(toSend.length()));
-                profile.getContextData().setFilePath(toSend.getName());
-                profile.getCurChannel().writeAndFlush(new byte[1]);
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                profile.getContextData().setCommand(CommandList.upload.getNum());
-                try {
+        } else if (messageContext.getCommand() == CommandList.delete.getNum()) {
+            deleteFile(messageContext);
 
-                    ChunkedFile chunk = new ChunkedFile(toSend, 1024);
-                    profile.getCurChannel().writeAndFlush(chunk);
+        } else if (messageContext.getCommand() == CommandList.fileUploadInfo.getNum()) {
+            sendFileInfo(messageContext);
 
-                    Thread.sleep(5000);
-                    System.out.println("end");
-                    chunk.close();
+        } else if (messageContext.getCommand() == CommandList.rename.getNum()) {
+            renameFile(messageContext);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        } else if (messageContext.getCommand() == CommandList.serverMessage.getNum()) {
+            goOn();
 
-            } else profile.sendMessage("false%%%File not found.");
-
-        } else if (super.messageContext.getCommand() == CommandList.delete.getNum()) {
-            File toDelete = Paths.get(profile.getAuthority() + super.messageContext.getFilePath()).toFile();
-            if (toDelete.exists()) {
-                try {
-                    Files.delete(toDelete.toPath());
-                    profile.sendMessage("true%%%File " + messageContext.getFilePath() + " deleted successfully.");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    profile.sendMessage("false%%%Error occurred. File delete failed.");
-                    throw new RuntimeException("SWW deleting a file");
-                }
-            } else {
-                profile.sendMessage("false%%%File " + messageContext.getFilePath() + " not found.");
-            }
-
-        } else if (super.messageContext.getCommand() == CommandList.fileUploadInfo.getNum()) {
-            File toDelete = Paths.get(profile.getAuthority() + "\\" + super.messageContext.getFilePath()).toFile();
-            if (toDelete.exists()) {
-                profile.sendMessage("YesNoTrue&&&Too gard for me!");
-                try {
-                    Files.delete(toDelete.toPath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("SWW deleting a file");
-                }
-            }else profile.sendMessage("YesNoFalse&&&Too good...");
-            profile.setFileLength(Long.parseLong(super.messageContext.getPassword()));
-            profile.sendMessage("SYSTEM");
         } else {
             profile.sendMessage("false%%%Command unknown.");
+            LOGGER.info("Command unknown.");
+        }
+    }
+
+    private void authorise(ContextData messageContext) {
+        AuthorisationService.login(messageContext.getLogin(), messageContext.getPassword(), profile);
+    }
+
+    private void register(ContextData messageContext) {
+        AuthorisationService.register(messageContext.getLogin(), messageContext.getPassword(), profile);
+    }
+
+    private void sendFileList() {
+        LOGGER.info("File List request initiated.");
+        File storage = Paths.get(this.profile.getAuthority()).toFile();
+        File[] files = storage.listFiles();
+        String fileList = Arrays.stream(files)
+                .map((File::getName))
+                .sorted()
+                .collect(Collectors.joining("###"));
+
+        profile.getContextData().setCommand(CommandList.getFileList.getNum());
+        profile.getCurChannel().writeAndFlush(fileList.getBytes());
+    }
+
+    private synchronized void sendFile(ContextData messageContext) {
+        LOGGER.info("File request initiated.");
+        File toSend = Paths.get(profile.getAuthority(), messageContext.getFilePath()).toFile();
+        if (toSend.exists()) {
+            profile.getContextData().setCommand(CommandList.fileUploadInfo.getNum());
+            profile.getContextData().setPassword(Objects.toString(toSend.length()));
+            profile.getContextData().setFilePath(toSend.getName());
+            profile.getCurChannel().writeAndFlush(new byte[1]);
+            LOGGER.info("File info sent.");
+
+            try {
+
+                wait();
+
+                LOGGER.info("Sending file "+toSend.getName() + " size "+toSend.length());
+                profile.getContextData().setCommand(CommandList.upload.getNum());
+                ChunkedFile chunk = new ChunkedFile(toSend, 1024);
+                profile.getCurChannel().writeAndFlush(chunk);
+
+                wait();
+
+                chunk.close();
+
+            } catch (Exception e) {
+                LOGGER.error("SWW waiting for respond!!", LOGGER.throwing(e));
+            }
+        } else {
+            profile.sendMessage("false%%%File not found.");
+            LOGGER.info("File not found.");
+        }
+    }
+
+    private void deleteFile(ContextData messageContext) {
+        LOGGER.info("File delete request.");
+        File toDelete = Paths.get(profile.getAuthority(), messageContext.getFilePath()).toFile();
+        if (toDelete.exists()) {
+            try {
+                Files.delete(toDelete.toPath());
+                profile.sendMessage("true%%%File " + messageContext.getFilePath() + " deleted successfully.");
+                LOGGER.info("File "+ messageContext.getFilePath() +" deleted.");
+            } catch (IOException e) {
+                profile.sendMessage("false%%%Error occurred. File delete failed.");
+                LOGGER.error("SWW deleting a file", LOGGER.throwing(e));
+            }
+        } else {
+            profile.sendMessage("false%%%File " + messageContext.getFilePath() + " not found.");
+            LOGGER.info("File not found.");
+        }
+    }
+
+    private void sendFileInfo(ContextData messageContext) {
+        File toDelete = Paths.get(profile.getAuthority(), messageContext.getFilePath()).toFile();
+        if (toDelete.exists()) {
+            profile.sendMessage("YesNoTrue&&&Too gard for me!");
+            try {
+                Files.delete(toDelete.toPath());
+            } catch (IOException e) {
+                LOGGER.error("SWW deleting a file", LOGGER.throwing(e));
+            }
+        } else profile.sendMessage("YesNoFalse&&&Too good...");
+        profile.setFileLength(Long.parseLong(messageContext.getPassword()));
+        profile.sendMessage("SYSTEM");
+    }
+
+    private synchronized void goOn() {
+        this.notify();
+    }
+
+    private void renameFile(ContextData messageContext) {
+        LOGGER.info("Rename request initiated.");
+        File toRename = Paths.get(profile.getAuthority(), messageContext.getFilePath()).toFile();
+        File newName = Paths.get(profile.getAuthority(), messageContext.getLogin()).toFile();
+        if (newName.exists()) {
+            profile.sendMessage("false%%%Rename failed! File " + messageContext.getLogin() + " already exists!");
+            return;
+        }
+        if (toRename.exists()) {
+            if (toRename.renameTo(newName)) {
+                profile.sendMessage("true%%%File " + messageContext.getFilePath() + " successfully renamed to " + messageContext.getLogin());
+                LOGGER.info("File "+messageContext.getFilePath()+" renamed to "+messageContext.getLogin());
+            } else profile.sendMessage("File rename failed!");
+        } else {
+            profile.sendMessage("false%%%File " + messageContext.getFilePath() + " not found.");
         }
     }
 

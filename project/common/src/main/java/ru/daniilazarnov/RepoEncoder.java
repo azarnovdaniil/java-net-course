@@ -4,6 +4,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 
@@ -12,6 +14,7 @@ import static io.netty.buffer.Unpooled.wrappedBuffer;
 public class RepoEncoder extends ChannelOutboundHandlerAdapter {
 
     private final ContextData data;
+    private static final Logger LOGGER = LogManager.getLogger(RepoEncoder.class);
 
     RepoEncoder(ContextData data) {
         this.data = data;
@@ -19,7 +22,6 @@ public class RepoEncoder extends ChannelOutboundHandlerAdapter {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
-        System.out.println("message left");
         byte[] command = ByteBuffer.allocate(4).putInt(data.getCommand()).array();
         byte[] chunk = null;
         if (data.getCommand() == CommandList.upload.getNum()) {
@@ -37,6 +39,7 @@ public class RepoEncoder extends ChannelOutboundHandlerAdapter {
                 chunk,
                 delimiter
         );
+        LOGGER.info("Byte package encoded and flushed.");
         ctx.writeAndFlush(encodedMessage);
     }
 

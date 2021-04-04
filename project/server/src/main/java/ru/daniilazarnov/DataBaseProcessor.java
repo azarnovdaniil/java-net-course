@@ -1,46 +1,52 @@
 package ru.daniilazarnov;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.*;
 
 public class DataBaseProcessor {
     private final ConnectionService connector;
+    private static final Logger LOGGER = LogManager.getLogger(DataBaseProcessor.class);
 
-    DataBaseProcessor(){
-        connector=new ConnectionService();
+    DataBaseProcessor() {
+        connector = new ConnectionService();
     }
 
-    public String createUser (String login, String password, String authority){
+    protected String createUser(String login, String password, String authority) {
         Connection connection = connector.connectUserBase();
-        String result="failed";
+        String result = "failed";
         try {
             connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO users (login, pass, authority) VALUES (?, ?, ?)"
             );
             statement.setString(1, login);
-            statement.setString(2,password);
-            statement.setString(3,authority);
+            statement.setString(2, password);
+            statement.setString(3, authority);
 
-            if (statement.executeUpdate()==1){
-                result="done";
+            if (statement.executeUpdate() == 1) {
+                result = "done";
             }
             connection.commit();
             return result;
 
-        } catch (SQLIntegrityConstraintViolationException e){
-            result="parameters occupied";
-        }catch (SQLException throwables) {
+        } catch (SQLIntegrityConstraintViolationException e) {
+            result = "parameters occupied";
+            LOGGER.error("Parameters occupied", LOGGER.throwing(e));
+
+        } catch (SQLException throwables) {
             connector.rollBack(connection);
-            throw new RuntimeException("SWW with creating new user. Rollback committed.");
-        }finally {
+            LOGGER.error("SWW with creating new user. Rollback committed.", LOGGER.throwing(throwables));
+        } finally {
             connector.close(connection);
         }
         return result;
     }
 
-    public String userCheck (String login, String password){
+    protected String userCheck(String login, String password) {
         Connection connection = connector.connectUserBase();
-        String authority="";
+        String authority = "";
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT * FROM users WHERE login = ? AND pass = ?"
@@ -54,8 +60,8 @@ public class DataBaseProcessor {
             }
 
         } catch (SQLException throwables) {
-            throw new RuntimeException("SWW with checking user in database.");
-        }finally {
+            LOGGER.error("SWW with checking user in database.", LOGGER.throwing(throwables));
+        } finally {
             connector.close(connection);
         }
         return authority;

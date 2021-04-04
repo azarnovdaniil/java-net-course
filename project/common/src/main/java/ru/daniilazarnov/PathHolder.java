@@ -11,4 +11,8 @@ public interface PathHolder {
     long getFileLength();
 
     void transComplete();
+
+    void sendMessage(String message);
+
+    public String getLogin();
 }
