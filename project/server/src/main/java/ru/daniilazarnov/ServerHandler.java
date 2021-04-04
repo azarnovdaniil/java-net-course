@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -26,19 +27,20 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        LOGGER.info("Chanel Read");
         try {
             RequestData requestData = (RequestData) msg;
             ResponseData responseData = new ResponseData();
             LOGGER.info("RequestData received = " + requestData);
             byte cmd = requestData.getCommand();
 
-//            String strMsg = msg.toString();
-//            if (strMsg.startsWith("-test")) {
-//                String text = strMsg.replaceFirst("-test", "");
-//                String filePath = SERVER_STORAGE + File.separator + "test.txt";
-//                FileUtils.createFile(filePath);
-//                FileUtils.addTextToFile(filePath, text);
-//            }
+            String strMsg = msg.toString();
+            if (strMsg.startsWith("-test")) {
+                String text = strMsg.replaceFirst("-test", "");
+                String filePath = SERVER_STORAGE + File.separator + "test.txt";
+                FileUtils.createFile(filePath);
+                FileUtils.addTextToFile(filePath, text);
+            }
             if (cmd == (byte) 1) {
                 char separator = requestData.getSeparator();
                 String[] filenameAndContent = requestData.getContent().split(String.valueOf(separator), 2);
@@ -52,7 +54,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 LOGGER.info(requestData);
             }
         } finally {
-            ctx.close();
+//            ctx.close();
         }
     }
 

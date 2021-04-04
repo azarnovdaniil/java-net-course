@@ -80,7 +80,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             LOGGER.info("Message received = " + msg);
         } finally {
             ReferenceCountUtil.release(msg);
-            //ctx.close();
         }
     }
 

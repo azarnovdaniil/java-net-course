@@ -9,17 +9,19 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.log4j.Logger;
+import ru.daniilazarnov.encoderdecoder.RequestDecoder;
 import ru.daniilazarnov.encoderdecoder.RequestEncoder;
 import ru.daniilazarnov.encoderdecoder.ResponseDecoder;
+import ru.daniilazarnov.encoderdecoder.ResponseEncoder;
 
 import static ru.daniilazarnov.Constants.LOCALHOST;
 import static ru.daniilazarnov.Constants.PORT;
 
 public class Client {
-    private static Logger log = Logger.getLogger(Client.class);
+    private static final Logger LOGGER = Logger.getLogger(Client.class);
 
     public static void main(String[] args) throws Exception {
-        log.info("Client starting!");
+        LOGGER.info("Client starting!");
 
         String host = System.getProperty("m_host", LOCALHOST);
         int port = Integer.getInteger("m_port", PORT);
