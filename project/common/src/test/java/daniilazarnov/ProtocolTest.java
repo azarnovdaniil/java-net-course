@@ -19,7 +19,7 @@ public class ProtocolTest {
     static Selector selector;
 
     @BeforeAll
-    public void prepareServer() {
+    public static void prepareServer() {
         new Thread(() -> {
             try {
                 ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
