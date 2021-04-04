@@ -21,6 +21,8 @@ public class FabricOfOperations {
                 return new PresentWorkDirectory(key);
             case disconnect:
                 return new DisconnectClient(key);
+            case ls:
+                return new ListOfFilesOrDirectories(key);
             default:
                 return null;
         }

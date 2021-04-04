@@ -26,6 +26,8 @@ public class FabricOfCommands {
                 return new PresentWorkDirectoryCommand(arguments);
             case disconnect:
                 return new DisconnectCommand(arguments);
+            case ls:
+                return new ListOfFilesOrDirectories(arguments);
             default:
                 return new UnknownCommand();
         }

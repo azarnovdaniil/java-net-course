@@ -14,6 +14,7 @@ public enum Commands {
     message((byte) 8),
     pwd((byte) 9),
     disconnect((byte) 10),
+    ls ((byte) 11),
     unknown((byte) 0);
 
     private byte numberOfCommand;
