@@ -2,6 +2,8 @@ package ru.daniilazarnov;
 
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+import messages.Message;
+import messages.MessageType;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -30,43 +32,48 @@ public class Client {
     public Client() throws IOException {
         this.socket = new Socket(InetAddress.getLocalHost(), PORT);
         this.out = new DataOutputStream(socket.getOutputStream());
-        this.in  = new Scanner(socket.getInputStream());
+        this.in = new Scanner(socket.getInputStream());
     }
 
     private void run() {
-        auth("l1", "p1");
+        //todo
+        auth("l1", "p1", "u1");
     }
 
-    public boolean auth(String username, String password) {
-        try (ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream());
-                ObjectDecoderInputStream in = new ObjectDecoderInputStream(socket.getInputStream())) {
+    public void auth(String login, String password, String username) {
 
-            CredentialsEntry user = new CredentialsEntry("l1", "p1", "u1");
-            out.writeObject("/auth");
-            out.flush();
+        try (ObjectEncoderOutputStream oeos = new ObjectEncoderOutputStream(socket.getOutputStream());
+             ObjectDecoderInputStream odis = new ObjectDecoderInputStream(socket.getInputStream())) {
 
-            out.writeObject(user);
-            out.flush();
+            CredentialsEntry user = new CredentialsEntry(login, password, username);
+            Message message = new Message(MessageType.AUTHORIZATION, user);
 
-            String answer = (String) in.readObject();
+            oeos.writeObject(message);
+            oeos.flush();
+
+            String answer = (String) odis.readObject();
 
             if (!answer.equals("ok")) {
-                throw new Exception(answer);
+                throw new ClientConnectionException(answer);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
     }
 
     public void uploadFile(String path) {
         //todo
-        try (ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream())) {
+        try (ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream());
+             ObjectDecoderInputStream odis = new ObjectDecoderInputStream(socket.getInputStream())) {
 
             out.writeObject("/upload");
 
-            //todo проверка что все ок
+            String answer = (String) odis.readObject();
+
+            if (!answer.equals("ok")) {
+                throw new ClientConnectionException(answer);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

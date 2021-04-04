@@ -2,6 +2,8 @@ package ru.daniilazarnov;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import messages.Message;
+import messages.MessageType;
 
 import java.util.Set;
 
@@ -22,12 +24,16 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
             ctx.fireChannelRead(msg);
             return;
         }
-        String msgs = (String) msg;
-        if (msgs.split("\\s")[0].equals("/auth")) {
-            String username = (msgs.split(" "))[1];
-            if (authorizedClients.contains(username)) {
+
+        Message msgs = (Message) msg;
+        if (msgs.getType().equals(MessageType.AUTHORIZATION)) {
+
+            CredentialsEntry cr = (CredentialsEntry) msgs.getMessage();
+
+            if (authorizedClients.stream().anyMatch(x -> x.getLogin().equals(cr.getLogin()))) {
                 authOk = true;
-                ctx.pipeline().addLast(new ServerHandler(username));
+                ctx.channel().writeAndFlush("ok");
+                ctx.pipeline().addLast(new ServerHandler(cr.getLogin()));
             }
         }
     }
