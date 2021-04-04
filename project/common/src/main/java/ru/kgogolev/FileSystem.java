@@ -7,45 +7,40 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class FileSystem {
     public static final byte MAGIC_BYTE = (byte) 25;
 
     public void walkFileTree(String path) throws IOException {
         Path currentPath = Paths.get(path);
+        File rootDir = new File(path);
 
-        Files.walkFileTree(currentPath, new SimpleFileVisitor<Path>() {
+        List<File> dirs = new ArrayList<>();
+        List<File> files = new ArrayList<>();
+        for (File currentFile : rootDir.listFiles()) {
+            if (currentFile.isDirectory())
+                dirs.add(currentFile);
+            if (currentFile.isFile())
+                files.add(currentFile);
+        }
+        for (File currentDir : dirs) {
+            System.out.println(String.format("subdir: %48s | %20s | %12s ",
+                    currentDir.getName(),
+                    new Date(currentDir.lastModified()),
+                    currentDir.list() == null ? "is empty" : currentDir.list().length + " files"));
 
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                if (!dir.toFile().canRead() || dir.toFile().isHidden()) {
-                    return FileVisitResult.CONTINUE;
-                } else if (dir.getNameCount() == currentPath.getNameCount() + 1) {
-                    System.out.println(String.format("subdir: %48s |",
-                            dir.getName(dir.getNameCount() - 1)));
-                }
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                try {
-                    if (!file.toFile().canRead() || file.toFile().isHidden()) {
-                        return FileVisitResult.CONTINUE;
-                    } else if (file.getNameCount() <= currentPath.getNameCount() + 1) {
-                        System.out.println(String.format("file: %50s | %20s | %10d",
-                                file.toFile().getName(),
-                                new Date(file.toFile().lastModified()),
-                                attrs.size()));
-                    }
-                } catch (Exception e) {
-                    return FileVisitResult.CONTINUE;
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
+        }
+        for (File currentFile : files) {
+            System.out.println(String.format("file: %50s | %20s | %10.0fKB",
+                    currentFile.getName(),
+                    new Date(currentFile.lastModified()),
+                    Math.ceil(currentFile.length() * 1.0 / 1000)));
+        }
     }
+
 
     public void walkAllFileTree(String path) throws IOException {
         Path currentPath = Paths.get(path);
