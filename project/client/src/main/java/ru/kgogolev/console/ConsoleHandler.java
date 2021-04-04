@@ -1,11 +1,13 @@
 package ru.kgogolev.console;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import ru.kgogolev.FileSystem;
 import ru.kgogolev.StringConstants;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 public class ConsoleHandler {
@@ -29,11 +31,17 @@ public class ConsoleHandler {
                     fileSystem.walkAllFileTree(line.split(" ")[2]);
 
                 } else if (line.startsWith(StringConstants.UPLOAD)) {
-//                    message = fileSystem.sendFile(Path.of("D:", "K.Gogolev", "Documents", "storage", "1.jpg"));
-                    message = fileSystem.sendFile(Path.of(line.split(" ")[1]));
-                    break;
+                    String[] split = line.split(" ");
+                    String[] split1 = split[1].split("[/\\\\]");
+//                    message = fileSystem.sendFile(Path.of(split1[0],split1[1]));
+//                    message = fileSystem.sendFile(Path.of(line.split(" ")[1]));
+                    return message = fileSystem.sendFile(Path.of("D:","test1.txt"));
+//                    break;
+                }else if (line.startsWith(StringConstants.AUTHENTIFICATION)){
+                   return message = Unpooled.wrappedBuffer(line.getBytes(StandardCharsets.UTF_8));
+//                    break;
                 } else {
-                    System.out.println(line);
+                    System.out.println(StringConstants.UNKNOWN+":" + line);
                 }
 
 

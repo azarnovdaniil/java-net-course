@@ -14,6 +14,7 @@ public class FileSystem {
 
     public void walkFileTree(String path) throws IOException {
         Path currentPath = Paths.get(path);
+
         Files.walkFileTree(currentPath, new SimpleFileVisitor<Path>() {
 
             @Override

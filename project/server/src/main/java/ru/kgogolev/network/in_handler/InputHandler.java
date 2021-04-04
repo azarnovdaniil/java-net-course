@@ -1,8 +1,10 @@
 package ru.kgogolev.network.in_handler;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.CharsetUtil;
 import ru.kgogolev.network.WorkingDirectory;
 
 import java.io.BufferedOutputStream;
@@ -84,6 +86,7 @@ public class InputHandler extends ChannelInboundHandlerAdapter {
         }
         if (buf.readableBytes() == 0) {
             buf.release();
+            ctx.writeAndFlush(Unpooled.copiedBuffer("File recieved", CharsetUtil.UTF_8));
         }
     }
 
