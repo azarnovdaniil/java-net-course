@@ -35,13 +35,13 @@ public class ConsoleHandler {
                     String[] split1 = split[1].split("[/\\\\]");
 //                    message = fileSystem.sendFile(Path.of(split1[0],split1[1]));
 //                    message = fileSystem.sendFile(Path.of(line.split(" ")[1]));
-                    return message = fileSystem.sendFile(Path.of("D:","test1.txt"));
-//                    break;
-                }else if (line.startsWith(StringConstants.AUTHENTIFICATION)){
-                   return message = Unpooled.wrappedBuffer(line.getBytes(StandardCharsets.UTF_8));
-//                    break;
+                    message = fileSystem.sendFile(Path.of("D:", "test1.txt"));
+                    break;
+                } else if (line.startsWith(StringConstants.AUTHENTIFICATION)) {
+                    message = Unpooled.wrappedBuffer(line.getBytes(StandardCharsets.UTF_8));
+                    break;
                 } else {
-                    System.out.println(StringConstants.UNKNOWN+":" + line);
+                    System.out.println(StringConstants.UNKNOWN + ":" + line);
                 }
 
 
