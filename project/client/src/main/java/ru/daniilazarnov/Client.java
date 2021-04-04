@@ -9,6 +9,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.log4j.Logger;
+import ru.daniilazarnov.encoderdecoder.RequestEncoder;
+import ru.daniilazarnov.encoderdecoder.ResponseDecoder;
 
 import static ru.daniilazarnov.Constants.LOCALHOST;
 import static ru.daniilazarnov.Constants.PORT;
@@ -33,8 +35,8 @@ public class Client {
 
                 @Override
                 public void initChannel(SocketChannel ch) {
-                    ch.pipeline().addLast("Decoder", new EncoderDecoder.Decoder());
-                    ch.pipeline().addLast("Encoder", new EncoderDecoder.Encoder());
+                    ch.pipeline().addLast("Decoder", new RequestEncoder());
+                    ch.pipeline().addLast("Encoder", new ResponseDecoder());
                     ch.pipeline().addLast("Client Handler", new ClientHandler());
                 }
             });

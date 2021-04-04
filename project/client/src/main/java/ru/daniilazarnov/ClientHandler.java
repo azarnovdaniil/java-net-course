@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import org.apache.log4j.Logger;
+import ru.daniilazarnov.model.RequestData;
 import ru.daniilazarnov.utils.FileUtils;
 
 import java.io.File;
@@ -16,9 +17,9 @@ import java.util.Scanner;
 public class ClientHandler extends ChannelInboundHandlerAdapter {
     private static final Logger LOGGER = Logger.getLogger(ClientHandler.class);
 
-    private static final String CLIENT_STORAGE = "project" + File.separator +
-            "client" + File.separator + "storage";
-    private static final String SECRET_SEPARATOR = "@";
+    private static final String CLIENT_STORAGE = "project" + File.separator
+            + "client" + File.separator + "storage";
+    private static final char SECRET_SEPARATOR = '@';
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
@@ -39,16 +40,23 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 String data = splitMsg[1];
                 switch (cmd) {
                     case "-test":
-                        LOGGER.info("sending text " + data);
+                        LOGGER.info("Sending text " + data);
                         ctx.writeAndFlush(cmd + data);
                         break;
                     case "-upload":
-                        LOGGER.info("uploading file " + data);
+                        LOGGER.info("Uploading file " + data);
                         try {
-                            String content = Files.readString(Path.of(CLIENT_STORAGE + File.separator + data),
+                            ctx.writeAndFlush("upload");
+                            String fileContent = Files.readString(Path.of(CLIENT_STORAGE + File.separator + data),
                                     StandardCharsets.US_ASCII);
-                            LOGGER.info("sending content: " + content);
-                            ctx.writeAndFlush(cmd + data + SECRET_SEPARATOR + content);
+                            RequestData requestData = new RequestData();
+                            requestData.setCommand((byte) 1);
+                            char separator = SECRET_SEPARATOR;
+                            requestData.setContent(data + separator + fileContent);
+                            requestData.setSeparator(separator);
+                            requestData.setLength(data.length() + fileContent.length() + 1);
+                            LOGGER.info("Sending: " + requestData);
+                            ctx.writeAndFlush(msg);
                             break;
                         } catch (IOException e) {
                             e.printStackTrace();
