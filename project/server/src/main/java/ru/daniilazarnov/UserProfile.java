@@ -24,7 +24,6 @@ public class UserProfile implements PathHolder {
     public void transComplete() {
         sendMessage("true%%%File uploaded successfully!");
         sendMessage("SYSTEM");
-
     }
 
     public void setAuthority(String authority) {

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] line %L -> %m %ex%n</Pattern>
+            </PatternLayout>
+            <MarkerFilter marker="CONS" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+
+        <RollingFile name="file" fileName="ClientLog.log"
+                     filePattern="ClientLog.%i.log" ignoreExceptions="false">
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="20 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] line %L -> %m %ex%n</Pattern>
+            </PatternLayout>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="file" level="INFO"/>
+            <AppenderRef ref="Console" level="INFO"/>
+        </Root>
+
+    </Loggers>
+</Configuration>
