@@ -24,17 +24,16 @@ public class ClientApp {
         Scanner scanner = new Scanner(System.in);
         System.out.println("!- Enter command -help for help.");
         while (true) {
-            System.out.print(":: ");
-            MessageHandler messageHandler = new MessageHandler(scanner.next());
 
-            if (messageHandler.code == 0) {
-                client.sendMessage(messageHandler.message);
+            System.out.print(":: ");
+            MessageHandler messageHandler = new MessageHandler(scanner.nextLine());
+            if (messageHandler.code == 255) {
+                client.sendMessage(messageHandler);
                 break;
             } else if (messageHandler.code > 0) {
-                client.sendMessage(messageHandler.message);
+                client.sendMessage(messageHandler);
             }
         }
-
     }
 
     private void read() {
