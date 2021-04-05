@@ -4,10 +4,20 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public enum Commands {
-//    LS((byte)1, ""),
-    DOWNLOAD((byte) 1, "[download] [destination]"),
-    UPLOAD((byte) 2, "[upload] [source]"),
-    HELP((byte) 3, "[help] - show all commands");
+    EMPTY((byte) -1, "empty"),
+    FILE((byte)15, "file"),
+    DOWNLOAD((byte) 16, "[download] [destination]"),
+    UPLOAD((byte) 17, "[upload] [source]"),
+    HELP((byte) 18, "[help] - show all commands"),
+    DELETE((byte)19, "delete"),
+    END((byte)20, "end"),
+//    AUTH((byte)21, "auth"),
+//    REG((byte)22, "reg"),
+    CREATE((byte)23, "create"),
+    FORWARD((byte)24, "forward"),
+    BACK((byte)25, "back");//,
+//    EXIT((byte)26, "exit"),
+//    WARNING((byte)27, "warning");
 
 
     private final byte commBytes;
@@ -27,11 +37,11 @@ public enum Commands {
         return commBytes;
     }
 
-    public static Commands getCommand(byte b) {
+    public Commands getCommand(byte b) {
         return getCommBytes(b);
     }
 
-    private static Commands getCommBytes(byte b) {
+    public Commands getCommBytes(byte b) {
         return Arrays.stream(Commands.values())
                 .filter(command -> command.getCommBytes() == b)
                 .findFirst().orElse(Commands.HELP);
@@ -43,4 +53,12 @@ public enum Commands {
                 .collect(Collectors.joining("\n"));
     }
 
+    public static void main(String[] args) {
+        Commands commands = Commands.DOWNLOAD;
+        System.out.println(commands.getExplain());
+        System.out.println(commands.getCommBytes());
+        System.out.println(commands.getCommand((byte)20));
+        System.out.println(commands.helpInfo());
+//        System.out.println(commands.getExplain());
+    }
 }
