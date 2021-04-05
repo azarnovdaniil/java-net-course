@@ -6,4 +6,3 @@ public class Main {
         System.out.println("Lesson 1");
     }
 }
-
