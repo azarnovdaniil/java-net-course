@@ -53,7 +53,7 @@ public class Protocol {
         return fileBuffer;
     }
 
-    public static ByteBuffer wrapStringAndCommandInByteBuffer(String message) throws IOException {
+    public static ByteBuffer wrapStringInByteBuffer(String message) throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE_FOR_STRING_SENDER);
         byteBuffer.put(Commands.message.getNumberOfCommand());
         byteBuffer.putInt(message.length());

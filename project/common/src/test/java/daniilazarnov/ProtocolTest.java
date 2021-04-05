@@ -2,7 +2,6 @@ package daniilazarnov;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.daniilazarnov.Protocol;
 
@@ -37,7 +36,7 @@ public class ProtocolTest {
                         if (key.isAcceptable()) {
                             SocketChannel socketChannel = ((ServerSocketChannel) key.channel()).accept();
                             socketChannel.configureBlocking(false);
-                            ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer("Test string");
+                            ByteBuffer byteBuffer = Protocol.wrapStringInByteBuffer("Test string");
 
                             //Убираем первый байт, в котором закодирована команда для клиента
                             byteBuffer.get();

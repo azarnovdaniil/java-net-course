@@ -24,7 +24,7 @@ public class PresentWorkDirectory implements ServerOperation {
         Path currentPath = userInfo.getCurrentPath();
         Path rootPath = userInfo.getUserRoot().getParent();
         Path currentPathForUser = rootPath.relativize(currentPath).normalize();
-        ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer(currentPathForUser.toString() + File.separator);
+        ByteBuffer byteBuffer = Protocol.wrapStringInByteBuffer(currentPathForUser.toString() + File.separator);
         socketChannel.write(byteBuffer);
         return true;
     }

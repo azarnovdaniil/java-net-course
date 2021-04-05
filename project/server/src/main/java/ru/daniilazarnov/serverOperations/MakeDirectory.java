@@ -31,7 +31,7 @@ public class MakeDirectory implements ServerOperation {
         }
         try {
             Files.createDirectories(targetPath);
-            ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer("Directory " + dirName + " created");
+            ByteBuffer byteBuffer = Protocol.wrapStringInByteBuffer("Directory " + dirName + " created");
             socketChannel.write(byteBuffer);
             return true;
         } catch (IOException e) {

@@ -28,13 +28,13 @@ public class AuthenticationUser implements ServerOperation {
         ((UserInfo) key.attachment()).setCurrentPath(path);
         if (!Files.exists(path)) {
             Files.createDirectory(path);
-            ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer("Created a section for a new user " + userName);
+            ByteBuffer byteBuffer = Protocol.wrapStringInByteBuffer("Created a section for a new user " + userName);
             socketChannel.write(byteBuffer);
             return false;
         }
         String message = "You are logged in as " + ((UserInfo) key.attachment()).getName()
                 + "\nCurrent directory " + path.getFileName() + File.separator;
-        ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer(message);
+        ByteBuffer byteBuffer = Protocol.wrapStringInByteBuffer(message);
         socketChannel.write(byteBuffer);
         return true;
     }

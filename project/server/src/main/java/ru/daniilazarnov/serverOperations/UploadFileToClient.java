@@ -25,7 +25,7 @@ public class UploadFileToClient implements ServerOperation {
         Path currentDir = ((UserInfo) key.attachment()).getCurrentPath();
         Path targetFilePath = currentDir.resolve(Paths.get(fileName));
         if (!Protocol.sendFileToSocketChannel(targetFilePath, socketChannel)) {
-            ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer("File not found");
+            ByteBuffer byteBuffer = Protocol.wrapStringInByteBuffer("File not found");
             socketChannel.write(byteBuffer);
             return false;
         }

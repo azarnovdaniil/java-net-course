@@ -3,7 +3,6 @@ package ru.daniilazarnov.serverOperations;
 import ru.daniilazarnov.Protocol;
 import ru.daniilazarnov.UserInfo;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -32,7 +31,7 @@ public class ListOfFilesOrDirectories implements ServerOperation {
         for (Path path : listOfPaths) {
             sb.append(path.getFileName()).append("\t");
         }
-        ByteBuffer byteBuffer = Protocol.wrapStringAndCommandInByteBuffer(sb.toString());
+        ByteBuffer byteBuffer = Protocol.wrapStringInByteBuffer(sb.toString());
         socketChannel.write(byteBuffer);
         return true;
     }
