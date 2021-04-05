@@ -7,6 +7,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -19,8 +20,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     private State state = State.GET_COMMAND;
     private int fileNameLength = 0;
     private BufferedOutputStream bos;
-    private final Network network = new Network();
-    private final ClientFileProtocol clientFileProtocol = new ClientFileProtocol(network);
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -65,13 +64,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void getFileNameLength(ByteBuf buf) {
-        if (buf.readableBytes() < Integer.SIZE / Byte.SIZE) return;
+        if (buf.readableBytes() < Integer.SIZE / Byte.SIZE) {
+            return;
+        }
         fileNameLength = buf.readInt();
         state = State.NAME;
     }
 
     public void getFileName(ByteBuf buf) {
-        if (buf.readableBytes() < fileNameLength) return;
+        if (buf.readableBytes() < fileNameLength) {
+            return;
+        }
         byte[] fileNameArr = new byte[fileNameLength];
         buf.readBytes(fileNameArr);
         String fileName = new String(fileNameArr);
@@ -84,12 +87,23 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void getFileLength(ByteBuf buf) throws FileNotFoundException {
-        if (buf.readableBytes() < Long.SIZE / Byte.SIZE) return;
+        if (buf.readableBytes() < Long.SIZE / Byte.SIZE) {
+            return;
+        }
         fileReqLength = buf.readLong();
         loadedLength = 0;
-        clientFileProtocol.createFile(path);
+        createFile(path);
         bos = new BufferedOutputStream(new FileOutputStream(path.toString(), true));
         state = State.GET_FILE;
+    }
+
+    public void createFile(Path path) {
+        try {
+            Files.deleteIfExists(path);
+            Files.createFile(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void getFile(ByteBuf buf) throws IOException {
@@ -97,10 +111,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             bos.write(buf.readByte());
             loadedLength++;
         }
-        if (loadedLength < fileReqLength) return;
+        if (loadedLength < fileReqLength) {
+            return;
+        }
         bos.flush();
         buf.release();
         bos.close();
         state = State.GET_COMMAND;
     }
+
+
 }

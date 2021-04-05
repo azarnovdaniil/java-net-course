@@ -13,11 +13,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 public class Network {
     private static final String HOST = "localhost";
     private static final int PORT = 8888;
-    private Channel currentChannel;
-
-    public Channel getCurrentChannel() {
-        return currentChannel;
-    }
 
     public void start() {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -29,7 +24,6 @@ public class Network {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) {
                             socketChannel.pipeline().addLast(new ClientHandler());
-                            currentChannel = socketChannel;
                         }
                     });
             ChannelFuture future = b.connect(HOST, PORT).sync();
@@ -44,4 +38,7 @@ public class Network {
     public static void main(String[] args) {
         new Network().start();
     }
+
+
+
 }
