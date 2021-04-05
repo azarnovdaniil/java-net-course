@@ -2,21 +2,13 @@ package ru.daniilazarnov;
 
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
-import messages.FileMessage;
-import messages.FileOperationType;
 import messages.Message;
 import messages.MessageType;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Client {
@@ -26,7 +18,7 @@ public class Client {
     private Socket socket;
     private DataOutputStream out;
     private Scanner in;
-    CredentialsEntry user;
+    private CredentialsEntry user;
 
     //todo args
     public static void main(String[] args) {
