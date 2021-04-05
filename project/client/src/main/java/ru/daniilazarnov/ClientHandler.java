@@ -65,7 +65,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void getFileNameLength(ByteBuf buf) {
-        if (buf.readableBytes() < 4) return;
+        if (buf.readableBytes() < Integer.SIZE / Byte.SIZE) return;
         fileNameLength = buf.readInt();
         state = State.NAME;
     }
@@ -84,7 +84,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void getFileLength(ByteBuf buf) throws FileNotFoundException {
-        if (buf.readableBytes() < 8) return;
+        if (buf.readableBytes() < Long.SIZE / Byte.SIZE) return;
         fileReqLength = buf.readLong();
         loadedLength = 0;
         clientFileProtocol.createFile(path);

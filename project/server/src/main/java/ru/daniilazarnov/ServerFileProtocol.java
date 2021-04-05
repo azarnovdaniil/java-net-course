@@ -2,6 +2,7 @@ package ru.daniilazarnov;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +15,7 @@ import static io.netty.buffer.Unpooled.buffer;
 public class ServerFileProtocol {
 
     private String serverPath = "project/server/";
-
+    private static final int BUF_SIZE = 1024;
     private ChannelHandlerContext ctx;
 
     public String getServerPath() {
@@ -30,8 +31,8 @@ public class ServerFileProtocol {
             if (Files.exists(path) && !Files.isDirectory(path)) {
                 sendCommand(Commands.UPLOAD, fileName);
                 try (InputStream inputStream = Files.newInputStream(path)) {
-                    byte[] data = new byte[1024];
-                    while (inputStream.available() >= 1024) {
+                    byte[] data = new byte[BUF_SIZE];
+                    while (inputStream.available() >= BUF_SIZE) {
                         inputStream.read(data);
                         sendData(data);
                     }
@@ -81,23 +82,27 @@ public class ServerFileProtocol {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for (String o : filesList) result.append(o).append(" ");
+        for (String o : filesList) {
+            result.append(o).append(" ");
+        }
         System.out.println(result.toString());
     }
 
     private void sendData(Object data) {
-        ByteBuf buf = buffer(1024);
+        ByteBuf buf = buffer(BUF_SIZE);
         buf.writeBytes((byte[]) data);
         ctx.channel().writeAndFlush(buf);
     }
 
     private void sendCommand(Commands command, String commandInfo) {
-        ByteBuf buf = buffer(1024);
+        ByteBuf buf = buffer(BUF_SIZE);
         try {
             buf.writeByte(command.getCommBytes());
             buf.writeInt(commandInfo.getBytes().length);
             buf.writeBytes(commandInfo.getBytes());
-            if (command == Commands.UPLOAD) buf.writeLong(Files.size(Paths.get(serverPath + commandInfo)));
+            if (command == Commands.UPLOAD) {
+                buf.writeLong(Files.size(Paths.get(serverPath + commandInfo)));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -124,8 +129,9 @@ public class ServerFileProtocol {
         String[] currentPathArr = serverPath.split(File.separator);
         if (currentPathArr.length >= 2) {
             StringBuilder previousPath = new StringBuilder();
-            for (int i = 0; i <= currentPathArr.length - 2; i++)
+            for (int i = 0; i <= currentPathArr.length - 2; i++) {
                 previousPath.append(currentPathArr[i]).append(File.separator);
+            }
             serverPath = previousPath.toString();
             sendFilesList();
         }

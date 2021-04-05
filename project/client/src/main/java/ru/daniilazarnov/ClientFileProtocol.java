@@ -14,6 +14,7 @@ public class ClientFileProtocol {
 
     private static final String CLIENT_PATH = "project/client/";
     private final Network network;
+    private static final int BUF_SIZE = 1024;
 
     public ClientFileProtocol(Network network) {
         this.network = network;
@@ -33,8 +34,8 @@ public class ClientFileProtocol {
             Path path = Paths.get(CLIENT_PATH + fileName);
             if (Files.exists(path)) {
                 InputStream inputStream = Files.newInputStream(path);
-                byte[] data = new byte[1024];
-                while (inputStream.available() >= 1024) {
+                byte[] data = new byte[BUF_SIZE];
+                while (inputStream.available() >= BUF_SIZE) {
                     inputStream.read(data);
                     sendData(data);
                 }
@@ -51,13 +52,13 @@ public class ClientFileProtocol {
     }
 
     public void sendData(byte[] data) {
-        ByteBuf buf = buffer(1024);
+        ByteBuf buf = buffer(BUF_SIZE);
         buf.writeBytes(data);
         network.getCurrentChannel().writeAndFlush(buf);
     }
 
     public void sendCommand(Commands command, String commandInfo) {
-        ByteBuf buf = buffer(1024);
+        ByteBuf buf = buffer(BUF_SIZE);
         try {
             buf.writeByte(command.getCommBytes());
             buf.writeInt(commandInfo.getBytes().length);

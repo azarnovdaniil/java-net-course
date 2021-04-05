@@ -3,6 +3,7 @@ package ru.daniilazarnov;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -74,6 +75,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             case GET_FILE:
                 getFile(buf);
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + state);
         }
     }
 
@@ -115,13 +118,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void getFileNameLength(ByteBuf buf) {
-        if (buf.readableBytes() < 4) return;
+        if (buf.readableBytes() < Integer.SIZE / Byte.SIZE) {
+            return;
+        }
         reqNameLength = buf.readInt();
         state = State.NAME;
     }
 
     public void getFileName(ByteBuf buf) {
-        if (buf.readableBytes() < reqNameLength) return;
+        if (buf.readableBytes() < reqNameLength) {
+            return;
+        }
         byte[] fileNameArr = new byte[reqNameLength];
         buf.readBytes(fileNameArr);
         fileName = new String(fileNameArr);
@@ -149,7 +156,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void getFileLength(ByteBuf buf) throws FileNotFoundException {
-        if (buf.readableBytes() < 8) return;
+        if (buf.readableBytes() < Long.SIZE / Byte.SIZE) {
+            return;
+        }
         fileReqLength = buf.readLong();
         loadedLength = 0;
         serverProtocol.createFile(path);
@@ -162,7 +171,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             bos.write(buf.readByte());
             loadedLength++;
         }
-        if (loadedLength < fileReqLength) return;
+        if (loadedLength < fileReqLength) {
+            return;
+        }
         bos.flush();
         buf.release();
         bos.close();
