@@ -3,7 +3,6 @@ package ru.daniilazarnov;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -57,7 +56,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     public void getCommandFromBytes(byte b) {
         command = command.getCommand(b);
-        if (command == Commands.HELP){
+        if (command == Commands.HELP) {
             command.helpInfo();
             state = State.GET_COMMAND;
         } else if (command == Commands.FILE) {

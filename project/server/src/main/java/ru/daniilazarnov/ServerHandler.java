@@ -3,14 +3,12 @@ package ru.daniilazarnov;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
@@ -97,16 +95,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     public void getCommandFromBytes(byte b) {
         command = command.getCommand(b);
-        switch (command){
+        switch (command) {
             case DOWNLOAD:
             case UPLOAD:
             case CREATE:
             case FORWARD:
-            case DELETE: state = State.NAME_LENGTH;
+            case DELETE:
+                state = State.NAME_LENGTH;
                 break;
-            case BACK: state = State.MOVE_BACK;
+            case BACK:
+                state = State.MOVE_BACK;
                 break;
-            case HELP: state = State.SEND_LIST;
+            case HELP:
+                state = State.SEND_LIST;
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + command);
@@ -125,18 +126,24 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         buf.readBytes(fileNameArr);
         fileName = new String(fileNameArr);
         path = Paths.get(serverProtocol.getServerPath() + fileName);
-        switch (command){
-            case DOWNLOAD: state = State.SEND_FILE;
+        switch (command) {
+            case DOWNLOAD:
+                state = State.SEND_FILE;
                 break;
-            case UPLOAD: state = State.FILE_LENGTH;
+            case UPLOAD:
+                state = State.FILE_LENGTH;
                 break;
-            case DELETE: state = State.DELETE_FILE;
+            case DELETE:
+                state = State.DELETE_FILE;
                 break;
-            case CREATE: state = State.CREATE_DIR;
+            case CREATE:
+                state = State.CREATE_DIR;
                 break;
-            case FORWARD: state = State.MOVE_FORWARD;
+            case FORWARD:
+                state = State.MOVE_FORWARD;
                 break;
-            default: state = State.GET_COMMAND;
+            default:
+                state = State.GET_COMMAND;
                 break;
         }
     }
@@ -151,7 +158,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void getFile(ByteBuf buf) throws IOException {
-        while (buf.readableBytes() > 0 && loadedLength < fileReqLength){
+        while (buf.readableBytes() > 0 && loadedLength < fileReqLength) {
             bos.write(buf.readByte());
             loadedLength++;
         }
