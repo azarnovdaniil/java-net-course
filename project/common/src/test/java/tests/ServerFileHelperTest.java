@@ -1,15 +1,12 @@
 package tests;
 
-import helpers.FileHelper;
+import helpers.ServerFileHelper;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class FileHelperTest {
+class ServerFileHelperTest {
 
     @org.junit.jupiter.api.Test
     void saveFile() {
@@ -21,7 +18,7 @@ class FileHelperTest {
 
     @org.junit.jupiter.api.Test
     void listDirectories() throws IOException {
-        ArrayList<Path> r = (ArrayList<Path>) FileHelper.listDirectories("test");
+        ArrayList<Path> r = (ArrayList<Path>) ServerFileHelper.listDirectories("test");
 
         for (Path p: r) {
             System.out.println(p.getFileName());
@@ -30,7 +27,7 @@ class FileHelperTest {
 
     @org.junit.jupiter.api.Test
     void listFilesInDirectory() throws IOException {
-        /*ArrayList<Path> r = (ArrayList<Path>) FileHelper.listFilesInDirectory("test", "test2");
+        /*ArrayList<Path> r = (ArrayList<Path>) ServerFileHelper.listFilesInDirectory("test", "test2");
 
         for (Path p: r) {
             System.out.println(p.getFileName());
@@ -39,6 +36,6 @@ class FileHelperTest {
 
     @org.junit.jupiter.api.Test
     void createDirectory() throws IOException {
-        //assertFalse(FileHelper.createDirectory("test", "test2"));
+        //assertFalse(ServerFileHelper.createDirectory("test", "test2"));
     }
 }

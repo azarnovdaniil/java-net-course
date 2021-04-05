@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FileHelper {
+public class ServerFileHelper {
 
     private static final String OUTPUT_DIRECTORY = "upload";
     private static final String USERNAME_WARNING = "имя пользователя должно быть задано";
