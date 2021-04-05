@@ -1,97 +1,56 @@
 package ru.daniilazarnov;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 public class Client {
+    private static final String USER = "User1";
+    private static final String USER_FOLDER = "src/main/java/server/";
+    private final Network network;
 
-    public static final int PORT = 8888;
-    private Channel currentChannel;
-    public static final byte MAGIC_BYTE = (byte) 25;
-    public static File file = new File("1.txt");
-
-    public Client() {
+    public Client(Network network) {
+        this.network = network;
+        network.start();
     }
 
-    public void run(Path path) {
-        EventLoopGroup group = new NioEventLoopGroup();
-        try {
-            Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(group)
-                    .channel(NioSocketChannel.class)
-                    .remoteAddress(new InetSocketAddress("localhost", PORT))
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            socketChannel.pipeline().addLast();
-                            currentChannel = socketChannel;
-                        }
-                    });
 
-            ChannelFuture channelFuture = bootstrap.connect().sync();
-            sendFile(path, future -> {
-                if (!future.isSuccess()) {
-                    future.cause().printStackTrace();
-                    stop();
-                }
-                if (future.isSuccess()) {
-                    System.out.println("Файл успешно передан");
-                    stop();
-                }
-            });
-            channelFuture.channel().closeFuture().sync();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            group.shutdownGracefully();
+    private void run() throws IOException {
+        System.out.println("Hello, " + USER + "! Type \"help\" for help");
+
+//        while (true) {
+//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+//            String inputLine = bufferedReader.readLine().trim().toLowerCase();
+//            Commands commands = Commands.valueOf(inputLine.split("\\n")[0]);
+//            switch (commands) {
+//                case UPLOAD:
+//                    ServerNetwork.sendFile(inputLine);
+//                    break;
+//                case DOWNLOAD:
+//                    ServerNetwork.downloadFile(inputLine);
+//                    break;
+//                case HELP:
+//                    System.out.println(commands.helpInfo());
+//                    break;
+//                default:
+//                    throw new IllegalStateException("Invalid command: " + commands);
+//            }
+//        }
+    }
+    protected static void walk() {
+        try (Stream<Path> stream = Files.walk(Path.of(USER_FOLDER))) {
+            System.out.println("Content of your folder:");
+            stream.forEach(System.out::println);
+        } catch (IOException e) {
+            throw new RuntimeException("SWW", e);
         }
     }
 
-    private void sendFile(Path path, ChannelFutureListener finishListener) throws IOException {
-
-        FileRegion region = new DefaultFileRegion(path.toFile(), 0, Files.size(path));
-
-        ByteBuf buf;
-        buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte(MAGIC_BYTE);
-        currentChannel.writeAndFlush(buf);
-
-        byte[] filenameBytes = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);
-        buf = ByteBufAllocator.DEFAULT.directBuffer(Integer.SIZE / Byte.SIZE);
-        buf.writeInt(filenameBytes.length);
-        currentChannel.writeAndFlush(buf);
-
-        buf = ByteBufAllocator.DEFAULT.directBuffer(filenameBytes.length);
-        buf.writeBytes(filenameBytes);
-        currentChannel.writeAndFlush(buf);
-
-        buf = ByteBufAllocator.DEFAULT.directBuffer(Long.SIZE / Byte.SIZE);
-        buf.writeLong(Files.size(path));
-        currentChannel.writeAndFlush(buf);
-
-        ChannelFuture transferOperationFuture = currentChannel.writeAndFlush(region);
-        if (finishListener != null) {
-            transferOperationFuture.addListener(finishListener);
-        }
-    }
-
-    public void stop() {
-        currentChannel.close();
-    }
-
-    public static void main(String[] args) {
-        new Client().run(Paths.get(file.getName()));
+    public static void main(String[] args) throws IOException {
+        Network network = new Network();
+        new Client(network).run();
     }
 }
