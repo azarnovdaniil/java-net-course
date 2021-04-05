@@ -5,19 +5,18 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
+import ru.kgogolev.user.ListOfUsers;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
 
 public class AuthHandler extends ChannelInboundHandlerAdapter {
 
-    private final Set<String> authorizedClients = Set.of("Vasya", "111", "222");
 
     private boolean authOk = false;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("клиент подкл.xbkcz");
+        System.out.println("клиент подключился");
     }
 
     @Override
@@ -33,14 +32,13 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
         System.out.println("Server received: " + input);
         if (input.split(" ")[0].equals("/auth")) {
             String username = input.split(" ")[1];
-            if (authorizedClients.contains(username)) {
+            if (ListOfUsers.USERS.get(input.split(" ")[1]).equals(input.split(" ")[2])) {
                 authOk = true;
                 System.out.println("auth OK");
                 ctx.writeAndFlush(Unpooled.wrappedBuffer(("U have authorised as ".getBytes(StandardCharsets.UTF_8)),
                         username.getBytes(StandardCharsets.UTF_8)));
             } else {
                 System.out.println("no such user");
-                ctx.fireChannelRead(msg);
                 ctx.writeAndFlush(Unpooled.wrappedBuffer("Invalid login or password".getBytes(StandardCharsets.UTF_8),
                         username.getBytes(StandardCharsets.UTF_8)));
             }

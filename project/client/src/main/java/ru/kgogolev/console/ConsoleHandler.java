@@ -27,16 +27,12 @@ public class ConsoleHandler {
                 if (line.startsWith(StringConstants.VIEW_FILES)) {
                     fileSystem.walkFileTree(line.split(" ")[1]);
 
-                } else if (line.startsWith(StringConstants.VIEW_FILES_DETAILED)) {
-                    fileSystem.walkAllFileTree(line.split(" ")[2]);
-
                 } else if (line.startsWith(StringConstants.UPLOAD)) {
                     String[] split = line.split(" ");
                     String[] split1 = split[1].split("[/\\\\]");
-//                    message = fileSystem.sendFile(Path.of(split1[0],split1[1]));
-//                    message = fileSystem.sendFile(Path.of(line.split(" ")[1]));
                     message = fileSystem.sendFile(Path.of("D:", "test1.txt"));
                     break;
+
                 } else if (line.startsWith(StringConstants.AUTHENTIFICATION)) {
                     message = Unpooled.wrappedBuffer(line.getBytes(StandardCharsets.UTF_8));
                     break;

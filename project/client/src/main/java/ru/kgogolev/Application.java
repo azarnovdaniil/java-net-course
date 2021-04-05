@@ -15,8 +15,6 @@ public class Application {
     }
 
     private void run() {
-//        client.sendMessage(Unpooled.wrappedBuffer("/auth 111111".getBytes(StandardCharsets.UTF_8)));
-//        client.sendMessage(Unpooled.wrappedBuffer("/auth Vasya".getBytes(StandardCharsets.UTF_8)));
         while (true) {
             client.sendMessage(consoleHandler.handleMessage());
         }
