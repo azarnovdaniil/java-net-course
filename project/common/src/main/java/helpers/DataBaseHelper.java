@@ -16,8 +16,9 @@ public class DataBaseHelper {
     private static final int PORT = 3306;
     private static final String DATABASE = "chat";
     private static final String HOST = "127.0.0.1";
-    private static final String DRIVER_STRING = "jdbc:mysql://%s:%d/%s";
+    private static final String DRIVER_STRING = "%s://%s:%d/%s";
 
+    //todo use config
     public static Connection connect() {
         try {
             return DriverManager.getConnection(String.format(DRIVER_STRING, HOST, PORT, DATABASE), "root", "root");

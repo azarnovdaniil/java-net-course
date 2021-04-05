@@ -15,6 +15,7 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+//todo use config
 public class Server {
 
     public static final int INET_PORT = 9876;

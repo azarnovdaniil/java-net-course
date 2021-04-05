@@ -1,26 +1,29 @@
 package ru.daniilazarnov;
 
+import helpers.ConfigHelper;
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 import messages.Message;
 import messages.MessageType;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.file.Path;
 import java.util.Scanner;
 
 public class Client {
 
-    public static final int PORT = 8189;
+    public static final int DEFAULT_PORT = 9876;
+    public static final String DEFAULT_HOST = "127.0.0.1";
+    public static final String CONFIG_FILE = "client.config";
 
     private Socket socket;
     private DataOutputStream out;
     private Scanner in;
     private CredentialsEntry user;
+    private ConfigHelper config;
 
-    //todo args
     public static void main(String[] args) {
         try {
             new Client().run();
@@ -30,16 +33,52 @@ public class Client {
     }
 
     public Client() throws IOException {
-        this.socket = new Socket(InetAddress.getLocalHost(), PORT);
-        this.out = new DataOutputStream(socket.getOutputStream());
-        this.in = new Scanner(socket.getInputStream());
+        init();
+    }
+
+    private void init() {
+        try {
+            config = new ConfigHelper(Path.of(CONFIG_FILE));
+            config.load();
+
+            this.socket = new Socket(config.getProperty("app.host"), Integer.parseInt(config.getProperty("app.port")));
+            this.out = new DataOutputStream(socket.getOutputStream());
+            this.in = new Scanner(socket.getInputStream());
+
+        } catch (FileNotFoundException e) {
+            System.out.println("не найден файл настроек будет создан новый со стандартными настройками");
+
+            try {
+                this.socket = new Socket(InetAddress.getByName(DEFAULT_HOST), DEFAULT_PORT);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+
+            try {
+                this.out = new DataOutputStream(socket.getOutputStream());
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+
+            try {
+                this.in = new Scanner(socket.getInputStream());
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+
+            //todo save to config
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void run() {
-        //todo
+        //todo properly with threads
         auth("l1", "p1", "u1");
     }
 
+    //todo use config
     public boolean auth(String login, String password, String username) {
         boolean res = false;
 
@@ -67,5 +106,12 @@ public class Client {
         return res;
     }
 
+    public boolean register(String login, String password, String username) {
+        boolean res = false;
 
+        //todo registration
+        //todo savings to config
+
+        return res;
+    }
 }

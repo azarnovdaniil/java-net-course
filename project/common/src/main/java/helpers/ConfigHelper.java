@@ -3,6 +3,7 @@ package helpers;
 import java.io.*;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Properties;
 
 //todo add checks for existence
@@ -17,14 +18,21 @@ public class ConfigHelper {
         load();
     }
 
+    public void create(Map<String, String> settings) throws IOException {
+        try (OutputStream os = new FileOutputStream(configPath.toString())) {
+            properties.putAll(settings);
+            properties.store(os, LocalDateTime.now().toString());
+        }
+    }
+
     public void load() throws IOException {
-        try(InputStream is = new FileInputStream(configPath.toString())) {
+        try (InputStream is = new FileInputStream(configPath.toString())) {
             properties.load(is);
         }
     }
 
     public void save() throws IOException {
-        try(OutputStream os = new FileOutputStream(configPath.toString())) {
+        try (OutputStream os = new FileOutputStream(configPath.toString())) {
             properties.store(os, LocalDateTime.now().toString());
         }
     }
