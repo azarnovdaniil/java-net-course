@@ -2,7 +2,7 @@ package ru.daniilazarnov;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.daniilazarnov.commands.*;
+import ru.daniilazarnov.clientConnection.commands.*;
 
 public class FabricOfCommandsTest {
 

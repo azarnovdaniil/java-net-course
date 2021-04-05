@@ -1,4 +1,4 @@
-package ru.daniilazarnov.commands;
+package ru.daniilazarnov.clientConnection.commands;
 
 import ru.daniilazarnov.Commands;
 

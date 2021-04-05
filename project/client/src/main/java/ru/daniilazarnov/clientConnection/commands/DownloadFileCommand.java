@@ -1,6 +1,5 @@
-package ru.daniilazarnov.commands;
+package ru.daniilazarnov.clientConnection.commands;
 
-import ru.daniilazarnov.ClientConnection;
 import ru.daniilazarnov.Commands;
 
 import java.io.IOException;
@@ -17,15 +16,10 @@ public class DownloadFileCommand implements ICommand {
     }
 
     @Override
-    public boolean apply(ClientConnection connection) throws IOException {
-        SocketChannel socketChannel = connection.getClientSocketChannel();
+    public boolean apply(SocketChannel socketChannel) throws IOException {
         int fileNameLength;
         String filename;
         if (socketChannel == null) {
-            return false;
-        }
-        if (args.length != 1) {
-            System.out.println("Wrong command");
             return false;
         }
         ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);

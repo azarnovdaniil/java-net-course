@@ -1,29 +1,23 @@
-package ru.daniilazarnov.commands;
+package ru.daniilazarnov.clientConnection.commands;
 
-import ru.daniilazarnov.ClientConnection;
 import ru.daniilazarnov.Commands;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-public class AuthCommand implements ICommand {
+public class MkDirCommand implements ICommand {
     private final String[] args;
-    private final Commands command = Commands.user;
+    private final Commands command = Commands.mkd;
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
-    public AuthCommand(ArgumentsForCommand arguments) {
+    public MkDirCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
     }
 
     @Override
-    public boolean apply(ClientConnection connection) throws IOException {
-        SocketChannel socketChannel = connection.getClientSocketChannel();
+    public boolean apply(SocketChannel socketChannel) throws IOException {
         if (socketChannel == null) {
-            return false;
-        }
-        if (args.length != 1) {
-            System.out.println("Wrong command");
             return false;
         }
         ByteBuffer byteBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);

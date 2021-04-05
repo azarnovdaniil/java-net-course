@@ -1,4 +1,4 @@
-package ru.daniilazarnov.commands;
+package ru.daniilazarnov.clientConnection.commands;
 
 import ru.daniilazarnov.Commands;
 
@@ -9,7 +9,7 @@ public final class ArgumentsForCommand {
     private final String[] args;
     private static final Commands[] COMMANDS = Commands.values();
 
-    private ArgumentsForCommand(Commands command, String[] args) {
+    public ArgumentsForCommand(Commands command, String[] args) {
         this.command = command;
         this.args = args;
     }

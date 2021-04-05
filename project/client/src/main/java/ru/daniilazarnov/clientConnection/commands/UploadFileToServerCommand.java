@@ -1,7 +1,5 @@
-package ru.daniilazarnov.commands;
+package ru.daniilazarnov.clientConnection.commands;
 
-import ru.daniilazarnov.ClientConnection;
-import ru.daniilazarnov.Commands;
 import ru.daniilazarnov.Protocol;
 
 import java.io.IOException;
@@ -11,21 +9,14 @@ import java.nio.file.Paths;
 
 public class UploadFileToServerCommand implements ICommand {
     private final String[] args;
-    private final Commands command = Commands.stor;
-    private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     public UploadFileToServerCommand(ArgumentsForCommand arguments) {
         this.args = arguments.getArgs();
     }
 
     @Override
-    public boolean apply(ClientConnection connection) throws IOException {
-        SocketChannel socketChannel = connection.getClientSocketChannel();
+    public boolean apply(SocketChannel socketChannel) throws IOException {
         if (socketChannel == null) {
-            return false;
-        }
-        if (args.length != 1) {
-            System.out.println("Wrong command");
             return false;
         }
         Path pathSrcFile = Paths.get(args[0]);
