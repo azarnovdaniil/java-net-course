@@ -8,6 +8,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 import ru.daniilazarnov.handler.*;
 
 import java.nio.file.Path;
@@ -19,6 +22,7 @@ public class Server {
 
     private int port;
     public Path path;
+    public static final int MAX_OBJECT_SIZE = 1024 * 1024 * 100;
 
     public Server(int port) {
         this.port = port;
@@ -35,7 +39,10 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new MainHandler()
+                            ch.pipeline().addLast(
+                                    new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
+                                    new ObjectEncoder(),
+                                    new MainHandler()
                             );
                         }
                     })
@@ -43,7 +50,7 @@ public class Server {
                     .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
             // Bind and start to accept incoming connections.
-            ChannelFuture f = b.bind(port).sync(); // (7)
+            ChannelFuture f = b.bind(Common.DEFAULT_PORT).sync(); // (7)
 
             // Wait until the server socket is closed.
             // In this example, this does not happen, but you can do that to gracefully

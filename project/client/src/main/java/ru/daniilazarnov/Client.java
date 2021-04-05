@@ -1,126 +1,89 @@
 package ru.daniilazarnov;
+
+import ru.daniilazarnov.domain.FileMessage;
+import ru.daniilazarnov.domain.MyMessage;
+import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
+import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.CompletionHandler;
-import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
 
-
 public class Client {
-    public static final int PORT = 8189;
-    public static final String HOST = "localhost";
-    private static final Integer MAGIC_BYTE = 21;
-
-    private String newData;
-    private SocketChannel socketClient;
-    private ByteBuffer buf = ByteBuffer.allocate(256);
-    private ByteBuffer msgBuf = ByteBuffer.allocate(256); ;
-    private String clientStorage = "C:\\clientStorage";
-
-
+    private Socket socket;
+    private ObjectEncoderOutputStream out;
+    private ObjectDecoderInputStream in;
+    private boolean authStatus;
+    private String nickname;
     public Client(){}
 
-    public void connect() throws IOException {
-        socketClient = SocketChannel.open();
-        socketClient.connect(new InetSocketAddress(HOST, PORT));
-    }
-    private void readChannel() throws IOException {
-        StringBuilder sb = new StringBuilder();
-        buf.clear();
-        int read = 0;
-        while (socketClient.read(buf) > 0) {
-            buf.flip();
-            byte[] bytes = new byte[buf.limit()];
-            buf.get(bytes);
-            System.out.println(new String(bytes));
-            buf.clear();
-        }
-    }
-    private void writeChannel(String msg) throws IOException {
-        msgBuf = ByteBuffer.wrap(msg.getBytes());
-        socketClient.write(msgBuf);
-        msgBuf.rewind();
-    }
-    private void writeBuffer(String msg) throws IOException {
-        msgBuf = ByteBuffer.wrap(msg.getBytes());
-        socketClient.write(msgBuf);
-        msgBuf.rewind();
-    }
-    private void disconnectClient(){
-        try {
-            socketClient.finishConnect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    public static final int MAX_OBJECT_SIZE = 100 * 1024 * 1024;
+    public static final String CLIENT_REPO = "C:\\clientStorage";
 
-    public static void main (String[] args) throws IOException {
-        Scanner scanner = new Scanner(System.in);
-        String enterData;
+    public void connect () throws IOException {
+        String s;
         Client client = new Client();
+        Common common = new Common();
         try {
-            client.connect();
-            new Thread(() -> {
-                try {
-                    client.readChannel();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-            while (scanner.hasNext()){
-                enterData = scanner.nextLine();
-                client.writeChannel(enterData);
+            if (socket ==null || socket.isClosed() ) {
+                socket = new Socket(Common.DEFAULT_HOST, Common.DEFAULT_PORT);
+                out = new ObjectEncoderOutputStream(socket.getOutputStream());
+                in = new ObjectDecoderInputStream(socket.getInputStream(), MAX_OBJECT_SIZE);
+                new Thread(() -> {
+                    while (socket.isConnected()) {
+                        Object msg = null;
+                        try {
+                            msg = in.readObject();
+                        } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        if (msg instanceof MyMessage) {
+                            String message = ((MyMessage) msg).getText();
+                            System.out.println("Answer from server: " + message);
+                        } else if (msg instanceof FileMessage) {
+                            try {
+                                common.receiveFile(msg, CLIENT_REPO);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
 
-                String[] strings = enterData.split(" ");
-               if (enterData.startsWith("/upload")){
-                   String  s = client.clientStorage+"\\"+strings[1];
-                   Integer fileSize = Math.toIntExact(Files.size(Path.of(s)));
-                    client.writeChannel(String.valueOf(fileSize));
+                    Scanner scanner = new Scanner(System.in);
+                    while (scanner.hasNext()) {
+                        s = scanner.nextLine();
+                        String[] strings = s.split(" ");
+                        if (s.equals("/upload") && strings.length ==2) {
+                            Path senderFileAaddress = Path.of(CLIENT_REPO + "\\" + strings[1]);
+                            if (Files.exists(senderFileAaddress)){
+                            out.writeObject(common.sendFile(strings[1], senderFileAaddress));
+                            }
+                            else{
+                                System.out.println("The specified file does not exist");
+                            }
+                        }
 
-                   byte[] fileContent = Files.readAllBytes(Path.of(s));
-                   client.socketClient.write(ByteBuffer.wrap(fileContent));
-               }
+                        else {
+                            MyMessage textMessage = new MyMessage(s);
+                            out.writeObject(textMessage);
+                        }
+                        out.flush();
+                    }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }finally {
-            client.disconnectClient();
+            in.close();
+            out.close();
+            socket.close();
         }
     }
-    private static void writeFile(String newData)
-            throws IOException {
-
-        String input = "Content to be written to the file.";
-        System.out.println("Input string: " + input);
-        byte [] byteArray = input.getBytes();
-
-        ByteBuffer buffer = ByteBuffer.wrap(byteArray);
-
-        AsynchronousFileChannel channel = AsynchronousFileChannel.open(Path.of(newData), StandardOpenOption.WRITE);
-
-        CompletionHandler handler = new CompletionHandler() {
-
-            @Override
-            public void completed (Object result, Object attachment) {
-            }
-
-            @Override
-            public void failed(Throwable e, Object attachment) {
-
-                System.out.println(attachment + " failed with exception:");
-                e.printStackTrace();
-            }
-        };
-
-        channel.write(buffer, 0, "Write operation ALFA", handler);
-
-        channel.close();
-    }
-
 }
+
