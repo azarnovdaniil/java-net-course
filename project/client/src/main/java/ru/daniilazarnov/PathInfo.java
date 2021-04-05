@@ -6,11 +6,12 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PathInfo {
-    List<FileInfo> infoList;
+    List<FileInfo> infoList = new ArrayList<>();
     Path path;
 
     PathInfo(Path path){
@@ -20,17 +21,26 @@ public class PathInfo {
     public void updateList() throws IOException {
 
 
-        //infoList.addAll(Files.list(this.path).map(FileInfo::new).collect(Collectors.toList()));
-        Files.walk(Paths.get(String.valueOf(path)), FileVisitOption.FOLLOW_LINKS)
+     //  List<File> f = Files.walk(this.path,FileVisitOption.FOLLOW_LINKS).map(FileInfo::new).collect(Collectors.toList());
+       Files.walk(path, FileVisitOption.FOLLOW_LINKS)
                 .map(Path::toFile)
-                .forEach(f -> {
-                    System.out.println(f.getAbsolutePath() + (f.isDirectory() ? " каталог" : " файл"));
-                });
+                .forEach(file ->
+                {
+                    infoList.add(new FileInfo(Path.of(file.getAbsolutePath())));
+                    System.out.println(new FileInfo(Path.of(file.getAbsolutePath())).toString());
+                }  );
 
     }
 
     public List<FileInfo> getInfoList() {
         return infoList;
+    }
+
+    @Override
+    public String toString() {
+        return "PathInfo{" +
+                "infoList=" + infoList +
+                '}';
     }
 }
 

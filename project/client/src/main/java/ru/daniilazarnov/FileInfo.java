@@ -58,9 +58,8 @@ public class FileInfo {
     }
 
     @Override
-    public String toString() {
-        System.out.println(filename +" "+type+ ""+size +" "+lastModified);
-        return null;
+    public String toString() { return filename +" " +type+ " "+ size ;
+
     }
 
     public void setLastModified(LocalDateTime lastModified) {
@@ -75,7 +74,6 @@ public class FileInfo {
             if (this.type == FileType.DIRECTORY) {
                 this.size = -1L;
             }
-            this.lastModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneOffset.ofHours(3));
         } catch (IOException e) {
             throw new RuntimeException("Unable to create file info from path");
         }
