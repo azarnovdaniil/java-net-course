@@ -37,8 +37,8 @@ public class Client {
 
                 @Override
                 public void initChannel(SocketChannel ch) {
-                    ch.pipeline().addLast("Decoder", new RequestEncoder());
-                    ch.pipeline().addLast("Encoder", new ResponseDecoder());
+                    ch.pipeline().addLast("Decoder", new EncoderDecoder.Decoder());
+                    ch.pipeline().addLast("Encoder", new EncoderDecoder.Encoder());
                     ch.pipeline().addLast("Client Handler", new ClientHandler());
                 }
             });

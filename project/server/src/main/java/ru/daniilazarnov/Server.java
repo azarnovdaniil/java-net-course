@@ -38,8 +38,8 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) {
-                            ch.pipeline().addLast("Decoder", new RequestDecoder());
-                            ch.pipeline().addLast("Encoder", new ResponseEncoder());
+                            ch.pipeline().addLast("Decoder", new EncoderDecoder.Decoder());
+                            ch.pipeline().addLast("Encoder", new EncoderDecoder.Encoder());
                             ch.pipeline().addLast("Server Handler", new ServerHandler());
                         }
                     });

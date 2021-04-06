@@ -14,7 +14,6 @@ import java.util.List;
 
 public class EncoderDecoder {
     private static Logger log = Logger.getLogger(EncoderDecoder.class);
-    private static final int MIN_READABLE_BYTES = 4;
 
     public static class Encoder extends MessageToByteEncoder<String> {
 

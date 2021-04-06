@@ -18,6 +18,11 @@ public class FileUtils {
         }
     }
 
+    public static boolean isFileExist(String filePath) {
+        File f = new File(filePath);
+        return f.exists() && !f.isDirectory();
+    }
+
     public static void createFile(String filePath) {
         Path path = Path.of(filePath);
         File f = path.toFile();

@@ -16,10 +16,9 @@ import java.util.Scanner;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
     private static final Logger LOGGER = Logger.getLogger(ClientHandler.class);
-
     private static final String CLIENT_STORAGE = "project" + File.separator
             + "client" + File.separator + "storage";
-    private static final char SECRET_SEPARATOR = '@';
+    private static final String FILE_PATH_TEMPLATE = CLIENT_STORAGE + File.separator + "%s";
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
@@ -35,33 +34,36 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             while (true) {
                 Scanner scanner = new Scanner(System.in);
                 String msg = scanner.nextLine();
-                String[] splitMsg = msg.split(" ", 2);
-                String cmd = splitMsg[0];
-                String data = splitMsg[1];
+                Command cmd = Command.byCmd(msg);
+                ctx.writeAndFlush(cmd.getCmd());
                 switch (cmd) {
-                    case "-test":
-                        LOGGER.info("Sending text " + data);
-                        ctx.writeAndFlush(cmd + data);
+                    case TEST:
+                        System.out.println("Enter data to send");
+                        String data = scanner.nextLine();
+                        ctx.writeAndFlush(data);
                         break;
-                    case "-upload":
-                        LOGGER.info("Uploading file " + data);
+                    case UPLOAD:
                         try {
-                            ctx.writeAndFlush("upload");
-                            String fileContent = Files.readString(Path.of(CLIENT_STORAGE + File.separator + data),
+
+                            String filename;
+                            do {
+                                System.out.println("Enter filename");
+                                filename = scanner.nextLine();
+                                if (!FileUtils.isFileExist(String.format(FILE_PATH_TEMPLATE, filename))) {
+                                    System.out.println("File not exist. Enter valid filename.");
+                                }
+                            } while (!FileUtils.isFileExist(String.format(FILE_PATH_TEMPLATE, filename)));
+
+                            ctx.writeAndFlush(filename);
+                            System.out.println("Sending file content");
+                            String fileContent = Files.readString(Path.of(String.format(FILE_PATH_TEMPLATE, filename)),
                                     StandardCharsets.US_ASCII);
-                            RequestData requestData = new RequestData();
-                            requestData.setCommand((byte) 1);
-                            char separator = SECRET_SEPARATOR;
-                            requestData.setContent(data + separator + fileContent);
-                            requestData.setSeparator(separator);
-                            requestData.setLength(data.length() + fileContent.length() + 1);
-                            LOGGER.info("Sending: " + requestData);
-                            ctx.writeAndFlush(msg);
-                            break;
+                            ctx.writeAndFlush(fileContent);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    case "-exit":
+                        break;
+                    case EXIT:
                         LOGGER.info("exit");
                         ctx.close();
                         System.exit(0);
@@ -76,16 +78,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        try {
-            LOGGER.info("Message received = " + msg);
-        } finally {
-            ReferenceCountUtil.release(msg);
-        }
+        LOGGER.info("Message received = " + msg);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        LOGGER.error("[Client] : Error " + cause.getMessage(), cause);
+        LOGGER.error("Error " + cause.getMessage(), cause);
         ctx.close();
     }
 }
