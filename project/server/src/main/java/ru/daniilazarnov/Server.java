@@ -9,10 +9,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.log4j.Logger;
-import ru.daniilazarnov.encoderdecoder.RequestDecoder;
-import ru.daniilazarnov.encoderdecoder.RequestEncoder;
-import ru.daniilazarnov.encoderdecoder.ResponseDecoder;
-import ru.daniilazarnov.encoderdecoder.ResponseEncoder;
 
 import static ru.daniilazarnov.Constants.PORT;
 

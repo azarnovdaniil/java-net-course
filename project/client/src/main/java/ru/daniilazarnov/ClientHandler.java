@@ -2,9 +2,7 @@ package ru.daniilazarnov;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.ReferenceCountUtil;
 import org.apache.log4j.Logger;
-import ru.daniilazarnov.model.RequestData;
 import ru.daniilazarnov.utils.FileUtils;
 
 import java.io.File;
