@@ -203,7 +203,7 @@ public class Connection implements IClientConnection {
             Files.write(targetPath, byteBufferForFile.array());
             System.out.print("File download successfully\n>");
         } catch (IOException e) {
-            System.out.println("File transfer error: " + e.toString());
+            System.out.println("File transfer error: " + e.toString() + "\n>");
         }
     }
 
