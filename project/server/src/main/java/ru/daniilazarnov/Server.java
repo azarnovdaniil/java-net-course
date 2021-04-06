@@ -27,7 +27,6 @@ public class Server {
 
         try {
             ServerBootstrap b = new ServerBootstrap();
-            b.option(ChannelOption.SO_BACKLOG, 128);
             b.childOption(ChannelOption.SO_KEEPALIVE, true);
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)

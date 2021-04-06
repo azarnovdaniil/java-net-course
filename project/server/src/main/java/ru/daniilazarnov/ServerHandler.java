@@ -61,6 +61,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 case UNKNOWN:
                     LOGGER.warn("Unknown command received" + strMsg);
                     break;
+                default:
+                    break;
             }
         }
     }
