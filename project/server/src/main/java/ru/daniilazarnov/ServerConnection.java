@@ -24,39 +24,46 @@ public class ServerConnection {
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8199;
     private final ByteBuffer welcomeMessage = ByteBuffer.allocate(512);
-    private static final Path DEFAULT_PATH_TO_STORAGE = Paths.get("project/server/src/main/resources");
+    private static final Path DEFAULT_PATH_TO_STORAGE = Paths.get("./storage");
 
     public ServerConnection(String serverHost, int serverPort, Path pathToStorage) {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
         this.pathToStorage = pathToStorage;
     }
+
     public ServerConnection(String serverHost, int serverPort) {
         this(serverHost, serverPort, DEFAULT_PATH_TO_STORAGE);
     }
+
     public ServerConnection() {
         this(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_PATH_TO_STORAGE);
     }
 
     public void start() throws IOException {
-        serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.socket().bind(new InetSocketAddress(serverHost, serverPort));
-        serverSocketChannel.configureBlocking(false);
-        selector = Selector.open();
-        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-
-        if (!Files.exists(pathToStorage)) {
-            Files.createDirectory(pathToStorage);
+        try {
+            serverSocketChannel = ServerSocketChannel.open();
+            serverSocketChannel.socket().bind(new InetSocketAddress(serverHost, serverPort));
+            serverSocketChannel.configureBlocking(false);
+            selector = Selector.open();
+            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            if (!Files.exists(pathToStorage)) {
+                Files.createDirectory(pathToStorage);
+            }
+            welcomeMessage.put(Commands.message.getNumberOfCommand());
+            welcomeMessage.putInt("Connection established".length());
+            welcomeMessage.put("Connection established".getBytes());
+            welcomeMessage.flip();
+            waitConnections();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            serverSocketChannel.close();
         }
-        welcomeMessage.put(Commands.message.getNumberOfCommand());
-        welcomeMessage.putInt("Connection established".length());
-        welcomeMessage.put("Connection established".getBytes());
-        welcomeMessage.flip();
-        waitConnections();
     }
 
 
-    public void waitConnections() {
+    public void waitConnections() throws IOException {
         try {
             System.out.println("Server запущен (Порт: 8199)");
             Iterator<SelectionKey> iterKey;
@@ -77,6 +84,8 @@ public class ServerConnection {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            serverSocketChannel.close();
         }
     }
 
@@ -85,7 +94,7 @@ public class ServerConnection {
         sc.configureBlocking(false);
         String userName = "user" + acceptClientIndex++;
         UserInfo info = new UserInfo(userName);
-        Path beginDir = Paths.get("project/server/src/main/resources" + File.separator + "tempStorage");
+        Path beginDir = Paths.get(DEFAULT_PATH_TO_STORAGE + File.separator + "tempStorage");
         if (!Files.exists(beginDir)) {
             Files.createDirectory(beginDir);
         }
@@ -111,7 +120,7 @@ public class ServerConnection {
         Optional<Commands> command = Commands.getCommand(numOfCommand);
         ServerOperation serverOperation = FabricOfOperations.getOperation(command.get(), key);
         serverOperation.apply();
-        }
+    }
 
     public static void main(String[] args) throws IOException {
         ServerConnection serverConnection = new ServerConnection();
