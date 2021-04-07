@@ -19,7 +19,9 @@ public class FileSystem {
     public static final double TO_KB = 1000;
 
     public void walkFileTree(String path) throws IOException {
-        File rootDir = new File(path);
+        Path of = Path.of(path);
+        File rootDir = of.toFile();
+
 
         List<File> dirs = new ArrayList<>();
         List<File> files = new ArrayList<>();

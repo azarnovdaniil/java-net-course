@@ -1,4 +1,4 @@
-package ru.kgogolev.network.in_handler;
+package ru.kgogolev;
 
 public enum State {
     IDLE,

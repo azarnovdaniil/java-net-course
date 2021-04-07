@@ -8,7 +8,6 @@ import ru.kgogolev.StringConstants;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 
 public class ConsoleHandler {
     private FileSystem fileSystem;
@@ -30,16 +29,17 @@ public class ConsoleHandler {
                 } else if (line.startsWith(StringConstants.UPLOAD)) {
                     String[] split = line.split(" ");
                     String[] split1 = split[1].split("[/\\\\]");
-                    message = fileSystem.sendFile(Path.of("D:", "test1.txt"));
+                    String command = StringConstants.UPLOAD + " " + line.split(" ")[1];
+//                    message = fileSystem.sendFile(Path.of("D:", "test1.txt"));
+                    message = Unpooled.wrappedBuffer(command.getBytes(StandardCharsets.UTF_8));
                     break;
 
                 } else if (line.startsWith(StringConstants.AUTHENTIFICATION)) {
                     message = Unpooled.wrappedBuffer(line.getBytes(StandardCharsets.UTF_8));
                     break;
                 } else {
-                    System.out.println(StringConstants.UNKNOWN + ":" + line);
+                    System.out.println(StringConstants.UNKNOWN + " : " + line);
                 }
-
 
             }
         } catch (Exception e) {

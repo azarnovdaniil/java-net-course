@@ -7,6 +7,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import ru.kgogolev.FileDecoder;
 import ru.kgogolev.PortHost;
 import ru.kgogolev.network.in_handler.AuthHandler;
 import ru.kgogolev.network.in_handler.InputHandler;
@@ -24,8 +25,8 @@ public class ServerApp {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline().addLast(
                                     new AuthHandler(),
-                                     new OutputHandler(),
-                                    new InputHandler()
+                                    new OutputHandler(),
+                                    new InputHandler(new FileDecoder(WorkingDirectory.WORKING_DIRECTORY))
                             );
                         }
                     });
