@@ -52,7 +52,6 @@ public class InputHandler implements Runnable {
 
                     break;
 
-                //todo доделать ввод команд
                 case "auth":
                     client.auth(client.getConfig().getProperty("app.login"),
                             client.getConfig().getProperty("app.password"),

@@ -6,7 +6,9 @@ import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 import messages.Message;
 import messages.MessageType;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -14,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Client {
 
@@ -24,8 +25,6 @@ public class Client {
     public static final String CONFIG_NOT_FOUND = "не найден файл настроек будет создан новый.";
 
     private Socket socket;
-    private DataOutputStream out;
-    private Scanner in;
     private CredentialsEntry user;
     private ConfigHelper config;
 
@@ -51,26 +50,12 @@ public class Client {
             config.load();
 
             this.socket = new Socket(config.getProperty("app.host"), Integer.parseInt(config.getProperty("app.port")));
-            this.out = new DataOutputStream(socket.getOutputStream());
-            this.in = new Scanner(socket.getInputStream());
 
         } catch (FileNotFoundException e) {
             System.out.println(CONFIG_NOT_FOUND);
 
             try {
                 this.socket = new Socket(InetAddress.getByName(DEFAULT_HOST), DEFAULT_PORT);
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-
-            try {
-                this.out = new DataOutputStream(socket.getOutputStream());
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-
-            try {
-                this.in = new Scanner(socket.getInputStream());
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
@@ -84,7 +69,6 @@ public class Client {
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -95,9 +79,7 @@ public class Client {
 
     }
 
-    public boolean auth(String login, String password, String username) {
-        boolean res = false;
-
+    public void auth(String login, String password, String username) {
         try (ObjectEncoderOutputStream oeos = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream odis = new ObjectDecoderInputStream(socket.getInputStream())) {
 
@@ -112,19 +94,12 @@ public class Client {
             if (!answer.equals("ok")) {
                 throw new ClientConnectionException(answer);
             }
-
-            res = true;
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return res;
     }
 
-    public boolean register(String login, String password, String username) {
-        boolean res = false;
-
+    public void register(String login, String password, String username) {
         //todo registration
 
         List<String> strings = new ArrayList<>();
@@ -137,7 +112,5 @@ public class Client {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-
-        return res;
     }
 }

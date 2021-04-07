@@ -18,16 +18,15 @@ import java.util.List;
 
 public class ClientFileHelper {
 
-    private Socket socket;
-    private CredentialsEntry user;
+    private final Socket socket;
+    private final CredentialsEntry user;
 
     public ClientFileHelper(Socket socket, CredentialsEntry user) {
         this.socket = socket;
         this.user = user;
     }
 
-    public boolean uploadFile(Path path) {
-        boolean res = false;
+    public void uploadFile(Path path) {
         try (ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream in = new ObjectDecoderInputStream(socket.getInputStream())) {
 
@@ -39,16 +38,13 @@ public class ClientFileHelper {
             String answer = (String) in.readObject();
 
             if (answer.equals("ok")) {
-
                 try (InputStream from = Files.newInputStream(path)) {
                     from.transferTo(out);
-                    res = true;
                 } catch (IOException e) {
                     in.close();
                     out.close();
                     e.printStackTrace();
                 }
-
             } else {
                 throw new FileOperationException(answer);
             }
@@ -57,12 +53,9 @@ public class ClientFileHelper {
             e.printStackTrace();
         }
 
-        return res;
     }
 
-    public boolean downloadFile(String filename) {
-        boolean res = false;
-
+    public void downloadFile(String filename) {
         try (ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream in = new ObjectDecoderInputStream(socket.getInputStream())) {
 
@@ -74,18 +67,13 @@ public class ClientFileHelper {
             String answer = (String) in.readObject();
 
             if (answer.equals("ok")) {
-
                 try (OutputStream to = Files.newOutputStream(Path.of(filename))) {
-                    //todo check for file existence
                     in.transferTo(to);
-
-                    res = true;
                 } catch (IOException e) {
                     in.close();
                     out.close();
                     e.printStackTrace();
                 }
-
             } else {
                 throw new FileOperationException(answer);
             }
@@ -93,12 +81,9 @@ public class ClientFileHelper {
             e.printStackTrace();
         }
 
-        return res;
     }
 
-    public boolean renameFile(String oldName, String newName) {
-        boolean res = false;
-
+    public void renameFile(String oldName, String newName) {
         try (ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream in = new ObjectDecoderInputStream(socket.getInputStream())) {
 
@@ -109,20 +94,15 @@ public class ClientFileHelper {
 
             String answer = (String) in.readObject();
 
-            if (answer.equals("ok")) {
-                res = true;
-            } else {
+            if (!answer.equals("ok")) {
                 throw new FileOperationException(answer);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return res;
     }
 
-    public boolean removeFile(String fileName) {
-        boolean res = false;
+    public void removeFile(String fileName) {
         try (ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream in = new ObjectDecoderInputStream(socket.getInputStream())) {
 
@@ -133,16 +113,12 @@ public class ClientFileHelper {
 
             String answer = (String) in.readObject();
 
-            if (answer.equals("ok")) {
-                res = true;
-            } else {
+            if (!answer.equals("ok")) {
                 throw new FileOperationException(answer);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return res;
     }
 
     public List<Path> listFiles() {
@@ -161,11 +137,9 @@ public class ClientFileHelper {
             if (res.isEmpty()) {
                 throw new FileOperationException(res.toString());
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return res;
     }
 }
