@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class CommandInterpretation {
-    static String DEFAULT_PASSWORD = null;
+    private static final String DEFAULT_PASSWORD = null;
 
     public static void interpreter(String message, IClientConnection connection) {
         String[] splitMessage = message.split(" ");
@@ -60,7 +60,7 @@ public class CommandInterpretation {
                 }
                 break;
             default:
-                System.out.println("Unknown command");
+                System.out.println("Unknown command\n>");
         }
     }
 }

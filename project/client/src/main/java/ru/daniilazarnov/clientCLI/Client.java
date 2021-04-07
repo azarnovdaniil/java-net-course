@@ -5,7 +5,7 @@ import ru.daniilazarnov.clientConnection.IClientConnection;
 import java.util.Scanner;
 
 public class Client {
-    static IClientConnection connection;
+    private static IClientConnection connection;
     public static void main(String[] args) {
         connection = new Connection();
         connection.connect();

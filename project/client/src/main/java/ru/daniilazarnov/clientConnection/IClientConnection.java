@@ -1,6 +1,5 @@
 package ru.daniilazarnov.clientConnection;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 public interface IClientConnection {
