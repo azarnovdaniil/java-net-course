@@ -21,7 +21,7 @@ public class Client {
     public static final int DEFAULT_PORT = 9876;
     public static final String DEFAULT_HOST = "127.0.0.1";
     public static final String CONFIG_FILE = "client.config";
-    public static final String CONFIG_NOT_FOUND = "не найден файл настроек будет создан новый со стандартными настройками";
+    public static final String CONFIG_NOT_FOUND = "не найден файл настроек будет создан новый.";
 
     private Socket socket;
     private DataOutputStream out;
@@ -29,7 +29,6 @@ public class Client {
     private CredentialsEntry user;
     private ConfigHelper config;
 
-    //todo do not do something until command!
     public Client() throws IOException {
         init();
     }
@@ -40,6 +39,10 @@ public class Client {
 
     public ConfigHelper getConfig() {
         return config;
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 
     private void init() {
