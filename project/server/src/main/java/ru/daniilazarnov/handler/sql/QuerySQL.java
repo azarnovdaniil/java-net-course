@@ -10,10 +10,10 @@ public class QuerySQL {
     public boolean tryAuthInStorage(Connection conn, String login, String pass) {
         //noinspection CheckStyle
         try {
-            PreparedStatement statement = conn.prepareStatement("SELECT username FROM clientstore WHERE username = ? AND password = ?");
-            statement.setString(1, login);
-            statement.setString(2, pass);
-            ResultSet rs = statement.executeQuery();
+            PreparedStatement state = conn.prepareStatement("SELECT username FROM clientstore WHERE username = ? AND password = ?");
+            state.setString(1, login);
+            state.setString(2, pass);
+            ResultSet rs = state.executeQuery();
             if (rs.next()) {
                 return true;
             }
@@ -25,15 +25,11 @@ public class QuerySQL {
         return false;
     }
 
-
-    @SuppressWarnings("CheckStyle")
-    public boolean tryToRegistNewUser(Connection conn, String username,
-                                      String password, String userStorage) {
-        try (PreparedStatement state = conn.prepareStatement("INSERT INTO clientstore (username, password,userStorage) VALUES (?, ?, ?)")) {
+    public boolean tryToRegistNewUser(Connection conn, String username, String password) {
+        try (PreparedStatement state = conn.prepareStatement("INSERT INTO clientstore (name, pass) VALUES (?, ?)")) {
             conn.setAutoCommit(false);
             state.setString(1, username);
             state.setString(2, password);
-            state.setString(3, userStorage);
             int row = state.executeUpdate();
             conn.commit();
             return true;
@@ -45,6 +41,7 @@ public class QuerySQL {
             ConnectionService.close(conn);
         }
     }
+
     public boolean isLoginInDb(Connection con, String login) {
         try (PreparedStatement state = con.prepareStatement("SELECT username FROM clientstore WHERE username = ? ")) {
             state.setString(1, login);
