@@ -7,25 +7,25 @@ public class User {
     private String address;
     private Channel channel;
 
-    public User(String name, String address, Channel channel){
+    public User(String name, String address, Channel channel) {
         this.name = name;
         this.address = address;
         this.channel = channel;
     }
 
-    public String getName () {
+    public String getName() {
         return name;
     }
 
-    public String getAddress () {
+    public String getAddress() {
         return address;
     }
 
-    public Channel getChannel () {
+    public Channel getChannel() {
         return channel;
     }
 
-    public void setChannel (Channel channel) {
+    public void setChannel(Channel channel) {
         this.channel = channel;
     }
 }

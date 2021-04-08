@@ -12,18 +12,16 @@ import java.util.Date;
 public class Common {
     public static final int DEFAULT_PORT = 8189;
     public static final String DEFAULT_HOST = "localhost";
-
-    public Common(){}
-
-    public FileMessage sendFile (String fileName, Path path) throws IOException {
+    public Common() { }
+    public FileMessage sendFile(String fileName, Path path) throws IOException {
         byte[] fileContent = Files.readAllBytes(path);
-        return new FileMessage(fileName, (int) Files.size(path), fileContent );
+        return new FileMessage(fileName, (int) Files.size(path), fileContent);
     }
 
-    public void receiveFile (Object msg, String directory) throws IOException {
+    public void receiveFile(Object msg, String directory) throws IOException {
         try {
             Path path = Path.of(directory + "\\" + ((FileMessage) msg).getFileName());
-            if(Files.exists(path)){
+            if (Files.exists(path)) {
                 Files.delete(path);
             }
             Files.write(path, ((FileMessage) msg).getContent(), StandardOpenOption.CREATE_NEW);
@@ -32,7 +30,7 @@ public class Common {
         }
     }
 
-    public StringBuilder showFiles (String path) {
+    public StringBuilder showFiles(String path) {
         File dir = new File(path);
         StringBuilder sb = new StringBuilder();
 
@@ -46,7 +44,7 @@ public class Common {
         return sb;
     }
 
-    public String deleteFile (String address, String src) {
+    public String deleteFile(String address, String src) {
         address = src + "\\" + address;
         try {
             Files.delete(Path.of(address));
@@ -56,17 +54,16 @@ public class Common {
         return new String("File was deleted");
     }
 
-    public String renameFile (String lastName, String newName, String src) {
-        String s;
+    public String renameFile(String lastName, String newName, String src) {
         String address = src + "\\" + lastName;
         String addressNew = src + "\\" + newName;
-        if (Files.notExists(Path.of(addressNew))){
+        if (Files.notExists(Path.of(addressNew))) {
             File file = new File(lastName);
             File newFile = new File(newName);
             file.renameTo(newFile);
-            return s= "File was renamed";
-        }else {
-            return s= "File with name " + newName+ "already exist";
+            return new String("File was renamed");
+        } else {
+            return new String("File with name " + newName + "already exist");
         }
     }
 }

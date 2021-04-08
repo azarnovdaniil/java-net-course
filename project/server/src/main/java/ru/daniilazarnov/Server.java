@@ -10,13 +10,6 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import ru.daniilazarnov.handler.*;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
 /**
  * Discards any incoming data.
  */
@@ -24,6 +17,7 @@ public class Server {
 
     public static final int MAX_OBJECT_SIZE = 1024 * 1024 * 100;
     public static final String SERVER_REPO = "D:\\serverStorage";
+    private final int number = 128;
 
 
     public Server(int port) {
@@ -39,15 +33,15 @@ public class Server {
                     .channel(NioServerSocketChannel.class) // (3)
                     .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
-                        public void initChannel(SocketChannel ch){
-                            ch.pipeline().addLast(
+                        public void initChannel(SocketChannel ch) {
+                                    ch.pipeline().addLast(
                                     new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
                                     new AuthHandler()
                             );
                         }
                     })
-                    .option(ChannelOption.SO_BACKLOG, 128)          // (5)
+                    .option(ChannelOption.SO_BACKLOG, number)          // (5)
                     .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
             // Bind and start to accept incoming connections.
