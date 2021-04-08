@@ -29,7 +29,10 @@ public class RepoServer {
     private final Consumer<UserProfile> closeConnection;
     private static final Logger LOGGER = LogManager.getLogger(RepoServer.class);
 
-
+    /**
+     * Channel manager class. Keeps connected UserProfile list and manages it.
+     * Keeps and  manages server executor service. Manages channel activity.
+     */
     RepoServer() {
         ServerConfigReader.readConfig();
         userList = new LinkedList<UserProfile>();

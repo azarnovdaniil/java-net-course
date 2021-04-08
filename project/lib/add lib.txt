@@ -1,0 +1,1 @@
+mvn install:install-file -DgroupId=ru.daniilazarnov -DartifactId=common -Dversion=1.0-SNAPSHOT -Dfile=common-1.0-SNAPSHOT-jar-with-dependencies.jar -Dpackaging=jar -DgeneratePom=true

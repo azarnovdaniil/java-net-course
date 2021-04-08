@@ -12,6 +12,10 @@ public class ConnectionService {
     private final String[] dBparam;
     private static final Logger LOGGER = LogManager.getLogger(ConnectionService.class);
 
+    /**
+     * Provides tools to work with MySql data base.
+     */
+
     ConnectionService() {
         this.dBparam = ServerConfigReader.getDBparam();
     }
@@ -22,7 +26,7 @@ public class ConnectionService {
             return DriverManager.getConnection(dBparam[0], dBparam[1], dBparam[2]);
         } catch (SQLException | ClassNotFoundException throwables) {
             LOGGER.error("SWW with connection to DataBase", LOGGER.throwing(throwables));
-            throw new RuntimeException();
+            return null;
         }
 
     }

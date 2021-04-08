@@ -20,6 +20,14 @@ public class RepoEncoder extends ChannelOutboundHandlerAdapter {
         this.data = data;
     }
 
+    /**
+     * Encodes the package to send it between Client and server. First part - command number, than all other data
+     * from DataContext, augmented with it's length parameter. Last is the file chunk or other content to send and
+     * a delimiter to separate packages in the stream.
+     * @param ctx - current channel.
+     * @param msg - package content. File chunks, mostly.
+     */
+
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
         byte[] command = ByteBuffer.allocate(4).putInt(data.getCommand()).array();

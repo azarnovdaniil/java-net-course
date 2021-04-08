@@ -1,6 +1,8 @@
 package ru.daniilazarnov;
 
-
+/**
+ * List of commands, used by both Client and Server Apps.
+ */
 enum CommandList {
     help(1, false, ": Prints all the commands available. 'help currentCommand' will print you this command description"),
     login(2, false, ": Print 'login yourLogin yourPassword' to login storage server and use it's service"),

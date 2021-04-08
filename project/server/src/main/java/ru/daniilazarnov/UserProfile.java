@@ -17,6 +17,13 @@ public class UserProfile implements PathHolder {
     private final ServerCommandReader commandReader;
     private static final Logger LOGGER = LogManager.getLogger(UserProfile.class);
 
+    /**
+     * PathHolder on Server side. Provides channel handlers with parameters and respond tools for current user.
+     * @param login - current user login. Has default value if user is not authorised.
+     * @param channel - current channel, this user is using.
+     * @param messageToUser - tool to send server respond for user commands.
+     */
+
     UserProfile(String login, SocketChannel channel, BiConsumer<String, SocketChannel> messageToUser) {
         this.login = login;
         this.curChannel = channel;

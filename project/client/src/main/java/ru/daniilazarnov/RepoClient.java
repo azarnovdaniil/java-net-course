@@ -32,6 +32,17 @@ public class RepoClient implements Runnable {
     static final Marker toCon = MarkerManager.getMarker("CONS");
     ClientCommandReader comReader;
 
+    /**
+     * Central hub for server connection.
+     *
+     * @param host       - server host to init connection.
+     * @param port       - server port to init connection.
+     * @param conData    - data container, having all the information to send to server.
+     * @param pathHolder - information holder, used by channel handlers to get repo path and to respond to server.
+     * @param comReader  - server message interpreter.
+     * @param addThread  - Consumer to add threads to Executor Service.
+     */
+
 
     RepoClient(String host, int port, ContextData conData, ClientPathHolder pathHolder,
                ClientCommandReader comReader, Consumer<Runnable> addThread) {
@@ -50,6 +61,10 @@ public class RepoClient implements Runnable {
         };
 
     }
+
+    /**
+     * Starts client connection, according to supplied @param. Netty based.
+     */
 
     @Override
     public void run() {
@@ -91,7 +106,15 @@ public class RepoClient implements Runnable {
 
     }
 
+    /**
+     * Takes all the info from supplied ContextData and puts it in the buffer ContextData, where it's supposed to be
+     * taken from by Channel Handlers. If a file supposed to be sent, it will be sent by chunks.
+     *
+     * @param context incoming context for the channel output.
+     */
+
     public synchronized void execute(ContextData context) {
+        if (!(this.curChannel.isActive())) this.pathHolder.channelNotActive();
         this.contextData.clone(context);
         if (context.getCommand() == CommandList.upload.getNum()) {
             try {
@@ -109,11 +132,19 @@ public class RepoClient implements Runnable {
         } else this.curChannel.writeAndFlush(new byte[1]);
     }
 
+    /**
+     * Closes the channel.
+     */
+
     public void close() {
         System.out.println("Connection closed.");
         this.curChannel.close();
         LOGGER.info("Connection closed.");
     }
+
+    /**
+     * Notifies the execute method to release the file sent.
+     */
 
     public synchronized void goOn() {
         notify();

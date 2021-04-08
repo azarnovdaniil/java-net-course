@@ -14,9 +14,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+
 public class InputCommandAnalyser {
     private static final Logger LOGGER = LogManager.getLogger(InputCommandAnalyser.class);
-    static final Marker toCon = MarkerManager.getMarker("CONS");
+    static final Marker TO_CON = MarkerManager.getMarker("CONS");
     private final ClientModuleManager hub;
     private Consumer<String> print;
     private Consumer<ContextData> execute;
@@ -28,10 +29,25 @@ public class InputCommandAnalyser {
     private static final String NOT_REGISTERED = "You are not authorised. Login first, please.";
     private boolean isYes;
 
+    /**
+     * Analyses the user commands to set proper contest to the incoming message or make some actions inside the App.
+     *
+     * @param hub - central App manager is supposed to be here to allow quick access to all required classes and methods
+     *            all over the App.
+     */
+
     public InputCommandAnalyser(ClientModuleManager hub) {
         this.hub = hub;
         this.yesOrNo = s -> yesNoAnswer(s);
     }
+
+    /**
+     * Taking a String from console and checks if it fits one of the commands. If yes, calls proper method to prepare
+     * prepare ContextData for sending to server or methods to make some actions inside the App.
+     *
+     * @param command      input String from the console to analyse.
+     * @param isAuthorised flag to refuse commands, that need authorisation before.
+     */
 
     public void commandDecoder(String command, boolean isAuthorised) {
         LOGGER.info("New command input: " + command);
@@ -139,7 +155,7 @@ public class InputCommandAnalyser {
     }
 
     private synchronized void download(String[] comArray) {
-        LOGGER.info("Trying download file "+comArray[1]);
+        LOGGER.info("Trying download file " + comArray[1]);
         Path path = Paths.get(hub.getPathToRepo(), comArray[1]);
         if (path.toFile().exists()) {
             LOGGER.info("File already exists");
@@ -148,7 +164,7 @@ public class InputCommandAnalyser {
             try {
                 wait();
             } catch (InterruptedException e) {
-                LOGGER.error(toCon,"SWW with download answer waiting.", LOGGER.throwing(e));
+                LOGGER.error(TO_CON, "SWW with download answer waiting.", LOGGER.throwing(e));
             }
             if (!isYes) {
                 LOGGER.info("Download canceled by user");
@@ -232,7 +248,7 @@ public class InputCommandAnalyser {
             try {
                 wait();
             } catch (InterruptedException e) {
-                LOGGER.error(toCon, "SWW waiting respond for upload.", LOGGER.throwing(e));
+                LOGGER.error(TO_CON, "SWW waiting respond for upload.", LOGGER.throwing(e));
             }
             if (isYes) {
                 ContextData data = new ContextData();

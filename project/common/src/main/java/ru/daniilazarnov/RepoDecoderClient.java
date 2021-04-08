@@ -16,6 +16,15 @@ public class RepoDecoderClient extends ChannelInboundHandlerAdapter {
     private final Consumer<Boolean> closeConnection;
     private static final Logger LOGGER = LogManager.getLogger(RepoDecoderClient.class);
 
+    /**
+     * First decoder on Client side after current package was separates from the stream. Decodes the context data
+     * and creates a ContextData container. Checks if the package must go further the pipeline or given to
+     * command analyser.
+     *
+     * @param commandReader - command analyser for incoming commands.
+     * @param closeConnection - Consumer, that will close the connection if something will go wrong.
+     */
+
     RepoDecoderClient(Consumer<ContextData> commandReader, Consumer<Boolean> closeConnection) {
         this.commandReader = commandReader;
         this.closeConnection = closeConnection;

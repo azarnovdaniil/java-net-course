@@ -16,11 +16,24 @@ public class AuthorisationService {
     private static Semaphore semaphore;
     private static final Logger LOGGER = LogManager.getLogger(AuthorisationService.class);
 
+    /**
+     * Manages authorisation process, including register and login commands.
+     * @param userList - list of connected user's PathHolders.
+     */
+
     public static void initAuthorisationService(LinkedList<UserProfile> userList) {
         dBconnector = new DataBaseProcessor();
         AuthorisationService.userList = userList;
         semaphore = new Semaphore(1);
     }
+
+    /**
+     * Inits login process, checks the result. Checks if user with supplied login is already connected.
+     * Gives respond to the user.
+     * @param login - incoming login.
+     * @param password - incoming password.
+     * @param user - current user PathHolder to work with.
+     */
 
     public static void login(String login, String password, UserProfile user) {
         LOGGER.info("Login attempt.");
@@ -35,7 +48,7 @@ public class AuthorisationService {
                 user.getCurChannel().writeAndFlush("false%%%This user is already connected!".getBytes());
             } else {
                 user.setLogin(login);
-                user.setAuthority(ServerConfigReader.getRepoPath() + "\\" + result);
+                user.setAuthority(ServerConfigReader.getRepoPath() + File.separator + result + File.separator);
                 ServerConfigReader.checkDir(user.getAuthority());
                 user.getContextData().setCommand(CommandList.login.getNum());
                 user.getCurChannel().writeAndFlush("true%%%Welcome back!".getBytes());
@@ -47,11 +60,18 @@ public class AuthorisationService {
         }
     }
 
+    /**
+     * Inits register process, checks the result. Gives respond to the user.
+     * @param login - incoming login.
+     * @param password - incoming password.
+     * @param user - current user PathHolder to work with.
+     */
+
     public static void register(String login, String password, UserProfile user) {
         LOGGER.info("Register attempt.");
         try {
             semaphore.acquire();
-            String authority = login + File.separator;
+            String authority = login;
             String result = dBconnector.createUser(login, password, authority);
             switch (result) {
                 case "failed":

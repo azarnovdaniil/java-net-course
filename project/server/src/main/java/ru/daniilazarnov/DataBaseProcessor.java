@@ -9,6 +9,10 @@ public class DataBaseProcessor {
     private final ConnectionService connector;
     private static final Logger LOGGER = LogManager.getLogger(DataBaseProcessor.class);
 
+    /**
+     * Keeps prepared statements to work with data base. Executes them and returns result to work with.
+     */
+
     DataBaseProcessor() {
         connector = new ConnectionService();
     }
@@ -16,6 +20,7 @@ public class DataBaseProcessor {
     protected String createUser(String login, String password, String authority) {
         Connection connection = connector.connectUserBase();
         String result = "failed";
+        if (connection==null) return result;
         try {
             connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(
@@ -47,6 +52,7 @@ public class DataBaseProcessor {
     protected String userCheck(String login, String password) {
         Connection connection = connector.connectUserBase();
         String authority = "";
+        if (connection==null) return authority;
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT * FROM users WHERE login = ? AND pass = ?"

@@ -13,8 +13,13 @@ public class ContextData {
     private final ByteBuf delimiter;
     private final byte[] delimArray;
 
+    /**
+     * Storage utility class. Carries all the info needed to be encoded with the packages sent between server and
+     * client. Class parameters are used by channel handlers to encode the package.
+     */
+
     ContextData() {
-        String del = "%%%fucking_delimiter%%%";
+        String del = "%%%very_unique_delimiter%%%";
         this.delimArray = del.getBytes();
         this.delimiter = wrappedBuffer(delimArray);
         this.filePath = "X:\\emptyPath\\";

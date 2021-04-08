@@ -27,6 +27,5 @@
             <AppenderRef ref="file" level="INFO"/>
             <AppenderRef ref="Console" level="INFO"/>
         </Root>
-
     </Loggers>
 </Configuration>

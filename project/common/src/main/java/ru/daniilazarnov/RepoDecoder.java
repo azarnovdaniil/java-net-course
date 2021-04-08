@@ -18,6 +18,16 @@ public class RepoDecoder <T extends PathHolder> extends ChannelInboundHandlerAda
     private final Consumer<T> closeConnection;
     private static final Logger LOGGER = LogManager.getLogger(RepoDecoder.class);
 
+    /**
+     * First decoder on Server side after current package was separates from the stream. Decodes the context data
+     * and creates a ContextData container. Checks if the package must go further the pipeline or given to
+     * command analyser. Checks if user is authorised before letting any commands proceed, with exception of
+     * login and register commands.
+     * @param commandReader - command analyser for incoming commands.
+     * @param closeConnection - Consumer, that will close the connection if something will go wrong.
+     * @param profile - PathHolder, having tools to respond to current user.
+     */
+
     RepoDecoder(BiConsumer<ContextData, T> commandReader, Consumer<T> closeConnection, T profile) {
         this.profile = profile;
         this.commandReader = commandReader;

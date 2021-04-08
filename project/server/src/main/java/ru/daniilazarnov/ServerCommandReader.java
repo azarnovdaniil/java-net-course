@@ -19,6 +19,11 @@ public class ServerCommandReader {
     private final UserProfile profile;
     private static final Logger LOGGER = LogManager.getLogger(ServerCommandReader.class);
 
+    /**
+     * Incoming command analyser. Identifies the command and inits the proper action.
+     * @param profile - current user PathHolder to work with.
+     */
+
     ServerCommandReader(UserProfile profile) {
 
         this.profile = profile;
@@ -58,6 +63,10 @@ public class ServerCommandReader {
     }
 
     private void authorise(ContextData messageContext) {
+        if(messageContext.getLogin().equals(new ContextData().getLogin())){
+            profile.sendMessage("Invalid login!");
+            return;
+        }
         AuthorisationService.login(messageContext.getLogin(), messageContext.getPassword(), profile);
     }
 

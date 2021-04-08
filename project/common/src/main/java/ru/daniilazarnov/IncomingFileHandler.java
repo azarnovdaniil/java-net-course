@@ -10,6 +10,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Main handler to assemble incoming file and to check it's integrity by file size.
+ * @param <T> - PathHolder, that keeps repo path and tools to report for the current user.
+ */
+
 public class IncomingFileHandler<T extends PathHolder> extends ChannelInboundHandlerAdapter {
     private final T pathHolder;
     private static final Logger LOGGER = LogManager.getLogger(IncomingFileHandler.class);

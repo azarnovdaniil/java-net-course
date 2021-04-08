@@ -35,6 +35,12 @@ public class ClientModuleManager {
 
     private static final Logger LOGGER = LogManager.getLogger(ClientModuleManager.class);
 
+    /**
+     * General hub, inits and connects all the App classes, provides classes with tools to cooperate.
+     *
+     * @param configPath - path to config file.
+     */
+
     ClientModuleManager(Path configPath) {
         this.configPath = configPath;
         this.isAuthorised = false;
@@ -58,9 +64,11 @@ public class ClientModuleManager {
 
     }
 
+
     public String getPathToRepo() {
         return configProc.getRepoPath();
     }
+
 
     public void addThread(Runnable runnable) {
         this.threadPool.submit(runnable);
