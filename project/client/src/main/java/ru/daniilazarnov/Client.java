@@ -76,7 +76,6 @@ public class Client {
 
     void run(InputStream stream) {
         new Thread(new InputHandler(this, stream)).start();
-
     }
 
     public void auth(String login, String password, String username) {
