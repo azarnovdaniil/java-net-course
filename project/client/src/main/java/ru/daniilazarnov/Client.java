@@ -12,9 +12,6 @@ import io.netty.handler.codec.string.StringEncoder;
 
 public class Client {
 
-    private static final String HOST = "localhost";
-    private static final int PORT = 8888;
-
 
     public Client() {
 
@@ -30,8 +27,8 @@ public class Client {
                     ch.pipeline().addLast(new StringDecoder(), new StringEncoder(), new ClientHandler());
                 }
             });
-
-            ChannelFuture f = b.connect(HOST, PORT).sync();
+            //TODO Добавить возможность сменить хост
+            ChannelFuture f = b.connect(ClientData.getHost(), ClientData.getPort()).sync();
 
             f.channel().closeFuture().sync();
         } catch (Exception e) {

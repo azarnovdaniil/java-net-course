@@ -4,11 +4,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.util.Scanner;
-import java.util.logging.Logger;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 
-    private static Logger logger;
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         new Thread(() -> {
@@ -16,8 +14,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 Scanner scanner = new Scanner(System.in);
                 String msg = scanner.nextLine();
 
-                if ("-exit".equals(msg)) {
-                    logger.info("exit");
+                if ("q".equals(msg)) {
+                    System.out.println(("Closing..."));
                     ctx.close();
                     System.exit(0);
                 } else {
@@ -34,7 +32,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        logger.info((String)msg);
+        System.out.println(((String) msg));
     }
 
     @Override
