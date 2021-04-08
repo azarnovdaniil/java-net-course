@@ -8,9 +8,9 @@ import java.sql.SQLException;
 
 public class QuerySQL {
     public boolean tryAuthInStorage(Connection conn, String login, String pass) {
-        //noinspection CheckStyle
+
         try {
-            PreparedStatement state = conn.prepareStatement("SELECT username FROM clientstore WHERE username = ? AND password = ?");
+            PreparedStatement state = conn.prepareStatement("SELECT name FROM clientstore WHERE name = ? AND pass = ?");
             state.setString(1, login);
             state.setString(2, pass);
             ResultSet rs = state.executeQuery();
