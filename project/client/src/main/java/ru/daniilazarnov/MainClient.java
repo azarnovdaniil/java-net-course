@@ -1,7 +1,5 @@
 package ru.daniilazarnov;
 
-import org.checkerframework.checker.units.qual.C;
-
 import java.io.IOException;
 
 public class MainClient {

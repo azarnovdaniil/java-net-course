@@ -1,5 +1,10 @@
 package ru.daniilazarnov.handler;
 
+import ru.daniilazarnov.Server;
+import ru.daniilazarnov.domain.MyMessage;
+import ru.daniilazarnov.handler.sql.ConnectionService;
+import ru.daniilazarnov.handler.sql.QuerySQL;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,22 +12,33 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CommandServer {
-    public CommandServer (){}
-    protected StringBuilder showFiles (Path path){
-        File dir = new File(String.valueOf(path));
-        StringBuilder sb = new StringBuilder();
-
-        File[] files = dir.listFiles();
-        sb.append(" For user: user " + "\n");
-        for (File file : files) {
-            long lastModified = file.lastModified();
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-            sb.append(file.getName() + " ,date of change " + sdf.format(new Date(lastModified))+"\n");
-
-        }
-        return sb;
+    public CommandServer () {
     }
-    protected StringBuilder callHelpManual() {
+
+    protected String authInStorage (String user, String password){
+        QuerySQL sql =new QuerySQL();
+        if (sql.tryAuthInStorage(ConnectionService.connectMySQL(), user, password) == true){
+            return  new String("Wellcome " + user);
+        }
+        return new String("Wrong username/password");
+    }
+    protected String regInStorage (String user, String password){
+        QuerySQL sql = new QuerySQL();
+        if (sql.isLoginInDb(ConnectionService.connectMySQL(), user) == false){
+
+            String addressStorage = Server.SERVER_REPO + "\\" + user;
+
+            sql.tryToRegistNewUser(ConnectionService.connectMySQL(), user, password,addressStorage);
+            try {
+                Files.createDirectories(Path.of(addressStorage));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return  new String("Registration in the system is completed");
+        }else
+            return  new String("User "+user+ " is alreade exist");
+}
+    protected StringBuilder callHelpManual () {
         File f = new File("project/server/src/help.txt");
         BufferedReader fin = null;
         try {
@@ -41,18 +57,4 @@ public class CommandServer {
         }
         return null;
     }
-    protected void deleteFile(String address) {
-        try {
-            Files.delete(Path.of(address));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    protected void renameFile(String lastName, String newName) {
-        File file = new File(lastName);
-        File newFile = new File(newName);
-        file.renameTo(newFile);
-
-    }
-
 }

@@ -1,10 +1,7 @@
 package ru.daniilazarnov;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -13,19 +10,23 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import ru.daniilazarnov.handler.*;
 
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * Discards any incoming data.
  */
 public class Server {
 
-    private int port;
-    public Path path;
     public static final int MAX_OBJECT_SIZE = 1024 * 1024 * 100;
+    public static final String SERVER_REPO = "D:\\serverStorage";
+
 
     public Server(int port) {
-        this.port = port;
     }
 
     public void run() throws Exception {
@@ -38,11 +39,11 @@ public class Server {
                     .channel(NioServerSocketChannel.class) // (3)
                     .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
+                        public void initChannel(SocketChannel ch){
                             ch.pipeline().addLast(
                                     new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
-                                    new MainHandler()
+                                    new AuthHandler()
                             );
                         }
                     })
@@ -60,16 +61,5 @@ public class Server {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
-    }
-
-
-
-    public static void main(String[] args) throws Exception {
-        int port = 8189;
-        if (args.length > 0) {
-            port = Integer.parseInt(args[0]);
-        }
-
-        new Server(port).run();
     }
 }
