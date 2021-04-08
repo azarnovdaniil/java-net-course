@@ -100,7 +100,23 @@ public class Client {
     }
 
     public void register(String login, String password, String username) {
-        //todo registration
+        try (ObjectEncoderOutputStream oeos = new ObjectEncoderOutputStream(socket.getOutputStream());
+             ObjectDecoderInputStream odis = new ObjectDecoderInputStream(socket.getInputStream())) {
+
+            user = new CredentialsEntry(login, password, username);
+            Message message = new Message(MessageType.REGISTRATION, user);
+
+            oeos.writeObject(message);
+            oeos.flush();
+
+            String answer = (String) odis.readObject();
+
+            if (!answer.equals("ok")) {
+                throw new ClientConnectionException(answer);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         List<String> strings = new ArrayList<>();
         strings.add("app.login=" + login);

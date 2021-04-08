@@ -36,7 +36,7 @@ public class InputHandler implements Runnable {
             //checkstyle
             final int registerLength = 4;
             final int uploadLength = 2;
-            final int dowloadLength = 2;
+            final int downloadLength = 2;
             final int renameLength = 3;
             final int removeLength = 2;
             final int listLength = 1;
@@ -68,7 +68,7 @@ public class InputHandler implements Runnable {
                     break;
 
                 case "download":
-                    if (command.length == dowloadLength) {
+                    if (command.length == downloadLength) {
                         cfh.downloadFile(command[1]);
                     } else {
                         System.out.println(WRONG_DOWNLOAD_TEXT);
