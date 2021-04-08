@@ -1,12 +1,20 @@
 package ru.daniilazarnov;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import ru.daniilazarnov.command.CommandHandler;
 
-public class ClientHandler extends SimpleChannelInboundHandler<String> {
+public class ClientHandler extends ChannelInboundHandlerAdapter {
+    CommandHandler commandHandler = new CommandHandler();
+
     @Override
-    protected void channelRead0(ChannelHandlerContext chc, String command)  {
-        System.out.println(command);
+    public void channelActive(ChannelHandlerContext ctx) {
+        System.out.println("Client connected: " + ctx.channel());
+    }
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        commandHandler.handler(msg);
     }
 
     @Override
