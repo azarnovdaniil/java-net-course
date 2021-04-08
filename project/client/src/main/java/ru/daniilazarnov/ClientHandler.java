@@ -45,12 +45,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             default:
                 throw new IllegalStateException("Unexpected value: " + state);
         }
+
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
         ctx.close();
+
     }
 
     public void getCommandFromBytes(byte b) {
@@ -61,6 +63,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         } else if (command == Commands.FILE) {
             state = State.NAME_LENGTH;
         }
+
     }
 
     public void getFileNameLength(ByteBuf buf) {
@@ -69,6 +72,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         }
         fileNameLength = buf.readInt();
         state = State.NAME;
+
     }
 
     public void getFileName(ByteBuf buf) {
@@ -83,6 +87,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         } else if (command == Commands.FILE) {
             path = Paths.get("project/client/" + fileName);
             state = State.FILE_LENGTH;
+
         }
     }
 
@@ -95,6 +100,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         createFile(path);
         bos = new BufferedOutputStream(new FileOutputStream(path.toString(), true));
         state = State.GET_FILE;
+
     }
 
     public void createFile(Path path) {
@@ -104,6 +110,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     public void getFile(ByteBuf buf) throws IOException {
@@ -118,7 +125,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         buf.release();
         bos.close();
         state = State.GET_COMMAND;
-    }
 
+    }
 
 }
