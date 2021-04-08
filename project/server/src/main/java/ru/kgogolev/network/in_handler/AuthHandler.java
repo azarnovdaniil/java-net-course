@@ -43,6 +43,9 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
                         username.getBytes(StandardCharsets.UTF_8)));
             }
         }
+//        if (input.split(" ")[0].equals(StringConstants.DOWNLOAD)){
+//            ctx.writeAndFlush(msg);
+//        }
     }
 
 }

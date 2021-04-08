@@ -8,8 +8,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import ru.kgogolev.FileDecoder;
 import ru.kgogolev.FileEncoder;
 import ru.kgogolev.PortHost;
+import ru.kgogolev.WorkingDirectory;
 import ru.kgogolev.network.in_handler.ClientInputHandler;
 import ru.kgogolev.network.out_handler.ClientOutputHandler;
 
@@ -29,7 +31,8 @@ public class Client {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         channel = ch;
-                        ch.pipeline().addLast(new ClientInputHandler(),
+                        ch.pipeline().addLast(
+                                new ClientInputHandler(new FileDecoder(WorkingDirectory.CLIENT_WORKING_DIRECTORY)),
                                 new ClientOutputHandler(new FileEncoder()));
                     }
                 });

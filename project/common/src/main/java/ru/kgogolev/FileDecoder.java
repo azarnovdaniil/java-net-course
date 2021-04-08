@@ -16,7 +16,7 @@ public class FileDecoder {
 
     private String workingDirectory;
 
-    private static final byte MAGIC_BYTE = (byte) 25;
+    public static final byte MAGIC_BYTE = (byte) 25;
     private State currentState = State.IDLE;
     private int nextLength;
     private long fileLength;
