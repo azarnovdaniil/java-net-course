@@ -5,7 +5,10 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileUtils {
     private static final Logger LOGGER = Logger.getLogger(FileUtils.class);
@@ -41,6 +44,19 @@ public class FileUtils {
             fw.close();
         } catch (IOException e) {
             LOGGER.error("IOException", e);
+        }
+    }
+
+    public static List<String> getFilesInDirectory(String dirPath) {
+        Path path = Path.of(dirPath);
+        try {
+            return Files.list(path)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            LOGGER.error("IOException", e);
+            throw new IllegalStateException(e);
         }
     }
 }

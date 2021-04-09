@@ -17,6 +17,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     private static final String CLIENT_STORAGE = "project" + File.separator
             + "client" + File.separator + "storage";
     private static final String FILE_PATH_TEMPLATE = CLIENT_STORAGE + File.separator + "%s";
+    private State state;
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
@@ -77,6 +78,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         LOGGER.info("Message received = " + msg);
+        state = State.valueOf(msg.toString().toUpperCase());
     }
 
     @Override
