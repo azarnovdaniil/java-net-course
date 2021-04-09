@@ -1,5 +1,8 @@
 package helpers;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -17,7 +20,7 @@ public class ServerFileHelper {
     private static final String PATH_WARNING = "путь должен быть задан";
     private static final int BUFFER_CAPACITY = 48;
 
-    public static void saveFile(InputStream from, String username, String filename) {
+    public static void saveFile(Channel from, Object msg, String username, String filename) throws FileNotFoundException {
 
         if (username.isEmpty()) {
             throw new IllegalArgumentException(USERNAME_WARNING);
@@ -29,14 +32,14 @@ public class ServerFileHelper {
 
         Path out = Path.of("..", OUTPUT_DIRECTORY, username, filename);
 
-        try (OutputStream to = Files.newOutputStream(out)) {
-            from.transferTo(to);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ByteBuf byteBuf = (ByteBuf) msg;
+        OutputStream to = new FileOutputStream(out.toString());
+        byteBuf.readBytes(to, byteBuf.);
+
+        from.read();
     }
 
-    public static void getFile(OutputStream to, String username, String filename) throws IOException {
+    public static void getFile(Channel to, String username, String filename) throws IOException {
         if (username.isEmpty()) {
             throw new IllegalArgumentException(USERNAME_WARNING);
         }
