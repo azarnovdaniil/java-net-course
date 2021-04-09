@@ -108,6 +108,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 filename = "";
                 setState(ctx, IDLE);
                 break;
+            default:
+                LOGGER.error("Unhandled state " + state);
         }
     }
 
