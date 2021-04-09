@@ -1,15 +1,15 @@
 package messages;
 
-import ru.daniilazarnov.CredentialsEntry;
+import java.io.Serializable;
 
-public class FileMessage {
+public class FileMessage implements Serializable {
 
     private FileOperationType type;
-    private CredentialsEntry user;
+    private AuthMessage user;
     private String path1;
     private String path2;
 
-    public FileMessage(FileOperationType type, CredentialsEntry user, String path1, String path2) {
+    public FileMessage(FileOperationType type, AuthMessage user, String path1, String path2) {
         this.type = type;
         this.user = user;
         this.path1 = path1;
@@ -24,11 +24,11 @@ public class FileMessage {
         this.type = type;
     }
 
-    public CredentialsEntry getUser() {
+    public AuthMessage getUser() {
         return user;
     }
 
-    public void setUser(CredentialsEntry user) {
+    public void setUser(AuthMessage user) {
         this.user = user;
     }
 

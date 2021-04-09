@@ -1,7 +1,9 @@
 package helpers;
 
-import ru.daniilazarnov.CredentialsEntry;
+import messages.AuthMessage;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.sql.*;
@@ -13,21 +15,38 @@ public class DataBaseHelper {
 
     private static final String SELECT_ALL_USERS = "select login, password, nickname from chat.users";
     private static final String UPDATE_USER_NICKNAME = "update chat.users set nickname = ? where nickname = ?";
-    private static final int PORT = 3306;
-    private static final String DATABASE = "chat";
-    private static final String HOST = "127.0.0.1";
     private static final String DRIVER_STRING = "%s://%s:%d/%s";
+    ConfigHelper config;
 
-    //todo use config
-    public static Connection connect() {
+    public DataBaseHelper(Path cofigPath) {
         try {
-            return DriverManager.getConnection(String.format(DRIVER_STRING, HOST, PORT, DATABASE), "root", "root");
+            config = new ConfigHelper(cofigPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            config.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Connection connect() {
+        try {
+            return DriverManager.getConnection(String.format(
+                    DRIVER_STRING,
+                    config.getProperty("app.db.driver"),
+                    config.getProperty("app.db.host"),
+                    Integer.parseInt(config.getProperty("app.db.port")),
+                    config.getProperty("app.db.name")),
+                    config.getProperty("app.db.user"),
+                    config.getProperty("app.db.pass"));
         } catch (SQLException throwables) {
             throw new RuntimeException("SWW", throwables);
         }
     }
 
-    public static void rollback(Connection connection) {
+    public void rollback(Connection connection) {
         try {
             connection.rollback();
         } catch (SQLException throwables) {
@@ -35,7 +54,7 @@ public class DataBaseHelper {
         }
     }
 
-    public static void close(Connection connection) {
+    public void close(Connection connection) {
         try {
             connection.close();
         } catch (SQLException throwables) {
@@ -43,9 +62,8 @@ public class DataBaseHelper {
         }
     }
 
-    //пробую кучу autocloseable через try
-    public static Set<CredentialsEntry> getUsers() {
-        Set<CredentialsEntry> result = new HashSet<>();
+    public Set<AuthMessage> getUsers() {
+        Set<AuthMessage> result = new HashSet<>();
 
         try (Connection con = connect()) {
             try (Statement s = con.createStatement()) {
@@ -53,7 +71,7 @@ public class DataBaseHelper {
 
                 try (ResultSet rs = s.getResultSet()) {
                     while (rs.next()) {
-                        result.add(new CredentialsEntry(
+                        result.add(new AuthMessage(
                                 rs.getString("login"),
                                 rs.getString("password"),
                                 rs.getString("nickname")
@@ -67,7 +85,7 @@ public class DataBaseHelper {
         return result;
     }
 
-    public static boolean updateNickname(String oldNick, String newNick) {
+    public boolean updateNickname(String oldNick, String newNick) {
         boolean result = false;
         Connection con = connect();
 

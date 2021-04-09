@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+import helpers.ConfigHelper;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -12,17 +13,19 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //todo use config
 public class Server {
 
-    public static final int INET_PORT = 9876;
+    public static final String CONFIG_FILE = "server.config";
     public static final int MAX_OBJECT_SIZE = 1024 * 1024;
 
     private int port;
     private InetAddress address;
+    ConfigHelper config;
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -34,6 +37,7 @@ public class Server {
     public Server(int port, InetAddress address) {
         this.port = port;
         this.address = address;
+        this.config = Path.of(CONFIG_FILE)
     }
 
     public static void main(String[] args) throws Exception {

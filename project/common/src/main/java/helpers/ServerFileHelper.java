@@ -3,8 +3,8 @@ package helpers;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +17,6 @@ public class ServerFileHelper {
     private static final String PATH_WARNING = "путь должен быть задан";
     private static final int BUFFER_CAPACITY = 48;
 
-    //stream version
     public static void saveFile(InputStream from, String username, String filename) {
 
         if (username.isEmpty()) {
@@ -37,7 +36,6 @@ public class ServerFileHelper {
         }
     }
 
-    //byte version
     public static void getFile(OutputStream to, String username, String filename) throws IOException {
         if (username.isEmpty()) {
             throw new IllegalArgumentException(USERNAME_WARNING);
@@ -71,20 +69,85 @@ public class ServerFileHelper {
         }
     }
 
-    public static void deleteFile(String username, String filename) {
-        //todo
+    public static void deleteFile(String username, String filename) throws IOException {
+        if (username.isEmpty()) {
+            throw new IllegalArgumentException(USERNAME_WARNING);
+        }
+
+        if (filename.isEmpty()) {
+            throw new IllegalArgumentException(PATH_WARNING);
+        }
+
+        if (Files.exists(Path.of("..", OUTPUT_DIRECTORY, username, filename))) {
+            Files.delete(Path.of("..", OUTPUT_DIRECTORY, username, filename));
+        }
     }
 
-    public static void emptyUserFolder(String username) {
-        //todo
+    public static void emptyUserFolder(String username) throws IOException {
+
+        if (username.isEmpty()) {
+            throw new IllegalArgumentException(USERNAME_WARNING);
+        }
+
+        Files.walkFileTree(Path.of("..", OUTPUT_DIRECTORY, username), new FileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                Files.delete(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 
-    public static void copyFile(String fromUser, String toUser) {
-        //todo
+    public static void copyFile(String fromUser, String toUser) throws IOException {
+
+        if (fromUser.isEmpty()) {
+            throw new IllegalArgumentException(USERNAME_WARNING);
+        }
+
+        if (toUser.isEmpty()) {
+            throw new IllegalArgumentException(PATH_WARNING);
+        }
+
+        if (Files.exists(Path.of("..", OUTPUT_DIRECTORY, fromUser))) {
+            Files.copy(Path.of("..", OUTPUT_DIRECTORY, fromUser),
+                    Path.of("..", OUTPUT_DIRECTORY, toUser),
+                    StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     public static void renameFile(String username, String oldName, String newName) {
-        //todo
+        if (username.isEmpty()) {
+            throw new IllegalArgumentException(USERNAME_WARNING);
+        }
+
+        if (oldName.isEmpty()) {
+            throw new IllegalArgumentException(PATH_WARNING);
+        }
+
+        if (newName.isEmpty()) {
+            throw new IllegalArgumentException(PATH_WARNING);
+        }
+
+        if (Files.exists(Path.of("..", OUTPUT_DIRECTORY, username, oldName))) {
+            File file = Path.of("..", OUTPUT_DIRECTORY, username, oldName).toFile();
+            file.renameTo(Path.of("..", OUTPUT_DIRECTORY, username, newName).toFile());
+        }
     }
 
     public static List<Path> listDirectories(String username) throws IOException {

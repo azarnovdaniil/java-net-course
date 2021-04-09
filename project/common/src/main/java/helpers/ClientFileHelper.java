@@ -4,7 +4,7 @@ import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 import messages.FileMessage;
 import messages.FileOperationType;
-import ru.daniilazarnov.CredentialsEntry;
+import messages.AuthMessage;
 import ru.daniilazarnov.FileOperationException;
 
 import java.io.IOException;
@@ -19,9 +19,9 @@ import java.util.List;
 public class ClientFileHelper {
 
     private final Socket socket;
-    private final CredentialsEntry user;
+    private final AuthMessage user;
 
-    public ClientFileHelper(Socket socket, CredentialsEntry user) {
+    public ClientFileHelper(Socket socket, AuthMessage user) {
         this.socket = socket;
         this.user = user;
     }

@@ -1,15 +1,14 @@
 package messages;
 
 public class AuthMessage {
+    private final String login;
+    private final String password;
+    private String nickname;
 
-    private String login;
-    private String password;
-    private String username;
-
-    public AuthMessage(String login, String password, String username) {
+    public AuthMessage(String login, String password, String nickname) {
         this.login = login;
         this.password = password;
-        this.username = username;
+        this.nickname = nickname;
     }
 
     public String getLogin() {
@@ -20,7 +19,11 @@ public class AuthMessage {
         return password;
     }
 
-    public String getUsername() {
-        return username;
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 }

@@ -3,6 +3,7 @@ package ru.daniilazarnov;
 import helpers.ConfigHelper;
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+import messages.AuthMessage;
 import messages.Message;
 import messages.MessageType;
 
@@ -25,14 +26,14 @@ public class Client {
     public static final String CONFIG_NOT_FOUND = "не найден файл настроек будет создан новый.";
 
     private Socket socket;
-    private CredentialsEntry user;
+    private AuthMessage user;
     private ConfigHelper config;
 
     public Client() throws IOException {
         init();
     }
 
-    public CredentialsEntry getUser() {
+    public AuthMessage getUser() {
         return user;
     }
 
@@ -82,7 +83,7 @@ public class Client {
         try (ObjectEncoderOutputStream oeos = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream odis = new ObjectDecoderInputStream(socket.getInputStream())) {
 
-            user = new CredentialsEntry(login, password, username);
+            user = new AuthMessage(login, password, username);
             Message message = new Message(MessageType.AUTHORIZATION, user);
 
             oeos.writeObject(message);
@@ -102,7 +103,7 @@ public class Client {
         try (ObjectEncoderOutputStream oeos = new ObjectEncoderOutputStream(socket.getOutputStream());
              ObjectDecoderInputStream odis = new ObjectDecoderInputStream(socket.getInputStream())) {
 
-            user = new CredentialsEntry(login, password, username);
+            user = new AuthMessage(login, password, username);
             Message message = new Message(MessageType.REGISTRATION, user);
 
             oeos.writeObject(message);
