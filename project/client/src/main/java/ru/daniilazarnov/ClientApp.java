@@ -1,5 +1,6 @@
 package ru.daniilazarnov;
 
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,8 +44,13 @@ public class ClientApp {
     }
 
     private void receive() {
-        // To be implemented.
+        try {
+            while (true) {
+                System.out.print(client.receiveMessage() + "\n:: ");
+                }
+            } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 }
 

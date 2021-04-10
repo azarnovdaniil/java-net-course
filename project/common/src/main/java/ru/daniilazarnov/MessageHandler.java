@@ -1,6 +1,7 @@
 package ru.daniilazarnov;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -8,6 +9,44 @@ public class MessageHandler {
     public byte[] message;
     public int code;
     public String[] arguments;
+
+    public MessageHandler(int code, byte[] message) {
+        this.code = code;
+        this.message = message;
+
+        switch (this.code) {
+            case 1:
+                saveFile();
+        }
+    }
+
+    private void saveFile() {
+        StringBuilder pathString = new StringBuilder();
+        int fileAt = 0;
+
+        for (int i = 0; i < this.message.length; i++) {
+            char c = (char) this.message[i];
+                if (c == ';') {
+                    fileAt = i + 1;
+                    break;
+                }
+            pathString.append(c);
+        }
+
+        System.out.printf("!- Uploading file %s.\n", pathString);
+
+        File file = new File(pathString.toString());
+        System.out.println(this.message.length - fileAt);
+        byte[] fileBytes = new byte[this.message.length - fileAt];
+
+        System.arraycopy(this.message, fileAt, fileBytes, 0, this.message.length - fileAt);
+
+        try {
+            Files.write(file.toPath(), fileBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public MessageHandler(String user_input) {
         HashMap<String, Integer> commandMap = new HashMap<String, Integer>() {{
@@ -115,6 +154,12 @@ public class MessageHandler {
             e.printStackTrace();
         }
         return new byte[0];
+    }
+
+    public static int bytesToInt(byte[] b) {
+        ByteBuffer bb = ByteBuffer.wrap(b);
+//        bb.order(ByteOrder.LITTLE_ENDIAN);
+        return bb.getInt();
     }
 
     private byte[] intToBytes( final int i ) {

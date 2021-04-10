@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,9 +40,22 @@ public class ClientHandler {
 
                 switch (code) {
                     case 1:
+                        try {
+                            new MessageHandler(code, buffer);
+                        } catch (RuntimeException e) {
+                            throw new RuntimeException("SWW", e);
+                        } finally {
+                            sendMessage("File has been uploaded.");
+                        }
                         break;
                     case 2:
-                        System.out.println("!- Downloading a file to be implemented.");
+                        try {
+                            new MessageHandler(code, buffer);
+                        } catch (RuntimeException e) {
+                            throw new RuntimeException("SWW", e);
+                        } finally {
+//                            sendFile(message);
+                        }
                         break;
                     case 3:
                         System.out.println("!- Showing files to be implemented.");
@@ -62,6 +74,14 @@ public class ClientHandler {
             catch (IOException e) {
                 throw new RuntimeException("SWW", e);
             }
+        }
+    }
+
+    private void sendMessage(String message) {
+        try {
+            out.writeUTF(message);
+        } catch (IOException e) {
+            throw new RuntimeException("SWW", e);
         }
     }
 }

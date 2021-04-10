@@ -30,4 +30,8 @@ public class ServerHandler {
             throw new RuntimeException("SWW", e);
         }
     }
+
+    public String receiveMessage() throws IOException {
+        return in.readUTF();
+    }
 }
