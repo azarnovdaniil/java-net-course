@@ -1,9 +1,12 @@
 package helpers;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
+import messages.FileMessage;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.*;
@@ -20,7 +23,7 @@ public class ServerFileHelper {
     private static final String PATH_WARNING = "путь должен быть задан";
     private static final int BUFFER_CAPACITY = 48;
 
-    public static void saveFile(Channel from, Object msg, String username, String filename) throws FileNotFoundException {
+    public static void saveFile(Object msg, String username, String filename) {
 
         if (username.isEmpty()) {
             throw new IllegalArgumentException(USERNAME_WARNING);
@@ -30,16 +33,19 @@ public class ServerFileHelper {
             throw new IllegalArgumentException(PATH_WARNING);
         }
 
-        Path out = Path.of("..", OUTPUT_DIRECTORY, username, filename);
+        ByteBuffer buf = ByteBuffer.allocate(BUFFER_CAPACITY);
+        Path p = Path.of("..", OUTPUT_DIRECTORY, username, filename);
 
-        ByteBuf byteBuf = (ByteBuf) msg;
-        OutputStream to = new FileOutputStream(out.toString());
-        byteBuf.readBytes(to, byteBuf.);
-
-        from.read();
+        if (!p.toFile().exists()) {
+            try {
+                Files.write(p, ((FileMessage) msg).getContent(), StandardOpenOption.CREATE_NEW);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public static void getFile(Channel to, String username, String filename) throws IOException {
+    public static void sendFile(Channel to, String username, String filename) throws IOException {
         if (username.isEmpty()) {
             throw new IllegalArgumentException(USERNAME_WARNING);
         }
@@ -92,9 +98,9 @@ public class ServerFileHelper {
             throw new IllegalArgumentException(USERNAME_WARNING);
         }
 
-        Files.walkFileTree(Path.of("..", OUTPUT_DIRECTORY, username), new FileVisitor<Path>() {
+        Files.walkFileTree(Path.of("..", OUTPUT_DIRECTORY, username), new FileVisitor<>() {
             @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                 return FileVisitResult.CONTINUE;
             }
 
@@ -105,7 +111,7 @@ public class ServerFileHelper {
             }
 
             @Override
-            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+            public FileVisitResult visitFileFailed(Path file, IOException exc) {
                 return FileVisitResult.CONTINUE;
             }
 

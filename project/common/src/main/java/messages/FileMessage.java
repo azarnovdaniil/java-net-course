@@ -8,12 +8,21 @@ public class FileMessage implements Serializable {
     private AuthMessage user;
     private String path1;
     private String path2;
+    private byte[] content;
 
     public FileMessage(FileOperationType type, AuthMessage user, String path1, String path2) {
         this.type = type;
         this.user = user;
         this.path1 = path1;
         this.path2 = path2;
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
     }
 
     public FileOperationType getType() {

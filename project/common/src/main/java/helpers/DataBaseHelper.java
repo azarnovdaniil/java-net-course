@@ -16,7 +16,7 @@ public class DataBaseHelper {
     private static final String SELECT_ALL_USERS = "select login, password, nickname from chat.users";
     private static final String UPDATE_USER_NICKNAME = "update chat.users set nickname = ? where nickname = ?";
     private static final String DRIVER_STRING = "%s://%s:%d/%s";
-    ConfigHelper config;
+    private ConfigHelper config;
 
     public DataBaseHelper(Path cofigPath) {
         try {
