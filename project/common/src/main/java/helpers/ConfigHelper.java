@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Properties;
 
-//todo add checks for existence
 public class ConfigHelper {
 
     private final Path configPath;
