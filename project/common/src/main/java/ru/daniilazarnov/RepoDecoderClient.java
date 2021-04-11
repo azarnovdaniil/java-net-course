@@ -21,7 +21,7 @@ public class RepoDecoderClient extends ChannelInboundHandlerAdapter {
      * and creates a ContextData container. Checks if the package must go further the pipeline or given to
      * command analyser.
      *
-     * @param commandReader - command analyser for incoming commands.
+     * @param commandReader   - command analyser for incoming commands.
      * @param closeConnection - Consumer, that will close the connection if something will go wrong.
      */
 

@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 
 /**
  * Main handler to assemble incoming file and to check it's integrity by file size.
+ *
  * @param <T> - PathHolder, that keeps repo path and tools to report for the current user.
  */
 

@@ -21,6 +21,7 @@ public class ServerCommandReader {
 
     /**
      * Incoming command analyser. Identifies the command and inits the proper action.
+     *
      * @param profile - current user PathHolder to work with.
      */
 
@@ -63,7 +64,7 @@ public class ServerCommandReader {
     }
 
     private void authorise(ContextData messageContext) {
-        if(messageContext.getLogin().equals(new ContextData().getLogin())){
+        if (messageContext.getLogin().equals(new ContextData().getLogin())) {
             profile.sendMessage("Invalid login!");
             return;
         }
@@ -101,7 +102,7 @@ public class ServerCommandReader {
 
                 wait();
 
-                LOGGER.info("Sending file "+toSend.getName() + " size "+toSend.length());
+                LOGGER.info("Sending file " + toSend.getName() + " size " + toSend.length());
                 profile.getContextData().setCommand(CommandList.upload.getNum());
                 ChunkedFile chunk = new ChunkedFile(toSend, 1024);
                 profile.getCurChannel().writeAndFlush(chunk);
@@ -126,7 +127,7 @@ public class ServerCommandReader {
             try {
                 Files.delete(toDelete.toPath());
                 profile.sendMessage("true%%%File " + messageContext.getFilePath() + " deleted successfully.");
-                LOGGER.info("File "+ messageContext.getFilePath() +" deleted.");
+                LOGGER.info("File " + messageContext.getFilePath() + " deleted.");
             } catch (IOException e) {
                 profile.sendMessage("false%%%Error occurred. File delete failed.");
                 LOGGER.error("SWW deleting a file", LOGGER.throwing(e));
@@ -166,7 +167,7 @@ public class ServerCommandReader {
         if (toRename.exists()) {
             if (toRename.renameTo(newName)) {
                 profile.sendMessage("true%%%File " + messageContext.getFilePath() + " successfully renamed to " + messageContext.getLogin());
-                LOGGER.info("File "+messageContext.getFilePath()+" renamed to "+messageContext.getLogin());
+                LOGGER.info("File " + messageContext.getFilePath() + " renamed to " + messageContext.getLogin());
             } else profile.sendMessage("File rename failed!");
         } else {
             profile.sendMessage("false%%%File " + messageContext.getFilePath() + " not found.");

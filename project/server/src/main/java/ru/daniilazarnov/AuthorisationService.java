@@ -18,6 +18,7 @@ public class AuthorisationService {
 
     /**
      * Manages authorisation process, including register and login commands.
+     *
      * @param userList - list of connected user's PathHolders.
      */
 
@@ -30,9 +31,10 @@ public class AuthorisationService {
     /**
      * Inits login process, checks the result. Checks if user with supplied login is already connected.
      * Gives respond to the user.
-     * @param login - incoming login.
+     *
+     * @param login    - incoming login.
      * @param password - incoming password.
-     * @param user - current user PathHolder to work with.
+     * @param user     - current user PathHolder to work with.
      */
 
     public static void login(String login, String password, UserProfile user) {
@@ -62,9 +64,10 @@ public class AuthorisationService {
 
     /**
      * Inits register process, checks the result. Gives respond to the user.
-     * @param login - incoming login.
+     *
+     * @param login    - incoming login.
      * @param password - incoming password.
-     * @param user - current user PathHolder to work with.
+     * @param user     - current user PathHolder to work with.
      */
 
     public static void register(String login, String password, UserProfile user) {

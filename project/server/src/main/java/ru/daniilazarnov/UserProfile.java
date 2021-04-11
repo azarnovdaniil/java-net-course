@@ -19,8 +19,9 @@ public class UserProfile implements PathHolder {
 
     /**
      * PathHolder on Server side. Provides channel handlers with parameters and respond tools for current user.
-     * @param login - current user login. Has default value if user is not authorised.
-     * @param channel - current channel, this user is using.
+     *
+     * @param login         - current user login. Has default value if user is not authorised.
+     * @param channel       - current channel, this user is using.
      * @param messageToUser - tool to send server respond for user commands.
      */
 

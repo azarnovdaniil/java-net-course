@@ -1,0 +1,34 @@
+2021-04-12 00:43:47,727 INFO r.d.ClientModuleManager [main] line 54 -> App started. 
+2021-04-12 00:43:47,758 INFO r.d.ClientConfigProcessor [main] line 69 -> Network settings initialized: 127.0.0.1 | 7777 
+2021-04-12 00:43:48,310 INFO r.d.RepoClient [pool-2-thread-2] line 93 -> Trying to connect server... 
+2021-04-12 00:43:54,900 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 53 -> New command input: help 
+2021-04-12 00:44:03,033 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 53 -> New command input: help upload 
+2021-04-12 00:44:17,588 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 53 -> New command input: upload \cat.jpg 
+2021-04-12 00:44:23,961 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 53 -> New command input: login user1 123 
+2021-04-12 00:44:23,972 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 138 -> Trying to login 
+2021-04-12 00:44:23,977 INFO r.d.RepoEncoder [nioEventLoopGroup-2-1] line 51 -> Byte package encoded and flushed. 
+2021-04-12 00:44:24,543 INFO r.d.RepoDecoderClient [nioEventLoopGroup-2-1] line 36 -> Byte package arrived. 
+2021-04-12 00:44:24,544 INFO r.d.ClientCommandReader [pool-2-thread-3] line 69 -> New message from server arrived: true%%%Welcome back! 
+2021-04-12 00:44:31,682 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 53 -> New command input: getFileList 
+2021-04-12 00:44:31,683 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 154 -> Trying get file list 
+2021-04-12 00:44:31,683 INFO r.d.RepoEncoder [nioEventLoopGroup-2-1] line 51 -> Byte package encoded and flushed. 
+2021-04-12 00:44:31,692 INFO r.d.RepoDecoderClient [nioEventLoopGroup-2-1] line 36 -> Byte package arrived. 
+2021-04-12 00:44:31,692 INFO r.d.ClientCommandReader [pool-2-thread-3] line 97 -> File list arrived. 
+2021-04-12 00:44:53,128 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 53 -> New command input: rename cat.jpg kitty.jpg 
+2021-04-12 00:44:53,129 INFO r.d.RepoEncoder [nioEventLoopGroup-2-1] line 51 -> Byte package encoded and flushed. 
+2021-04-12 00:44:53,135 INFO r.d.RepoDecoderClient [nioEventLoopGroup-2-1] line 36 -> Byte package arrived. 
+2021-04-12 00:44:53,136 INFO r.d.ClientCommandReader [pool-2-thread-3] line 69 -> New message from server arrived: true%%%File cat.jpg successfully renamed to kitty.jpg 
+2021-04-12 00:45:04,294 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 53 -> New command input: getFileList 
+2021-04-12 00:45:04,295 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 154 -> Trying get file list 
+2021-04-12 00:45:04,295 INFO r.d.RepoEncoder [nioEventLoopGroup-2-1] line 51 -> Byte package encoded and flushed. 
+2021-04-12 00:45:04,301 INFO r.d.RepoDecoderClient [nioEventLoopGroup-2-1] line 36 -> Byte package arrived. 
+2021-04-12 00:45:04,301 INFO r.d.ClientCommandReader [pool-2-thread-3] line 97 -> File list arrived. 
+2021-04-12 00:45:19,291 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 53 -> New command input: upload \cat.jpg 
+2021-04-12 00:45:19,291 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 240 -> Trying to upload file. 
+2021-04-12 00:45:19,293 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 247 -> File info sent. 
+2021-04-12 00:45:19,295 INFO r.d.RepoEncoder [nioEventLoopGroup-2-1] line 51 -> Byte package encoded and flushed. 
+2021-04-12 00:45:19,298 INFO r.d.RepoDecoderClient [nioEventLoopGroup-2-1] line 36 -> Byte package arrived. 
+2021-04-12 00:45:19,299 INFO r.d.RepoDecoderClient [nioEventLoopGroup-2-1] line 36 -> Byte package arrived. 
+2021-04-12 00:45:19,299 INFO r.d.ClientCommandReader [pool-2-thread-4] line 69 -> New message from server arrived: YesNoFalse&&&Too good... 
+2021-04-12 00:45:19,300 INFO r.d.ClientCommandReader [pool-2-thread-5] line 69 -> New message from server arrived: SYSTEM 
+2021-04-12 00:45:19,309 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 258 -> Starting file transmission. 

@@ -11,8 +11,8 @@
         <RollingFile name="file" fileName="ClientLog.log"
                      filePattern="ClientLog.%i.log" ignoreExceptions="false">
             <Policies>
-                <OnStartupTriggeringPolicy />
-                <SizeBasedTriggeringPolicy size="20 MB" />
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="3"/>
             <PatternLayout>

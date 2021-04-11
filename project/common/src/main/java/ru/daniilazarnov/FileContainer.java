@@ -6,8 +6,9 @@ public class FileContainer {
 
     /**
      * Utility class, used to send files.
+     *
      * @param filePart - file chunk.
-     * @param name - name of the file.
+     * @param name     - name of the file.
      */
 
     FileContainer(byte[] filePart, String name) {
