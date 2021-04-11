@@ -1,9 +1,0 @@
-2021-04-06 03:22:46,017 INFO r.d.ClientModuleManager [main] line 53 -> App started. 
-2021-04-06 03:22:46,027 INFO r.d.ClientConfigProcessor [main] line 68 -> Network settings initialized: 127.0.0.1 | 7777 
-2021-04-06 03:22:46,340 INFO r.d.RepoClient [pool-2-thread-2] line 92 -> Trying to connect server... 
-2021-04-06 03:22:52,830 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 52 -> New command input: login user2 123 
-2021-04-06 03:22:52,838 INFO r.d.InputCommandAnalyser [pool-2-thread-3] line 137 -> Trying to login 
-2021-04-06 03:22:52,842 INFO r.d.RepoEncoder [nioEventLoopGroup-2-1] line 50 -> Byte package encoded and flushed. 
-2021-04-06 03:22:52,900 INFO r.d.RepoDecoderClient [nioEventLoopGroup-2-1] line 36 -> Byte package arrived. 
-2021-04-06 03:22:52,901 INFO r.d.ClientCommandReader [pool-2-thread-3] line 69 -> New message from server arrived: false%%%No user found with your parameters 
-2021-04-06 03:24:26,191 INFO r.d.RepoClient [nioEventLoopGroup-2-1] line 140 -> Connection closed. 
