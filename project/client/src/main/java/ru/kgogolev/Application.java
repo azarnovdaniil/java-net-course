@@ -10,7 +10,7 @@ public class Application {
 
     public Application(Client client) {
         this.client = client;
-        this.consoleHandler = new ConsoleHandler(new FileSystem());
+        this.consoleHandler = new ConsoleHandler(new FileSystem(), client.getCurrentDirectory());
         run();
     }
 

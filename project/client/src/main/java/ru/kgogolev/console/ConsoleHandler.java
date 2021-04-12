@@ -11,9 +11,11 @@ import java.nio.charset.StandardCharsets;
 
 public class ConsoleHandler {
     private FileSystem fileSystem;
+    private String currentDirectory;
 
-    public ConsoleHandler(FileSystem fileSystem) {
+    public ConsoleHandler(FileSystem fileSystem, String currentDirectory) {
         this.fileSystem = fileSystem;
+        this.currentDirectory = currentDirectory;
     }
 
     public ByteBuf handleMessage() {
@@ -22,9 +24,10 @@ public class ConsoleHandler {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
             while (true) {
+                System.out.print(currentDirectory + " : ");
                 line = br.readLine();
                 if (line.startsWith(StringConstants.VIEW_FILES)) {
-                    fileSystem.walkFileTree(line.split(" ")[1]);
+                    fileSystem.walkFileTree(currentDirectory);
 
                 } else if (line.startsWith(StringConstants.UPLOAD)) {
                     String command = StringConstants.UPLOAD + " " + line.split(" ")[1];

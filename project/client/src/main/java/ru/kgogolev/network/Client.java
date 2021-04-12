@@ -8,20 +8,19 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import ru.kgogolev.FileDecoder;
-import ru.kgogolev.FileEncoder;
-import ru.kgogolev.PortHost;
-import ru.kgogolev.WorkingDirectory;
+import ru.kgogolev.*;
 import ru.kgogolev.network.in_handler.ClientInputHandler;
 import ru.kgogolev.network.out_handler.ClientOutputHandler;
 
 public class Client {
     private SocketChannel channel;
+    private User user;
 
 
     private EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-    public Client() {
+    public Client(User user) {
+        this.user = user;
         new Thread(() -> {
             try {
                 Bootstrap b = new Bootstrap();
@@ -32,7 +31,7 @@ public class Client {
                     public void initChannel(SocketChannel ch) throws Exception {
                         channel = ch;
                         ch.pipeline().addLast(
-                                new ClientInputHandler(new FileDecoder(WorkingDirectory.CLIENT_WORKING_DIRECTORY)),
+                                new ClientInputHandler(new FileDecoder(user.getRootDownloadDirectory())),
                                 new ClientOutputHandler(new FileEncoder()));
                     }
                 });
@@ -52,6 +51,9 @@ public class Client {
         channel.writeAndFlush(bytes);
     }
 
+    public String getCurrentDirectory() {
+        return user.getRootNavigateDirectory();
+    }
 
 }
 

@@ -18,7 +18,6 @@ public class ServerInputHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
-//        System.out.println(inBuffer.toString());
         String input = buf.toString(CharsetUtil.UTF_8);
         if (input.split(" ")[0].equals(StringConstants.DOWNLOAD)) {
             ctx.writeAndFlush(msg);
