@@ -1,20 +1,20 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.commands;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import ru.daniilazarnov.commands.State;
-import ru.daniilazarnov.commands.UpLoadFile;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.channel.*;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private UpLoadFile upLoadFile = new UpLoadFile();
-    public  final byte DOWNLOAD = (byte) 25;
-    public final  byte UPLOAD = (byte) 24;
+public class DownLoadFile extends ChannelInboundHandlerAdapter {
+    public final byte DOWNLOAD = (byte) 25;
+    public final byte UPLOAD = (byte) 24;
     private State currentState = State.IDLE;
     private int nextLength;
     private String fileName;
@@ -22,11 +22,41 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private long receivedFileLength;
     private BufferedOutputStream out;
     private FileOutputStream fos;
+    private   Path path = Paths.get("C:\\Users\\Stas\\Desktop\\Java.NET\\java-net-course\\project\\server\\src\\main\\java\\ru");
 
 
 
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public  void downloadRequest(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
+       //Запрос на скачивание
+        FileRegion region = new DefaultFileRegion(path.toFile(), 0, Files.size(path));
+        ByteBuf buf;
+        buf = ByteBufAllocator.DEFAULT.directBuffer(1);
+        buf.writeByte(UPLOAD);
+        channel.writeAndFlush(buf);
 
+        byte[] filenameBytes = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(Integer.SIZE / Byte.SIZE);
+        buf.writeInt(filenameBytes.length);
+        channel.writeAndFlush(buf);
+
+        buf = ByteBufAllocator.DEFAULT.directBuffer(filenameBytes.length);
+        buf.writeBytes(filenameBytes);
+        channel.writeAndFlush(buf);
+
+
+        buf = ByteBufAllocator.DEFAULT.directBuffer(Long.SIZE / Byte.SIZE);
+        buf.writeLong(Files.size(path));
+        channel.writeAndFlush(buf);
+
+        ChannelFuture transferOperationFuture = channel.writeAndFlush(region);
+        if (finishListener != null) {
+            transferOperationFuture.addListener(finishListener);
+        }
+
+    }
+
+
+    public  void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = ((ByteBuf) msg);
         while (buf.readableBytes() > 0) {
             //Проверка ключа операции
@@ -39,24 +69,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 } else {
                     System.out.println("ERROR: Invalid first byte - " + readed);
                 }
-                if(readed == UPLOAD){
-//                    try {
-                        //C:\Users\Stas\Desktop\Java.NET\java-net-course\project\client\src\main\java\ru\daniilazarnov\demo.txt
-//                        upLoadFile.sendFile(pathFile, Network.getInstance().getCurrentChannel(), future -> {
-//                            if (!future.isSuccess()) {
-//                                future.cause().printStackTrace();
-//                                                Network.getInstance().stop();
-//                            }
-//                            if (future.isSuccess()) {
-//                                System.out.println("Файл успешно передан");
-//                                                Network.getInstance().stop();
-//                            }
-//                        });
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
+                if (readed == UPLOAD) {
                     System.out.println("Команда читается сервером");
-
                     break;
                 }
             }
@@ -79,7 +93,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     // out = new BufferedOutputStream(new FileOutputStream("_" + new String(fName)));
                     currentState = State.FILE_LENGTH;
                     fileName = new String(fName, "UTF-8");
-                    fos = new FileOutputStream("C:\\Users\\Stas\\Desktop\\Java.NET\\java-net-course\\project\\server\\src\\main\\java\\ru\\daniilazarnov\\" + fileName);
+                    fos = new FileOutputStream(path + fileName);
                     // fos = new FileOutputStream(f);
                 }
 

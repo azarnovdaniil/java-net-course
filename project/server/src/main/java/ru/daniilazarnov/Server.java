@@ -21,6 +21,7 @@ import java.util.logging.LogManager;
 
 public class Server {
     public static final int INET_PORT = 8180;
+    public static final Server SERVER = new Server();
 
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -42,6 +43,7 @@ public class Server {
             bossGroup.shutdownGracefully();
         }
     }
+    Server getInstance () { return SERVER;}
 
     public static void main(String[] args) throws Exception {
         new Server().run();

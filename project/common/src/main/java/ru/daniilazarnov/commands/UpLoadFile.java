@@ -1,19 +1,18 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.commands;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class FilesSender {
+public class UpLoadFile  {
     public static final byte MAGIC_BYTE = (byte) 25;
 
-    public static void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
+    public  void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
         FileRegion region = new DefaultFileRegion(path.toFile(), 0, Files.size(path));
         ByteBuf buf;
         buf = ByteBufAllocator.DEFAULT.directBuffer(1);

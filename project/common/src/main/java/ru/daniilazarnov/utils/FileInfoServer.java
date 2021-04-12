@@ -1,14 +1,11 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.utils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
-import java.util.stream.Collectors;
 
-public class FileInfo {
+public class FileInfoServer {
 
     public enum FileType {
         FILE("F"), DIRECTORY("D");
@@ -66,7 +63,7 @@ public class FileInfo {
         this.lastModified = lastModified;
     }
 
-    public FileInfo(Path path) {
+    public FileInfoServer(Path path) {
         try {
             this.filename = path.getFileName().toString();
             this.size = Files.size(path);

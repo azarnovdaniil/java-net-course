@@ -1,4 +1,4 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.commands;
 
 public enum State {
     IDLE,
