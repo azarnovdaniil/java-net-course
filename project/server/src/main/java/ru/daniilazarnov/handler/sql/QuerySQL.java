@@ -10,7 +10,7 @@ public class QuerySQL {
     public boolean tryAuthInStorage(Connection conn, String login, String pass) {
 
         try {
-            PreparedStatement state = conn.prepareStatement("SELECT name FROM clientstore WHERE name = ? AND pass = ?");
+            PreparedStatement state = conn.prepareStatement("SELECT name FROM clientside WHERE name = ? AND pass = ?");
             state.setString(1, login);
             state.setString(2, pass);
             ResultSet rs = state.executeQuery();
@@ -20,32 +20,32 @@ public class QuerySQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-        ConnectionService.close(conn);
+            ConnectionService.close(conn);
         }
         return false;
     }
 
     public boolean tryToRegistNewUser(Connection conn, String username, String password) {
-        try (PreparedStatement state = conn.prepareStatement("INSERT INTO clientstore (name, pass) VALUES (?, ?)")) {
+        try (PreparedStatement state = conn.prepareStatement("INSERT INTO clientside (name, pass) VALUES (?, ?)")) {
             conn.setAutoCommit(false);
             state.setString(1, username);
             state.setString(2, password);
-            int row = state.executeUpdate();
+            state.executeUpdate();
             conn.commit();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
             ConnectionService.rollback(conn);
-            return false;
         } finally {
             ConnectionService.close(conn);
         }
+        return false;
     }
 
     public boolean isLoginInDb(Connection con, String login) {
-        try (PreparedStatement state = con.prepareStatement("SELECT username FROM clientstore WHERE username = ? ")) {
+        try (PreparedStatement state = con.prepareStatement("SELECT uname FROM clientside WHERE name = ? ")) {
             state.setString(1, login);
-          ResultSet rs = state.executeQuery();
+            ResultSet rs = state.executeQuery();
             if (rs.next()) {
                 return true;
             }
@@ -55,20 +55,5 @@ public class QuerySQL {
             ConnectionService.close(con);
         }
         return false;
-    }
-    public String tryUserStorage(Connection connect, String login) {
-        try {
-            PreparedStatement state = connect.prepareStatement("SELECT userStorage FROM clientstore WHERE login = ?");
-            state.setString(1, login);
-            ResultSet rs = state.executeQuery();
-            if (rs.next()) {
-                return rs.getString("userStorage");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            ConnectionService.close(connect);
-        }
-        return null;
     }
 }

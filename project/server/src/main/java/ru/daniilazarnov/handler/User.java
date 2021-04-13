@@ -1,24 +1,18 @@
-package ru.daniilazarnov;
+package ru.daniilazarnov.handler;
 
-import java.nio.channels.Channel;
+import io.netty.channel.Channel;
 
 public class User {
     private String name;
-    private String address;
     private Channel channel;
 
-    public User(String name, String address, Channel channel) {
+    public User(String name, Channel channel) {
         this.name = name;
-        this.address = address;
         this.channel = channel;
     }
 
     public String getName() {
         return name;
-    }
-
-    public String getAddress() {
-        return address;
     }
 
     public Channel getChannel() {

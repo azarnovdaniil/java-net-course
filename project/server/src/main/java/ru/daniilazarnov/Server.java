@@ -1,14 +1,17 @@
 package ru.daniilazarnov;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import ru.daniilazarnov.handler.*;
+import ru.daniilazarnov.handler.AuthHandler;
 
 /**
  * Discards any incoming data.
@@ -16,10 +19,7 @@ import ru.daniilazarnov.handler.*;
 public class Server {
 
     public static final int MAX_OBJECT_SIZE = 1024 * 1024 * 100;
-    public static final String SERVER_REPO = "D:\\serverStorage";
     private final int number = 128;
-
-
     public Server(int port) {
     }
 
@@ -34,7 +34,7 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
                         public void initChannel(SocketChannel ch) {
-                                    ch.pipeline().addLast(
+                            ch.pipeline().addLast(
                                     new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
                                     new AuthHandler()
@@ -45,7 +45,7 @@ public class Server {
                     .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
             // Bind and start to accept incoming connections.
-            ChannelFuture f = b.bind(Common.DEFAULT_PORT).sync(); // (7)
+            ChannelFuture f = b.bind(Common.readConfig().getPort()).sync(); // (7)
 
             // Wait until the server socket is closed.
             // In this example, this does not happen, but you can do that to gracefully

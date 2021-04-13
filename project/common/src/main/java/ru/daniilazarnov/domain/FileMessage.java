@@ -8,7 +8,7 @@ public class FileMessage implements Serializable {
     private final byte[] content;
 
 
-    public FileMessage(String fileName, Integer sizeFile, byte[] content) {
+    public FileMessage(String fileName, byte[] content) {
         this.fileName = fileName;
         this.content = content;
     }

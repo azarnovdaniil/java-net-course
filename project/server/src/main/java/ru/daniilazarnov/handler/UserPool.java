@@ -1,11 +1,14 @@
-package ru.daniilazarnov;
-import java.nio.channels.Channel;
+package ru.daniilazarnov.handler;
+
+import io.netty.channel.Channel;
+
 import java.util.LinkedList;
 import java.util.List;
+
 public class UserPool {
     private static List<User> pool;
 
-    private static void add(User user) {
+    public static void add(User user) {
         if (pool == null) {
             pool = new LinkedList<>();
             pool.add(user);
@@ -13,16 +16,15 @@ public class UserPool {
         pool.add(user);
     }
 
-    private static void remove(Channel channel) {
-        for (User user : pool
-        ) {
+    public static void remove(Channel channel) {
+        for (User user : pool) {
             if (user.getChannel() == channel) {
                 pool.remove(user);
             }
         }
     }
 
-    private static String getUserName(Channel channel) {
+    public static String getUserName(Channel channel) {
         for (User user : pool) {
             if (user.getChannel() == channel) {
                 return user.getName();

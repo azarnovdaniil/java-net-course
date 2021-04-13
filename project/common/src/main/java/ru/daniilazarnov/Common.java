@@ -10,15 +10,62 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Common {
-    public static final int DEFAULT_PORT = 8189;
-    public static final String DEFAULT_HOST = "localhost";
-    public Common() { }
-    public FileMessage sendFile(String fileName, Path path) throws IOException {
-        byte[] fileContent = Files.readAllBytes(path);
-        return new FileMessage(fileName, (int) Files.size(path), fileContent);
+    private Integer port;
+    private String host;
+    private String serverRepo;
+    private String clientRepo;
+
+    public Common() {
     }
 
-    public void receiveFile(Object msg, String directory) throws IOException {
+    public int getPort() {
+        return port;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public String getClientRepo() {
+        return clientRepo;
+    }
+
+    public String getServerRepo() {
+        return serverRepo;
+    }
+
+    public static Common readConfig() throws UnsupportedEncodingException, IOException {
+        Common connect = new Common();
+        InputStream is = Common.class.getClassLoader().getResourceAsStream("config.txt");
+        InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+        BufferedReader file = new BufferedReader(isr);
+        String line = null; // line read from file
+        while ((line = file.readLine()) != null) {
+            String[]parametr = line.split(" - ");
+            if (parametr[0].equals("port") && parametr[0] != null) {
+                connect.port = Integer.valueOf(parametr[1]);
+            } else if (parametr[0].equals("host") && parametr[0] != null) {
+                connect.host = parametr[1];
+            } else if (parametr[0].equals("server") && parametr[0] != null) {
+                connect.serverRepo = parametr[1];
+            } else if (parametr[0].equals("user") && parametr[0] != null) {
+                connect.clientRepo = parametr[1];
+            } else {
+                System.out.println("Config file is fail");
+            }
+        }
+
+        file.close(); isr.close(); is.close();
+    return connect;
+    }
+
+
+    public FileMessage sendFile(String fileName, Path path) throws IOException {
+        byte[] fileContent = Files.readAllBytes(path);
+        return new FileMessage(fileName, fileContent);
+    }
+
+    public void receiveFile(Object msg, String directory) {
         try {
             Path path = Path.of(directory + "\\" + ((FileMessage) msg).getFileName());
             if (Files.exists(path)) {
@@ -55,7 +102,6 @@ public class Common {
     }
 
     public String renameFile(String lastName, String newName, String src) {
-        String address = src + "\\" + lastName;
         String addressNew = src + "\\" + newName;
         if (Files.notExists(Path.of(addressNew))) {
             File file = new File(lastName);

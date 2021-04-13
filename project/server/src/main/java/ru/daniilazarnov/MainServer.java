@@ -1,7 +1,10 @@
 package ru.daniilazarnov;
 
+import java.io.*;
+
 public class MainServer {
     public static void main(String[] args) throws Exception {
-        new Server(Common.DEFAULT_PORT).run();
+    new Server(Common.readConfig().getPort()).run();
+
     }
 }
