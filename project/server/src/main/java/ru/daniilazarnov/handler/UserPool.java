@@ -32,4 +32,12 @@ public class UserPool {
         }
         return null;
     }
+    public static TypeUser getUserType(Channel channel) {
+        for (User user : pool) {
+            if (user.getChannel() == channel) {
+                return user.getTypeUser();
+            }
+        }
+        return null;
+    }
 }

@@ -7,58 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+
 
 public class Common {
-    private Integer port;
-    private String host;
-    private String serverRepo;
-    private String clientRepo;
-
     public Common() {
     }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public String getClientRepo() {
-        return clientRepo;
-    }
-
-    public String getServerRepo() {
-        return serverRepo;
-    }
-
-    public static Common readConfig() throws UnsupportedEncodingException, IOException {
-        Common connect = new Common();
-        InputStream is = Common.class.getClassLoader().getResourceAsStream("config.txt");
-        InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-        BufferedReader file = new BufferedReader(isr);
-        String line = null; // line read from file
-        while ((line = file.readLine()) != null) {
-            String[]parametr = line.split(" - ");
-            if (parametr[0].equals("port") && parametr[0] != null) {
-                connect.port = Integer.valueOf(parametr[1]);
-            } else if (parametr[0].equals("host") && parametr[0] != null) {
-                connect.host = parametr[1];
-            } else if (parametr[0].equals("server") && parametr[0] != null) {
-                connect.serverRepo = parametr[1];
-            } else if (parametr[0].equals("user") && parametr[0] != null) {
-                connect.clientRepo = parametr[1];
-            } else {
-                System.out.println("Config file is fail");
-            }
-        }
-
-        file.close(); isr.close(); is.close();
-    return connect;
-    }
-
 
     public FileMessage sendFile(String fileName, Path path) throws IOException {
         byte[] fileContent = Files.readAllBytes(path);
@@ -77,18 +30,17 @@ public class Common {
         }
     }
 
-    public StringBuilder showFiles(String path) {
+    public String showFiles(String path) {
         File dir = new File(path);
         StringBuilder sb = new StringBuilder();
 
         File[] files = dir.listFiles();
-        sb.append(" For user: user " + "\n");
         for (File file : files) {
             long lastModified = file.lastModified();
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-            sb.append(file.getName() + " ,date of change " + sdf.format(new Date(lastModified)) + "\n");
+            sb.append(file.getName() + "\n\r");
         }
-        return sb;
+        return sb.toString();
     }
 
     public String deleteFile(String address, String src) {

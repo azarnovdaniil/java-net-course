@@ -10,6 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>common</artifactId>
+    <build>
+
+    </build>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -29,11 +32,7 @@
             <version>5.4.2</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>7.1.0</version>
-        </dependency>
+
     </dependencies>
 
     <properties>

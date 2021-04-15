@@ -1,15 +1,16 @@
-/help - calling help;
+/help - calling help
 
-Work whith Storage
-/auth username password - log in to the system, enter your username and password;
-/reg username password - registration in the system, entering a username and password;
+Work with Storage
+/auth username password - log in to the system, enter your username and password
+/reg username password - registration in the system, entering a username and password
 /show - showing a list of files in the storage
 /rename fileOld fileNew - rename the file, enter the old name, then enter the new name
 /delete file - deleting a file, specifying a file to delete
 /download file - downloading a file from storage,specifying a file to download
 /upload file - uploading a file from storage,specifying a file to upload
 
-Work whith Storage (add -l to command of Server)
+Work with Storage (add -l to command of Server)
 /show -l - showing a list of files in the storage
 /rename -l fileOld fileNew - rename the file, enter the old name, then enter the new name
 /delete file -l - deleting a file, specifying a file to delete
+/fin -out from program

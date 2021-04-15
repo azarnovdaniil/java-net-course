@@ -45,7 +45,7 @@ public class Server {
                     .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
             // Bind and start to accept incoming connections.
-            ChannelFuture f = b.bind(Common.readConfig().getPort()).sync(); // (7)
+            ChannelFuture f = b.bind(Config.readConfig(Config.DEFAULT_CONFIG).getPort()).sync(); // (7)
 
             // Wait until the server socket is closed.
             // In this example, this does not happen, but you can do that to gracefully

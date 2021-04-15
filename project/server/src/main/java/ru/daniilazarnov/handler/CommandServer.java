@@ -1,8 +1,13 @@
 package ru.daniilazarnov.handler;
+
 import ru.daniilazarnov.Server;
 import ru.daniilazarnov.handler.sql.ConnectionService;
 import ru.daniilazarnov.handler.sql.QuerySQL;
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -25,6 +30,9 @@ public class CommandServer {
             String addressStorage = storage + "\\" + user;
             if (sql.tryToRegistNewUser(ConnectionService.connectMySQL(), user, password)) {
                 try {
+                    if (Files.exists(Path.of(addressStorage))) {
+                        Files.delete(Path.of(addressStorage));
+                    }
                     Files.createDirectories(Path.of(addressStorage));
                 } catch (IOException e) {
                     e.printStackTrace();

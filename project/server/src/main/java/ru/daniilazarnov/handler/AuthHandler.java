@@ -2,7 +2,7 @@ package ru.daniilazarnov.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import ru.daniilazarnov.Common;
+import ru.daniilazarnov.Config;
 import ru.daniilazarnov.domain.MyMessage;
 
 import java.io.IOException;
@@ -14,9 +14,9 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         System.out.println("Client connected...");
-        ctx.writeAndFlush(new MyMessage("Welcome to storage"));
-        ctx.writeAndFlush(new MyMessage("To get started, register in the repository or log in, enter /help"));
-    }
+            ctx.writeAndFlush(new MyMessage("Welcome to storage"));
+            ctx.writeAndFlush(new MyMessage("To get started, register in the repository or log in, enter /help"));
+            }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
@@ -33,7 +33,7 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
             if (msg instanceof MyMessage) {
                 String identifier = ((MyMessage) msg).getText();
                 String[] ident = identifier.split(" ");
-                String storage = Common.readConfig().getServerRepo();
+                String storage = Config.readConfig(Config.DEFAULT_CONFIG).getServerRepo();
                 if (ident[0].equals("/auth") && ident.length == maxLen) {
                     ctx.writeAndFlush(new MyMessage((new CommandServer()).authInStorage(ident[1], ident[2])));
                     ctx.pipeline().addLast(new MainHandler());
