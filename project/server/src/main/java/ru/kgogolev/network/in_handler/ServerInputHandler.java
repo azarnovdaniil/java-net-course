@@ -6,12 +6,18 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
 import ru.kgogolev.FileDecoder;
+import ru.kgogolev.FileSystem;
 import ru.kgogolev.StringConstants;
+import ru.kgogolev.StringUtil;
 
 public class ServerInputHandler extends ChannelInboundHandlerAdapter {
+    private String currentDirectory;
+    private final FileSystem fileSystem;
     private FileDecoder fileDecoder;
 
-    public ServerInputHandler(FileDecoder fileDecoder) {
+    public ServerInputHandler(String currentDirectory, FileSystem fileSystem, FileDecoder fileDecoder) {
+        this.currentDirectory = currentDirectory;
+        this.fileSystem = fileSystem;
         this.fileDecoder = fileDecoder;
     }
 
@@ -21,6 +27,9 @@ public class ServerInputHandler extends ChannelInboundHandlerAdapter {
         String input = buf.toString(CharsetUtil.UTF_8);
         if (input.split(" ")[0].equals(StringConstants.DOWNLOAD)) {
             ctx.writeAndFlush(msg);
+        } else if (input.split(" ")[0].equals(StringConstants.VIEW_SERVER_FILES)) {
+            ctx.writeAndFlush(
+                    StringUtil.lineToByteBuf(fileSystem.walkFileTree(currentDirectory)));
         } else {
             fileDecoder.decodeFile(buf);
         }

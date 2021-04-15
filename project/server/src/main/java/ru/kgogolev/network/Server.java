@@ -32,7 +32,9 @@ public class Server {
                             socketChannel.pipeline().addLast(
                                     new AuthHandler(),
                                     new ServerOutputHandler(new FileEncoder()),
-                                    new ServerInputHandler(new FileDecoder(serverUser.getRootDownloadDirectory()))
+                                    new ServerInputHandler(serverUser.getRootNavigateDirectory(),
+                                            new FileSystem(),
+                                            new FileDecoder(serverUser.getRootDownloadDirectory()))
                             );
                         }
                     });

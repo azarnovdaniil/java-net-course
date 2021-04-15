@@ -10,13 +10,14 @@ import java.io.IOException;
 
 public class FileDecoder {
 
+    private String workingDirectory;
+
     public FileDecoder(String workingDirectory) {
         this.workingDirectory = workingDirectory;
     }
 
-    private String workingDirectory;
-
     public static final byte MAGIC_BYTE = (byte) 25;
+
     private State currentState = State.IDLE;
     private int nextLength;
     private long fileLength;
@@ -80,5 +81,9 @@ public class FileDecoder {
             }
         }
 
+    }
+
+    public void setWorkingDirectory(String workingDirectory) {
+        this.workingDirectory = workingDirectory;
     }
 }
