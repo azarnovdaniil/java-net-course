@@ -1,0 +1,4 @@
+qwe  - weq
+port - 12345
+server - D:\\serverStorage
+user - C:\\clientStorage

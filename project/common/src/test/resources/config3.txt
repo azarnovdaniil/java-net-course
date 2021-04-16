@@ -1,0 +1,3 @@
+host - localhost
+server - D:\\serverStorage
+asd - C:\\clientStorage

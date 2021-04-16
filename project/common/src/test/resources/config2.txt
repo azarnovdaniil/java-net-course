@@ -1,0 +1,4 @@
+host - localhost
+     - 8189
+server - D:\\serverStorage
+user - C:\\clientStorage
