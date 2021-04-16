@@ -17,7 +17,7 @@ public class CLI {
     private ObjectDecoderInputStream in;
     public static final int MAX_OBJECT_SIZE = 100 * 1024 * 1024;
     public CLI() { }
-    public void connect(String host, Integer port, String repo) throws IOException {
+    public void run(String host, Integer port, String repo) throws IOException {
         String s;
         Common common = new Common();
         try {
@@ -39,13 +39,13 @@ public class CLI {
                             String message = ((MyMessage) msg).getText();
                             System.out.println(message);
                         } else if (msg instanceof FileMessage) {
-                                common.receiveFile(msg, repo);
+                                (new Common()).receiveFile(msg, repo);
                         }
                     }
                 }).start();
 
                     Scanner scanner = new Scanner(System.in);
-                    while (scanner.hasNext()) {
+                    do {
                         s = scanner.nextLine();
                         String[] strings = s.split(" ");
                         if (s.equals("/upload") && strings.length == 2) {
@@ -65,7 +65,7 @@ public class CLI {
                             out.writeObject(textMessage);
                         }
                         out.flush();
-                    }
+                    } while (!s.equals("/fin"));
             }
 
         } catch (Exception e) {

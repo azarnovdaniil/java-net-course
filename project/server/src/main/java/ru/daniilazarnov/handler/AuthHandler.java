@@ -10,6 +10,10 @@ import java.io.IOException;
 public class AuthHandler extends ChannelInboundHandlerAdapter {
     private final int maxLen = 3;
     private boolean auth = false;
+    private Config config = Config.readConfig(Config.DEFAULT_CONFIG);
+
+    public AuthHandler() throws IOException {
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -33,10 +37,10 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
             if (msg instanceof MyMessage) {
                 String identifier = ((MyMessage) msg).getText();
                 String[] ident = identifier.split(" ");
-                String storage = Config.readConfig(Config.DEFAULT_CONFIG).getServerRepo();
+                String storage = config.getServerRepo();
                 if (ident[0].equals("/auth") && ident.length == maxLen) {
                     ctx.writeAndFlush(new MyMessage((new CommandServer()).authInStorage(ident[1], ident[2])));
-                    ctx.pipeline().addLast(new MainHandler());
+                    ctx.pipeline().addLast(new MainHandler(config));
                     UserPool.add(new User(ident[1], ctx.channel()));
                     auth = true;
                 } else if (ident[0].equals("/reg") && ident.length == maxLen) {

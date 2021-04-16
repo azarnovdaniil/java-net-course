@@ -13,6 +13,8 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import ru.daniilazarnov.handler.AuthHandler;
 
+import java.io.IOException;
+
 /**
  * Discards any incoming data.
  */
@@ -20,6 +22,7 @@ public class Server {
 
     public static final int MAX_OBJECT_SIZE = 1024 * 1024 * 100;
     private final int number = 128;
+    private Config config;
     public Server(int port) {
     }
 
@@ -33,7 +36,7 @@ public class Server {
                     .channel(NioServerSocketChannel.class) // (3)
                     .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
-                        public void initChannel(SocketChannel ch) {
+                        public void initChannel(SocketChannel ch) throws IOException {
                             ch.pipeline().addLast(
                                     new ObjectDecoder(MAX_OBJECT_SIZE, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),

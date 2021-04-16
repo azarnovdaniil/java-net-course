@@ -1,8 +1,9 @@
 package ru.daniilazarnov.handler;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testng.Assert;
+
 import ru.daniilazarnov.Config;
 import ru.daniilazarnov.handler.sql.ConnectionService;
 import ru.daniilazarnov.handler.sql.QuerySQL;
@@ -29,9 +30,10 @@ class CommandServerTest {
 
     @Test
     void regInStorage() throws IOException {
+        Config config = Config.readConfig(Config.DEFAULT_CONFIG);
         String user1 = "login10";
         String pass1 = "pass10";
-        String repo = Config.readConfig(Config.DEFAULT_CONFIG).getServerRepo();
+        String repo = config.getServerRepo();
         String exceptedGood = "Registration in the system is completed";
         String exceptedRedudance = "User " + user1 + " is already exist";
 

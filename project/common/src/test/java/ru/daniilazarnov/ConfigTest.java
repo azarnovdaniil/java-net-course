@@ -1,16 +1,18 @@
 package ru.daniilazarnov;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testng.Assert;
+
+
 
 import java.io.IOException;
 
 class ConfigTest {
-    private Config config;
+
     @BeforeEach
     public void init() {
-        config = new Config();
+        Config config = new Config();
     }
 
     @Test

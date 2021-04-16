@@ -13,9 +13,15 @@ import java.nio.file.Path;
 
 public class MainHandler extends ChannelInboundHandlerAdapter { // (1)
 private final int maxLengthArrayRename = 3;
+private final Config config;
+
+    public MainHandler(Config config) {
+        this.config = config;
+    }
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        String address = Config.readConfig(Config.DEFAULT_CONFIG).getServerRepo() + "\\" + UserPool.getUserName(ctx.channel());
+        Common cmd = new Common();
+        String address = config.getServerRepo() + "\\" + UserPool.getUserName(ctx.channel());
         String inCorrectRequest = "Wrong command!! See help for details /help";
         if (msg instanceof MyMessage) {
             System.out.println("Client text message: " + ((MyMessage) msg).getText());
@@ -32,7 +38,7 @@ private final int maxLengthArrayRename = 3;
                 } else if (strings[0].equals("/download") || strings.length == 2) {
                     Path senderFileAddress = Path.of(address + "\\" + strings[1]);
                     if (Files.exists(senderFileAddress)) {
-                        Future f = ctx.writeAndFlush((new Common()).sendFile(strings[1], senderFileAddress));
+                        Future f = ctx.writeAndFlush(cmd.sendFile(strings[1], senderFileAddress));
                     if (f.isDone()) {
                         s = "The requested file was transferred";
                     }
@@ -41,13 +47,13 @@ private final int maxLengthArrayRename = 3;
                     }
                     } else if (strings[0].equals("/rename")) {
                     if (strings.length == maxLengthArrayRename) {
-                        ctx.writeAndFlush(new MyMessage((new Common()).renameFile(strings[1], strings[2], address)));
+                        ctx.writeAndFlush(new MyMessage(cmd.renameFile(strings[1], strings[2], address)));
                     } else {
                         s = inCorrectRequest;
                     }
                  } else if (strings[0].equals("/delete")) {
                     if (strings.length == 2) {
-                        ctx.writeAndFlush(new MyMessage((new Common().deleteFile(strings[1], address))));
+                        ctx.writeAndFlush(new MyMessage(cmd.deleteFile(strings[1], address)));
                     } else {
                         s = inCorrectRequest;
                     }
